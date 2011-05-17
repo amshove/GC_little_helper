@@ -6,8 +6,11 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net>
-// Version:        1.7             - 09.07.2010
-// Changelog:      1.7             - Bugfix: Mail-Link, hide disclaimer, decrypt hint (fixed the URL matching)
+// Version:        1.8             - 26.07.2010
+// Changelog:      1.8             - Add Links to Friendlist: Gallery, Hidden Caches
+//                                 - Add Link to Found-List on Found-Counter at Friend-List
+//                                 - Compatible to GCTidy Link (Thanks to tenrapid)
+//                 1.7             - Bugfix: Mail-Link, hide disclaimer, decrypt hint (fixed the URL matching)
 //                                 - Added My Trackabels-Bookmark
 //                 1.6             - Bookmark hinzugefuegt: Neares-List ohne Funde
 //                                 - TB-Log-Typ erweitert um "retrieved .."
@@ -202,7 +205,7 @@ bookmarks[34]['id'] = "lnk_my_trackables";
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "1.7";
+var scriptVersion = "1.8";
 
 var bookmarks_def = new Array(16,18,13,14,17,12);
 
@@ -309,43 +312,56 @@ if(settings_bookmarks_show && document.location.href.match(/^http:\/\/www\.geoca
 
 // Bookmarks on top
 if(settings_bookmarks_on_top){
-  var head = document.getElementById("hd");
-  var slogan = getElementsByClass("yui-u first")[0];
-  slogan.innerHTML = "";
-  slogan.className = "";
-  slogan.style.cssFloat = "left";
+  GM_addStyle(
+    '#gclittlehelper-bookmarks, #gclittlehelper-bookmarks + #gctidy-open-configuration {font-size: ' + settings_bookmarks_top_size + '%;}' +
+    'div#gclittlehelper-bookmarks {float: right;}' +
+    '#hd #gclittlehelper-bookmarks a {color: ' + settings_bookmarks_top_color + ';}' +
+    '#hd #gclittlehelper-bookmarks a:hover {text-decoration: underline;}'
+  );
+  
+  var container;
+  
+  if(settings_bookmarks_top_left){ // Bookmarks left or right?
+    var h1 = getElementsByClass("yui-u first")[0].getElementsByTagName('h1')[0];
+    var node = h1.firstChild;
+    var next;
+    while (node) {
+      next = node.nextSibling;
+      if (node.nodeType == 3 || (node.nodeType == 1 && node.getAttribute('id') != 'gctidy-open-configuration')) {
+        h1.removeChild(node);
+      }
+      else {
+        h1.insertBefore(document.createTextNode(" - "), node)
+      }
+      node = next;
+    }
+    container = document.createElement("span");
+    h1.insertBefore(container, h1.firstChild);
+  }else{
+    container = document.createElement("div");
+    document.getElementById("hd").appendChild(container);
+  }
+  container.setAttribute('id', 'gclittlehelper-bookmarks');
 
-  if(getElementsByClass("yui-u")[0]) getElementsByClass("yui-u")[0].style.width = "350px";
-  if(getElementsByClass("yui-u AlignRight")[0]) getElementsByClass("yui-u AlignRight")[0].style.width = "350px";
-
-  var p = document.createElement("p");
-  p.setAttribute("class","HalfRight");
-  p.setAttribute("style","width: 100%; text-align: right; font-size: "+settings_bookmarks_top_size+"%; color: "+settings_bookmarks_top_color+";");
+  if(getElementsByClass("yui-u")[0]) getElementsByClass("yui-u")[0].style.width = "auto";
+  if(getElementsByClass("yui-u first")[0]) getElementsByClass("yui-u first")[0].style.width = "auto";
+  if(getElementsByClass("yui-u AlignRight")[0]) getElementsByClass("yui-u AlignRight")[0].style.width = "auto";
 
   var first = true;
   for(var i=0; i < settings_bookmarks_list.length; i++){
     var x = settings_bookmarks_list[i];
     if(typeof(x) == "undefined") continue;
-    var a = document.createElement("a");
-    a.setAttribute("style","color: "+settings_bookmarks_top_color+";");
 
+    if(!first) container.appendChild(document.createTextNode(" | "));
+    first = false;
+
+    var a = document.createElement("a");
     for(attr in bookmarks[x]){
       a.setAttribute(attr,bookmarks[x][attr]);
     }
-
-    if(!first) p.appendChild(document.createTextNode(" | "));
-    first = false;
-
     a.appendChild(document.createTextNode(bookmarks[x]['title']));
 
-    p.appendChild(a);
-  }
-
-  if(settings_bookmarks_top_left){ // Bookmarks left or right?
-    slogan.appendChild(p);
-    slogan.innerHTML += "<h1></h1>";  // Fix for GCTidy
-  }else{
-    head.appendChild(p);
+    container.appendChild(a);
   }
 }
 
@@ -457,6 +473,20 @@ if(settings_default_tb_logtype != "-1" && document.location.href.match(/^http:\/
     if(childs[i].value == settings_default_tb_logtype){
       childs[i].setAttribute("selected","selected");
     }
+  }
+}
+
+// Improve Friendlist
+if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/myfriends\.aspx/)){
+  var friends = getElementsByClass("FriendText");
+  
+  for(var i=0; i<friends.length; i++){
+    var friend = friends[i];
+    var name = friend.getElementsByTagName("a")[0];
+    
+    friend.getElementsByTagName("dl")[0].lastChild.innerHTML = "<a href='/seek/nearest.aspx?ul="+name.innerHTML+"'>"+friend.getElementsByTagName("dl")[0].lastChild.innerHTML+"</a>";
+    
+    friend.getElementsByTagName("p")[0].innerHTML = "<a id='lnk_profilegallery2' href='"+name.href+"'>Gallery</a> | <a href='/seek/nearest.aspx?u="+name.innerHTML+"'>Hidden Caches</a> | "+friend.getElementsByTagName("p")[0].innerHTML
   }
 }
 
@@ -603,6 +633,9 @@ function linkToGallery(){
 }
 if(document.getElementById('lnk_profilegallery')){
   document.getElementById('lnk_profilegallery').addEventListener("click", linkToGallery, false);
+}
+if(document.getElementById('lnk_profilegallery2')){ // Friendlist
+  document.getElementById('lnk_profilegallery2').addEventListener("click", linkToGallery, false);
 }
 
 function linkToBookmarks(){
