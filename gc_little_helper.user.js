@@ -10,8 +10,9 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net>
-// Version:        3.1             - 01.01.2010
-// Changelog:      3.1             - Bugfix: Mail-Icon was not displayed on pages with URL?id=..
+// Version:        3.2             - 18.01.2010
+// Changelog:      3.2             - Added "Log It" Icon to Nearest List
+//                 3.1             - Bugfix: Mail-Icon was not displayed on pages with URL?id=..
 //                 3.0             - Added www.google.de/maps
 //                 2.9             - gc.com-update-fix: Link on found-counter at friendlist
 //                 2.8             - Bugfix: Style problems in "Your Account Details"-Page
@@ -235,7 +236,7 @@ bookmarks[34]['id'] = "lnk_my_trackables";;
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "3.1";
+var scriptVersion = "3.2";
 
 var anzCustom = 10;
 
@@ -276,6 +277,8 @@ settings_decrypt_hint = GM_getValue("settings_decrypt_hint",false);
 settings_show_mail = GM_getValue("settings_show_mail",true);
 // Settings: Show google-maps Link
 settings_show_google_maps = GM_getValue("settings_show_google_maps",true);
+// Settings: Show Log It Icon
+settings_show_log_it = GM_getValue("settings_show_log_it",true);
 // Settings: default Log Type
 settings_default_logtype = GM_getValue("settings_default_logtype","-1");
 // Settings: default TB-Log Type
@@ -385,7 +388,7 @@ function getElementsByClass(classname){
 }
 
 // F2 zum Log abschicken
-if(settings_submit_log_button && (document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?(id|ID|LUID|PLogGuid)\=/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/track\/log\.aspx\?(id|wid|ID|PLogGuid)\=/))){
+if(settings_submit_log_button && (document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?(id|guid|ID|LUID|PLogGuid)\=/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/track\/log\.aspx\?(id|wid|guid|ID|PLogGuid)\=/))){
   function keydown(e){
     if(e.keyCode == 113){
       document.getElementById("ctl00_ContentBody_LogBookPanel1_LogButton").click();
@@ -665,7 +668,7 @@ if(settings_show_mail && document.location.href.match(/^http:\/\/www\.geocaching
 }
 
 // Default Log Type
-if(settings_default_logtype != "-1" && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?(id|ID)\=/)){
+if(settings_default_logtype != "-1" && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?(id|guid|ID|LUID|PLogGuid)\=/)){
   var select = document.getElementById('ctl00_ContentBody_LogBookPanel1_ddLogType');
   var childs = select.childNodes;
 
@@ -766,6 +769,17 @@ if(settings_show_google_maps && document.location.href.match(/^http:\/\/www\.geo
   box.appendChild(link);*/
 }
 
+// Show "Log It"-Button
+if(settings_show_log_it && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/nearest\.aspx\?/)){
+  var links = document.getElementsByTagName("a");
+  
+  for(var i=0; i<links.length; i++){
+    if(links[i].href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx\?.*/) && links[i].innerHTML.match(/^<span>/)){
+      links[i].parentNode.innerHTML = links[i].parentNode.innerHTML.replace("<br>","<a title='Log it' href='"+links[i].href.replace("cache_details","log")+"'><img src='/images/stockholm/16x16/add_comment.gif'></a><br>");
+    }
+  }
+}
+
 // Improve Bookmark-List
 if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/bookmarks\/view\.aspx\?guid=/)){
   var box = document.getElementById("ctl00_ContentBody_lbHeading").parentNode.parentNode;
@@ -836,6 +850,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my/)){
     document.getElementById("lnk_"+i).addEventListener("click",saveStates,false);
   }
 }
+
 
 ////////////////////////////////////////////////////////////////////////////
 
@@ -1126,6 +1141,10 @@ function showConfig(){
     html += "    <td align='left' colspan='3'>Show link to and from Google Maps</td>";
     html += "  </tr>";
     html += "  <tr>";
+    html += "    <td align='left'><input type='checkbox' "+(settings_show_log_it ? "checked='checked'" : "" )+" id='settings_show_log_it'></td>";
+    html += "    <td align='left' colspan='3'>Show Log It-Icon on nearest list</td>";
+    html += "  </tr>";
+    html += "  <tr>";
     html += "    <td align='left' colspan='4'><select id='settings_default_logtype'>";
     html += "<option value=\"-1\" "+(settings_default_logtype == "-1" ? "selected=\"selected\"" : "")+">- Select Type of Log -</option>";
     html += "<option value=\"2\" "+(settings_default_logtype == "2" ? "selected=\"selected\"" : "")+">Found it</option>";
@@ -1225,6 +1244,7 @@ function showConfig(){
     GM_setValue("settings_decrypt_hint",document.getElementById('settings_decrypt_hint').checked);
     GM_setValue("settings_show_mail",document.getElementById('settings_show_mail').checked);
     GM_setValue("settings_show_google_maps",document.getElementById('settings_show_google_maps').checked);
+    GM_setValue("settings_show_log_it",document.getElementById('settings_show_log_it').checked);
     GM_setValue("settings_default_logtype",document.getElementById('settings_default_logtype').value);
     GM_setValue("settings_default_tb_logtype",document.getElementById('settings_default_tb_logtype').value);
     GM_setValue("settings_mail_signature",document.getElementById('settings_mail_signature').value);
