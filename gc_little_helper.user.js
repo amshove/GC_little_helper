@@ -8,8 +8,10 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net>
-// Version:        2.0             - 08.08.2010
-// Changelog:      2.0             - Added links to bookmark-lists: "Download as kml" and "Show in google maps"
+// Version:        2.1             - 09.08.2010
+// Changelog:      2.1             - Added feature to add custom bookmarks
+//                                 - Added "Show in google maps"-Link to Bookmark-Overview-Page
+//                 2.0             - Added links to bookmark-lists: "Download as kml" and "Show in google maps"
 //                                 - Bugfix: Wrong coordinates from google maps
 //                 1.9             - Added a Link to Google Maps on Cache-Page a Link on Google Maps to geocaching.com
 //                                 - Replaced the Mail-Link with an Icon
@@ -207,14 +209,16 @@ bookmarks[33]['id'] = "lnk_nearestlist_wo";
 bookmarks[34] = new Object();
 bookmarks[34]['href'] = "#";
 bookmarks[34]['title'] = "My Trackables";
-bookmarks[34]['id'] = "lnk_my_trackables";
+bookmarks[34]['id'] = "lnk_my_trackables";;
 
 
 ////////////////////////////////////////////////////////////////////////////
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "2.0";
+var scriptVersion = "2.1";
+
+var anzCustom = 10;
 
 var bookmarks_def = new Array(16,18,13,14,17,12);
 
@@ -252,6 +256,34 @@ settings_default_logtype = GM_getValue("settings_default_logtype","-1");
 settings_default_tb_logtype = GM_getValue("settings_default_tb_logtype","-1");
 // Settings: Bookmarklist
 settings_bookmarks_list = eval(GM_getValue("settings_bookmarks_list",uneval(bookmarks_def)));
+
+// Settings: Custom Bookmarks
+var num = bookmarks.length;
+for(var i=0; i<anzCustom; i++){
+  bookmarks[num] = Object();
+  
+  if(typeof(GM_getValue("settings_custom_bookmark["+i+"]")) != "undefined" && GM_getValue("settings_custom_bookmark["+i+"]") != ""){
+    bookmarks[num]['href'] = GM_getValue("settings_custom_bookmark["+i+"]");
+  }else{
+    bookmarks[num]['href'] = "#";
+  }
+  
+  if(typeof(GM_getValue("settings_bookmarks_title["+num+"]")) != "undefined" && GM_getValue("settings_bookmarks_title["+num+"]") != ""){
+    bookmarks[num]['title'] = GM_getValue("settings_bookmarks_title["+num+"]");
+  }else{
+    bookmarks[num]['title'] = "Custom"+i;
+    GM_setValue("settings_bookmarks_title["+num+"]",bookmarks[num]['title']);
+  }
+  
+  if(typeof(GM_getValue("settings_custom_bookmark_target["+i+"]")) != "undefined" && GM_getValue("settings_custom_bookmark_target["+i+"]") != ""){
+    bookmarks[num]['target'] = GM_getValue("settings_custom_bookmark_target["+i+"]");
+  }else{
+    bookmarks[num]['target'] = "";
+  }
+  
+  bookmarks[num]['custom'] = true;
+  num++;
+}
 
 // Settings: Custom Bookmark-title
 var bookmarks_orig_title = new Array();
@@ -356,7 +388,7 @@ if(settings_bookmarks_show && document.location.href.match(/^http:\/\/www\.geoca
     var a = document.createElement("a");
 
     for(attr in bookmarks[x]){
-      a.setAttribute(attr,bookmarks[x][attr]);
+      if(attr != "custom") a.setAttribute(attr,bookmarks[x][attr]);
     }
 
     a.appendChild(document.createTextNode(bookmarks[x]['title']));
@@ -419,7 +451,7 @@ if(settings_bookmarks_on_top){
 
     var a = document.createElement("a");
     for(attr in bookmarks[x]){
-      a.setAttribute(attr,bookmarks[x][attr]);
+      if(attr != "custom") a.setAttribute(attr,bookmarks[x][attr]);
     }
     a.appendChild(document.createTextNode(bookmarks[x]['title']));
 
@@ -639,7 +671,17 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/bookmarks\/view
   var matches = document.location.href.match(/guid=([a-zA-Z0-9-]*)/);
   var uuid = matches[1];
   
-  box.childNodes[7].innerHTML += "<br><a href='http://www.geocaching.com/kml/bmkml.aspx?bmguid="+uuid+"'>Download as kml</a> <a href='http://maps.google.com/?q=http://www.geocaching.com/kml/bmkml.aspx?bmguid="+uuid+"' target='_blank'>Show in google maps</a>";
+  box.childNodes[7].innerHTML += "<br><a title=\"Download as kml\" href='http://www.geocaching.com/kml/bmkml.aspx?bmguid="+uuid+"'>Download as kml</a> <a title=\"Show in google maps\" href='http://maps.google.com/?q=http://www.geocaching.com/kml/bmkml.aspx?bmguid="+uuid+"' target='_blank'>Show in google maps</a>";
+}
+if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/bookmarks\/default\.aspx/)){
+  var links = document.getElementsByTagName("a");
+  
+  for(var i=0; i<links.length; i++){
+    if(links[i].title == "Download Google Earth KML"){
+      var matches = links[i].href.match(/guid=([a-zA-Z0-9-]*)/);
+      links[i].parentNode.innerHTML += "<br><a title='Show in google maps' href='http://maps.google.com/?q=http://www.geocaching.com/kml/bmkml.aspx?bmguid="+matches[1]+"' target='_blank'>Show in google maps</a>"
+    }
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -953,6 +995,7 @@ function showConfig(){
     }
 
     // Create the Bookmark-Options
+    var cust = 0;
     for(var i=0; i<bookmarks.length; i++){
       var options = "";
       for(var x=0; x<bookmarks.length; x++){
@@ -961,11 +1004,19 @@ function showConfig(){
 
       html += "  <tr>";
       html += "    <td align='left'><input type='checkbox' "+(typeof(sort[i]) != "undefined" ? "checked='checked'" : "" )+" id='settings_bookmarks_list["+i+"]'></td>";
-      html += "    <td align='left'><a ";
-      for(attr in bookmarks[i]){
-        html += attr+"='"+bookmarks[i][attr]+"' ";
+      html += "    <td align='left'>";
+      if(typeof(bookmarks[i]['custom']) != "undefined" && bookmarks[i]['custom'] == true){
+        html += "<input type='text' id='settings_custom_bookmark["+cust+"]' value='"+bookmarks[i]['href']+"'> ";
+        html += "<input type='checkbox' title='Open in new Window' "+(bookmarks[i]['target'] == "_blank" ? "checked='checked'" : "" )+" id='settings_custom_bookmark_target["+cust+"]'>";
+        cust++;
+      }else{
+        html += "<a ";
+        for(attr in bookmarks[i]){
+          html += attr+"='"+bookmarks[i][attr]+"' ";
+        }
+        html += ">"+(typeof(bookmarks_orig_title[i]) != "undefined" && bookmarks_orig_title[i] != "" ? bookmarks_orig_title[i] : bookmarks[i]['title'])+"</a>";
       }
-      html += ">"+(typeof(bookmarks_orig_title[i]) != "undefined" && bookmarks_orig_title[i] != "" ? bookmarks_orig_title[i] : bookmarks[i]['title'])+"</a></td>";
+      html += "</td>";
       html += "    <td align='left'><select id='bookmarks_sort["+i+"]'>"+options+"</select></td>";
       html += "    <td align='left'><input id='bookmarks_name["+i+"]' type='text' size='10' value='"+(typeof(GM_getValue("settings_bookmarks_title["+i+"]")) != "undefined" ? GM_getValue("settings_bookmarks_title["+i+"]") : "")+"'></td>";
       html += "  </tr>";
@@ -1031,6 +1082,12 @@ function showConfig(){
       }
     }
     GM_setValue("settings_bookmarks_list",uneval(tmp));
+    
+    // Save custom-Link URLs
+    for(var i=0; i<anzCustom; i++){
+      GM_setValue("settings_custom_bookmark["+i+"]",document.getElementById("settings_custom_bookmark["+i+"]").value);
+      if(document.getElementById('settings_custom_bookmark_target['+i+']').checked) GM_setValue('settings_custom_bookmark_target['+i+']',"_blank");
+    }
 
     document.location.reload(true);
   }
