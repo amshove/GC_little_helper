@@ -6,8 +6,9 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net>
-// Version:        1.2             - 03.07.2010
-// Changelog:      1.2             - Bookmarks in einer Zeile
+// Version:        1.3             - 03.07.2010
+// Changelog:      1.3             - Bugfix: Zeichensatzproblem bei Grad-Zeichen in RegEx
+//                 1.2             - Bookmarks in einer Zeile
 //                                 - Weitere Bookmarks hinzugefuegt (Tabs im oeffentlichen Profil, My Profile, Nearest List, Map)
 //                                 - "Configuration" umbenannt in "little helper config"
 //                                 - Default-Log-Type fuer Trackables
@@ -184,7 +185,7 @@ bookmarks[33]['id'] = "lnk_nearestlist_wo";
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "1.2";
+var scriptVersion = "1.3";
 
 var bookmarks_def = new Array(16,18,13,14,17,12);
 
@@ -377,7 +378,7 @@ function getElementsByClass(classname){
 
 // Helper: from N/S/E/W Deg Min.Sec to Dec
 function toDec(coords){
-  var match = coords.match(/^(N|S) ([0-9][0-9])° ([0-9][0-9])\.([0-9][0-9][0-9]) (E|W) ([0-9][0-9][0-9])° ([0-9][0-9])\.([0-9][0-9][0-9])$/);
+  var match = coords.match(/^(N|S) ([0-9][0-9]). ([0-9][0-9])\.([0-9][0-9][0-9]) (E|W) ([0-9][0-9][0-9]). ([0-9][0-9])\.([0-9][0-9][0-9])$/);
   
   var dec1 = parseInt(match[2]) + (parseFloat(match[3]+"."+match[4])/60);
   if(match[1] == "S") dec1 = dec1 * -1;
@@ -394,7 +395,7 @@ function toDec(coords){
 if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/$/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/default\.aspx$/)){
   var search_value = document.getElementById("ctl00_ContentBody_saddress").value;
   
-  if(search_value.match(/^(N|S) [0-9][0-9]° [0-9][0-9]\.[0-9][0-9][0-9] (E|W) [0-9][0-9][0-9]° [0-9][0-9]\.[0-9][0-9][0-9]$/)){
+  if(search_value.match(/^(N|S) [0-9][0-9]. [0-9][0-9]\.[0-9][0-9][0-9] (E|W) [0-9][0-9][0-9]. [0-9][0-9]\.[0-9][0-9][0-9]$/)){
     var latlng = toDec(search_value);
     
     if(GM_getValue("home_lat") != latlng[0]*10000000) GM_setValue("home_lat",latlng[0]*10000000); // * 10000000 because GM don't know float
@@ -406,8 +407,8 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/$/) || document
 if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/account\/ManageLocations\.aspx/)){
   function setCoordsHelper(){
     var search_value = document.getElementById("search").value;
-alert(search_value);
-    if(search_value.match(/^(N|S) [0-9][0-9]° [0-9][0-9]\.[0-9][0-9][0-9] (E|W) [0-9][0-9][0-9]° [0-9][0-9]\.[0-9][0-9][0-9]$/)){
+
+    if(search_value.match(/^(N|S) [0-9][0-9]. [0-9][0-9]\.[0-9][0-9][0-9] (E|W) [0-9][0-9][0-9]. [0-9][0-9]\.[0-9][0-9][0-9]$/)){
       var latlng = toDec(search_value);
 
       if(GM_getValue("home_lat") != latlng[0]*10000000) GM_setValue("home_lat",latlng[0]*10000000); // * 10000000 because GM don't know float
