@@ -8,8 +8,9 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net>
-// Version:        2.8             - 17.10.2010
-// Changelog:      2.8             - Bugfix: Style problems in "Your Account Details"-Page
+// Version:        2.9             - 10.11.2010
+// Changelog:      2.9             - gc.com-update-fix: Link on found-counter at friendlist
+//                 2.8             - Bugfix: Style problems in "Your Account Details"-Page
 //                 2.7             - Bugfix: Problem with "Hide Cache Notes if empty"-Option for not-PM
 //                 2.6             - Added feature to hide Cache Notes if there are no notes (Hide/Show Link appears)
 //                                 - Added feature to hide Cache Notes completely
@@ -230,7 +231,7 @@ bookmarks[34]['id'] = "lnk_my_trackables";;
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "2.8";
+var scriptVersion = "2.9";
 
 var anzCustom = 10;
 
@@ -380,7 +381,7 @@ function getElementsByClass(classname){
 }
 
 // F2 zum Log abschicken
-if(settings_submit_log_button && (document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?(id|ID|PLogGuid)\=/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/track\/log\.aspx\?(id|wid|ID|PLogGuid)\=/))){
+if(settings_submit_log_button && (document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?(id|ID|LUID|PLogGuid)\=/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/track\/log\.aspx\?(id|wid|ID|PLogGuid)\=/))){
   function keydown(e){
     if(e.keyCode == 113){
       document.getElementById("ctl00_ContentBody_LogBookPanel1_LogButton").click();
@@ -691,7 +692,8 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/myfriends\.
     var friend = friends[i];
     var name = friend.getElementsByTagName("a")[0];
     
-    friend.getElementsByTagName("dl")[0].lastChild.innerHTML = "<a href='/seek/nearest.aspx?ul="+name.innerHTML+"'>"+friend.getElementsByTagName("dl")[0].lastChild.innerHTML+"</a>";
+//    friend.getElementsByTagName("dl")[0].lastChild.innerHTML = "<a href='/seek/nearest.aspx?ul="+name.innerHTML+"'>"+friend.getElementsByTagName("dl")[0].lastChild.innerHTML+"</a>";
+    friend.getElementsByTagName("dd")[4].innerHTML = "<a href='/seek/nearest.aspx?ul="+name.innerHTML+"'>"+friend.getElementsByTagName("dd")[4].innerHTML+"</a>";
     
     friend.getElementsByTagName("p")[0].innerHTML = "<a name='lnk_profilegallery2' href='"+name.href+"'>Gallery</a> | <a href='/seek/nearest.aspx?u="+name.innerHTML+"'>Hidden Caches</a> | "+friend.getElementsByTagName("p")[0].innerHTML
   }
