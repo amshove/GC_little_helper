@@ -8,8 +8,9 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net>
-// Version:        2.1             - 09.08.2010
-// Changelog:      2.1             - Added feature to add custom bookmarks
+// Version:        2.2             - 10.08.2010
+// Changelog:      2.2             - Added feature to hide the boxes on the "My Profile"-Sidebar
+//                 2.1             - Added feature to add custom bookmarks
 //                                 - Added "Show in google maps"-Link to Bookmark-Overview-Page
 //                 2.0             - Added links to bookmark-lists: "Download as kml" and "Show in google maps"
 //                                 - Bugfix: Wrong coordinates from google maps
@@ -216,7 +217,7 @@ bookmarks[34]['id'] = "lnk_my_trackables";;
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "2.1";
+var scriptVersion = "2.2";
 
 var anzCustom = 10;
 
@@ -681,6 +682,58 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/bookmarks\/defa
       var matches = links[i].href.match(/guid=([a-zA-Z0-9-]*)/);
       links[i].parentNode.innerHTML += "<br><a title='Show in google maps' href='http://maps.google.com/?q=http://www.geocaching.com/kml/bmkml.aspx?bmguid="+matches[1]+"' target='_blank'>Show in google maps</a>"
     }
+  }
+}
+
+// Improve "My Profile"
+if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my/)){
+  var code = "function hide_box(i){";
+  code += "  if(document.getElementById('box_'+i).style.display == 'none'){";
+  code += "    document.getElementById('box_'+i).style.display = 'block';";
+  code += "    document.getElementById('lnk_'+i).src = 'http://www.geocaching.com/images/minus.gif';";
+  code += "    document.getElementById('lnk_'+i).title = 'hide';";
+  code += "  }else{";
+  code += "    document.getElementById('box_'+i).style.display = 'none';";
+  code += "    document.getElementById('lnk_'+i).src = 'http://www.geocaching.com/images/plus.gif';";
+  code += "    document.getElementById('lnk_'+i).title = 'show';";
+  code += "  }";
+  code += "}";
+  
+  var script = document.createElement("script");
+  script.innerHTML = code;
+  document.getElementsByTagName("body")[0].appendChild(script);
+
+  var boxes = getElementsByClass("WidgetHeader");
+  function saveStates(){
+    for(var i=0; i<boxes.length; i++){
+      var box = boxes[i].parentNode.childNodes[3];
+    
+      if(boxes[i].innerHTML.match(/Bookmarks/)) continue;
+    
+      if(typeof(box) == "undefined") continue;
+      
+      var show = box.style.display;
+      if(typeof(show) == "undefined" || show != "none") show = "block";
+      
+      GM_setValue("show_box["+i+"]",show);
+    }
+  }
+  
+  for(var i=0; i<boxes.length; i++){
+    var box = boxes[i].parentNode.childNodes[3];
+    
+    if(boxes[i].innerHTML.match(/Bookmarks/)) continue;
+    
+    box.setAttribute("id","box_"+i);
+    
+    if(typeof(GM_getValue("show_box["+i+"]")) != "undefined") box.style.display = GM_getValue("show_box["+i+"]");
+    
+    if(box.style.display == "none")
+      boxes[i].innerHTML = "<img id='lnk_"+i+"' src='http://www.geocaching.com/images/plus.gif' onClick='hide_box(\""+i+"\");' title='show'> "+boxes[i].innerHTML;
+    else
+      boxes[i].innerHTML = "<img id='lnk_"+i+"' src='http://www.geocaching.com/images/minus.gif' onClick='hide_box(\""+i+"\");' title='hide'> "+boxes[i].innerHTML;
+      
+    document.getElementById("lnk_"+i).addEventListener("click",saveStates,false);
   }
 }
 
