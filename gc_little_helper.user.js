@@ -10,8 +10,12 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net>
-// Version:        3.6             - 05.05.2010
-// Changelog:      3.6             - Fix: Bookmark-List on Top -> now in Navigation
+// Version:        3.7             - 08.05.2010
+// Changelog:      3.7             - Insert Home-Coords into search-field
+//                                 - Custom Map-width
+//                                 - Fix: Homezone on Beta Map
+//                                 - New Links: Profile Souvenirs & Statistics
+//                 3.6             - Fix: Bookmark-List on Top -> now in Navigation
 //                                 - Fix: Feedback-Link
 //                                 - Rename: Bookmarks -> Linklist
 //                                 - Fix: Bookmarks in Profile
@@ -248,24 +252,13 @@ bookmarks[34]['href'] = "#";
 bookmarks[34]['title'] = "My Trackables";
 bookmarks[34]['id'] = "lnk_my_trackables";
 
-/*
-bookmarks[35] = new Object();
-bookmarks[35]['href'] = "#";
-bookmarks[35]['title'] = "Profile Souvenirs";
-bookmarks[35]['id'] = "lnk_profilesouvenirs";
-
-bookmarks[36] = new Object();
-bookmarks[36]['href'] = "#";
-bookmarks[36]['title'] = "Profile Statistics";
-bookmarks[36]['id'] = "lnk_profilestatistics";
-*/
-
+// New Bookmarks under custom_Bookmarks ..
 
 ////////////////////////////////////////////////////////////////////////////
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "3.6";
+var scriptVersion = "3.7";
 
 var anzCustom = 10;
 
@@ -347,6 +340,18 @@ for(var i=0; i<anzCustom; i++){
   bookmarks[num]['custom'] = true;
   num++;
 }
+
+// Some more Bookmarks ..
+bookmarks[num] = new Object();
+bookmarks[num]['href'] = "#";
+bookmarks[num]['title'] = "Profile Souvenirs";
+bookmarks[num]['id'] = "lnk_profilesouvenirs";
+
+num++;
+bookmarks[num] = new Object();
+bookmarks[num]['href'] = "#";
+bookmarks[num]['title'] = "Profile Statistics";
+bookmarks[num]['id'] = "lnk_profilestatistics";
 
 // Settings: Custom Bookmark-title
 var bookmarks_orig_title = new Array();
@@ -468,7 +473,7 @@ if(settings_bookmarks_show && (document.location.href.match(/^http:\/\/www\.geoc
 }
 
 // Bookmarks on top
-if(settings_bookmarks_on_top){
+if(settings_bookmarks_on_top && document.getElementById('Navigation')){
   var nav_list = document.getElementById('Navigation').childNodes[1];
   
   var menu = document.createElement("li");
@@ -1007,6 +1012,110 @@ if(settings_show_homezone && document.location.href.match(/^http:\/\/www\.geocac
   document.getElementById('uxMapRefresh').parentNode.insertBefore(br,document.getElementById('uxMapRefresh'));
 }
 
+// Change Map width
+if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\/default.aspx/) && document.getElementById("Content")){
+  var map_width = GM_getValue("map_width","1200");
+  if(document.getElementById("Content").childNodes[1]) document.getElementById("Content").childNodes[1].style.width = map_width+"px";
+  if(document.getElementById("ctl00_divBreadcrumbs")) document.getElementById("ctl00_divBreadcrumbs").style.width = map_width+"px";
+  if(document.getElementById("ctl00_divContentMain")) document.getElementById("ctl00_divContentMain").style.width = map_width+"px";
+}
+
+// Search-field in Navigation
+if(false){
+  var script = "<script>";
+  script += "var gcRegex = /^GC[0123456789ABCDEFGHJKMNPQRTVWXYZ]{1,10}\b/i;";
+  script += "var datumRegex = /^(N|S)?\s?(([0-9]*)[°]?\s+)?(-?[0-9]+(\.[0-9]+)?)\,?\s*(W|E)?\s?(([0-9]*)[°]?\s+)?(-?[0-9]+(\.[0-9]+)?)/i;";
+  script += "var zipcodeRegex = /^(?!0{5})(\d{5})(?!-?0{4})(-?\d{4})?$/;";
+  script += "var statString = $(\"#statsArea\").html();";
+  script += "$(\"#tbSearch\").keypress(function (e) {";
+  script += "    if (e.which == 13) {";
+  script += "        e.preventDefault();";
+  script += "        parseSearchInput();";
+  script += "    }";
+  script += "});";
+  script += "$(\"#ibSearch\").click(function (e) {";
+  script += "    e.preventDefault();";
+  script += "    parseSearchInput();";
+  script += "});";
+  script += "function parseSearchInput() {";
+  script += "    var inputString = $.trim($('#tbSearch').val());";
+  script += "    if (inputString.length > 0) {";
+  script += "        if (gcRegex.test(inputString)) {";
+  script += "            lookupGCCode(inputString);";
+  script += "        } else if (datumRegex.test(inputString) && !zipcodeRegex.test(inputString)) {";
+  script += "            searchByDatum(inputString);";
+  script += "        } else if (inputString.indexOf(\"postal code\") < 0) {";
+  script += "            searchByAddress();";
+  script += "        }";
+  script += "    }";
+  script += "}";
+  script += "function lookupGCCode(inputString) {";
+  script += "    $.pageMethod(\"GCCodeLookup\", JSON.stringify({ gcCode: inputString }), function (result) {";
+  script += "        if (result.d.indexOf(\"http://\") == 0) {";
+  script += "            $(window.location).attr('href', result.d);";
+  script += "        } else {";
+  script += "            alert(result.d);";
+  script += "        }";
+  script += "    });";
+  script += "}";
+  script += "function searchByAddress() {";
+  script += "    $('#tbSearch').searchByAddress('tbSearch', { 'distance': '100' });";
+  script += "}";
+  script += "function searchByDatum(inputString) {";
+  script += "    var str = inputString.match(datumRegex);";
+  script += "    if (!str[1] || !str[6]) {";
+  script += "        if (str[2] || str[3] || (!str[5] && !str[10] && /\d{5}/ig.test(inputString))) {";
+  script += "            searchByAddress();";
+  script += "        } else {";
+  script += "            $(window.location).attr('href', '/seek/nearest.aspx?origin_lat=' + str[4] + '&origin_long=' + str[9] + '&dist=100');";
+  script += "        }";
+  script += "    } else {";
+  script += "        var lat_ns = (str[1].toUpperCase() == \"N\" ? 1 : -1);";
+  script += "        var long_ew = (str[6].toUpperCase() == \"E\" ? 1 : -1);";
+  script += "        if (!str[3]) {";
+  script += "            var lat_h = str[4];";
+  script += "            var lat_mmss = \"\";";
+  script += "            var long_h = str[9];";
+  script += "            var long_mmss = \"\";";
+  script += "        } else {";
+  script += "            var lat_h = str[3];";
+  script += "            var lat_mmss = str[4];";
+  script += "            var long_h = str[8];";
+  script += "            var long_mmss = str[9];";
+  script += "        }";
+  script += "        $(window.location).attr('href', '/seek/nearest.aspx?lat_ns=' + lat_ns + '&lat_h=' + lat_h + '&lat_mmss=' + lat_mmss + '&long_ew=' + long_ew + '&long_h=' + long_h + '&long_mmss=' + long_mmss + '&dist=100');";
+  script += "    }";
+  script += "}</script>";
+
+  document.getElementsByTagName('body')[0].innerHTML += script;
+
+  var searchfield = '<span class="HomeSearchWidget"><input type="text" class="Search Watermark" id="tbSearch" value="postal code, country, etc." name="ctl00$ContentBody$tbSearch"><input type="image" style="border-width:0px;" alt="Search" src="images/tlnMasters/icon_search.png" text="Search" class="ImageButton" title="Search" id="ibSearch" name="ctl00$ContentBody$ibSearch"></span>';
+  var nav_list = document.getElementById('Navigation').childNodes[1];
+  nav_list.innerHTML += searchfield;
+}
+
+// Home-Coords in Search-Field
+if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/$/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/default\.aspx$/)){
+  if(GM_getValue("home_lat") && GM_getValue("home_lng")){
+    var txt = "";
+    var lat = GM_getValue("home_lat")/10000000;
+    var lng = GM_getValue("home_lng")/10000000;
+
+/*    if(lat < 0) txt += "S ";
+    else txt += "N ";
+    txt += lat;
+
+    if(lng < 0) txt += " W ";
+    else txt += " E ";
+    txt += lng;*/
+
+    txt = "N "+lat+" E "+lng;
+
+    document.getElementById("tbSearch").value = txt;
+  }
+}
+
+
 ////////////////////////////////////////////////////////////////////////////
 
 // Helper: from N/S/E/W Deg Min.Sec to Dec
@@ -1322,6 +1431,9 @@ function showConfig(){
     html += "    <td align='left'><input id='settings_homezone_radius' type='text' size='2' value='"+settings_homezone_radius+"'> km</td>";
     html += "  </tr>";
     html += "  <tr>";
+    html += "    <td align='left' colspan='4'>Map Width (default gc.com-default: 950): <input type='text' id='map_width' value='"+GM_getValue("map_width",1200)+"' size='4'>px</td>";
+    html += "  </tr>";
+    html += "  <tr>";
     html += "    <td align='left' colspan='4'><select id='settings_default_logtype'>";
     html += "<option value=\"-1\" "+(settings_default_logtype == "-1" ? "selected=\"selected\"" : "")+">- Select Type of Log -</option>";
     html += "<option value=\"2\" "+(settings_default_logtype == "2" ? "selected=\"selected\"" : "")+">Found it</option>";
@@ -1370,7 +1482,7 @@ function showConfig(){
       html += "    <td align='left'><input type='checkbox' "+(typeof(sort[i]) != "undefined" ? "checked='checked'" : "" )+" id='settings_bookmarks_list["+i+"]'></td>";
       html += "    <td align='left'>";
       if(typeof(bookmarks[i]['custom']) != "undefined" && bookmarks[i]['custom'] == true){
-        html += "<input type='text' id='settings_custom_bookmark["+cust+"]' value='"+bookmarks[i]['href']+"'> ";
+        html += "<input type='text' id='settings_custom_bookmark["+cust+"]' value='"+bookmarks[i]['href']+"' size='15'> ";
         html += "<input type='checkbox' title='Open in new Window' "+(bookmarks[i]['target'] == "_blank" ? "checked='checked'" : "" )+" id='settings_custom_bookmark_target["+cust+"]'>";
         cust++;
       }else{
@@ -1424,6 +1536,7 @@ function showConfig(){
     GM_setValue("settings_show_log_it",document.getElementById('settings_show_log_it').checked);
     GM_setValue("settings_show_homezone",document.getElementById('settings_show_homezone').checked);
     GM_setValue("settings_homezone_radius",document.getElementById('settings_homezone_radius').value);
+    GM_setValue("map_width",document.getElementById('map_width').value);
     GM_setValue("settings_default_logtype",document.getElementById('settings_default_logtype').value);
     GM_setValue("settings_default_tb_logtype",document.getElementById('settings_default_tb_logtype').value);
     GM_setValue("settings_mail_signature",document.getElementById('settings_mail_signature').value);
