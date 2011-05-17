@@ -8,8 +8,9 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net>
-// Version:        2.7             - 14.10.2010
-// Changelog:      2.7             - Bugfix: Problem with "Hide Cache Notes if empty"-Option for not-PM
+// Version:        2.8             - 17.10.2010
+// Changelog:      2.8             - Bugfix: Style problems in "Your Account Details"-Page
+//                 2.7             - Bugfix: Problem with "Hide Cache Notes if empty"-Option for not-PM
 //                 2.6             - Added feature to hide Cache Notes if there are no notes (Hide/Show Link appears)
 //                                 - Added feature to hide Cache Notes completely
 //                                 - Added feature to hide the L&F-Banner on top of the Logs (Listing)
@@ -229,7 +230,7 @@ bookmarks[34]['id'] = "lnk_my_trackables";;
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "2.7";
+var scriptVersion = "2.8";
 
 var anzCustom = 10;
 
@@ -457,7 +458,7 @@ if(settings_bookmarks_on_top){
   }
   container.setAttribute('id', 'gclittlehelper-bookmarks');
 
-  if(getElementsByClass("yui-u")[0]) getElementsByClass("yui-u")[0].style.width = "auto";
+  if(getElementsByClass("yui-g")[0]) getElementsByClass("yui-g")[0].style.width = "auto";
   if(getElementsByClass("yui-u first")[0]) getElementsByClass("yui-u first")[0].style.width = "auto";
   if(getElementsByClass("yui-u AlignRight")[0]) getElementsByClass("yui-u AlignRight")[0].style.width = "auto";
 
