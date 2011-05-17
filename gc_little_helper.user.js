@@ -8,8 +8,12 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net>
-// Version:        2.4             - 25.08.2010
-// Changelog:      2.4             - Bugfix: Disabled redirect also with bookmark "Nearest List (w/o Founds)"
+// Version:        2.5             - 29.09.2010
+// Changelog:      2.5             - Added feature to prevent "show all logs" if there are to many logs
+//                                 - Added an signature for mails
+//                                 - Fix: Shanged Feedback-Bookmark to new URL
+//                                 - Fix: new Feedback-button can be hidden again
+//                 2.4             - Bugfix: Disabled redirect also with bookmark "Nearest List (w/o Founds)"
 //                 2.3             - Disabled redirect to map, if link "Neares List" is used
 //                                 - Bugfix: Wrong cachename in mail-text if there are more than one open tab
 //                 2.2             - Added feature to hide the boxes on the "My Profile"-Sidebar
@@ -162,7 +166,7 @@ bookmarks[23]['title'] = "Blog";
 bookmarks[23]['target'] = "_blank";
 
 bookmarks[24] = new Object();
-bookmarks[24]['href'] = "http://feedback.geocaching.com/geocaching";
+bookmarks[24]['href'] = "http://feedback.geocaching.com/forums";
 bookmarks[24]['title'] = "Feedback";
 bookmarks[24]['target'] = "_blank";
 
@@ -220,7 +224,7 @@ bookmarks[34]['id'] = "lnk_my_trackables";;
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "2.4";
+var scriptVersion = "2.5";
 
 var anzCustom = 10;
 
@@ -248,6 +252,7 @@ settings_hide_feedback = GM_getValue("settings_hide_feedback",false);
 settings_hide_disclaimer = GM_getValue("settings_hide_disclaimer",false);
 // Settings: Show all Logs
 settings_show_all_logs = GM_getValue("settings_show_all_logs",false);
+settings_show_all_logs_count = GM_getValue("settings_show_all_logs_count","0");
 // Settings: Decrypt Hint
 settings_decrypt_hint = GM_getValue("settings_decrypt_hint",false);
 // Settings: Show mail-Link
@@ -484,10 +489,19 @@ if(settings_redirect_to_map && document.location.href.match(/^http:\/\/www\.geoc
 
 // Hide Feedback-Button
 if(settings_hide_feedback){
-  var button = document.getElementById('fdbk_tab');
-  if(button){
-    button.parentNode.removeChild(button);
+//  var button = document.getElementById('fdbk_tab');
+//  if(button){
+//    button.parentNode.removeChild(button);
+//  }
+
+  function hide_feedback(){
+    var button = document.getElementById('uservoice-feedback');
+    if(button){
+      button.parentNode.removeChild(button);
+    }
   }
+  
+  window.addEventListener("load", hide_feedback, false);
 }
 
 // Hide Disclaimer
@@ -500,9 +514,20 @@ if(settings_hide_disclaimer && document.location.href.match(/^http:\/\/www\.geoc
 
 // Show all Logs
 if(settings_show_all_logs && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx\?(guid|wp)\=[a-zA-Z0-9-]*$/)){
-  document.location.href = document.location.href+"&log=y";
+  if(settings_show_all_logs_count > 0){
+    var p = document.getElementsByTagName("p");
+    for(var i=0; i<p.length; i++){
+      if(p[i].innerHTML.match(/There are [0-9]* additional logs/)){
+        var matches = p[i].innerHTML.match(/[0-9]+/);
+        if(matches) if(matches[0] < settings_show_all_logs_count-5){
+          document.location.href = document.location.href+"&log=y";
+        }
+        break;
+      }
+    }
+  }else document.location.href = document.location.href+"&log=y";
 }
-if(settings_show_all_logs){
+if(settings_show_all_logs && settings_show_all_logs_count < 1){
   function change_cache_link(){
     var links = document.getElementsByTagName('a');
     for(var i=0; i<links.length; i++){
@@ -569,7 +594,10 @@ if(settings_show_mail && document.location.href.match(/^http:\/\/www\.geocaching
   
   // Grab Text from URL
   var matches = document.location.href.match(/&text=(.*)/)
-  document.getElementById("ctl00_ContentBody_SendMessagePanel1_tbMessage").innerHTML = decodeURIComponent(matches[1]);
+  if(matches) document.getElementById("ctl00_ContentBody_SendMessagePanel1_tbMessage").innerHTML = decodeURIComponent(matches[1]);
+  
+  // Add Mail-Signature
+  if(typeof(GM_getValue("settings_mail_signature")) != "undefined") document.getElementById("ctl00_ContentBody_SendMessagePanel1_tbMessage").innerHTML += "\n\n"+GM_getValue("settings_mail_signature");
 }
 
 // Default Log Type
@@ -1006,7 +1034,7 @@ function showConfig(){
     html += "  </tr>";
     html += "  <tr>";
     html += "    <td align='left'><input type='checkbox' "+(settings_show_all_logs ? "checked='checked'" : "" )+" id='settings_show_all_logs'></td>";
-    html += "    <td align='left' colspan='3'>Show all logs of a cache</td>";
+    html += "    <td align='left' colspan='3'>Show all logs of a cache - if log-count lower than <input type='text' size='2' id='settings_show_all_logs_count' value='"+settings_show_all_logs_count+"'></td>";
     html += "  </tr>"
     html += "  <tr>";
     html += "    <td align='left'><input type='checkbox' "+(settings_decrypt_hint ? "checked='checked'" : "" )+" id='settings_decrypt_hint'></td>";
@@ -1038,6 +1066,9 @@ function showConfig(){
     html += "<option value=\"4\" "+(settings_default_tb_logtype == "4" ? "selected=\"selected\"" : "")+">Write note</option>";
     html += "<option value=\"48\" "+(settings_default_tb_logtype == "48" ? "selected=\"selected\"" : "")+">Discovered It</option>";
     html += "</select> Default TB Log Type</td>";
+    html += "  </tr>";
+    html += "  <tr>";
+    html += "    <td align='left' colspan='4'>Mail-Signature:<br><textarea id='settings_mail_signature' rows='7' cols='50'>"+(typeof(GM_getValue("settings_mail_signature")) != "undefined" ? GM_getValue("settings_mail_signature") : "")+"</textarea></td>";
     html += "  </tr>";
     html += "  <tr>";
     html += "    <td align='left' colspan='4'>&nbsp;</td>";
@@ -1110,11 +1141,13 @@ function showConfig(){
     GM_setValue("settings_hide_feedback",document.getElementById('settings_hide_feedback').checked);
     GM_setValue("settings_hide_disclaimer",document.getElementById('settings_hide_disclaimer').checked);
     GM_setValue("settings_show_all_logs",document.getElementById('settings_show_all_logs').checked);
+    GM_setValue("settings_show_all_logs_count",document.getElementById('settings_show_all_logs_count').value);
     GM_setValue("settings_decrypt_hint",document.getElementById('settings_decrypt_hint').checked);
     GM_setValue("settings_show_mail",document.getElementById('settings_show_mail').checked);
     GM_setValue("settings_show_google_maps",document.getElementById('settings_show_google_maps').checked);
     GM_setValue("settings_default_logtype",document.getElementById('settings_default_logtype').value);
     GM_setValue("settings_default_tb_logtype",document.getElementById('settings_default_tb_logtype').value);
+    GM_setValue("settings_mail_signature",document.getElementById('settings_mail_signature').value);
 
     // Create the confusing settings_bookmarks_list Array :)
     var queue = new Array();
