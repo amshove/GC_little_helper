@@ -8,8 +8,10 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net>
-// Version:        2.2             - 10.08.2010
-// Changelog:      2.2             - Added feature to hide the boxes on the "My Profile"-Sidebar
+// Version:        2.3             - 23.08.2010
+// Changelog:      2.3             - Disabled redirect to map, if link "Neares List" is used
+//                                 - Bugfix: Wrong cachename in mail-text if there are more than one open tab
+//                 2.2             - Added feature to hide the boxes on the "My Profile"-Sidebar
 //                 2.1             - Added feature to add custom bookmarks
 //                                 - Added "Show in google maps"-Link to Bookmark-Overview-Page
 //                 2.0             - Added links to bookmark-lists: "Download as kml" and "Show in google maps"
@@ -217,7 +219,7 @@ bookmarks[34]['id'] = "lnk_my_trackables";;
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "2.2";
+var scriptVersion = "2.3";
 
 var anzCustom = 10;
 
@@ -463,8 +465,8 @@ if(settings_bookmarks_on_top){
 // Redirect to Map
 if(settings_redirect_to_map && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/nearest\.aspx\?/)){
   var latlng = document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/nearest\.aspx\?lat=([0-9.]*)\&lng\=([0-9.]*)/);
-
-  document.location.href = "http://www.geocaching.com/map/default.aspx?lat="+latlng[1]+"&lng="+latlng[2];
+  
+  if(!document.location.href.match(/&disable_redirect/)) document.location.href = "http://www.geocaching.com/map/default.aspx?lat="+latlng[1]+"&lng="+latlng[2];
 }
 
 
@@ -534,12 +536,12 @@ if(settings_show_mail && document.location.href.match(/^http:\/\/www\.geocaching
       mail_img.setAttribute("title","Send a mail to this user");
       mail_img.setAttribute("src","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAKCAYAAAC9vt6cAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9oHHg0gKjtwF3IAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAABdElEQVQoz4WRMaviUBSEv5s8H8RO0Eq00SiCRMQigoiCYC2I/hhbwd8g1lpZWFioECwl2IqIwT5iGdDCK94tlhf27cK+gWmGYZg5R9i2rUzTpFAooOs6AEIINE1DCPEPv/T3+81yuURMJhNlmiYAtVqNSCTCT7her6zXa6SUaFJKms0m8XicxWLB5XIJjUqpkAD3+53tdovruvT7faSUfHyZi8UiyWQSx3HwfZ96vY4QIgy73W5sNhssy6LRaIRztT+rxWIxer0eUkpms1moe57HfD6n0+lQKpXQdT1s9fH3PqUUmUwG13UZjUaUy2V2ux2WZRGNRlFKfWv2LSAIAlzXJQgCBoMBz+eTw+HAcDjE8zym0ynVapVsNhtOCAOOxyOn04l8Pk+73Qbg8/OTSqWCUopcLkcikWC/33M+n2m1Wr9fPh6PVTqdxjAMbNvGMIwf3+j7Po7j8Hg8EJZlqW63SyqVQtO08Dj/gxCC1+vFarXiF7aOl1qte6kYAAAAAElFTkSuQmCC");
       mail_link.appendChild(mail_img);
-      mail_link.setAttribute("href","http://www.geocaching.com/email/?guid="+guid);
+      mail_link.setAttribute("href","http://www.geocaching.com/email/?guid="+guid+"&text="+name);
 
       links[i].parentNode.appendChild(document.createTextNode("   "));
       links[i].parentNode.appendChild(mail_link);
 
-      GM_setValue("run_after_redirect","document.getElementById(\"ctl00_ContentBody_SendMessagePanel1_tbMessage\").innerHTML = \""+name+"\";");
+      //GM_setValue("run_after_redirect","document.getElementById(\"ctl00_ContentBody_SendMessagePanel1_tbMessage\").innerHTML = \""+name+"\";");
     }
   }
 }
@@ -563,6 +565,10 @@ if(settings_show_mail && document.location.href.match(/^http:\/\/www\.geocaching
 
   document.getElementById('ctl00_ContentBody_SendMessagePanel1_chkSendAddress').addEventListener("click", chgDefaultSendaddress, false);
   document.getElementById('ctl00_ContentBody_SendMessagePanel1_chkEmailCopy').addEventListener("click", chgDefaultMailcopy, false);
+  
+  // Grab Text from URL
+  var matches = document.location.href.match(/&text=(.*)/)
+  document.getElementById("ctl00_ContentBody_SendMessagePanel1_tbMessage").innerHTML = decodeURIComponent(matches[1]);
 }
 
 // Default Log Type
@@ -801,7 +807,7 @@ function linkToNearesList(){
   if(typeof(GM_getValue("home_lat")) == "undefined" || typeof(GM_getValue("home_lng")) == "undefined"){
     if(window.confirm("To use this Link, you have to set your Home-Coordinates.")) document.location.href = "http://www.geocaching.com/account/ManageLocations.aspx";
   }else{
-    document.location.href = "http://www.geocaching.com/seek/nearest.aspx?lat="+(GM_getValue("home_lat")/10000000)+"&lng="+(GM_getValue("home_lng")/10000000)+"&dist=25";
+    document.location.href = "http://www.geocaching.com/seek/nearest.aspx?lat="+(GM_getValue("home_lat")/10000000)+"&lng="+(GM_getValue("home_lng")/10000000)+"&dist=25&disable_redirect";
   }
 }
 if(document.getElementById('lnk_nearestlist')){
