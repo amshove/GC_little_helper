@@ -10,8 +10,10 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net>
-// Version:        3.2             - 18.01.2010
-// Changelog:      3.2             - Added "Log It" Icon to Nearest List
+// Version:        3.3             - 09.03.2010
+// Changelog:      3.3             - Show Mail-Icon on log-Page
+//                                 - Bugfix: Some JS not working on page "Your Profile"
+//                 3.2             - Added "Log It" Icon to Nearest List
 //                 3.1             - Bugfix: Mail-Icon was not displayed on pages with URL?id=..
 //                 3.0             - Added www.google.de/maps
 //                 2.9             - gc.com-update-fix: Link on found-counter at friendlist
@@ -236,7 +238,7 @@ bookmarks[34]['id'] = "lnk_my_trackables";;
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "3.2";
+var scriptVersion = "3.3";
 
 var anzCustom = 10;
 
@@ -613,10 +615,11 @@ if(settings_decrypt_hint && document.location.href.match(/^http:\/\/www\.geocach
 }
 
 // Show email-Link beside Username
-if(settings_show_mail && document.location.href.match(/^http:\/\/www\.geocaching\.com\/(seek\/cache_details|track\/details)\.aspx\?(guid|wp|tracker|id)\=[a-zA-Z0-9-]*/)){
+if(settings_show_mail && document.location.href.match(/^http:\/\/www\.geocaching\.com\/(seek\/cache_details|seek\/log|track\/details)\.aspx\?(guid|wp|tracker|id|LUID|ID|PLogGuid)\=[a-zA-Z0-9-]*/)){
   var links = document.getElementsByTagName('a');
   if(document.getElementById('ctl00_ContentBody_CacheName'))  var name = document.getElementById('ctl00_ContentBody_CacheName').innerHTML;
-  else if(document.getElementById('ctl00_ContentBody_lbHeading'))  var name = document.getElementById('ctl00_ContentBody_lbHeading').innerHTML;
+  else if(document.getElementById('ctl00_ContentBody_lbHeading') && !document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?.*/))  var name = document.getElementById('ctl00_ContentBody_lbHeading').innerHTML;
+  else var name = ""; 
 
   for(var i=0; i<links.length; i++){
     if(links[i].href.match(/http:\/\/www\.geocaching\.com\/profile\/\?guid=/)){
@@ -668,7 +671,7 @@ if(settings_show_mail && document.location.href.match(/^http:\/\/www\.geocaching
 }
 
 // Default Log Type
-if(settings_default_logtype != "-1" && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?(id|guid|ID|LUID|PLogGuid)\=/)){
+if(settings_default_logtype != "-1" && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?(id|guid|ID|LUID)\=/)){
   var select = document.getElementById('ctl00_ContentBody_LogBookPanel1_ddLogType');
   var childs = select.childNodes;
 
@@ -835,19 +838,20 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my/)){
   
   for(var i=0; i<boxes.length; i++){
     var box = boxes[i].parentNode.childNodes[3];
+    if(typeof(box) != "undefined"){
+      if(boxes[i].innerHTML.match(/Bookmarks/)) continue;
     
-    if(boxes[i].innerHTML.match(/Bookmarks/)) continue;
+      box.setAttribute("id","box_"+i);
+     
+      if(typeof(GM_getValue("show_box["+i+"]")) != "undefined") box.style.display = GM_getValue("show_box["+i+"]");
     
-    box.setAttribute("id","box_"+i);
-    
-    if(typeof(GM_getValue("show_box["+i+"]")) != "undefined") box.style.display = GM_getValue("show_box["+i+"]");
-    
-    if(box.style.display == "none")
-      boxes[i].innerHTML = "<img id='lnk_"+i+"' src='http://www.geocaching.com/images/plus.gif' onClick='hide_box(\""+i+"\");' title='show'> "+boxes[i].innerHTML;
-    else
-      boxes[i].innerHTML = "<img id='lnk_"+i+"' src='http://www.geocaching.com/images/minus.gif' onClick='hide_box(\""+i+"\");' title='hide'> "+boxes[i].innerHTML;
+      if(box.style.display == "none")
+        boxes[i].innerHTML = "<img id='lnk_"+i+"' src='http://www.geocaching.com/images/plus.gif' onClick='hide_box(\""+i+"\");' title='show'> "+boxes[i].innerHTML;
+      else
+        boxes[i].innerHTML = "<img id='lnk_"+i+"' src='http://www.geocaching.com/images/minus.gif' onClick='hide_box(\""+i+"\");' title='hide'> "+boxes[i].innerHTML;
       
-    document.getElementById("lnk_"+i).addEventListener("click",saveStates,false);
+      document.getElementById("lnk_"+i).addEventListener("click",saveStates,false);
+    }
   }
 }
 
