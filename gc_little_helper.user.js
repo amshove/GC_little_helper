@@ -6,8 +6,9 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net>
-// Version:        1.3             - 03.07.2010
-// Changelog:      1.3             - Bugfix: Zeichensatzproblem bei Grad-Zeichen in RegEx
+// Version:        1.4             - 04.07.2010
+// Changelog:      1.4             - Bugfix: Breite der "Du bist angemeldet als .." Zeile an deutsche Uebersetzung angepasst
+//                 1.3             - Bugfix: Zeichensatzproblem bei Grad-Zeichen in RegEx
 //                 1.2             - Bookmarks in einer Zeile
 //                                 - Weitere Bookmarks hinzugefuegt (Tabs im oeffentlichen Profil, My Profile, Nearest List, Map)
 //                                 - "Configuration" umbenannt in "little helper config"
@@ -185,7 +186,7 @@ bookmarks[33]['id'] = "lnk_nearestlist_wo";
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "1.3";
+var scriptVersion = "1.4";
 
 var bookmarks_def = new Array(16,18,13,14,17,12);
 
@@ -277,9 +278,8 @@ if(settings_bookmarks_on_top){
   slogan.className = "";
   slogan.style.cssFloat = "left";
   
-  if(getElementsByClass("yui-u")[0]) getElementsByClass("yui-u")[0].style.width = "300px";
-  else if(getElementsByClass("yui-u AlignRight")[0]) getElementsByClass("yui-u AlignRight")[0].style.width = "300px";
-  
+  if(getElementsByClass("yui-u")[0]) getElementsByClass("yui-u")[0].style.width = "350px";
+  if(getElementsByClass("yui-u AlignRight")[0]) getElementsByClass("yui-u AlignRight")[0].style.width = "350px";
   
   var p = document.createElement("p");
   p.setAttribute("class","HalfRight");
