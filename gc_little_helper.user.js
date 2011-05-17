@@ -6,8 +6,10 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net>
-// Version:        1.4             - 04.07.2010
-// Changelog:      1.4             - Bugfix: Breite der "Du bist angemeldet als .." Zeile an deutsche Uebersetzung angepasst
+// Version:        1.5             - 06.07.2010
+// Changelog:      1.5             - Bugfix: Home-Koordinaten berechnung gefixt
+//                                 - Kleine vorlaufiger Fix: GCTidy-Link
+//                 1.4             - Bugfix: Breite der "Du bist angemeldet als .." Zeile an deutsche Uebersetzung angepasst
 //                 1.3             - Bugfix: Zeichensatzproblem bei Grad-Zeichen in RegEx
 //                 1.2             - Bookmarks in einer Zeile
 //                                 - Weitere Bookmarks hinzugefuegt (Tabs im oeffentlichen Profil, My Profile, Nearest List, Map)
@@ -186,7 +188,7 @@ bookmarks[33]['id'] = "lnk_nearestlist_wo";
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "1.4";
+var scriptVersion = "1.5";
 
 var bookmarks_def = new Array(16,18,13,14,17,12);
 
@@ -303,6 +305,7 @@ if(settings_bookmarks_on_top){
     p.appendChild(a);
   }
   slogan.appendChild(p);
+  slogan.innerHTML += "<h1></h1>";  // Fix for GCTidy
 }
 
 // Redirect to Map
@@ -380,11 +383,11 @@ function getElementsByClass(classname){
 function toDec(coords){
   var match = coords.match(/^(N|S) ([0-9][0-9]). ([0-9][0-9])\.([0-9][0-9][0-9]) (E|W) ([0-9][0-9][0-9]). ([0-9][0-9])\.([0-9][0-9][0-9])$/);
   
-  var dec1 = parseInt(match[2]) + (parseFloat(match[3]+"."+match[4])/60);
+  var dec1 = parseInt(match[2],10) + (parseFloat(match[3]+"."+match[4])/60);
   if(match[1] == "S") dec1 = dec1 * -1;
   dec1 = Math.round(dec1*10000000)/10000000;
-  
-  var dec2 = parseInt(match[6]) + (parseFloat(match[7]+"."+match[8])/60);
+
+  var dec2 = parseInt(match[6],10) + (parseFloat(match[7]+"."+match[8])/60);
   if(match[5] == "W") dec2 = dec2 * -1;
   dec2 = Math.round(dec2*10000000)/10000000;
 
@@ -746,7 +749,7 @@ function checkVersion(){
   var url = "http://www.amshove.net/greasemonkey/updates.php";
   var time = new Date().getTime();
   var next_check = 24 * 60 * 60 * 1000; // Milliseconds
-  var last_check = parseInt(GM_getValue("update_last_check"));
+  var last_check = parseInt(GM_getValue("update_last_check"),10);
 
   if(!last_check) last_check = 0;
 
