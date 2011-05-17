@@ -6,8 +6,10 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net>
-// Version:        1.6             - 08.07.2010
-// Changelog:      1.6             - Bookmark hinzugefuegt: Neares-List ohne Funde
+// Version:        1.7             - 09.07.2010
+// Changelog:      1.7             - Bugfix: Mail-Link, hide disclaimer, decrypt hint (fixed the URL matching)
+//                                 - Added My Trackabels-Bookmark
+//                 1.6             - Bookmark hinzugefuegt: Neares-List ohne Funde
 //                                 - TB-Log-Typ erweitert um "retrieved .."
 //                                 - Konfigurierbar: Bookmarks links oder rechts
 //                                 - Konfigurierbar: Bookmarks farbe und groesse
@@ -190,12 +192,17 @@ bookmarks[33]['href'] = "#";
 bookmarks[33]['title'] = "Nearest List (w/o Founds)";
 bookmarks[33]['id'] = "lnk_nearestlist_wo";
 
+bookmarks[34] = new Object();
+bookmarks[34]['href'] = "#";
+bookmarks[34]['title'] = "My Trackables";
+bookmarks[34]['id'] = "lnk_my_trackables";
+
 
 ////////////////////////////////////////////////////////////////////////////
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "1.6";
+var scriptVersion = "1.7";
 
 var bookmarks_def = new Array(16,18,13,14,17,12);
 
@@ -369,7 +376,7 @@ if(settings_hide_feedback){
 }
 
 // Hide Disclaimer
-if(settings_hide_disclaimer && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx\?(guid|wp)\=[a-zA-Z0-9-]*$/)){
+if(settings_hide_disclaimer && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx\?(guid|wp)\=[a-zA-Z0-9-]*/)){
   var disc = getElementsByClass('CacheDisclaimerTable Spacing ReverseSpacing')[0];
   if(disc){
     disc.parentNode.removeChild(disc);
@@ -382,12 +389,12 @@ if(settings_show_all_logs && document.location.href.match(/^http:\/\/www\.geocac
 }
 
 // Decrypt Hint
-if(settings_decrypt_hint && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx\?(guid|wp)\=[a-zA-Z0-9-]*$/)){
+if(settings_decrypt_hint && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx\?(guid|wp)\=[a-zA-Z0-9-]*/)){
   unsafeWindow.dht("ctl00_ContentBody_lnkDH");
 }
 
 // Show email-Link beside Username
-if(settings_show_mail && document.location.href.match(/^http:\/\/www\.geocaching\.com\/(seek\/cache_details|track\/details)\.aspx\?(guid|wp)\=[a-zA-Z0-9-]*$/)){
+if(settings_show_mail && document.location.href.match(/^http:\/\/www\.geocaching\.com\/(seek\/cache_details|track\/details)\.aspx\?(guid|wp|tracker)\=[a-zA-Z0-9-]*/)){
   var links = document.getElementsByTagName('a');
   if(document.getElementById('ctl00_ContentBody_CacheName'))  var name = document.getElementById('ctl00_ContentBody_CacheName').innerHTML;
   else if(document.getElementById('ctl00_ContentBody_lbHeading'))  var name = document.getElementById('ctl00_ContentBody_lbHeading').innerHTML;
@@ -512,6 +519,20 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/account\/Manage
   window.addEventListener("load", setCoordsHelper, false); // On first hit, the search-field ist filled after loading - so we have to wait
 }
 
+// Save uid for special bookmarks - From My Profile
+if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\//)){
+  var links = document.getElementsByTagName("a");
+
+  for(var i=0; i<links.length; i++){
+    if(links[i].href.match(/\/track\/search\.aspx\?o=1\&uid=/)){
+      var uid = links[i].href.match(/\/track\/search\.aspx\?o=1\&uid=(.*)/);
+      uid = uid[1];
+
+      if(GM_getValue["uid"] != uid) GM_setValue("uid",uid);
+    }
+  }
+}
+
 // Redirect to Neares List/Map
 function linkToNearesList(){
   if(typeof(GM_getValue("home_lat")) == "undefined" || typeof(GM_getValue("home_lng")) == "undefined"){
@@ -547,6 +568,17 @@ if(document.getElementById('lnk_nearestlist_wo')){
   document.getElementById('lnk_nearestlist_wo').addEventListener("click", linkToNearesListWo, false);
 }
 
+// Redirect to My Trackables
+function linkToMyTrackables(){
+  if(typeof(GM_getValue("uid")) == "undefined"){
+    if(window.confirm("To use this Link, the script has to know your uid. Just load the \"My Profile\" site and the script will save it automatically.")) document.location.href = "http://www.geocaching.com/my/";
+  }else{
+    document.location.href = "http://www.geocaching.com/track/search.aspx?o=1&uid="+GM_getValue("uid");
+  }
+}
+if(document.getElementById('lnk_my_trackables')){
+  document.getElementById('lnk_my_trackables').addEventListener("click", linkToMyTrackables, false);
+}
 
 // Redirect + JS-Exec
 function linkToGeocaches(){
