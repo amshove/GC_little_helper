@@ -10,8 +10,16 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net>
-// Version:        3.5             - 03.05.2010
-// Changelog:      3.5             - BugFix: Saving Home-Coords (thanks to Birnbaum2001)
+// Version:        3.6             - 05.05.2010
+// Changelog:      3.6             - Fix: Bookmark-List on Top -> now in Navigation
+//                                 - Fix: Feedback-Link
+//                                 - Rename: Bookmarks -> Linklist
+//                                 - Fix: Bookmarks in Profile
+//                                 - Fix: Google-Maps & KML-Link in Bookmark-Lists
+//                                 - Fix: Hide Cache Notes
+//                                 - Fix: Hide Disclaimer
+//                                 - Removed: Hide L&F-Banner
+//                 3.5             - BugFix: Saving Home-Coords (thanks to Birnbaum2001)
 //                                 - Fill Homezone on Map (and remove "clickable")
 //                 3.4             - Show Homezone on Map
 //                 3.3             - Show Mail-Icon on log-Page
@@ -175,21 +183,25 @@ bookmarks[21]['title'] = "Guidelines";
 bookmarks[22] = new Object();
 bookmarks[22]['href'] = "http://forums.groundspeak.com/";
 bookmarks[22]['title'] = "Forum";
+bookmarks[22]['rel'] = "external";
 bookmarks[22]['target'] = "_blank";
 
 bookmarks[23] = new Object();
 bookmarks[23]['href'] = "http://blog.geocaching.com/";
 bookmarks[23]['title'] = "Blog";
+bookmarks[23]['rel'] = "external";
 bookmarks[23]['target'] = "_blank";
 
 bookmarks[24] = new Object();
-bookmarks[24]['href'] = "http://feedback.geocaching.com/forums";
+bookmarks[24]['href'] = "http://feedback.geocaching.com/";
 bookmarks[24]['title'] = "Feedback";
+bookmarks[24]['rel'] = "external";
 bookmarks[24]['target'] = "_blank";
 
 bookmarks[25] = new Object();
 bookmarks[25]['href'] = "http://www.geoclub.de/";
 bookmarks[25]['title'] = "Geoclub";
+bookmarks[25]['rel'] = "external";
 bookmarks[25]['target'] = "_blank";
 
 bookmarks[26] = new Object();
@@ -234,14 +246,26 @@ bookmarks[33]['id'] = "lnk_nearestlist_wo";
 bookmarks[34] = new Object();
 bookmarks[34]['href'] = "#";
 bookmarks[34]['title'] = "My Trackables";
-bookmarks[34]['id'] = "lnk_my_trackables";;
+bookmarks[34]['id'] = "lnk_my_trackables";
+
+/*
+bookmarks[35] = new Object();
+bookmarks[35]['href'] = "#";
+bookmarks[35]['title'] = "Profile Souvenirs";
+bookmarks[35]['id'] = "lnk_profilesouvenirs";
+
+bookmarks[36] = new Object();
+bookmarks[36]['href'] = "#";
+bookmarks[36]['title'] = "Profile Statistics";
+bookmarks[36]['id'] = "lnk_profilestatistics";
+*/
 
 
 ////////////////////////////////////////////////////////////////////////////
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "3.5";
+var scriptVersion = "3.6";
 
 var anzCustom = 10;
 
@@ -254,11 +278,11 @@ settings_bookmarks_show = GM_getValue("settings_bookmarks_show",true);
 // Settings: Bookmarks on Top
 settings_bookmarks_on_top = GM_getValue("settings_bookmarks_on_top",true);
 // Settings: Bookmarks on Top_left
-settings_bookmarks_top_left = GM_getValue("settings_bookmarks_top_left",true);
+//settings_bookmarks_top_left = GM_getValue("settings_bookmarks_top_left",true);
 // Settings: Bookmarks size
-settings_bookmarks_top_size = GM_getValue("settings_bookmarks_top_size","85");
+//settings_bookmarks_top_size = GM_getValue("settings_bookmarks_top_size","85");
 // Settings: Bookmarks color
-settings_bookmarks_top_color = GM_getValue("settings_bookmarks_top_color","#CDD8E8");
+//settings_bookmarks_top_color = GM_getValue("settings_bookmarks_top_color","#CDD8E8");
 // Settings: Redirect to Map
 settings_redirect_to_map = GM_getValue("settings_redirect_to_map",true);
 // Settings: Hide Facebook Button
@@ -272,7 +296,7 @@ settings_hide_cache_notes = GM_getValue("settings_hide_cache_notes",false);
 // Settings: Hide Cache Notes if empty
 settings_hide_empty_cache_notes = GM_getValue("settings_hide_empty_cache_notes",true);
 // Settings: Hide LF-Banner
-settings_hide_lf_banner = GM_getValue("settings_hide_lf_banner",false);
+//settings_hide_lf_banner = GM_getValue("settings_hide_lf_banner",false);
 // Settings: Show all Logs
 settings_show_all_logs = GM_getValue("settings_show_all_logs",false);
 settings_show_all_logs_count = GM_getValue("settings_show_all_logs_count","0");
@@ -315,6 +339,7 @@ for(var i=0; i<anzCustom; i++){
   
   if(typeof(GM_getValue("settings_custom_bookmark_target["+i+"]")) != "undefined" && GM_getValue("settings_custom_bookmark_target["+i+"]") != ""){
     bookmarks[num]['target'] = GM_getValue("settings_custom_bookmark_target["+i+"]");
+    bookmarks[num]['rel'] = "external";
   }else{
     bookmarks[num]['target'] = "";
   }
@@ -408,12 +433,12 @@ if(settings_submit_log_button && (document.location.href.match(/^http:\/\/www\.g
 }
 
 // Bookmark-Liste im Profil
-if(settings_bookmarks_show && document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/$/)){
+if(settings_bookmarks_show && (document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/$/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/default\.aspx$/))){
   var side = document.getElementById("ctl00_ContentBody_WidgetMiniProfile1_LoggedInPanel");
 
   var header = document.createElement("h3");
   header.setAttribute("class","WidgetHeader");
-  header.appendChild(document.createTextNode(" Bookmarks"));
+  header.appendChild(document.createTextNode(" Linklist"));
 
   var div = document.createElement("div");
   div.setAttribute("class","WidgetBody ProfileWidget");
@@ -444,6 +469,60 @@ if(settings_bookmarks_show && document.location.href.match(/^http:\/\/www\.geoca
 
 // Bookmarks on top
 if(settings_bookmarks_on_top){
+  var nav_list = document.getElementById('Navigation').childNodes[1];
+  
+  var menu = document.createElement("li");
+  
+  var headline = document.createElement("a");
+  headline.setAttribute("href","#");
+  headline.setAttribute("title","Linklist");
+  headline.setAttribute("accesskey","7");
+  headline.innerHTML = "Linklist";
+  menu.appendChild(headline);
+  
+  var submenu = document.createElement("ul");
+  submenu.setAttribute("class","SubMenu");
+  submenu.setAttribute("style","visibility: hidden;");
+  menu.appendChild(submenu);
+
+  for(var i=0; i < settings_bookmarks_list.length; i++){
+    var x = settings_bookmarks_list[i];
+    if(typeof(x) == "undefined") continue;
+
+    var sublink = document.createElement("li");
+    var hyperlink = document.createElement("a");
+    
+    for(attr in bookmarks[x]){
+      if(attr != "custom") hyperlink.setAttribute(attr,bookmarks[x][attr]);
+    }
+    hyperlink.appendChild(document.createTextNode(bookmarks[x]['title']));
+
+    sublink.appendChild(hyperlink);
+    submenu.appendChild(sublink);
+  }
+      
+
+//  hyperlink.setAttribute("href","#test");
+  //hyperlink.setAttribute("rel","external");
+//  hyperlink.setAttribute("title","test");
+  //hyperlink.setAttribute("accesskey","x");
+//  hyperlink.innerHTML = "testt";
+//  sublink.appendChild(hyperlink);
+  
+
+  nav_list.appendChild(menu);
+  
+// menu      - <li class="">
+// headline  -   <a href="#" title="Shop" accesskey="6" id="ctl00_hlNavShop">Shop ?</a>
+// submenu   -   <ul class="SubMenu" style="visibility: hidden;">
+// sublink   -     <li class="">
+// hyperlink -       <a href="http://shop.groundspeak.com/" rel="external" title="Shop Geocaching" accesskey="j" id="ctl00_hlSubNavShop">Shop Geocaching</a></li>
+// sublink   -     <li class="">
+// hyperlink -       <a href="../about/buying.aspx" title="Guide to Buying a GPS Device" accesskey="k" id="ctl00_hlSubNavGPSGuide">Guide to Buying a GPS Device</a></li>
+// submenu   -   </ul>
+// menu      - </li>  
+  
+/*  old Design ..  
   GM_addStyle(
     '#gclittlehelper-bookmarks, #gclittlehelper-bookmarks + #gctidy-open-configuration {font-size: ' + settings_bookmarks_top_size + '%;}' +
     'div#gclittlehelper-bookmarks {float: right;}' +
@@ -498,7 +577,7 @@ if(settings_bookmarks_on_top){
 
       container.appendChild(a);
     }
-  }
+  } */
 }
 
 // Redirect to Map
@@ -539,7 +618,7 @@ if(settings_hide_feedback){
 
 // Hide Disclaimer
 if(settings_hide_disclaimer && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx\?(guid|wp)\=[a-zA-Z0-9-]*/)){
-  var disc = getElementsByClass('CacheDisclaimerTable Spacing ReverseSpacing')[0];
+  var disc = getElementsByClass('DisclaimerWidget')[0];
   if(disc){
     disc.parentNode.removeChild(disc);
   }
@@ -547,7 +626,7 @@ if(settings_hide_disclaimer && document.location.href.match(/^http:\/\/www\.geoc
 
 // Hide Cache Notes
 if(settings_hide_cache_notes && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx\?(guid|wp)\=[a-zA-Z0-9-]*/)){
-  var disc = getElementsByClass('CacheNote ReverseSpacing NoSpacing')[0];
+  var disc = getElementsByClass('NotesWidget')[0];
   if(disc){
     disc.parentNode.removeChild(disc);
   }
@@ -555,7 +634,7 @@ if(settings_hide_cache_notes && document.location.href.match(/^http:\/\/www\.geo
 
 // Hide/Show Cache Notes
 if(settings_hide_empty_cache_notes && !settings_hide_cache_notes && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx\?(guid|wp)\=[a-zA-Z0-9-]*/)){
-  var box = getElementsByClass('CacheNote ReverseSpacing NoSpacing')[0];
+  var box = getElementsByClass('NotesWidget')[0];
   if(box){
     var code = "function hide_notes(){";
     code += "  if(document.getElementById('box_notes').style.display == 'none'){";
@@ -575,7 +654,7 @@ if(settings_hide_empty_cache_notes && !settings_hide_cache_notes && document.loc
     getElementsByClass("UserSuppliedContent")[0].innerHTML = "<font style='font-size: 10px;'><a href='#' onClick='hide_notes();'>Show/Hide Cache Notes</a></font><br><br>"+getElementsByClass("UserSuppliedContent")[0].innerHTML;
   
     function hide_on_load(){
-      var box = getElementsByClass('CacheNote ReverseSpacing NoSpacing')[0];
+      var box = getElementsByClass('NotesWidget')[0];
       var text = document.getElementById("cache_note").innerHTML;
       if(text == "Click to enter a note" || text == "Klicken zum Eingeben einer Notiz") box.style.display = "none";
     }
@@ -585,12 +664,12 @@ if(settings_hide_empty_cache_notes && !settings_hide_cache_notes && document.loc
 }
 
 // Hide LF-Banner
-if(settings_hide_lf_banner && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx\?(guid|wp)\=[a-zA-Z0-9-]*/)){
-  var disc = getElementsByClass('LFNominateBanner Clear')[0];
-  if(disc){
-    disc.parentNode.removeChild(disc);
-  }
-}
+//if(settings_hide_lf_banner && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx\?(guid|wp)\=[a-zA-Z0-9-]*/)){
+//  var disc = getElementsByClass('LFNominateBanner Clear')[0];
+//  if(disc){
+//    disc.parentNode.removeChild(disc);
+//  }
+//}
 
 // Show all Logs
 if(settings_show_all_logs && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx\?(guid|wp)\=[a-zA-Z0-9-]*$/)){
@@ -796,17 +875,18 @@ if(settings_show_log_it && document.location.href.match(/^http:\/\/www\.geocachi
 
 // Improve Bookmark-List
 if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/bookmarks\/view\.aspx\?guid=/)){
-  var box = document.getElementById("ctl00_ContentBody_lbHeading").parentNode.parentNode;
+  var box = document.getElementById("ctl00_ContentBody_lbHeading").parentNode.parentNode.parentNode;
   var matches = document.location.href.match(/guid=([a-zA-Z0-9-]*)/);
   var uuid = matches[1];
   
-  box.childNodes[7].innerHTML += "<br><a title=\"Download as kml\" href='http://www.geocaching.com/kml/bmkml.aspx?bmguid="+uuid+"'>Download as kml</a> <a title=\"Show in google maps\" href='http://maps.google.com/?q=http://www.geocaching.com/kml/bmkml.aspx?bmguid="+uuid+"' target='_blank'>Show in google maps</a>";
+  box.childNodes[3].innerHTML += "<br><a title=\"Download as kml\" href='http://www.geocaching.com/kml/bmkml.aspx?bmguid="+uuid+"'>Download as kml</a><br><a title=\"Show in google maps\" href='http://maps.google.com/?q=http://www.geocaching.com/kml/bmkml.aspx?bmguid="+uuid+"' target='_blank'>Show in google maps</a>";
 }
-if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/bookmarks\/default\.aspx/)){
+if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/bookmarks\/default\.aspx/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/lists\.aspx/)){
   var links = document.getElementsByTagName("a");
   
   for(var i=0; i<links.length; i++){
     if(links[i].title == "Download Google Earth KML"){
+
       var matches = links[i].href.match(/guid=([a-zA-Z0-9-]*)/);
       links[i].parentNode.innerHTML += "<br><a title='Show in google maps' href='http://maps.google.com/?q=http://www.geocaching.com/kml/bmkml.aspx?bmguid="+matches[1]+"' target='_blank'>Show in google maps</a>"
     }
@@ -945,6 +1025,7 @@ function toDec(coords){
 }
 
 // Save HomeCoords for special bookmarks - From Index
+/* Da stehen keine Koords mehr ...
 if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/$/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/default\.aspx$/)){
   var search_value = document.getElementById("ctl00_ContentBody_saddress").value;
 
@@ -954,7 +1035,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/$/) || document
     if(GM_getValue("home_lat",0) != parseInt(latlng[0]*10000000)) GM_setValue("home_lat",parseInt(latlng[0]*10000000)); // * 10000000 because GM don't know float
     if(GM_getValue("home_lng",0) != parseInt(latlng[1]*10000000)) GM_setValue("home_lng",parseInt(latlng[1]*10000000));
   }
-}
+}*/
 
 // Save HomeCoords for special bookmarks - From Manage Home Location
 if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/account\/ManageLocations\.aspx/)){
@@ -1070,6 +1151,22 @@ if(document.getElementById('lnk_profilebookmarks')){
   document.getElementById('lnk_profilebookmarks').addEventListener("click", linkToBookmarks, false);
 }
 
+function linkToSouvenirs(){
+  GM_setValue("run_after_redirect","__doPostBack('ctl00$ContentBody$ProfilePanel1$lnkSouvenirs','')");
+  document.location.href = "/profile/default.aspx";
+}
+if(document.getElementById('lnk_profilesouvenirs')){
+  document.getElementById('lnk_profilesouvenirs').addEventListener("click", linkToSouvenirs, false);
+}
+
+function linkToStatistics(){
+  GM_setValue("run_after_redirect","__doPostBack('ctl00$ContentBody$ProfilePanel1$lnkStatistics','')");
+  document.location.href = "/profile/default.aspx";
+}
+if(document.getElementById('lnk_profilestatistics')){
+  document.getElementById('lnk_profilestatistics').addEventListener("click", linkToStatistics, false);
+}
+
 // Close the Overlays
 function btnClose(){
   if(document.getElementById('bg_shadow')) document.getElementById('bg_shadow').style.display = "none";
@@ -1154,23 +1251,23 @@ function showConfig(){
     html += "  </tr>";
     html += "  <tr>";
     html += "    <td align='left'><input type='checkbox' "+(settings_bookmarks_show ? "checked='checked'" : "" )+" id='settings_bookmarks_show'></td>";
-    html += "    <td align='left' colspan='3'>Show Bookmark-List in profile</td>";
+    html += "    <td align='left' colspan='3'>Show Linklist in profile</td>";
     html += "  </tr>";
     html += "  <tr>";
     html += "    <td align='left'><input type='checkbox' "+(settings_bookmarks_on_top ? "checked='checked'" : "" )+" id='settings_bookmarks_on_top'></td>";
-    html += "    <td align='left' colspan='2'>Show Bookmark-List on top</td>";
-    html += "    <td align='left'><input type='checkbox' "+(settings_bookmarks_top_left ? "checked='checked'" : "" )+" id='settings_bookmarks_top_left'> Show left?</td>";
+    html += "    <td align='left' colspan='3'>Show Linklist on top</td>";
+//    html += "    <td align='left'><input type='checkbox' "+(settings_bookmarks_top_left ? "checked='checked'" : "" )+" id='settings_bookmarks_top_left'> Show left?</td>";
     html += "  </tr>";
-    html += "  <tr>";
-    html += "    <td align='left'>&nbsp;</td>";
-    html += "    <td align='left' colspan='2'>Top-Bookmark-List Link Size:</td>";
-    html += "    <td align='left'><input id='settings_bookmarks_top_size' type='text' size='10' value='"+settings_bookmarks_top_size+"'> %</td>";
-    html += "  </tr>";
-    html += "  <tr>";
-    html += "    <td align='left'>&nbsp;</td>";
-    html += "    <td align='left' colspan='2'>Top-Bookmark-List Link Color:</td>";
-    html += "    <td align='left'><input id='settings_bookmarks_top_color' type='text' size='10' value='"+settings_bookmarks_top_color+"'></td>";
-    html += "  </tr>";
+//    html += "  <tr>";
+//    html += "    <td align='left'>&nbsp;</td>";
+//    html += "    <td align='left' colspan='2'>Top-Bookmark-List Link Size:</td>";
+//    html += "    <td align='left'><input id='settings_bookmarks_top_size' type='text' size='10' value='"+settings_bookmarks_top_size+"'> %</td>";
+//    html += "  </tr>";
+//    html += "  <tr>";
+//    html += "    <td align='left'>&nbsp;</td>";
+//    html += "    <td align='left' colspan='2'>Top-Bookmark-List Link Color:</td>";
+//    html += "    <td align='left'><input id='settings_bookmarks_top_color' type='text' size='10' value='"+settings_bookmarks_top_color+"'></td>";
+//    html += "  </tr>";
     html += "  <tr>";
     html += "    <td align='left'><input type='checkbox' "+(settings_redirect_to_map ? "checked='checked'" : "" )+" id='settings_redirect_to_map'></td>";
     html += "    <td align='left' colspan='3'>Redirect from Cache-list to map</td>";
@@ -1195,10 +1292,10 @@ function showConfig(){
     html += "    <td align='left'><input type='checkbox' "+(settings_hide_empty_cache_notes ? "checked='checked'" : "" )+" id='settings_hide_empty_cache_notes'></td>";
     html += "    <td align='left' colspan='3'>Hide Cache Notes if empty</td>";
     html += "  </tr>";
-    html += "  <tr>";
-    html += "    <td align='left'><input type='checkbox' "+(settings_hide_lf_banner ? "checked='checked'" : "" )+" id='settings_hide_lf_banner'></td>";
-    html += "    <td align='left' colspan='3'>Hide L&F-Banner in Listing</td>";
-    html += "  </tr>";
+//    html += "  <tr>";
+//    html += "    <td align='left'><input type='checkbox' "+(settings_hide_lf_banner ? "checked='checked'" : "" )+" id='settings_hide_lf_banner'></td>";
+//    html += "    <td align='left' colspan='3'>Hide L&F-Banner in Listing</td>";
+//    html += "  </tr>";
     html += "  <tr>";
     html += "    <td align='left'><input type='checkbox' "+(settings_show_all_logs ? "checked='checked'" : "" )+" id='settings_show_all_logs'></td>";
     html += "    <td align='left' colspan='3'>Show all logs of a cache - if log-count lower than <input type='text' size='2' id='settings_show_all_logs_count' value='"+settings_show_all_logs_count+"'></td>";
@@ -1250,7 +1347,7 @@ function showConfig(){
     html += "    <td align='left' colspan='4'>&nbsp;</td>";
     html += "  </tr>";
     html += "  <tr>";
-    html += "    <td align='left' colspan='2'><b>Bookmarks:</b></td>";
+    html += "    <td align='left' colspan='2'><b>Linklist:</b></td>";
     html += "    <td align='left'>Sort</td>";
     html += "    <td align='left'>Custom Name</td>";
     html += "  </tr>";
@@ -1309,16 +1406,16 @@ function showConfig(){
     GM_setValue("settings_submit_log_button",document.getElementById('settings_submit_log_button').checked);
     GM_setValue("settings_bookmarks_show",document.getElementById('settings_bookmarks_show').checked);
     GM_setValue("settings_bookmarks_on_top",document.getElementById('settings_bookmarks_on_top').checked);
-    GM_setValue("settings_bookmarks_top_left",document.getElementById('settings_bookmarks_top_left').checked);
-    GM_setValue("settings_bookmarks_top_size",document.getElementById('settings_bookmarks_top_size').value);
-    GM_setValue("settings_bookmarks_top_color",document.getElementById('settings_bookmarks_top_color').value);
+//    GM_setValue("settings_bookmarks_top_left",document.getElementById('settings_bookmarks_top_left').checked);
+//    GM_setValue("settings_bookmarks_top_size",document.getElementById('settings_bookmarks_top_size').value);
+//    GM_setValue("settings_bookmarks_top_color",document.getElementById('settings_bookmarks_top_color').value);
     GM_setValue("settings_redirect_to_map",document.getElementById('settings_redirect_to_map').checked);
 //    GM_setValue("settings_hide_facebook",document.getElementById('settings_hide_facebook').checked);
     GM_setValue("settings_hide_feedback",document.getElementById('settings_hide_feedback').checked);
     GM_setValue("settings_hide_disclaimer",document.getElementById('settings_hide_disclaimer').checked);
     GM_setValue("settings_hide_cache_notes",document.getElementById('settings_hide_cache_notes').checked);
     GM_setValue("settings_hide_empty_cache_notes",document.getElementById('settings_hide_empty_cache_notes').checked);
-    GM_setValue("settings_hide_lf_banner",document.getElementById('settings_hide_lf_banner').checked);
+//    GM_setValue("settings_hide_lf_banner",document.getElementById('settings_hide_lf_banner').checked);
     GM_setValue("settings_show_all_logs",document.getElementById('settings_show_all_logs').checked);
     GM_setValue("settings_show_all_logs_count",document.getElementById('settings_show_all_logs_count').value);
     GM_setValue("settings_decrypt_hint",document.getElementById('settings_decrypt_hint').checked);
