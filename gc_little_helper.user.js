@@ -8,8 +8,9 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net>
-// Version:        2.3             - 23.08.2010
-// Changelog:      2.3             - Disabled redirect to map, if link "Neares List" is used
+// Version:        2.4             - 25.08.2010
+// Changelog:      2.4             - Bugfix: Disabled redirect also with bookmark "Nearest List (w/o Founds)"
+//                 2.3             - Disabled redirect to map, if link "Neares List" is used
 //                                 - Bugfix: Wrong cachename in mail-text if there are more than one open tab
 //                 2.2             - Added feature to hide the boxes on the "My Profile"-Sidebar
 //                 2.1             - Added feature to add custom bookmarks
@@ -219,7 +220,7 @@ bookmarks[34]['id'] = "lnk_my_trackables";;
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "2.3";
+var scriptVersion = "2.4";
 
 var anzCustom = 10;
 
@@ -830,7 +831,7 @@ function linkToNearesListWo(){
   if(typeof(GM_getValue("home_lat")) == "undefined" || typeof(GM_getValue("home_lng")) == "undefined"){
     if(window.confirm("To use this Link, you have to set your Home-Coordinates.")) document.location.href = "http://www.geocaching.com/account/ManageLocations.aspx";
   }else{
-    document.location.href = "http://www.geocaching.com/seek/nearest.aspx?lat="+(GM_getValue("home_lat")/10000000)+"&lng="+(GM_getValue("home_lng")/10000000)+"&dist=25&f=1";
+    document.location.href = "http://www.geocaching.com/seek/nearest.aspx?lat="+(GM_getValue("home_lat")/10000000)+"&lng="+(GM_getValue("home_lng")/10000000)+"&dist=25&f=1&disable_redirect";
   }
 }
 if(document.getElementById('lnk_nearestlist_wo')){
