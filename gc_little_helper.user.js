@@ -8,8 +8,10 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net>
-// Version:        1.9             - 30.07.2010
-// Changelog:      1.9             - Added a Link to Google Maps on Cache-Page a Link on Google Maps to geocaching.com
+// Version:        2.0             - 08.08.2010
+// Changelog:      2.0             - Added links to bookmark-lists: "Download as kml" and "Show in google maps"
+//                                 - Bugfix: Wrong coordinates from google maps
+//                 1.9             - Added a Link to Google Maps on Cache-Page a Link on Google Maps to geocaching.com
 //                                 - Replaced the Mail-Link with an Icon
 //                                 - Removed: "Hide Facebook Button" - gc.com removed it
 //                                 - "Show all Logs" now replaces the links, to prevent the redirect
@@ -212,7 +214,7 @@ bookmarks[34]['id'] = "lnk_my_trackables";
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "1.9";
+var scriptVersion = "2.0";
 
 var bookmarks_def = new Array(16,18,13,14,17,12);
 
@@ -268,7 +270,7 @@ if(document.location.href.match(/^http:\/\/maps\.google\.(de|com)/)){
     var ref_link = document.getElementById("link");
     if(ref_link){
       function open_gc(){
-        var matches = document.getElementById("link").href.match(/ll=([-0-9]*\.[0-9]*),([-0-9]*\.[0-9]*)/);
+        var matches = document.getElementById("link").href.match(/&ll=([-0-9]*\.[0-9]*),([-0-9]*\.[0-9]*)/);
         var zoom = document.getElementById("link").href.match(/z=([0-9]*)/);
         window.open("http://www.geocaching.com/map/default.aspx?lat="+matches[1]+"&lng="+matches[2]+"&zm="+zoom[1]);
       }
@@ -629,6 +631,15 @@ if(settings_show_google_maps && document.location.href.match(/^http:\/\/www\.geo
   link.appendChild(span);
   
   box.appendChild(link);*/
+}
+
+// Improve Bookmark-List
+if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/bookmarks\/view\.aspx\?guid=/)){
+  var box = document.getElementById("ctl00_ContentBody_lbHeading").parentNode.parentNode;
+  var matches = document.location.href.match(/guid=([a-zA-Z0-9-]*)/);
+  var uuid = matches[1];
+  
+  box.childNodes[7].innerHTML += "<br><a href='http://www.geocaching.com/kml/bmkml.aspx?bmguid="+uuid+"'>Download as kml</a> <a href='http://maps.google.com/?q=http://www.geocaching.com/kml/bmkml.aspx?bmguid="+uuid+"' target='_blank'>Show in google maps</a>";
 }
 
 ////////////////////////////////////////////////////////////////////////////
