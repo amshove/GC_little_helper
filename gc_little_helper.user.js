@@ -2,12 +2,19 @@
 // @name           GC little helper
 // @namespace      http://www.amshove.net
 // @include        http://www.geocaching.com/*
+// @include        http://maps.google.de/*
+// @include        http://maps.google.com/*
 // @description    Some little things to make life easy (on www.geocaching.com).
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net>
-// Version:        1.8             - 26.07.2010
-// Changelog:      1.8             - Add Links to Friendlist: Gallery, Hidden Caches
+// Version:        1.9             - 30.07.2010
+// Changelog:      1.9             - Added a Link to Google Maps on Cache-Page a Link on Google Maps to geocaching.com
+//                                 - Replaced the Mail-Link with an Icon
+//                                 - Removed: "Hide Facebook Button" - gc.com removed it
+//                                 - "Show all Logs" now replaces the links, to prevent the redirect
+//                                 - Bugfix: Gallery-Link on Friend-List
+//                 1.8             - Add Links to Friendlist: Gallery, Hidden Caches
 //                                 - Add Link to Found-List on Found-Counter at Friend-List
 //                                 - Compatible to GCTidy Link (Thanks to tenrapid)
 //                 1.7             - Bugfix: Mail-Link, hide disclaimer, decrypt hint (fixed the URL matching)
@@ -43,7 +50,7 @@
 
 
 ////////////////////////////////////////////////////////////////////////////
-
+  
 var bookmarks = new Array();
 
 bookmarks[0] = new Object();
@@ -205,11 +212,9 @@ bookmarks[34]['id'] = "lnk_my_trackables";
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "1.8";
+var scriptVersion = "1.9";
 
 var bookmarks_def = new Array(16,18,13,14,17,12);
-
-GM_registerMenuCommand("little helper config", showConfig);
 
 // Settings: Submit Log on F2
 settings_submit_log_button = GM_getValue("settings_submit_log_button",true);
@@ -226,7 +231,7 @@ settings_bookmarks_top_color = GM_getValue("settings_bookmarks_top_color","#CDD8
 // Settings: Redirect to Map
 settings_redirect_to_map = GM_getValue("settings_redirect_to_map",true);
 // Settings: Hide Facebook Button
-settings_hide_facebook = GM_getValue("settings_hide_facebook",true);
+//settings_hide_facebook = GM_getValue("settings_hide_facebook",true);
 // Settings: Hide Feedback Button
 settings_hide_feedback = GM_getValue("settings_hide_feedback",false);
 // Settings: Hide Disclaimer
@@ -237,6 +242,8 @@ settings_show_all_logs = GM_getValue("settings_show_all_logs",false);
 settings_decrypt_hint = GM_getValue("settings_decrypt_hint",false);
 // Settings: Show mail-Link
 settings_show_mail = GM_getValue("settings_show_mail",true);
+// Settings: Show google-maps Link
+settings_show_google_maps = GM_getValue("settings_show_google_maps",true);
 // Settings: default Log Type
 settings_default_logtype = GM_getValue("settings_default_logtype","-1");
 // Settings: default TB-Log Type
@@ -255,6 +262,46 @@ for(var i=0; i<bookmarks.length; i++){
 
 ////////////////////////////////////////////////////////////////////////////
 
+// Link on Google Maps
+if(document.location.href.match(/^http:\/\/maps\.google\.(de|com)/)){
+  if(settings_show_google_maps){
+    var ref_link = document.getElementById("link");
+    if(ref_link){
+      function open_gc(){
+        var matches = document.getElementById("link").href.match(/ll=([-0-9]*\.[0-9]*),([-0-9]*\.[0-9]*)/);
+        var zoom = document.getElementById("link").href.match(/z=([0-9]*)/);
+        window.open("http://www.geocaching.com/map/default.aspx?lat="+matches[1]+"&lng="+matches[2]+"&zm="+zoom[1]);
+      }
+    
+      var box = ref_link.parentNode;
+      
+      box.appendChild(document.createTextNode(" "));
+      
+      var divider = document.createElement("img");
+      divider.setAttribute("class","bar-icon-divider bar-divider");
+      divider.setAttribute("src","http://maps.gstatic.com/intl/de_de/mapfiles/transparent.png");
+      box.appendChild(divider);
+      
+      box.appendChild(document.createTextNode(" "));
+      
+      var link = document.createElement("a");
+      link.setAttribute("title","Show area at geocaching.com");
+      link.setAttribute("href","#");
+      link.setAttribute("id","gc_com_lnk");
+      
+      var span = document.createElement("span");
+      span.setAttribute("class","link-text");
+      span.appendChild(document.createTextNode("gc.com"));
+      link.appendChild(span);
+      
+      box.appendChild(link);
+      
+      document.getElementById('gc_com_lnk').addEventListener("click", open_gc, false);
+    }
+  }
+}else{
+  
+////////////////////////////////////////////////////////////////////////////
 // Helper
 // Run after Redirect
 if(GM_getValue("run_after_redirect") != ""){
@@ -262,6 +309,19 @@ if(GM_getValue("run_after_redirect") != ""){
     eval("unsafeWindow."+GM_getValue("run_after_redirect"));
   }catch(e){}
   GM_setValue("run_after_redirect","no");
+}
+
+function getElementsByClass(classname){
+  var result = new Array();
+  var all_elements = document.getElementsByTagName("*");
+
+  for(var i=0; i<all_elements.length;i++){
+    if(all_elements[i].className == classname){
+      result.push(all_elements[i]);
+    }
+  }
+
+  return result;
 }
 
 // F2 zum Log abschicken
@@ -372,16 +432,17 @@ if(settings_redirect_to_map && document.location.href.match(/^http:\/\/www\.geoc
   document.location.href = "http://www.geocaching.com/map/default.aspx?lat="+latlng[1]+"&lng="+latlng[2];
 }
 
+
 // Hide Facebook-Button
-if(settings_hide_facebook && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx\?(guid|wp)\=[a-zA-Z0-9-]*/)){
-  var iframes = document.getElementsByTagName('iframe');
+//if(settings_hide_facebook && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx\?(guid|wp)\=[a-zA-Z0-9-]*/)){
+/*  var iframes = document.getElementsByTagName('iframe');
   for(var i=0; i<iframes.length; i++){
     if(iframes[i].src.match(/^http:\/\/www\.facebook\.com/)){
       iframes[i].parentNode.removeChild(iframes[i]);
       break;
     }
   }
-}
+}*/
 
 // Hide Feedback-Button
 if(settings_hide_feedback){
@@ -403,6 +464,18 @@ if(settings_hide_disclaimer && document.location.href.match(/^http:\/\/www\.geoc
 if(settings_show_all_logs && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx\?(guid|wp)\=[a-zA-Z0-9-]*$/)){
   document.location.href = document.location.href+"&log=y";
 }
+if(settings_show_all_logs){
+  function change_cache_link(){
+    var links = document.getElementsByTagName('a');
+    for(var i=0; i<links.length; i++){
+      if(links[i].href.match(/seek\/cache_details\.aspx\?/) && !links[i].href.match(/&log=y/)){
+        links[i].href += "&log=y";
+      }
+    }
+  }
+  
+  window.addEventListener("load", change_cache_link, false);
+}
 
 // Decrypt Hint
 if(settings_decrypt_hint && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx\?(guid|wp)\=[a-zA-Z0-9-]*/)){
@@ -421,9 +494,14 @@ if(settings_show_mail && document.location.href.match(/^http:\/\/www\.geocaching
       guid = guid[1];
 
       var mail_link = document.createElement("a");
-      mail_link.appendChild(document.createTextNode(" [mail]"));
+      var mail_img = document.createElement("img");
+      mail_img.setAttribute("border","0");
+      mail_img.setAttribute("title","Send a mail to this user");
+      mail_img.setAttribute("src","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAKCAYAAAC9vt6cAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9oHHg0gKjtwF3IAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAABdElEQVQoz4WRMaviUBSEv5s8H8RO0Eq00SiCRMQigoiCYC2I/hhbwd8g1lpZWFioECwl2IqIwT5iGdDCK94tlhf27cK+gWmGYZg5R9i2rUzTpFAooOs6AEIINE1DCPEPv/T3+81yuURMJhNlmiYAtVqNSCTCT7her6zXa6SUaFJKms0m8XicxWLB5XIJjUqpkAD3+53tdovruvT7faSUfHyZi8UiyWQSx3HwfZ96vY4QIgy73W5sNhssy6LRaIRztT+rxWIxer0eUkpms1moe57HfD6n0+lQKpXQdT1s9fH3PqUUmUwG13UZjUaUy2V2ux2WZRGNRlFKfWv2LSAIAlzXJQgCBoMBz+eTw+HAcDjE8zym0ynVapVsNhtOCAOOxyOn04l8Pk+73Qbg8/OTSqWCUopcLkcikWC/33M+n2m1Wr9fPh6PVTqdxjAMbNvGMIwf3+j7Po7j8Hg8EJZlqW63SyqVQtO08Dj/gxCC1+vFarXiF7aOl1qte6kYAAAAAElFTkSuQmCC");
+      mail_link.appendChild(mail_img);
       mail_link.setAttribute("href","http://www.geocaching.com/email/?guid="+guid);
 
+      links[i].parentNode.appendChild(document.createTextNode("   "));
       links[i].parentNode.appendChild(mail_link);
 
       GM_setValue("run_after_redirect","document.getElementById(\"ctl00_ContentBody_SendMessagePanel1_tbMessage\").innerHTML = \""+name+"\";");
@@ -486,25 +564,74 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/myfriends\.
     
     friend.getElementsByTagName("dl")[0].lastChild.innerHTML = "<a href='/seek/nearest.aspx?ul="+name.innerHTML+"'>"+friend.getElementsByTagName("dl")[0].lastChild.innerHTML+"</a>";
     
-    friend.getElementsByTagName("p")[0].innerHTML = "<a id='lnk_profilegallery2' href='"+name.href+"'>Gallery</a> | <a href='/seek/nearest.aspx?u="+name.innerHTML+"'>Hidden Caches</a> | "+friend.getElementsByTagName("p")[0].innerHTML
+    friend.getElementsByTagName("p")[0].innerHTML = "<a name='lnk_profilegallery2' href='"+name.href+"'>Gallery</a> | <a href='/seek/nearest.aspx?u="+name.innerHTML+"'>Hidden Caches</a> | "+friend.getElementsByTagName("p")[0].innerHTML
   }
+}
+
+// Show Google-Maps Link on Cache Page
+if(settings_show_google_maps && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx\?/)){
+  var ref_link = document.getElementById("ctl00_ContentBody_uxViewLargerMap");
+  var box = ref_link.parentNode;
+  var matches = ref_link.href.match(/lat=([-0-9]*\.[0-9]*)\&lng=([-0-9]*\.[0-9]*)/);
+    
+  box.appendChild(document.createElement("br"));
+  
+  var link = document.createElement("a");
+  link.setAttribute("class","lnk");
+  link.setAttribute("target","_blank");
+  link.setAttribute("title","Show area at Google Maps");
+  link.setAttribute("href","http://maps.google.de/?ll="+matches[1]+","+matches[2]);
+  
+  var img = document.createElement("img");
+  img.setAttribute("src","/images/silk/map_go.png");
+  link.appendChild(img);
+  
+  link.appendChild(document.createTextNode(" "));
+  
+  var span = document.createElement("span");
+  span.appendChild(document.createTextNode("Show area on Google Maps"));
+  link.appendChild(span);
+  
+  box.appendChild(link);
+}
+
+// Show Google-Maps Link on Map Page
+if(settings_show_google_maps && document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\/default\.aspx/)){
+
+/*
+  var evObj = document.createEvent('MouseEvents');
+  evObj.initEvent('click', true, false );
+  document.getElementById("lp").dispatchEvent(evObj);
+      
+  //document.getElementById("lp").click();
+  alert(document.getElementById("leurl").value);
+  */
+  /*var ref_link = document.getElementById("ctl00_ContentBody_uxViewLargerMap");
+  var box = ref_link.parentNode;
+  var matches = ref_link.href.match(/lat=([-0-9]*\.[0-9]*)\&lng=([-0-9]*\.[0-9]*)/);
+    
+  box.appendChild(document.createElement("br"));
+  
+  var link = document.createElement("a");
+  link.setAttribute("class","lnk");
+  link.setAttribute("target","_blank");
+  link.setAttribute("title","Show area at Google Maps");
+  link.setAttribute("href","http://maps.google.de/?ll="+matches[1]+","+matches[2]);
+  
+  var img = document.createElement("img");
+  img.setAttribute("src","/images/silk/map_go.png");
+  link.appendChild(img);
+  
+  link.appendChild(document.createTextNode(" "));
+  
+  var span = document.createElement("span");
+  span.appendChild(document.createTextNode("Show area on Google Maps"));
+  link.appendChild(span);
+  
+  box.appendChild(link);*/
 }
 
 ////////////////////////////////////////////////////////////////////////////
-
-// Helper
-function getElementsByClass(classname){
-  var result = new Array();
-  var all_elements = document.getElementsByTagName("*");
-
-  for(var i=0; i<all_elements.length;i++){
-    if(all_elements[i].className == classname){
-      result.push(all_elements[i]);
-    }
-  }
-
-  return result;
-}
 
 // Helper: from N/S/E/W Deg Min.Sec to Dec
 function toDec(coords){
@@ -634,8 +761,9 @@ function linkToGallery(){
 if(document.getElementById('lnk_profilegallery')){
   document.getElementById('lnk_profilegallery').addEventListener("click", linkToGallery, false);
 }
-if(document.getElementById('lnk_profilegallery2')){ // Friendlist
-  document.getElementById('lnk_profilegallery2').addEventListener("click", linkToGallery, false);
+var links = document.getElementsByName('lnk_profilegallery2');
+for(var i=0; i<links.length; i++){ // Friendlist
+  links[i].addEventListener("click", linkToGallery, false);
 }
 
 function linkToBookmarks(){
@@ -751,10 +879,10 @@ function showConfig(){
     html += "    <td align='left'><input type='checkbox' "+(settings_redirect_to_map ? "checked='checked'" : "" )+" id='settings_redirect_to_map'></td>";
     html += "    <td align='left' colspan='3'>Redirect from Cache-list to map</td>";
     html += "  </tr>";
-    html += "  <tr>";
+/*    html += "  <tr>";
     html += "    <td align='left'><input type='checkbox' "+(settings_hide_facebook ? "checked='checked'" : "" )+" id='settings_hide_facebook'></td>";
     html += "    <td align='left' colspan='3'>Hide Facebook-Button</td>";
-    html += "  </tr>";
+    html += "  </tr>";*/
     html += "  <tr>";
     html += "    <td align='left'><input type='checkbox' "+(settings_hide_feedback ? "checked='checked'" : "" )+" id='settings_hide_feedback'></td>";
     html += "    <td align='left' colspan='3'>Hide Feedback-Button</td>";
@@ -774,6 +902,10 @@ function showConfig(){
     html += "  <tr>";
     html += "    <td align='left'><input type='checkbox' "+(settings_show_mail ? "checked='checked'" : "" )+" id='settings_show_mail'></td>";
     html += "    <td align='left' colspan='3'>Show Mail-Link beside Usernames</td>";
+    html += "  </tr>";
+    html += "  <tr>";
+    html += "    <td align='left'><input type='checkbox' "+(settings_show_google_maps ? "checked='checked'" : "" )+" id='settings_show_google_maps'></td>";
+    html += "    <td align='left' colspan='3'>Show link to and from Google Maps</td>";
     html += "  </tr>";
     html += "  <tr>";
     html += "    <td align='left' colspan='4'><select id='settings_default_logtype'>";
@@ -852,12 +984,13 @@ function showConfig(){
     GM_setValue("settings_bookmarks_top_size",document.getElementById('settings_bookmarks_top_size').value);
     GM_setValue("settings_bookmarks_top_color",document.getElementById('settings_bookmarks_top_color').value);
     GM_setValue("settings_redirect_to_map",document.getElementById('settings_redirect_to_map').checked);
-    GM_setValue("settings_hide_facebook",document.getElementById('settings_hide_facebook').checked);
+//    GM_setValue("settings_hide_facebook",document.getElementById('settings_hide_facebook').checked);
     GM_setValue("settings_hide_feedback",document.getElementById('settings_hide_feedback').checked);
     GM_setValue("settings_hide_disclaimer",document.getElementById('settings_hide_disclaimer').checked);
     GM_setValue("settings_show_all_logs",document.getElementById('settings_show_all_logs').checked);
     GM_setValue("settings_decrypt_hint",document.getElementById('settings_decrypt_hint').checked);
     GM_setValue("settings_show_mail",document.getElementById('settings_show_mail').checked);
+    GM_setValue("settings_show_google_maps",document.getElementById('settings_show_google_maps').checked);
     GM_setValue("settings_default_logtype",document.getElementById('settings_default_logtype').value);
     GM_setValue("settings_default_tb_logtype",document.getElementById('settings_default_tb_logtype').value);
 
@@ -891,6 +1024,7 @@ function showConfig(){
     document.location.reload(true);
   }
 }
+GM_registerMenuCommand("little helper config", showConfig);
 
 // Check for Updates
 function checkVersion(){
@@ -921,3 +1055,4 @@ function checkVersion(){
 }
 
 checkVersion();
+} // Google Maps site
