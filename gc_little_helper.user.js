@@ -10,8 +10,11 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net>
-// Version:        3.7             - 08.05.2010
-// Changelog:      3.7             - Insert Home-Coords into search-field
+// Version:        3.8             - 14.05.2010
+// Changelog:      3.8             - Enable dynamic map
+//                                 - Show Linklist as flat Navigation
+//                                 - Remove links from Navigation
+//                 3.7             - Insert Home-Coords into search-field
 //                                 - Custom Map-width
 //                                 - Fix: Homezone on Beta Map
 //                                 - New Links: Profile Souvenirs & Statistics
@@ -258,7 +261,7 @@ bookmarks[34]['id'] = "lnk_my_trackables";
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "3.7";
+var scriptVersion = "3.8";
 
 var anzCustom = 10;
 
@@ -270,6 +273,7 @@ settings_submit_log_button = GM_getValue("settings_submit_log_button",true);
 settings_bookmarks_show = GM_getValue("settings_bookmarks_show",true);
 // Settings: Bookmarks on Top
 settings_bookmarks_on_top = GM_getValue("settings_bookmarks_on_top",true);
+settings_bookmarks_top_menu = GM_getValue("settings_bookmarks_top_menu","true");
 // Settings: Bookmarks on Top_left
 //settings_bookmarks_top_left = GM_getValue("settings_bookmarks_top_left",true);
 // Settings: Bookmarks size
@@ -310,6 +314,8 @@ settings_default_logtype = GM_getValue("settings_default_logtype","-1");
 settings_default_tb_logtype = GM_getValue("settings_default_tb_logtype","-1");
 // Settings: Bookmarklist
 settings_bookmarks_list = eval(GM_getValue("settings_bookmarks_list",uneval(bookmarks_def)));
+// Settinks: Dynamic Map
+settings_dynamic_map = GM_getValue("settings_dynamic_map",true);
 
 
 // Settings: Custom Bookmarks
@@ -479,44 +485,53 @@ if(settings_bookmarks_on_top && document.getElementById('Navigation')){
   var menu = document.createElement("li");
   
   var headline = document.createElement("a");
-  headline.setAttribute("href","#");
-  headline.setAttribute("title","Linklist");
-  headline.setAttribute("accesskey","7");
-  headline.innerHTML = "Linklist";
-  menu.appendChild(headline);
-  
-  var submenu = document.createElement("ul");
-  submenu.setAttribute("class","SubMenu");
-  submenu.setAttribute("style","visibility: hidden;");
-  menu.appendChild(submenu);
 
-  for(var i=0; i < settings_bookmarks_list.length; i++){
-    var x = settings_bookmarks_list[i];
-    if(typeof(x) == "undefined") continue;
-
-    var sublink = document.createElement("li");
-    var hyperlink = document.createElement("a");
+  if(settings_bookmarks_top_menu){   // Navi vertikal
+    headline.setAttribute("href","#");
+    headline.setAttribute("title","Linklist");
+    headline.setAttribute("accesskey","7");
+    headline.innerHTML = "Linklist ▼";
+    menu.appendChild(headline);
     
-    for(attr in bookmarks[x]){
-      if(attr != "custom") hyperlink.setAttribute(attr,bookmarks[x][attr]);
-    }
-    hyperlink.appendChild(document.createTextNode(bookmarks[x]['title']));
-
-    sublink.appendChild(hyperlink);
-    submenu.appendChild(sublink);
-  }
+    var submenu = document.createElement("ul");
+    submenu.setAttribute("class","SubMenu");
+    submenu.setAttribute("style","visibility: hidden;");
+    menu.appendChild(submenu);
+  
+    for(var i=0; i < settings_bookmarks_list.length; i++){
+      var x = settings_bookmarks_list[i];
+      if(typeof(x) == "undefined") continue;
+  
+      var sublink = document.createElement("li");
+      var hyperlink = document.createElement("a");
       
-
-//  hyperlink.setAttribute("href","#test");
-  //hyperlink.setAttribute("rel","external");
-//  hyperlink.setAttribute("title","test");
-  //hyperlink.setAttribute("accesskey","x");
-//  hyperlink.innerHTML = "testt";
-//  sublink.appendChild(hyperlink);
+      for(attr in bookmarks[x]){
+        if(attr != "custom") hyperlink.setAttribute(attr,bookmarks[x][attr]);
+      }
+      hyperlink.appendChild(document.createTextNode(bookmarks[x]['title']));
   
+      sublink.appendChild(hyperlink);
+      submenu.appendChild(sublink);
+    }
+    nav_list.appendChild(menu);
+  }else{                             // Navi horizontal
+    for(var i=0; i < settings_bookmarks_list.length; i++){
+      var x = settings_bookmarks_list[i];
+      if(typeof(x) == "undefined") continue;
 
-  nav_list.appendChild(menu);
-  
+      var sublink = document.createElement("li");
+      var hyperlink = document.createElement("a");
+ 
+      for(attr in bookmarks[x]){
+        if(attr != "custom") hyperlink.setAttribute(attr,bookmarks[x][attr]);
+      }
+      hyperlink.appendChild(document.createTextNode(bookmarks[x]['title']));
+
+      sublink.appendChild(hyperlink);
+      nav_list.appendChild(sublink);
+    }
+  }
+
 // menu      - <li class="">
 // headline  -   <a href="#" title="Shop" accesskey="6" id="ctl00_hlNavShop">Shop ?</a>
 // submenu   -   <ul class="SubMenu" style="visibility: hidden;">
@@ -527,62 +542,17 @@ if(settings_bookmarks_on_top && document.getElementById('Navigation')){
 // submenu   -   </ul>
 // menu      - </li>  
   
-/*  old Design ..  
-  GM_addStyle(
-    '#gclittlehelper-bookmarks, #gclittlehelper-bookmarks + #gctidy-open-configuration {font-size: ' + settings_bookmarks_top_size + '%;}' +
-    'div#gclittlehelper-bookmarks {float: right;}' +
-    '#hd #gclittlehelper-bookmarks a {color: ' + settings_bookmarks_top_color + ';}' +
-    '#hd #gclittlehelper-bookmarks a:hover {text-decoration: underline;}'
-  );
-  
-  var container;
-  
-  if(settings_bookmarks_top_left){ // Bookmarks left or right?
-    if(getElementsByClass("yui-u first")[0]){
-      var h1 = getElementsByClass("yui-u first")[0].getElementsByTagName('h1')[0];
-      var node = h1.firstChild;
-      var next;
-      while (node) {
-        next = node.nextSibling;
-        if (node.nodeType == 3 || (node.nodeType == 1 && node.getAttribute('id') != 'gctidy-open-configuration')) {
-          h1.removeChild(node);
-        }
-        else {
-          h1.insertBefore(document.createTextNode(" - "), node)
-        }
-        node = next;
-      }
-      container = document.createElement("span");
-      h1.insertBefore(container, h1.firstChild);
-    }
-  }else{
-    container = document.createElement("div");
-    document.getElementById("hd").appendChild(container);
-  }
-  if(container){
-    container.setAttribute('id', 'gclittlehelper-bookmarks');
+}
 
-    if(getElementsByClass("yui-g")[0]) getElementsByClass("yui-g")[0].style.width = "auto";
-    if(getElementsByClass("yui-u first")[0]) getElementsByClass("yui-u first")[0].style.width = "auto";
-    if(getElementsByClass("yui-u AlignRight")[0]) getElementsByClass("yui-u AlignRight")[0].style.width = "auto";
-
-    var first = true;
-    for(var i=0; i < settings_bookmarks_list.length; i++){
-      var x = settings_bookmarks_list[i];
-      if(typeof(x) == "undefined") continue;
-
-      if(!first) container.appendChild(document.createTextNode(" | "));
-      first = false;
-
-      var a = document.createElement("a");
-      for(attr in bookmarks[x]){
-        if(attr != "custom") a.setAttribute(attr,bookmarks[x][attr]);
-      }
-      a.appendChild(document.createTextNode(bookmarks[x]['title']));
-
-      container.appendChild(a);
-    }
-  } */
+// Remove gc.com Links in Navigation
+if(document.getElementById('Navigation')){
+  var liste = document.getElementById('Navigation').childNodes[1];
+  if(GM_getValue('remove_navi_play')) liste.removeChild(document.getElementById('ctl00_hlNavPlay').parentNode);
+  if(GM_getValue('remove_navi_profile')) liste.removeChild(document.getElementById('ctl00_hlNavProfile').parentNode);
+  if(GM_getValue('remove_navi_community')) liste.removeChild(document.getElementById('ctl00_hlNavCommunity').parentNode);
+  if(GM_getValue('remove_navi_videos')) liste.removeChild(document.getElementById('ctl00_hlNavVideos').parentNode);
+  if(GM_getValue('remove_navi_resources')) liste.removeChild(document.getElementById('ctl00_hlNavResources').parentNode);
+  if(GM_getValue('remove_navi_shop')) liste.removeChild(document.getElementById('ctl00_hlNavShop').parentNode);
 }
 
 // Redirect to Map
@@ -1115,6 +1085,15 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/$/) || document
   }
 }
 
+// Dynamic Map
+if(settings_dynamic_map && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx\?/)){
+  function load_dynamic(){
+    unsafeWindow.loadDynamicMap();
+  }
+
+  window.addEventListener("load", load_dynamic, false);
+}
+
 
 ////////////////////////////////////////////////////////////////////////////
 
@@ -1426,6 +1405,10 @@ function showConfig(){
     html += "    <td align='left' colspan='3'>Show Log It-Icon on nearest list</td>";
     html += "  </tr>";
     html += "  <tr>";
+    html += "    <td align='left'><input type='checkbox' "+(settings_dynamic_map ? "checked='checked'" : "" )+" id='settings_dynamic_map'></td>";
+    html += "    <td align='left' colspan='3'>Show dynamic map in Listings</td>";
+    html += "  </tr>";
+    html += "  <tr>";
     html += "    <td align='left'><input type='checkbox' "+(settings_show_homezone ? "checked='checked'" : "" )+" id='settings_show_homezone'></td>";
     html += "    <td align='left' colspan='2'>Show Homezone</td>";
     html += "    <td align='left'><input id='settings_homezone_radius' type='text' size='2' value='"+settings_homezone_radius+"'> km</td>";
@@ -1457,6 +1440,40 @@ function showConfig(){
     html += "  </tr>";
     html += "  <tr>";
     html += "    <td align='left' colspan='4'>&nbsp;</td>";
+    html += "  </tr>";
+    html += "  <tr>";
+    html += "    <td align='left' colspan='4'><b>Remove links from Navi:</b></td>";
+    html += "  </tr>";
+    html += "  <tr>";
+    html += "    <td><input type='checkbox' "+(GM_getValue('remove_navi_play') ? "checked='checked'" : "" )+" id='remove_navi_play'></td>";
+    html += "    <td colspan='3'>Play</td>";
+    html += "  </tr>";
+    html += "  <tr>";
+    html += "    <td><input type='checkbox' "+(GM_getValue('remove_navi_profile') ? "checked='checked'" : "" )+" id='remove_navi_profile'></td>";
+    html += "    <td colspan='3'>Your Profile</td>";
+    html += "  </tr>";
+    html += "  <tr>";
+    html += "    <td><input type='checkbox' "+(GM_getValue('remove_navi_community') ? "checked='checked'" : "" )+" id='remove_navi_community'></td>";
+    html += "    <td colspan='3'>Community</td>";
+    html += "  </tr>";
+    html += "  <tr>";
+    html += "    <td><input type='checkbox' "+(GM_getValue('remove_navi_videos') ? "checked='checked'" : "" )+" id='remove_navi_videos'></td>";
+    html += "    <td colspan='3'>Videos</td>";
+    html += "  </tr>";
+    html += "  <tr>";
+    html += "    <td><input type='checkbox' "+(GM_getValue('remove_navi_resources') ? "checked='checked'" : "" )+" id='remove_navi_resources'></td>";
+    html += "    <td colspan='3'>Resources</td>";
+    html += "  </tr>";
+    html += "  <tr>";
+    html += "    <td><input type='checkbox' "+(GM_getValue('remove_navi_shop') ? "checked='checked'" : "" )+" id='remove_navi_shop'></td>";
+    html += "    <td colspan='3'>Shop</td>";
+    html += "  </tr>";
+    html += "  <tr>";
+    html += "    <td align='left' colspan='4'>&nbsp;</td>";
+    html += "  </tr>";
+    html += "  <tr>";
+    html += "    <td><input type='checkbox' "+(settings_bookmarks_top_menu ? "checked='checked'" : "" )+" id='settings_bookmarks_top_menu'></td>";
+    html += "    <td colspan='3'>Show Linklist as Drop-Down-Menu</td>";
     html += "  </tr>";
     html += "  <tr>";
     html += "    <td align='left' colspan='2'><b>Linklist:</b></td>";
@@ -1534,12 +1551,20 @@ function showConfig(){
     GM_setValue("settings_show_mail",document.getElementById('settings_show_mail').checked);
     GM_setValue("settings_show_google_maps",document.getElementById('settings_show_google_maps').checked);
     GM_setValue("settings_show_log_it",document.getElementById('settings_show_log_it').checked);
+    GM_setValue("settings_dynamic_map",document.getElementById('settings_dynamic_map').checked);
     GM_setValue("settings_show_homezone",document.getElementById('settings_show_homezone').checked);
     GM_setValue("settings_homezone_radius",document.getElementById('settings_homezone_radius').value);
     GM_setValue("map_width",document.getElementById('map_width').value);
     GM_setValue("settings_default_logtype",document.getElementById('settings_default_logtype').value);
     GM_setValue("settings_default_tb_logtype",document.getElementById('settings_default_tb_logtype').value);
     GM_setValue("settings_mail_signature",document.getElementById('settings_mail_signature').value);
+    GM_setValue("remove_navi_play",document.getElementById('remove_navi_play').checked);
+    GM_setValue("remove_navi_profile",document.getElementById('remove_navi_profile').checked);
+    GM_setValue("remove_navi_community",document.getElementById('remove_navi_community').checked);
+    GM_setValue("remove_navi_videos",document.getElementById('remove_navi_videos').checked);
+    GM_setValue("remove_navi_resources",document.getElementById('remove_navi_resources').checked);
+    GM_setValue("remove_navi_shop",document.getElementById('remove_navi_shop').checked);
+    GM_setValue("settings_bookmarks_top_menu",document.getElementById('settings_bookmarks_top_menu').checked);
 
     // Create the confusing settings_bookmarks_list Array :)
     var queue = new Array();
