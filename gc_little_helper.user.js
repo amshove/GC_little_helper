@@ -10,8 +10,9 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net>
-// Version:        3.3             - 09.03.2010
-// Changelog:      3.3             - Show Mail-Icon on log-Page
+// Version:        3.4             - 02.05.2010
+// Changelog:      3.4             - Show Homezone on Map
+//                 3.3             - Show Mail-Icon on log-Page
 //                                 - Bugfix: Some JS not working on page "Your Profile"
 //                 3.2             - Added "Log It" Icon to Nearest List
 //                 3.1             - Bugfix: Mail-Icon was not displayed on pages with URL?id=..
@@ -238,7 +239,7 @@ bookmarks[34]['id'] = "lnk_my_trackables";;
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "3.3";
+var scriptVersion = "3.4";
 
 var anzCustom = 10;
 
@@ -281,6 +282,9 @@ settings_show_mail = GM_getValue("settings_show_mail",true);
 settings_show_google_maps = GM_getValue("settings_show_google_maps",true);
 // Settings: Show Log It Icon
 settings_show_log_it = GM_getValue("settings_show_log_it",true);
+// Settings: Show Homezone
+settings_show_homezone = GM_getValue("settings_show_homezone",true);
+settings_homezone_radius = GM_getValue("settings_homezone_radius","10");
 // Settings: default Log Type
 settings_default_logtype = GM_getValue("settings_default_logtype","-1");
 // Settings: default TB-Log Type
@@ -447,46 +451,50 @@ if(settings_bookmarks_on_top){
   var container;
   
   if(settings_bookmarks_top_left){ // Bookmarks left or right?
-    var h1 = getElementsByClass("yui-u first")[0].getElementsByTagName('h1')[0];
-    var node = h1.firstChild;
-    var next;
-    while (node) {
-      next = node.nextSibling;
-      if (node.nodeType == 3 || (node.nodeType == 1 && node.getAttribute('id') != 'gctidy-open-configuration')) {
-        h1.removeChild(node);
+    if(getElementsByClass("yui-u first")[0]){
+      var h1 = getElementsByClass("yui-u first")[0].getElementsByTagName('h1')[0];
+      var node = h1.firstChild;
+      var next;
+      while (node) {
+        next = node.nextSibling;
+        if (node.nodeType == 3 || (node.nodeType == 1 && node.getAttribute('id') != 'gctidy-open-configuration')) {
+          h1.removeChild(node);
+        }
+        else {
+          h1.insertBefore(document.createTextNode(" - "), node)
+        }
+        node = next;
       }
-      else {
-        h1.insertBefore(document.createTextNode(" - "), node)
-      }
-      node = next;
+      container = document.createElement("span");
+      h1.insertBefore(container, h1.firstChild);
     }
-    container = document.createElement("span");
-    h1.insertBefore(container, h1.firstChild);
   }else{
     container = document.createElement("div");
     document.getElementById("hd").appendChild(container);
   }
-  container.setAttribute('id', 'gclittlehelper-bookmarks');
+  if(container){
+    container.setAttribute('id', 'gclittlehelper-bookmarks');
 
-  if(getElementsByClass("yui-g")[0]) getElementsByClass("yui-g")[0].style.width = "auto";
-  if(getElementsByClass("yui-u first")[0]) getElementsByClass("yui-u first")[0].style.width = "auto";
-  if(getElementsByClass("yui-u AlignRight")[0]) getElementsByClass("yui-u AlignRight")[0].style.width = "auto";
+    if(getElementsByClass("yui-g")[0]) getElementsByClass("yui-g")[0].style.width = "auto";
+    if(getElementsByClass("yui-u first")[0]) getElementsByClass("yui-u first")[0].style.width = "auto";
+    if(getElementsByClass("yui-u AlignRight")[0]) getElementsByClass("yui-u AlignRight")[0].style.width = "auto";
 
-  var first = true;
-  for(var i=0; i < settings_bookmarks_list.length; i++){
-    var x = settings_bookmarks_list[i];
-    if(typeof(x) == "undefined") continue;
+    var first = true;
+    for(var i=0; i < settings_bookmarks_list.length; i++){
+      var x = settings_bookmarks_list[i];
+      if(typeof(x) == "undefined") continue;
 
-    if(!first) container.appendChild(document.createTextNode(" | "));
-    first = false;
+      if(!first) container.appendChild(document.createTextNode(" | "));
+      first = false;
 
-    var a = document.createElement("a");
-    for(attr in bookmarks[x]){
-      if(attr != "custom") a.setAttribute(attr,bookmarks[x][attr]);
+      var a = document.createElement("a");
+      for(attr in bookmarks[x]){
+        if(attr != "custom") a.setAttribute(attr,bookmarks[x][attr]);
+      }
+      a.appendChild(document.createTextNode(bookmarks[x]['title']));
+
+      container.appendChild(a);
     }
-    a.appendChild(document.createTextNode(bookmarks[x]['title']));
-
-    container.appendChild(a);
   }
 }
 
@@ -855,6 +863,66 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my/)){
   }
 }
 
+// Show Homezone-Circle on Map
+if(settings_show_homezone && document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\/beta/)){ // BETA map
+  var code = "function drawCircle(){ ";
+  code += "if(google.maps){";
+  code += "  var home_coord = new google.maps.LatLng("+(GM_getValue("home_lat")/10000000)+", "+(GM_getValue("home_lng")/10000000)+");";
+  code += "  var circle = new google.maps.Circle({center:home_coord,map:map,radius:"+settings_homezone_radius+"000,strokeColor:'#0000FF',fillOpacity:0});";
+  code += "}}";
+  
+  var script = document.createElement("script");
+  script.innerHTML = code;
+  document.getElementsByTagName("body")[0].appendChild(script);
+    
+  function drawCircle(){
+    unsafeWindow.drawCircle();
+  }
+  
+  window.addEventListener("load", drawCircle, false);
+}
+if(settings_show_homezone && document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\/default.aspx/)){
+  var code = "function drawCircle() {"; // Code from http://www.geocodezip.com/GoogleEx_markerinfowindowCircle.asp
+  code += "var point = new GLatLng("+(GM_getValue("home_lat")/10000000)+", "+(GM_getValue("home_lng")/10000000)+");";
+  code += "var radius = "+settings_homezone_radius+";";
+  code += "  var cColor = '#0000FF';";
+  code += "  var cWidth = 5;";
+  code += "  var Cradius = radius;   ";
+  code += "  var d2r = Math.PI/180; ";
+  code += "  var r2d = 180/Math.PI; ";
+  code += "  var Clat = (Cradius/3963)*r2d; ";
+  code += "  var Clng = Clat/Math.cos(point.lat()*d2r); ";
+  code += "  var Cpoints = []; ";
+  code += "  for (var i=0; i < 33; i++) { ";
+  code += "    var theta = Math.PI * (i/16); ";
+  code += "    var CPlng = point.lng() + (Clng * Math.cos(theta)); ";
+  code += "    var CPlat = point.lat() + (Clat * Math.sin(theta)); ";
+  code += "    var P = new GLatLng(CPlat,CPlng);";
+  code += "    Cpoints.push(P); ";
+  code += "  }";
+  code += "  map.addOverlay(new GPolyline(Cpoints,cColor,cWidth)); ";
+  code += "}";
+  
+  var script = document.createElement("script");
+  script.innerHTML = code;
+  document.getElementsByTagName("body")[0].appendChild(script);
+    
+  function drawCircle(){
+    unsafeWindow.drawCircle();
+  }
+  
+  window.addEventListener("load", drawCircle, false);
+  
+  // Draw Homezone Link
+  var drawlink = document.createElement("a");
+  drawlink.setAttribute("onclick","drawCircle();");
+  drawlink.href = "#";
+  drawlink.id = "drawlink";
+  drawlink.innerHTML = "Draw Homezone";
+  document.getElementById('uxMapRefresh').parentNode.insertBefore(drawlink,document.getElementById('uxMapRefresh'));
+  var br = document.createElement("br");
+  document.getElementById('uxMapRefresh').parentNode.insertBefore(br,document.getElementById('uxMapRefresh'));
+}
 
 ////////////////////////////////////////////////////////////////////////////
 
@@ -1149,6 +1217,11 @@ function showConfig(){
     html += "    <td align='left' colspan='3'>Show Log It-Icon on nearest list</td>";
     html += "  </tr>";
     html += "  <tr>";
+    html += "    <td align='left'><input type='checkbox' "+(settings_show_homezone ? "checked='checked'" : "" )+" id='settings_show_homezone'></td>";
+    html += "    <td align='left' colspan='2'>Show Homezone</td>";
+    html += "    <td align='left'><input id='settings_homezone_radius' type='text' size='2' value='"+settings_homezone_radius+"'> km</td>";
+    html += "  </tr>";
+    html += "  <tr>";
     html += "    <td align='left' colspan='4'><select id='settings_default_logtype'>";
     html += "<option value=\"-1\" "+(settings_default_logtype == "-1" ? "selected=\"selected\"" : "")+">- Select Type of Log -</option>";
     html += "<option value=\"2\" "+(settings_default_logtype == "2" ? "selected=\"selected\"" : "")+">Found it</option>";
@@ -1249,6 +1322,8 @@ function showConfig(){
     GM_setValue("settings_show_mail",document.getElementById('settings_show_mail').checked);
     GM_setValue("settings_show_google_maps",document.getElementById('settings_show_google_maps').checked);
     GM_setValue("settings_show_log_it",document.getElementById('settings_show_log_it').checked);
+    GM_setValue("settings_show_homezone",document.getElementById('settings_show_homezone').checked);
+    GM_setValue("settings_homezone_radius",document.getElementById('settings_homezone_radius').value);
     GM_setValue("settings_default_logtype",document.getElementById('settings_default_logtype').value);
     GM_setValue("settings_default_tb_logtype",document.getElementById('settings_default_tb_logtype').value);
     GM_setValue("settings_mail_signature",document.getElementById('settings_mail_signature').value);
