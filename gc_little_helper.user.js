@@ -10,8 +10,9 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net>
-// Version:        3.0             - 20.12.2010
-// Changelog:      3.0             - Added www.google.de/maps
+// Version:        3.1             - 01.01.2010
+// Changelog:      3.1             - Bugfix: Mail-Icon was not displayed on pages with URL?id=..
+//                 3.0             - Added www.google.de/maps
 //                 2.9             - gc.com-update-fix: Link on found-counter at friendlist
 //                 2.8             - Bugfix: Style problems in "Your Account Details"-Page
 //                 2.7             - Bugfix: Problem with "Hide Cache Notes if empty"-Option for not-PM
@@ -234,7 +235,7 @@ bookmarks[34]['id'] = "lnk_my_trackables";;
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "3.0";
+var scriptVersion = "3.1";
 
 var anzCustom = 10;
 
@@ -609,7 +610,7 @@ if(settings_decrypt_hint && document.location.href.match(/^http:\/\/www\.geocach
 }
 
 // Show email-Link beside Username
-if(settings_show_mail && document.location.href.match(/^http:\/\/www\.geocaching\.com\/(seek\/cache_details|track\/details)\.aspx\?(guid|wp|tracker)\=[a-zA-Z0-9-]*/)){
+if(settings_show_mail && document.location.href.match(/^http:\/\/www\.geocaching\.com\/(seek\/cache_details|track\/details)\.aspx\?(guid|wp|tracker|id)\=[a-zA-Z0-9-]*/)){
   var links = document.getElementsByTagName('a');
   if(document.getElementById('ctl00_ContentBody_CacheName'))  var name = document.getElementById('ctl00_ContentBody_CacheName').innerHTML;
   else if(document.getElementById('ctl00_ContentBody_lbHeading'))  var name = document.getElementById('ctl00_ContentBody_lbHeading').innerHTML;
