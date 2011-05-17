@@ -6,8 +6,13 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net>
-// Version:        1.1             - 02.07.2010
-// Changelog:      1.1             - Konfigurations-Menue hinzugefuegt
+// Version:        1.2             - 03.07.2010
+// Changelog:      1.2             - Bookmarks in einer Zeile
+//                                 - Weitere Bookmarks hinzugefuegt (Tabs im oeffentlichen Profil, My Profile, Nearest List, Map)
+//                                 - "Configuration" umbenannt in "little helper config"
+//                                 - Default-Log-Type fuer Trackables
+//                                 - Bookmarks umbenennen / Kuerzel geben
+//                 1.1             - Konfigurations-Menue hinzugefuegt
 //                                 - Bookmarks konfigurierbar und sortierbar gemacht
 //                                 - Bookmark-Links erweitert
 //                                 - Find Player-Menue
@@ -134,15 +139,56 @@ bookmarks[25]['href'] = "http://www.geoclub.de/";
 bookmarks[25]['title'] = "Geoclub";
 bookmarks[25]['target'] = "_blank";
 
+bookmarks[26] = new Object();
+bookmarks[26]['href'] = "#";
+bookmarks[26]['title'] = "Profile Geocaches";
+bookmarks[26]['id'] = "lnk_profilegeocaches";
+
+bookmarks[27] = new Object();
+bookmarks[27]['href'] = "#";
+bookmarks[27]['title'] = "Profile Trackables";
+bookmarks[27]['id'] = "lnk_profiletrackables";
+
+bookmarks[28] = new Object();
+bookmarks[28]['href'] = "#";
+bookmarks[28]['title'] = "Profile Gallery";
+bookmarks[28]['id'] = "lnk_profilegallery";
+
+bookmarks[29] = new Object();
+bookmarks[29]['href'] = "#";
+bookmarks[29]['title'] = "Profile Bookmarks";
+bookmarks[29]['id'] = "lnk_profilebookmarks";
+
+bookmarks[30] = new Object();
+bookmarks[30]['href'] = "/my/";
+bookmarks[30]['title'] = "My Profile";
+
+bookmarks[31] = new Object();
+bookmarks[31]['href'] = "#";
+bookmarks[31]['title'] = "Nearest List";
+bookmarks[31]['id'] = "lnk_nearestlist";
+
+bookmarks[32] = new Object();
+bookmarks[32]['href'] = "#";
+bookmarks[32]['title'] = "Nearest Map";
+bookmarks[32]['id'] = "lnk_nearestmap";
+
+/* Tut nicht - GS ist schuld
+bookmarks[33] = new Object();
+bookmarks[33]['href'] = "#";
+bookmarks[33]['title'] = "Nearest List (wo Founds)";
+bookmarks[33]['id'] = "lnk_nearestlist_wo";
+*/
+
 ////////////////////////////////////////////////////////////////////////////
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "1.1";
+var scriptVersion = "1.2";
 
 var bookmarks_def = new Array(16,18,13,14,17,12);
 
-GM_registerMenuCommand("Configuration", showConfig);
+GM_registerMenuCommand("little helper config", showConfig);
   
 // Settings: Submit Log on F2
 settings_submit_log_button = GM_getValue("settings_submit_log_button",true);
@@ -160,8 +206,19 @@ settings_hide_feedback = GM_getValue("settings_hide_feedback",false);
 settings_show_all_logs = GM_getValue("settings_show_all_logs",false);
 // Settings: default Log Type
 settings_default_logtype = GM_getValue("settings_default_logtype","-1");
+// Settings: default TB-Log Type
+settings_default_tb_logtype = GM_getValue("settings_default_tb_logtype","-1");
 // Settings: Bookmarklist
 settings_bookmarks_list = eval(GM_getValue("settings_bookmarks_list",uneval(bookmarks_def)));
+
+// Settings: Custom Bookmark-title
+var bookmarks_orig_title = new Array();
+for(var i=0; i<bookmarks.length; i++){
+  if(typeof(GM_getValue("settings_bookmarks_title["+i+"]")) != "undefined" && GM_getValue("settings_bookmarks_title["+i+"]") != ""){
+    bookmarks_orig_title[i] = bookmarks[i]['title']; // Needed for configuration
+    bookmarks[i]['title'] = GM_getValue("settings_bookmarks_title["+i+"]");
+  }
+}
 
 ////////////////////////////////////////////////////////////////////////////
 
@@ -214,6 +271,15 @@ if(settings_bookmarks_show && document.location.href.match(/^http:\/\/www\.geoca
 // Bookmarks on top
 if(settings_bookmarks_on_top){
   var head = document.getElementById("hd");
+  var slogan = getElementsByClass("yui-u first")[0];
+  slogan.innerHTML = "";
+  slogan.className = "";
+  slogan.style.cssFloat = "left";
+  
+  if(getElementsByClass("yui-u")[0]) getElementsByClass("yui-u")[0].style.width = "300px";
+  else if(getElementsByClass("yui-u AlignRight")[0]) getElementsByClass("yui-u AlignRight")[0].style.width = "300px";
+  
+  
   var p = document.createElement("p");
   p.setAttribute("class","HalfRight");
   p.setAttribute("style","width: 100%; text-align: right; font-size: 85%; color: #CDD8E8;");
@@ -235,7 +301,7 @@ if(settings_bookmarks_on_top){
 
     p.appendChild(a);
   }
-  head.appendChild(p);
+  slogan.appendChild(p);
 }
 
 // Redirect to Map
@@ -269,6 +335,7 @@ if(settings_show_all_logs && document.location.href.match(/^http:\/\/www\.geocac
   document.location.href = document.location.href+"&log=y";
 }
 
+// Default Log Type
 if(settings_default_logtype != "-1" && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?(id|ID)\=/)){
   var select = document.getElementById('ctl00_ContentBody_LogBookPanel1_ddLogType');
   var childs = select.childNodes;
@@ -280,7 +347,182 @@ if(settings_default_logtype != "-1" && document.location.href.match(/^http:\/\/w
   }
 }
 
+// Default TB Log Type
+if(settings_default_tb_logtype != "-1" && document.location.href.match(/^http:\/\/www\.geocaching\.com\/track\/log\.aspx/)){
+  var select = document.getElementById('ctl00_ContentBody_LogBookPanel1_ddLogType');
+  var childs = select.childNodes;
+
+  for(var i=0; i<childs.length; i++){
+    if(childs[i].value == settings_default_tb_logtype){
+      childs[i].setAttribute("selected","selected");
+    }
+  }
+}
+
 ////////////////////////////////////////////////////////////////////////////
+
+// Helper
+function getElementsByClass(classname){
+  var result = new Array();
+  var all_elements = document.getElementsByTagName("*");
+  
+  for(var i=0; i<all_elements.length;i++){
+    if(all_elements[i].className == classname){
+      result.push(all_elements[i]);
+    }
+  }
+  
+  return result;
+}
+
+// Helper: from N/S/E/W Deg Min.Sec to Dec
+function toDec(coords){
+  var match = coords.match(/^(N|S) ([0-9][0-9])° ([0-9][0-9])\.([0-9][0-9][0-9]) (E|W) ([0-9][0-9][0-9])° ([0-9][0-9])\.([0-9][0-9][0-9])$/);
+  
+  var dec1 = parseInt(match[2]) + (parseFloat(match[3]+"."+match[4])/60);
+  if(match[1] == "S") dec1 = dec1 * -1;
+  dec1 = Math.round(dec1*10000000)/10000000;
+  
+  var dec2 = parseInt(match[6]) + (parseFloat(match[7]+"."+match[8])/60);
+  if(match[5] == "W") dec2 = dec2 * -1;
+  dec2 = Math.round(dec2*10000000)/10000000;
+
+  return new Array(dec1,dec2);
+}
+
+// Save HomeCoords for special bookmarks - From Index
+if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/$/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/default\.aspx$/)){
+  var search_value = document.getElementById("ctl00_ContentBody_saddress").value;
+  
+  if(search_value.match(/^(N|S) [0-9][0-9]° [0-9][0-9]\.[0-9][0-9][0-9] (E|W) [0-9][0-9][0-9]° [0-9][0-9]\.[0-9][0-9][0-9]$/)){
+    var latlng = toDec(search_value);
+    
+    if(GM_getValue("home_lat") != latlng[0]*10000000) GM_setValue("home_lat",latlng[0]*10000000); // * 10000000 because GM don't know float
+    if(GM_getValue("home_lng") != latlng[1]*10000000) GM_setValue("home_lng",latlng[1]*10000000);
+  }
+}
+
+// Save HomeCoords for special bookmarks - From Manage Home Location
+if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/account\/ManageLocations\.aspx/)){
+  function setCoordsHelper(){
+    var search_value = document.getElementById("search").value;
+alert(search_value);
+    if(search_value.match(/^(N|S) [0-9][0-9]° [0-9][0-9]\.[0-9][0-9][0-9] (E|W) [0-9][0-9][0-9]° [0-9][0-9]\.[0-9][0-9][0-9]$/)){
+      var latlng = toDec(search_value);
+
+      if(GM_getValue("home_lat") != latlng[0]*10000000) GM_setValue("home_lat",latlng[0]*10000000); // * 10000000 because GM don't know float
+      if(GM_getValue("home_lng") != latlng[1]*10000000) GM_setValue("home_lng",latlng[1]*10000000);
+    }
+  }
+
+  window.addEventListener("load", setCoordsHelper, false); // On first hit, the search-field ist filled after loading - so we have to wait
+}
+
+// Redirect to Neares List/Map
+function linkToNearesList(){
+  if(typeof(GM_getValue("home_lat")) == "undefined" || typeof(GM_getValue("home_lng")) == "undefined"){
+    if(window.confirm("To use this Link, you have to set your Home-Coordinates.")) document.location.href = "http://www.geocaching.com/account/ManageLocations.aspx";
+  }else{
+    document.location.href = "http://www.geocaching.com/seek/nearest.aspx?lat="+(GM_getValue("home_lat")/10000000)+"&lng="+(GM_getValue("home_lng")/10000000)+"&dist=25";
+  }
+}
+if(document.getElementById('lnk_nearestlist')){
+  document.getElementById('lnk_nearestlist').addEventListener("click", linkToNearesList, false);
+}
+
+function linkToNearesMap(){
+  if(typeof(GM_getValue("home_lat")) == "undefined" || typeof(GM_getValue("home_lng")) == "undefined"){
+    if(window.confirm("To use this Link, you have to set your Home-Coordinates.")) document.location.href = "http://www.geocaching.com/account/ManageLocations.aspx";
+  }else{
+    document.location.href = "http://www.geocaching.com/map/default.aspx?lat="+(GM_getValue("home_lat")/10000000)+"&lng="+(GM_getValue("home_lng")/10000000);
+  }
+}
+if(document.getElementById('lnk_nearestmap')){
+  document.getElementById('lnk_nearestmap').addEventListener("click", linkToNearesMap, false);
+}
+
+/* TUT NICH - GS ist schuld
+// Redirect to Neares List without Founds
+function linkToNearesListWo(){
+  if(typeof(GM_getValue("home_lat")) == "undefined" || typeof(GM_getValue("home_lng")) == "undefined"){
+    if(window.confirm("To use this Link, you have to set your Home-Coordinates.")) document.location.href = "http://www.geocaching.com/account/ManageLocations.aspx";
+  }else{
+    var north = 1;
+    var lat = GM_getValue("home_lat");
+    if(lat < 0){
+      nort = -1;
+      lat = lat * -1;
+    }
+    lat = lat / 10000000;
+    
+    var east = 1;
+    var lng = GM_getValue("home_lng");
+    if(lng < 0){
+      east = -1;
+      lng = lng * -1;
+    }
+    lng = lng / 10000000;
+
+    var html = "";
+    html += "<form id='hiddenform' action='http://www.geocaching.com/seek/nearest.aspx' method='post'>";
+    html += "<input type='hidden' name='__VIEWSTATE' value=''>";
+    html += "<input type='hidden' name='ctl00$ContentBody$uxTaxonomies' value='9a79e6ce-3344-409c-bbe9-496530baf758'>";
+    html += "<input type='hidden' name='ctl00$ContentBody$LocationPanel1$ddSearchType' value='WPT'>";
+    html += "<input type='hidden' name='ctl00$ContentBody$LocationPanel1$LatLong' value='0'>";
+    html += "<input type='hidden' name='ctl00$ContentBody$LocationPanel1$LatLong:_selectNorthSouth' value='"+north+"'>";
+    html += "<input type='hidden' name='ctl00$ContentBody$LocationPanel1$LatLong$_inputLatDegs' value='"+lat+"'>";
+    html += "<input type='hidden' name='ctl00$ContentBody$LocationPanel1$LatLong:_selectEastWest' value='"+east+"'>";
+    html += "<input type='hidden' name='ctl00$ContentBody$LocationPanel1$LatLong$_inputLongDegs' value='"+lng+"'>";
+    html += "<input type='hidden' name='ctl00$ContentBody$LocationPanel1$LatLong:_currentLatLongFormat' value='0'>";
+//    html += "<input type='hidden' name='ctl00$ContentBody$LocationPanel1$btnLocale' value='Search+for+Geocaches'>";
+    html += "<input type='hidden' name='ctl00$ContentBody$ChkExclude' value='on'>";
+    html += "</form>";
+    document.getElementsByTagName('body')[0].innerHTML += html;
+    document.getElementById('hiddenform').submit();
+  }
+}
+if(document.getElementById('lnk_nearestlist_wo')){
+  document.getElementById('lnk_nearestlist_wo').addEventListener("click", linkToNearesListWo, false);
+}
+*/
+
+// Redirect + JS-Exec
+function linkToGeocaches(){
+  GM_setValue("run_after_redirect","__doPostBack('ctl00$ContentBody$ProfilePanel1$lnkUserStats','')");
+  document.location.href = "/profile/default.aspx";
+}
+if(document.getElementById('lnk_profilegeocaches')){
+  document.getElementById('lnk_profilegeocaches').addEventListener("click", linkToGeocaches, false);
+}
+
+function linkToTrackables(){
+  GM_setValue("run_after_redirect","__doPostBack('ctl00$ContentBody$ProfilePanel1$lnkCollectibles','')");
+  document.location.href = "/profile/default.aspx";
+}
+if(document.getElementById('lnk_profiletrackables')){
+  document.getElementById('lnk_profiletrackables').addEventListener("click", linkToTrackables, false);
+}
+
+function linkToGallery(){
+  GM_setValue("run_after_redirect","__doPostBack('ctl00$ContentBody$ProfilePanel1$lnkGallery','')");
+  document.location.href = "/profile/default.aspx";
+}
+if(document.getElementById('lnk_profilegallery')){
+  document.getElementById('lnk_profilegallery').addEventListener("click", linkToGallery, false);
+}
+
+function linkToBookmarks(){
+  GM_setValue("run_after_redirect","__doPostBack('ctl00$ContentBody$ProfilePanel1$lnkLists','')");
+  document.location.href = "/profile/default.aspx";
+}
+if(document.getElementById('lnk_profilebookmarks')){
+  document.getElementById('lnk_profilebookmarks').addEventListener("click", linkToBookmarks, false);
+}
+
+if(GM_getValue("run_after_redirect") != ""){
+  eval("unsafeWindow."+GM_getValue("run_after_redirect"));
+  GM_setValue("run_after_redirect","no");
+}
 
 // Close the Overlays
 function btnClose(){
@@ -352,44 +594,44 @@ function showConfig(){
   }else{
     var html = "";
     // Overlay erstellen
-    html += "<div id='settings_overlay' style='background-color:#DDDDDD; width:350px; height:80%; left:35%; outline: 2px solid black; overflow:auto; padding:10px; position:fixed; top:7.5%; z-index:101;' align='center'>";
+    html += "<div id='settings_overlay' style='background-color:#DDDDDD; width:450px; height:80%; left:35%; outline: 2px solid black; overflow:auto; padding:10px; position:fixed; top:7.5%; z-index:101;' align='center'>";
     // Inhalt
     html += "<h3 style='margin:5px;'>GC little helper</h3>";
     html += "<br>";
     html += "<table>";
     html += "  <tr>";
-    html += "    <td align='left' colspan='3'><b>Options:</b></td>";
+    html += "    <td align='left' colspan='4'><b>Options:</b></td>";
     html += "  </tr>";
     html += "  <tr>";
     html += "    <td align='left'><input type='checkbox' "+(settings_submit_log_button ? "checked='checked'" : "" )+" id='settings_submit_log_button'></td>";
-    html += "    <td align='left' colspan='2'>Submit Log-Text on F2</td>";
+    html += "    <td align='left' colspan='3'>Submit Log-Text on F2</td>";
     html += "  </tr>";
     html += "  <tr>";
     html += "    <td align='left'><input type='checkbox' "+(settings_bookmarks_show ? "checked='checked'" : "" )+" id='settings_bookmarks_show'></td>";
-    html += "    <td align='left' colspan='2'>Show Bookmark-List in profile</td>";
+    html += "    <td align='left' colspan='3'>Show Bookmark-List in profile</td>";
     html += "  </tr>";
     html += "  <tr>";
     html += "    <td align='left'><input type='checkbox' "+(settings_bookmarks_on_top ? "checked='checked'" : "" )+" id='settings_bookmarks_on_top'></td>";
-    html += "    <td align='left' colspan='2'>Show Bookmark-List on top</td>";
+    html += "    <td align='left' colspan='3'>Show Bookmark-List on top</td>";
     html += "  </tr>";
     html += "  <tr>";
     html += "    <td align='left'><input type='checkbox' "+(settings_redirect_to_map ? "checked='checked'" : "" )+" id='settings_redirect_to_map'></td>";
-    html += "    <td align='left' colspan='2'>Redirect from Cache-list to map</td>";
+    html += "    <td align='left' colspan='3'>Redirect from Cache-list to map</td>";
     html += "  </tr>";
     html += "  <tr>";
     html += "    <td align='left'><input type='checkbox' "+(settings_hide_facebook ? "checked='checked'" : "" )+" id='settings_hide_facebook'></td>";
-    html += "    <td align='left' colspan='2'>Hide Facebook-Button</td>";
+    html += "    <td align='left' colspan='3'>Hide Facebook-Button</td>";
     html += "  </tr>";
     html += "  <tr>";
     html += "    <td align='left'><input type='checkbox' "+(settings_hide_feedback ? "checked='checked'" : "" )+" id='settings_hide_feedback'></td>";
-    html += "    <td align='left' colspan='2'>Hide Feedback-Button</td>";
+    html += "    <td align='left' colspan='3'>Hide Feedback-Button</td>";
     html += "  </tr>";
     html += "  <tr>";
     html += "    <td align='left'><input type='checkbox' "+(settings_show_all_logs ? "checked='checked'" : "" )+" id='settings_show_all_logs'></td>";
-    html += "    <td align='left' colspan='2'>Show all logs of a cache</td>";
+    html += "    <td align='left' colspan='3'>Show all logs of a cache</td>";
     html += "  </tr>"
     html += "  <tr>";
-    html += "    <td align='left' colspan='3'><select id='settings_default_logtype'>";
+    html += "    <td align='left' colspan='4'><select id='settings_default_logtype'>";
     html += "<option value=\"-1\" "+(settings_default_logtype == "-1" ? "selected=\"selected\"" : "")+">- Select Type of Log -</option>";
     html += "<option value=\"2\" "+(settings_default_logtype == "2" ? "selected=\"selected\"" : "")+">Found it</option>";
     html += "<option value=\"3\" "+(settings_default_logtype == "3" ? "selected=\"selected\"" : "")+">Didn't find it</option>";
@@ -399,11 +641,20 @@ function showConfig(){
     html += "</select> Default Log Type</td>";
     html += "  </tr>";
     html += "  <tr>";
-    html += "    <td align='left' colspan='3'>&nbsp;</td>";
+    html += "    <td align='left' colspan='4'><select id='settings_default_tb_logtype'>";
+    html += "<option value=\"-1\" "+(settings_default_tb_logtype == "-1" ? "selected=\"selected\"" : "")+">- Select Type of Log -</option>";
+    html += "<option value=\"19\" "+(settings_default_tb_logtype == "19" ? "selected=\"selected\"" : "")+">Grab it from ..</option>";
+    html += "<option value=\"4\" "+(settings_default_tb_logtype == "4" ? "selected=\"selected\"" : "")+">Write note</option>";
+    html += "<option value=\"48\" "+(settings_default_tb_logtype == "48" ? "selected=\"selected\"" : "")+">Discovered It</option>";
+    html += "</select> Default TB Log Type</td>";
+    html += "  </tr>";
+    html += "  <tr>";
+    html += "    <td align='left' colspan='4'>&nbsp;</td>";
     html += "  </tr>";
     html += "  <tr>";
     html += "    <td align='left' colspan='2'><b>Bookmarks:</b></td>";
-    html += "    <td align='left'>sort</td>";
+    html += "    <td align='left'>Sort</td>";
+    html += "    <td align='left'>Custom Name</td>";
     html += "  </tr>";
     
     // Create reverse-Array
@@ -425,16 +676,17 @@ function showConfig(){
       for(attr in bookmarks[i]){
         html += attr+"='"+bookmarks[i][attr]+"' ";
       }
-      html += ">"+bookmarks[i]['title']+"</a></td>";
+      html += ">"+(typeof(bookmarks_orig_title[i]) != "undefined" && bookmarks_orig_title[i] != "" ? bookmarks_orig_title[i] : bookmarks[i]['title'])+"</a></td>";
       html += "    <td align='left'><select id='bookmarks_sort["+i+"]'>"+options+"</select></td>";
+      html += "    <td align='left'><input id='bookmarks_name["+i+"]' type='text' size='10' value='"+(typeof(GM_getValue("settings_bookmarks_title["+i+"]")) != "undefined" ? GM_getValue("settings_bookmarks_title["+i+"]") : "")+"'></td>";
       html += "  </tr>";
     }
     
     html += "  <tr>";
-    html += "    <td align='left' colspan='3'>&nbsp;</td>";
+    html += "    <td align='left' colspan='4'>&nbsp;</td>";
     html += "  </tr>";
     html += "  <tr>";
-    html += "    <td align='center' colspan='3'><input id='btn_save' type='button' value='save'><input id='btn_close' type='button' value='close'></td>";
+    html += "    <td align='center' colspan='4'><input id='btn_save' type='button' value='save'><input id='btn_close' type='button' value='close'></td>";
     html += "  </tr>";
     html += "</table>";
     html += "</div>";
@@ -455,6 +707,7 @@ function showConfig(){
     GM_setValue("settings_hide_feedback",document.getElementById('settings_hide_feedback').checked);
     GM_setValue("settings_show_all_logs",document.getElementById('settings_show_all_logs').checked);
     GM_setValue("settings_default_logtype",document.getElementById('settings_default_logtype').value);
+    GM_setValue("settings_default_tb_logtype",document.getElementById('settings_default_tb_logtype').value);
     
     // Create the confusing settings_bookmarks_list Array :)
     var queue = new Array();
@@ -476,6 +729,9 @@ function showConfig(){
             }
           }
         }
+      }
+      if(document.getElementById('bookmarks_name['+i+']') && document.getElementById('bookmarks_name['+i+']') != ""){ // Set custom name
+        GM_setValue("settings_bookmarks_title["+i+"]",document.getElementById('bookmarks_name['+i+']').value);
       }
     }
     GM_setValue("settings_bookmarks_list",uneval(tmp));
@@ -513,6 +769,3 @@ function checkVersion(){
 }
 
 checkVersion();
-
-
-
