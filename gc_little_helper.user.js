@@ -10,8 +10,10 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net>
-// Version:        3.4             - 02.05.2010
-// Changelog:      3.4             - Show Homezone on Map
+// Version:        3.5             - 03.05.2010
+// Changelog:      3.5             - BugFix: Saving Home-Coords (thanks to Birnbaum2001)
+//                                 - Fill Homezone on Map (and remove "clickable")
+//                 3.4             - Show Homezone on Map
 //                 3.3             - Show Mail-Icon on log-Page
 //                                 - Bugfix: Some JS not working on page "Your Profile"
 //                 3.2             - Added "Log It" Icon to Nearest List
@@ -239,7 +241,7 @@ bookmarks[34]['id'] = "lnk_my_trackables";;
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "3.4";
+var scriptVersion = "3.5";
 
 var anzCustom = 10;
 
@@ -291,6 +293,7 @@ settings_default_logtype = GM_getValue("settings_default_logtype","-1");
 settings_default_tb_logtype = GM_getValue("settings_default_tb_logtype","-1");
 // Settings: Bookmarklist
 settings_bookmarks_list = eval(GM_getValue("settings_bookmarks_list",uneval(bookmarks_def)));
+
 
 // Settings: Custom Bookmarks
 var num = bookmarks.length;
@@ -868,7 +871,7 @@ if(settings_show_homezone && document.location.href.match(/^http:\/\/www\.geocac
   var code = "function drawCircle(){ ";
   code += "if(google.maps){";
   code += "  var home_coord = new google.maps.LatLng("+(GM_getValue("home_lat")/10000000)+", "+(GM_getValue("home_lng")/10000000)+");";
-  code += "  var circle = new google.maps.Circle({center:home_coord,map:map,radius:"+settings_homezone_radius+"000,strokeColor:'#0000FF',fillOpacity:0});";
+  code += "  var circle = new google.maps.Circle({center:home_coord,map:map,radius:"+settings_homezone_radius+"000,strokeColor:'#0000FF',fillColor:'#0000FF',fillOpacity:0.1,clickable:false});";
   code += "}}";
   
   var script = document.createElement("script");
@@ -948,8 +951,8 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/$/) || document
   if(search_value.match(/^(N|S) [0-9][0-9]. [0-9][0-9]\.[0-9][0-9][0-9] (E|W) [0-9][0-9][0-9]. [0-9][0-9]\.[0-9][0-9][0-9]$/)){
     var latlng = toDec(search_value);
 
-    if(GM_getValue("home_lat") != latlng[0]*10000000) GM_setValue("home_lat",latlng[0]*10000000); // * 10000000 because GM don't know float
-    if(GM_getValue("home_lng") != latlng[1]*10000000) GM_setValue("home_lng",latlng[1]*10000000);
+    if(GM_getValue("home_lat",0) != parseInt(latlng[0]*10000000)) GM_setValue("home_lat",parseInt(latlng[0]*10000000)); // * 10000000 because GM don't know float
+    if(GM_getValue("home_lng",0) != parseInt(latlng[1]*10000000)) GM_setValue("home_lng",parseInt(latlng[1]*10000000));
   }
 }
 
@@ -961,8 +964,8 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/account\/Manage
     if(search_value.match(/^(N|S) [0-9][0-9]. [0-9][0-9]\.[0-9][0-9][0-9] (E|W) [0-9][0-9][0-9]. [0-9][0-9]\.[0-9][0-9][0-9]$/)){
       var latlng = toDec(search_value);
 
-      if(GM_getValue("home_lat") != latlng[0]*10000000) GM_setValue("home_lat",latlng[0]*10000000); // * 10000000 because GM don't know float
-      if(GM_getValue("home_lng") != latlng[1]*10000000) GM_setValue("home_lng",latlng[1]*10000000);
+      if(GM_getValue("home_lat",0) != parseInt(latlng[0]*10000000)) GM_setValue("home_lat",parseInt(latlng[0]*10000000)); // * 10000000 because GM don't know float
+      if(GM_getValue("home_lng",0) != parseInt(latlng[1]*10000000)) GM_setValue("home_lng",parseInt(latlng[1]*10000000));
     }
   }
 
