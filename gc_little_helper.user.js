@@ -4,12 +4,15 @@
 // @include        http://www.geocaching.com/*
 // @include        http://maps.google.de/*
 // @include        http://maps.google.com/*
+// @include        http://www.google.de/maps*
+// @include        http://www.google.com/maps*
 // @description    Some little things to make life easy (on www.geocaching.com).
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net>
-// Version:        2.9             - 10.11.2010
-// Changelog:      2.9             - gc.com-update-fix: Link on found-counter at friendlist
+// Version:        3.0             - 20.12.2010
+// Changelog:      3.0             - Added www.google.de/maps
+//                 2.9             - gc.com-update-fix: Link on found-counter at friendlist
 //                 2.8             - Bugfix: Style problems in "Your Account Details"-Page
 //                 2.7             - Bugfix: Problem with "Hide Cache Notes if empty"-Option for not-PM
 //                 2.6             - Added feature to hide Cache Notes if there are no notes (Hide/Show Link appears)
@@ -231,7 +234,7 @@ bookmarks[34]['id'] = "lnk_my_trackables";;
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "2.9";
+var scriptVersion = "3.0";
 
 var anzCustom = 10;
 
@@ -319,7 +322,7 @@ for(var i=0; i<bookmarks.length; i++){
 ////////////////////////////////////////////////////////////////////////////
 
 // Link on Google Maps
-if(document.location.href.match(/^http:\/\/maps\.google\.(de|com)/)){
+if(document.location.href.match(/^http:\/\/maps\.google\.(de|com)/) || document.location.href.match(/^http:\/\/www\.google\.(de|com)\/maps/)){
   if(settings_show_google_maps){
     var ref_link = document.getElementById("link");
     if(ref_link){
