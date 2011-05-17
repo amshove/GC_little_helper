@@ -8,8 +8,9 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net>
-// Version:        2.6             - 07.10.2010
-// Changelog:      2.6             - Added feature to hide Cache Notes if there are no notes (Hide/Show Link appears)
+// Version:        2.7             - 14.10.2010
+// Changelog:      2.7             - Bugfix: Problem with "Hide Cache Notes if empty"-Option for not-PM
+//                 2.6             - Added feature to hide Cache Notes if there are no notes (Hide/Show Link appears)
 //                                 - Added feature to hide Cache Notes completely
 //                                 - Added feature to hide the L&F-Banner on top of the Logs (Listing)
 //                                 - Fix: Added F2 to Submit-Feature also to Trackable-Page
@@ -228,7 +229,7 @@ bookmarks[34]['id'] = "lnk_my_trackables";;
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "2.6";
+var scriptVersion = "2.7";
 
 var anzCustom = 10;
 
@@ -532,31 +533,33 @@ if(settings_hide_cache_notes && document.location.href.match(/^http:\/\/www\.geo
 
 // Hide/Show Cache Notes
 if(settings_hide_empty_cache_notes && !settings_hide_cache_notes && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx\?(guid|wp)\=[a-zA-Z0-9-]*/)){
-  var code = "function hide_notes(){";
-  code += "  if(document.getElementById('box_notes').style.display == 'none'){";
-  code += "    document.getElementById('box_notes').style.display = 'block';"
-  code += "  }else{";
-  code += "    document.getElementById('box_notes').style.display = 'none';";
-  code += "  }";
-  code += "}";
-  
-  var script = document.createElement("script");
-  script.innerHTML = code;
-  document.getElementsByTagName("body")[0].appendChild(script);
-
   var box = getElementsByClass('CacheNote ReverseSpacing NoSpacing')[0];
-//  box.style.display = "none";
-  box.setAttribute("id","box_notes");
+  if(box){
+    var code = "function hide_notes(){";
+    code += "  if(document.getElementById('box_notes').style.display == 'none'){";
+    code += "    document.getElementById('box_notes').style.display = 'block';"
+    code += "  }else{";
+    code += "    document.getElementById('box_notes').style.display = 'none';";
+    code += "  }";
+    code += "}";
+  
+    var script = document.createElement("script");
+    script.innerHTML = code;
+    document.getElementsByTagName("body")[0].appendChild(script);
 
-  getElementsByClass("UserSuppliedContent")[0].innerHTML = "<font style='font-size: 10px;'><a href='#' onClick='hide_notes();'>Show/Hide Cache Notes</a></font><br><br>"+getElementsByClass("UserSuppliedContent")[0].innerHTML;
+//    box.style.display = "none";
+    box.setAttribute("id","box_notes");
+
+    getElementsByClass("UserSuppliedContent")[0].innerHTML = "<font style='font-size: 10px;'><a href='#' onClick='hide_notes();'>Show/Hide Cache Notes</a></font><br><br>"+getElementsByClass("UserSuppliedContent")[0].innerHTML;
   
-  function hide_on_load(){
-    var box = getElementsByClass('CacheNote ReverseSpacing NoSpacing')[0];
-    var text = document.getElementById("cache_note").innerHTML;
-    if(text == "Click to enter a note" || text == "Klicken zum Eingeben einer Notiz") box.style.display = "none";
+    function hide_on_load(){
+      var box = getElementsByClass('CacheNote ReverseSpacing NoSpacing')[0];
+      var text = document.getElementById("cache_note").innerHTML;
+      if(text == "Click to enter a note" || text == "Klicken zum Eingeben einer Notiz") box.style.display = "none";
+    }
+  
+    window.addEventListener("load", hide_on_load, false);
   }
-  
-  window.addEventListener("load", hide_on_load, false);
 }
 
 // Hide LF-Banner
