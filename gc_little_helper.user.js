@@ -8,8 +8,12 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net>
-// Version:        2.5             - 29.09.2010
-// Changelog:      2.5             - Added feature to prevent "show all logs" if there are to many logs
+// Version:        2.6             - 07.10.2010
+// Changelog:      2.6             - Added feature to hide Cache Notes if there are no notes (Hide/Show Link appears)
+//                                 - Added feature to hide Cache Notes completely
+//                                 - Added feature to hide the L&F-Banner on top of the Logs (Listing)
+//                                 - Fix: Added F2 to Submit-Feature also to Trackable-Page
+//                 2.5             - Added feature to prevent "show all logs" if there are to many logs
 //                                 - Added an signature for mails
 //                                 - Fix: Shanged Feedback-Bookmark to new URL
 //                                 - Fix: new Feedback-button can be hidden again
@@ -224,7 +228,7 @@ bookmarks[34]['id'] = "lnk_my_trackables";;
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "2.5";
+var scriptVersion = "2.6";
 
 var anzCustom = 10;
 
@@ -250,6 +254,12 @@ settings_redirect_to_map = GM_getValue("settings_redirect_to_map",true);
 settings_hide_feedback = GM_getValue("settings_hide_feedback",false);
 // Settings: Hide Disclaimer
 settings_hide_disclaimer = GM_getValue("settings_hide_disclaimer",false);
+// Settings: Hide Cache Notes
+settings_hide_cache_notes = GM_getValue("settings_hide_cache_notes",false);
+// Settings: Hide Cache Notes if empty
+settings_hide_empty_cache_notes = GM_getValue("settings_hide_empty_cache_notes",true);
+// Settings: Hide LF-Banner
+settings_hide_lf_banner = GM_getValue("settings_hide_lf_banner",false);
 // Settings: Show all Logs
 settings_show_all_logs = GM_getValue("settings_show_all_logs",false);
 settings_show_all_logs_count = GM_getValue("settings_show_all_logs_count","0");
@@ -368,7 +378,7 @@ function getElementsByClass(classname){
 }
 
 // F2 zum Log abschicken
-if(settings_submit_log_button && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?(id|ID|PLogGuid)\=/)){
+if(settings_submit_log_button && (document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?(id|ID|PLogGuid)\=/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/track\/log\.aspx\?(id|wid|ID|PLogGuid)\=/))){
   function keydown(e){
     if(e.keyCode == 113){
       document.getElementById("ctl00_ContentBody_LogBookPanel1_LogButton").click();
@@ -507,6 +517,51 @@ if(settings_hide_feedback){
 // Hide Disclaimer
 if(settings_hide_disclaimer && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx\?(guid|wp)\=[a-zA-Z0-9-]*/)){
   var disc = getElementsByClass('CacheDisclaimerTable Spacing ReverseSpacing')[0];
+  if(disc){
+    disc.parentNode.removeChild(disc);
+  }
+}
+
+// Hide Cache Notes
+if(settings_hide_cache_notes && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx\?(guid|wp)\=[a-zA-Z0-9-]*/)){
+  var disc = getElementsByClass('CacheNote ReverseSpacing NoSpacing')[0];
+  if(disc){
+    disc.parentNode.removeChild(disc);
+  }
+}
+
+// Hide/Show Cache Notes
+if(settings_hide_empty_cache_notes && !settings_hide_cache_notes && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx\?(guid|wp)\=[a-zA-Z0-9-]*/)){
+  var code = "function hide_notes(){";
+  code += "  if(document.getElementById('box_notes').style.display == 'none'){";
+  code += "    document.getElementById('box_notes').style.display = 'block';"
+  code += "  }else{";
+  code += "    document.getElementById('box_notes').style.display = 'none';";
+  code += "  }";
+  code += "}";
+  
+  var script = document.createElement("script");
+  script.innerHTML = code;
+  document.getElementsByTagName("body")[0].appendChild(script);
+
+  var box = getElementsByClass('CacheNote ReverseSpacing NoSpacing')[0];
+//  box.style.display = "none";
+  box.setAttribute("id","box_notes");
+
+  getElementsByClass("UserSuppliedContent")[0].innerHTML = "<font style='font-size: 10px;'><a href='#' onClick='hide_notes();'>Show/Hide Cache Notes</a></font><br><br>"+getElementsByClass("UserSuppliedContent")[0].innerHTML;
+  
+  function hide_on_load(){
+    var box = getElementsByClass('CacheNote ReverseSpacing NoSpacing')[0];
+    var text = document.getElementById("cache_note").innerHTML;
+    if(text == "Click to enter a note" || text == "Klicken zum Eingeben einer Notiz") box.style.display = "none";
+  }
+  
+  window.addEventListener("load", hide_on_load, false);
+}
+
+// Hide LF-Banner
+if(settings_hide_lf_banner && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx\?(guid|wp)\=[a-zA-Z0-9-]*/)){
+  var disc = getElementsByClass('LFNominateBanner Clear')[0];
   if(disc){
     disc.parentNode.removeChild(disc);
   }
@@ -1033,6 +1088,18 @@ function showConfig(){
     html += "    <td align='left' colspan='3'>Hide Disclaimer in Listing</td>";
     html += "  </tr>";
     html += "  <tr>";
+    html += "    <td align='left'><input type='checkbox' "+(settings_hide_cache_notes ? "checked='checked'" : "" )+" id='settings_hide_cache_notes'></td>";
+    html += "    <td align='left' colspan='3'>Hide Cache Notes in Listing</td>";
+    html += "  </tr>";
+    html += "  <tr>";
+    html += "    <td align='left'><input type='checkbox' "+(settings_hide_empty_cache_notes ? "checked='checked'" : "" )+" id='settings_hide_empty_cache_notes'></td>";
+    html += "    <td align='left' colspan='3'>Hide Cache Notes if empty</td>";
+    html += "  </tr>";
+    html += "  <tr>";
+    html += "    <td align='left'><input type='checkbox' "+(settings_hide_lf_banner ? "checked='checked'" : "" )+" id='settings_hide_lf_banner'></td>";
+    html += "    <td align='left' colspan='3'>Hide L&F-Banner in Listing</td>";
+    html += "  </tr>";
+    html += "  <tr>";
     html += "    <td align='left'><input type='checkbox' "+(settings_show_all_logs ? "checked='checked'" : "" )+" id='settings_show_all_logs'></td>";
     html += "    <td align='left' colspan='3'>Show all logs of a cache - if log-count lower than <input type='text' size='2' id='settings_show_all_logs_count' value='"+settings_show_all_logs_count+"'></td>";
     html += "  </tr>"
@@ -1140,6 +1207,9 @@ function showConfig(){
 //    GM_setValue("settings_hide_facebook",document.getElementById('settings_hide_facebook').checked);
     GM_setValue("settings_hide_feedback",document.getElementById('settings_hide_feedback').checked);
     GM_setValue("settings_hide_disclaimer",document.getElementById('settings_hide_disclaimer').checked);
+    GM_setValue("settings_hide_cache_notes",document.getElementById('settings_hide_cache_notes').checked);
+    GM_setValue("settings_hide_empty_cache_notes",document.getElementById('settings_hide_empty_cache_notes').checked);
+    GM_setValue("settings_hide_lf_banner",document.getElementById('settings_hide_lf_banner').checked);
     GM_setValue("settings_show_all_logs",document.getElementById('settings_show_all_logs').checked);
     GM_setValue("settings_show_all_logs_count",document.getElementById('settings_show_all_logs_count').value);
     GM_setValue("settings_decrypt_hint",document.getElementById('settings_decrypt_hint').checked);
