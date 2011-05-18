@@ -10,8 +10,10 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net>
-// Version:        3.9             - 17.05.2010
-// Changelog:      3.9             - Edit button to own caches on profile page
+// Version:        4.0             - 18.05.2010
+// Changelog:      4.0             - Update links to use beta-Map (disable via "default old map" in settings)
+//                                 - Fix: Signature removes Log on edit
+//                 3.9             - Edit button to own caches on profile page
 //                                 - Set old map as Default
 //                                 - Log-Signature-Variable: #found# (will be replaced with finds+1)
 //                                 - Log & TB Signature
@@ -268,7 +270,7 @@ bookmarks[34]['id'] = "lnk_my_trackables";
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "3.9";
+var scriptVersion = "4.0";
 
 var anzCustom = 10;
 
@@ -318,6 +320,8 @@ settings_show_homezone = GM_getValue("settings_show_homezone",true);
 settings_homezone_radius = GM_getValue("settings_homezone_radius","10");
 // Settings: default Map
 settings_old_map = GM_getValue("settings_old_map",false);
+if(settings_old_map) map_url = "http://www.geocaching.com/map/default.aspx";
+else map_url = "http://www.geocaching.com/map/beta/default.aspx";
 // Settings: default Log Type
 settings_default_logtype = GM_getValue("settings_default_logtype","-1");
 // Settings: default TB-Log Type
@@ -388,7 +392,7 @@ if(document.location.href.match(/^http:\/\/maps\.google\.(de|com)/) || document.
       function open_gc(){
         var matches = document.getElementById("link").href.match(/&ll=([-0-9]*\.[0-9]*),([-0-9]*\.[0-9]*)/);
         var zoom = document.getElementById("link").href.match(/z=([0-9]*)/);
-        window.open("http://www.geocaching.com/map/default.aspx?lat="+matches[1]+"&lng="+matches[2]+"&zm="+zoom[1]);
+        window.open(map_url+"?lat="+matches[1]+"&lng="+matches[2]+"&zm="+zoom[1]);
       }
     
       var box = ref_link.parentNode;
@@ -543,7 +547,7 @@ if(settings_bookmarks_on_top && document.getElementById('Navigation')){
   }
 
   if(settings_bookmarks_search){
-    var searchfield = "<form style='display: inline;' action='/default.aspx' method='GET'><input type='text' size='6' name='navi_search'></form>";
+    var searchfield = "<form style='display: inline;' action='/default.aspx' method='GET'><input type='text' size='6' name='navi_search' style='border: 1px solid #55aa22; border-radius: 7px 7px 7px 7px;'></form>";
     var nav_list = document.getElementById('Navigation').childNodes[1];
     nav_list.innerHTML += searchfield;
   }
@@ -596,9 +600,13 @@ if(document.getElementById('Navigation')){
 
 // Redirect to Map
 if(settings_redirect_to_map && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/nearest\.aspx\?/)){
-  var latlng = document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/nearest\.aspx\?lat=([0-9.]*)\&lng\=([0-9.]*)/);
+  var lat = document.location.href.match(/lat_h=([0-9.]*)/);
+  var lng = document.location.href.match(/long_h=([0-9.]*)/);
+
+  if(!lat) var lat = document.location.href.match(/lat=([0-9.]*)/);
+  if(!lng) var lng = document.location.href.match(/lng=([0-9.]*)/);
   
-  if(!document.location.href.match(/&disable_redirect/)) document.location.href = "http://www.geocaching.com/map/default.aspx?lat="+latlng[1]+"&lng="+latlng[2];
+  if(!document.location.href.match(/&disable_redirect/)) document.location.href = map_url+"?lat="+lat[1]+"&lng="+lng[1];
 }
 
 
@@ -797,7 +805,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx
   }
 
   // Signature
-  document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML = "\n\n"+GM_getValue("settings_log_signature","");
+  if(document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML == "") document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML = "\n\n"+GM_getValue("settings_log_signature","");
 
   // Replace #found# variable
   if(getElementsByClass('SignedInText')[0]){
@@ -822,7 +830,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/track\/log\.asp
   }
 
   // Signature
-  document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML = "\n\n"+GM_getValue("settings_tb_signature","");
+  if(document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML == "") document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML = "\n\n"+GM_getValue("settings_tb_signature","");
 }
 
 // Improve Friendlist
@@ -1241,7 +1249,7 @@ function linkToNearesMap(){
   if(typeof(GM_getValue("home_lat")) == "undefined" || typeof(GM_getValue("home_lng")) == "undefined"){
     if(window.confirm("To use this Link, you have to set your Home-Coordinates.")) document.location.href = "http://www.geocaching.com/account/ManageLocations.aspx";
   }else{
-    document.location.href = "http://www.geocaching.com/map/default.aspx?lat="+(GM_getValue("home_lat")/10000000)+"&lng="+(GM_getValue("home_lng")/10000000);
+    document.location.href = map_url+"?lat="+(GM_getValue("home_lat")/10000000)+"&lng="+(GM_getValue("home_lng")/10000000);
   }
 }
 if(document.getElementById('lnk_nearestmap')){
