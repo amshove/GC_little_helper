@@ -10,8 +10,17 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net>
-// Version:        4.0             - 18.05.2010
-// Changelog:      4.0             - Update links to use beta-Map (disable via "default old map" in settings)
+// Version:        4.1             - 21.05.2010
+// Changelog:      4.1             - Friendlist: Show amount of caches found sine last load of the Friendlist
+//                                 - Fix: Default-Log-Type doesn't override &LogType=
+//                                 - Post log from Listing (inline)
+//                                 - Fix: Hide Navigation on SignIn overlay
+//                                 - Fix: Remove gc.com Links if logged out
+//                                 - Fix: On auto-decrypt hint the decrypt link now changes to "encrypt"
+//                                 - Choose wich Links are shown in Beta Map
+//                                 - Fix: Show Log-Signature also on log.aspx?wp=xxx
+//                                 - Removed leading line breaks from Log Signature
+//                 4.0             - Update links to use beta-Map (disable via "default old map" in settings)
 //                                 - Fix: Signature removes Log on edit
 //                 3.9             - Edit button to own caches on profile page
 //                                 - Set old map as Default
@@ -270,7 +279,7 @@ bookmarks[34]['id'] = "lnk_my_trackables";
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "4.0";
+var scriptVersion = "4.1";
 
 var anzCustom = 10;
 
@@ -278,6 +287,8 @@ var bookmarks_def = new Array(16,18,13,14,17,12);
 
 // Settings: Submit Log on F2
 settings_submit_log_button = GM_getValue("settings_submit_log_button",true);
+// Settings: Log Inline
+settings_log_inline = GM_getValue("settings_log_inline",true);
 // Settings: Show Bookmarks
 settings_bookmarks_show = GM_getValue("settings_bookmarks_show",true);
 // Settings: Bookmarks on Top
@@ -328,6 +339,7 @@ settings_default_logtype = GM_getValue("settings_default_logtype","-1");
 settings_default_tb_logtype = GM_getValue("settings_default_tb_logtype","-1");
 // Settings: Bookmarklist
 settings_bookmarks_list = eval(GM_getValue("settings_bookmarks_list",uneval(bookmarks_def)));
+settings_bookmarks_list_beta = eval(GM_getValue("settings_bookmarks_list_beta",uneval(bookmarks_def)));
 // Settinks: Dynamic Map
 settings_dynamic_map = GM_getValue("settings_dynamic_map",true);
 
@@ -447,7 +459,7 @@ function getElementsByClass(classname){
 }
 
 // F2 zum Log abschicken
-if(settings_submit_log_button && (document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?(id|guid|ID|LUID|PLogGuid)\=/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/track\/log\.aspx\?(id|wid|guid|ID|PLogGuid)\=/))){
+if(settings_submit_log_button && (document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?(id|guid|ID|wp|LUID|PLogGuid)\=/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/track\/log\.aspx\?(id|wid|guid|ID|PLogGuid)\=/))){
   function keydown(e){
     if(e.keyCode == 113){
       document.getElementById("ctl00_ContentBody_LogBookPanel1_LogButton").click();
@@ -570,8 +582,8 @@ if(settings_bookmarks_on_top && document.location.href.match(/^http:\/\/www\.geo
   var strong = navi.childNodes[1];
   //navi.removeChild(navi.childNodes[1]);
 
-  for(var i=0; i < settings_bookmarks_list.length; i++){
-    var x = settings_bookmarks_list[i];
+  for(var i=0; i < settings_bookmarks_list_beta.length; i++){
+    var x = settings_bookmarks_list_beta[i];
     if(typeof(x) == "undefined") continue;
 
     var hyperlink = document.createElement("a");
@@ -582,7 +594,7 @@ if(settings_bookmarks_on_top && document.location.href.match(/^http:\/\/www\.geo
     hyperlink.appendChild(document.createTextNode(bookmarks[x]['title']));
 
     navi.insertBefore(hyperlink, strong);
-    if(i != (settings_bookmarks_list.length-1)) navi.insertBefore(document.createTextNode(' | '), strong);
+    if(i != (settings_bookmarks_list_beta.length-1)) navi.insertBefore(document.createTextNode(' | '), strong);
   }
   navi.removeChild(strong);
 }
@@ -590,12 +602,13 @@ if(settings_bookmarks_on_top && document.location.href.match(/^http:\/\/www\.geo
 // Remove gc.com Links in Navigation
 if(document.getElementById('Navigation')){
   var liste = document.getElementById('Navigation').childNodes[1];
-  if(GM_getValue('remove_navi_play')) liste.removeChild(document.getElementById('ctl00_hlNavPlay').parentNode);
-  if(GM_getValue('remove_navi_profile')) liste.removeChild(document.getElementById('ctl00_hlNavProfile').parentNode);
-  if(GM_getValue('remove_navi_community')) liste.removeChild(document.getElementById('ctl00_hlNavCommunity').parentNode);
-  if(GM_getValue('remove_navi_videos')) liste.removeChild(document.getElementById('ctl00_hlNavVideos').parentNode);
-  if(GM_getValue('remove_navi_resources')) liste.removeChild(document.getElementById('ctl00_hlNavResources').parentNode);
-  if(GM_getValue('remove_navi_shop')) liste.removeChild(document.getElementById('ctl00_hlNavShop').parentNode);
+  if(GM_getValue('remove_navi_play') && document.getElementById('ctl00_hlNavPlay')) liste.removeChild(document.getElementById('ctl00_hlNavPlay').parentNode);
+  if(GM_getValue('remove_navi_profile') && document.getElementById('ctl00_hlNavProfile')) liste.removeChild(document.getElementById('ctl00_hlNavProfile').parentNode);
+  if(GM_getValue('remove_navi_join') && document.getElementById('ctl00_hlNavJoin')) liste.removeChild(document.getElementById('ctl00_hlNavJoin').parentNode);
+  if(GM_getValue('remove_navi_community') && document.getElementById('ctl00_hlNavCommunity')) liste.removeChild(document.getElementById('ctl00_hlNavCommunity').parentNode);
+  if(GM_getValue('remove_navi_videos') && document.getElementById('ctl00_hlNavVideos')) liste.removeChild(document.getElementById('ctl00_hlNavVideos').parentNode);
+  if(GM_getValue('remove_navi_resources') && document.getElementById('ctl00_hlNavResources')) liste.removeChild(document.getElementById('ctl00_hlNavResources').parentNode);
+  if(GM_getValue('remove_navi_shop') && document.getElementById('ctl00_hlNavShop')) liste.removeChild(document.getElementById('ctl00_hlNavShop').parentNode);
 }
 
 // Redirect to Map
@@ -723,7 +736,7 @@ if(settings_show_all_logs && settings_show_all_logs_count < 1){
 
 // Decrypt Hint
 if(settings_decrypt_hint && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx\?(guid|wp)\=[a-zA-Z0-9-]*/)){
-  unsafeWindow.dht("ctl00_ContentBody_lnkDH");
+  unsafeWindow.dht(document.getElementById("ctl00_ContentBody_lnkDH"));
 }
 
 // Show email-Link beside Username
@@ -792,8 +805,8 @@ if(settings_show_mail && document.location.href.match(/^http:\/\/www\.geocaching
 }
 
 // Default Log Type && Log Signature
-if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?(id|guid|ID|LUID)\=/) && document.getElementById('ctl00_ContentBody_LogBookPanel1_ddLogType')){
-  if(settings_default_logtype != "-1"){
+if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?(id|guid|ID|LUID|wp)\=/) && document.getElementById('ctl00_ContentBody_LogBookPanel1_ddLogType')){
+  if(settings_default_logtype != "-1" && !document.location.href.match(/\&LogType\=/)){
     var select = document.getElementById('ctl00_ContentBody_LogBookPanel1_ddLogType');
     var childs = select.childNodes;
 
@@ -805,7 +818,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx
   }
 
   // Signature
-  if(document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML == "") document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML = "\n\n"+GM_getValue("settings_log_signature","");
+  if(document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML == "") document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML = GM_getValue("settings_log_signature","");
 
   // Replace #found# variable
   if(getElementsByClass('SignedInText')[0]){
@@ -818,7 +831,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx
 
 // Default TB Log Type && Log Signature
 if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/track\/log\.aspx/)){
-  if(settings_default_tb_logtype != "-1"){
+  if(settings_default_tb_logtype != "-1" && !document.location.href.match(/\&LogType\=/)){
     var select = document.getElementById('ctl00_ContentBody_LogBookPanel1_ddLogType');
     var childs = select.childNodes;
 
@@ -830,7 +843,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/track\/log\.asp
   }
 
   // Signature
-  if(document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML == "") document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML = "\n\n"+GM_getValue("settings_tb_signature","");
+  if(document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML == "") document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML = GM_getValue("settings_tb_signature","");
 }
 
 // Improve Friendlist
@@ -840,9 +853,16 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/myfriends\.
   for(var i=0; i<friends.length; i++){
     var friend = friends[i];
     var name = friend.getElementsByTagName("a")[0];
+    var add = "";
+    var founds = friend.getElementsByTagName("dd")[4].innerHTML;
+    var last_founds = GM_getValue("friends_founds_"+name.innerHTML);
+
+    if(typeof(last_founds) == "undefined") last_founds = founds;
+    if((founds - last_founds) > 0) add = " (+"+(founds - last_founds)+")";
+    GM_setValue("friends_founds_"+name.innerHTML,founds);
     
 //    friend.getElementsByTagName("dl")[0].lastChild.innerHTML = "<a href='/seek/nearest.aspx?ul="+name.innerHTML+"'>"+friend.getElementsByTagName("dl")[0].lastChild.innerHTML+"</a>";
-    friend.getElementsByTagName("dd")[4].innerHTML = "<a href='/seek/nearest.aspx?ul="+name.innerHTML+"'>"+friend.getElementsByTagName("dd")[4].innerHTML+"</a>";
+    friend.getElementsByTagName("dd")[4].innerHTML = "<a href='/seek/nearest.aspx?ul="+name.innerHTML+"'>"+founds+"</a>"+add;
     
     friend.getElementsByTagName("p")[0].innerHTML = "<a name='lnk_profilegallery2' href='"+name.href+"'>Gallery</a> | <a href='/seek/nearest.aspx?u="+name.innerHTML+"'>Hidden Caches</a> | "+friend.getElementsByTagName("p")[0].innerHTML
   }
@@ -1135,8 +1155,8 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/(default\.a
   }
 }
 
-// Post log from Listing
-if(false && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx\?(guid|wp)\=[a-zA-Z0-9-]*/)){
+// Post log from Listing (inline)
+if(settings_log_inline && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx\?(guid|wp)\=[a-zA-Z0-9-]*/)){
   var links = document.getElementsByTagName('a');
 
   var link = false;
@@ -1154,23 +1174,66 @@ if(false && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/
   if(link){
     var match = link.href.match(/gallery\.aspx\?guid=(.*)/);
     if(match[1]){
-      var form = document.createElement("form");
-      var html = "";
+      var iframe = document.createElement("iframe");
+      iframe.setAttribute("id","gclhFrame");
+      iframe.setAttribute("width","100%");
+      iframe.setAttribute("height","450px");
+      iframe.setAttribute("style","border: 0px; overflow: hidden; display: none;");
+      iframe.setAttribute("src","log.aspx?guid="+match[1]+"&gclh=small");
 
-      html += "<input type='hidden' name='ctl00$ContentBody$LogBookPanel1$ddLogType' value='4'>";
-      html += "<input type='hidden' name='ctl00$ContentBody$LogBookPanel1$DateTimeLogged$Month' value='5'>";
-      html += "<input type='hidden' name='ctl00$ContentBody$LogBookPanel1$DateTimeLogged$Day' value='17'>";
-      html += "<input type='hidden' name='ctl00$ContentBody$LogBookPanel1$DateTimeLogged$Year' value='2011'>";
-      html += "<input type='hidden' name='ctl00$ContentBody$LogBookPanel1$LogButton' value='Submit Log Entry'>";
-      html += "<textarea name='ctl00$ContentBody$LogBookPanel1$uxLogInfo'></textarea>";
-      html += "<input type='submit' name='ctl00$ContentBody$LogBookPanel1$LogButton'>";
+      function hide_iframe(){
+        var frame = document.getElementById('gclhFrame');
+        if(frame.style.display == "") frame.style.display = "none";
+        else frame.style.display = "";
+      }
 
-      form.setAttribute("method","POST");
-      form.setAttribute("action","log.aspx?guid="+match[1]);
-      form.innerHTML = html;
-      link.parentNode.parentNode.insertBefore(form,link.parentNode);
+      var a = document.createElement("a");
+      a.setAttribute("href","#gclhLogIt");
+      a.setAttribute("name","gclhLogIt");
+      a.appendChild(document.createTextNode("Log your visit"));
+      a.addEventListener("click", hide_iframe, false);
+
+      link.parentNode.parentNode.insertBefore(a,link.parentNode);
+      link.parentNode.parentNode.insertBefore(iframe,link.parentNode);
     }
   }
+}
+if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?guid\=[a-zA-Z0-9-]*\&gclh\=small/)){ // Hide everything to be smart for the iframe :)
+  if(document.getElementsByTagName('html')[0]) document.getElementsByTagName('html')[0].style.backgroundColor = "#FFFFFF";
+
+  if(document.getElementsByTagName("header")[0]) document.getElementsByTagName("header")[0].style.display = "none";
+   
+  if(document.getElementById('ctl00_divBreadcrumbs')) document.getElementById('ctl00_divBreadcrumbs').style.display = "none";
+
+  if(getElementsByClass('BottomSpacing')[0]) getElementsByClass('BottomSpacing')[0].style.display = "none";
+  if(getElementsByClass('BottomSpacing')[1]) getElementsByClass('BottomSpacing')[1].style.display = "none";
+  if(document.getElementById('ctl00_ContentBody_LogBookPanel1_WaypointLink')) document.getElementById('ctl00_ContentBody_LogBookPanel1_WaypointLink').parentNode.style.display = 'none';
+  var dts = document.getElementsByTagName("dt");
+  for(var i=0; i<dts.length; i++){
+    dts[i].style.display = "none";
+  }
+  if(document.getElementById('divAdvancedOptions')) document.getElementById('divAdvancedOptions').style.display = "none";
+  if(document.getElementById('ctl00_ContentBody_LogBookPanel1_TBPanel')) document.getElementById('ctl00_ContentBody_LogBookPanel1_TBPanel').style.display = "none";
+
+  if(document.getElementById('ctl00_ContentBody_uxVistOtherListingLabel')) document.getElementById('ctl00_ContentBody_uxVistOtherListingLabel').style.display = "none";
+  if(document.getElementById('ctl00_ContentBody_uxVistOtherListingGC')) document.getElementById('ctl00_ContentBody_uxVistOtherListingGC').style.display = "none";
+  if(document.getElementById('ctl00_ContentBody_uxVisitOtherListingButton')) document.getElementById('ctl00_ContentBody_uxVisitOtherListingButton').style.display = "none";
+
+  if(document.getElementById('ctl00_divContentSide')) document.getElementById('ctl00_divContentSide').style.display = "none";
+
+  if(document.getElementById('UtilityNav')) document.getElementById('UtilityNav').style.display = "none";
+
+  if(document.getElementsByTagName("footer")[0]) document.getElementsByTagName("footer")[0].style.display = "none";
+
+  function hide_feedback(){
+    var button = document.getElementById('uservoice-feedback');
+    if(button){
+      button.parentNode.removeChild(button);
+    }
+  }
+  window.addEventListener("load", hide_feedback, false);
+
+  if(getElementsByClass('container')[1]) getElementsByClass('container')[1].style.display = "inline";
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -1202,6 +1265,15 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/$/) || document
     if(GM_getValue("home_lng",0) != parseInt(latlng[1]*10000000)) GM_setValue("home_lng",parseInt(latlng[1]*10000000));
   }
 }*/
+
+// Hide Navi on SignIn-Overlay
+function hide_navi(){
+  var navi = document.getElementById('Navigation');
+  if(navi.style.display == "") navi.style.display = "none";
+  else navi.style.display = "";
+}
+if(document.getElementById('hlSignIn')) document.getElementById('hlSignIn').addEventListener("click",hide_navi,false);
+if(document.getElementById('ctl00_hlSignInClose')) document.getElementById('ctl00_hlSignInClose').addEventListener("click",hide_navi,false);
 
 // Save HomeCoords for special bookmarks - From Manage Home Location
 if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/account\/ManageLocations\.aspx/)){
@@ -1403,7 +1475,7 @@ function showConfig(){
   }else{
     var html = "";
     // Overlay erstellen
-    html += "<div id='settings_overlay' style='background-color:#DDDDDD; width:450px; height:80%; left:35%; outline: 2px solid black; overflow:auto; padding:10px; position:fixed; top:7.5%; z-index:101;' align='center'>";
+    html += "<div id='settings_overlay' style='background-color:#DDDDDD; width:500px; height:80%; left:35%; outline: 2px solid black; overflow:auto; padding:10px; position:fixed; top:7.5%; z-index:101;' align='center'>";
     // Inhalt
     html += "<h3 style='margin:5px;'>GC little helper</h3>";
     html += "<br>";
@@ -1414,6 +1486,10 @@ function showConfig(){
     html += "  <tr>";
     html += "    <td align='left'><input type='checkbox' "+(settings_submit_log_button ? "checked='checked'" : "" )+" id='settings_submit_log_button'></td>";
     html += "    <td align='left' colspan='3'>Submit Log-Text on F2</td>";
+    html += "  </tr>";
+    html += "  <tr>";
+    html += "    <td align='left'><input type='checkbox' "+(settings_log_inline ? "checked='checked'" : "" )+" id='settings_log_inline'></td>";
+    html += "    <td align='left' colspan='3'>Log Cache from Listing</td>";
     html += "  </tr>";
     html += "  <tr>";
     html += "    <td align='left'><input type='checkbox' "+(settings_bookmarks_show ? "checked='checked'" : "" )+" id='settings_bookmarks_show'></td>";
@@ -1541,6 +1617,10 @@ function showConfig(){
     html += "    <td colspan='3'>Your Profile</td>";
     html += "  </tr>";
     html += "  <tr>";
+    html += "    <td><input type='checkbox' "+(GM_getValue('remove_navi_join') ? "checked='checked'" : "" )+" id='remove_navi_join'></td>";
+    html += "    <td colspan='3'>Join</td>";
+    html += "  </tr>";
+    html += "  <tr>";
     html += "    <td><input type='checkbox' "+(GM_getValue('remove_navi_community') ? "checked='checked'" : "" )+" id='remove_navi_community'></td>";
     html += "    <td colspan='3'>Community</td>";
     html += "  </tr>";
@@ -1564,7 +1644,7 @@ function showConfig(){
     html += "    <td colspan='3'>Show Linklist as Drop-Down-Menu</td>";
     html += "  </tr>";
     html += "  <tr>";
-    html += "    <td align='left' colspan='2'><b>Linklist:</b></td>";
+    html += "    <td align='left' colspan='2'><b>Linklist:</b><br><font style='font-size: 10px;'>(second check to enable on Beta Map)</font></td>";
     html += "    <td align='left'>Sort</td>";
     html += "    <td align='left'>Custom Name</td>";
     html += "  </tr>";
@@ -1573,6 +1653,10 @@ function showConfig(){
     var sort = new Array();
     for(var i=0; i<settings_bookmarks_list.length; i++){
       sort[settings_bookmarks_list[i]] = i;
+    }
+    var sort_beta = new Array();
+    for(var i=0; i<settings_bookmarks_list_beta.length; i++){
+      sort_beta[settings_bookmarks_list_beta[i]] = i;
     }
 
     // Create the Bookmark-Options
@@ -1584,7 +1668,7 @@ function showConfig(){
       }
 
       html += "  <tr>";
-      html += "    <td align='left'><input type='checkbox' "+(typeof(sort[i]) != "undefined" ? "checked='checked'" : "" )+" id='settings_bookmarks_list["+i+"]'></td>";
+      html += "    <td align='left'><input type='checkbox' "+(typeof(sort[i]) != "undefined" ? "checked='checked'" : "" )+" id='settings_bookmarks_list["+i+"]'><input type='checkbox' "+(typeof(sort_beta[i]) != "undefined" ? "checked='checked'" : "" )+" id='settings_bookmarks_list_beta["+i+"]'></td>";
       html += "    <td align='left'>";
       if(typeof(bookmarks[i]['custom']) != "undefined" && bookmarks[i]['custom'] == true){
         html += "<input type='text' id='settings_custom_bookmark["+cust+"]' value='"+bookmarks[i]['href']+"' size='15'> ";
@@ -1626,6 +1710,7 @@ function showConfig(){
   // Save Button
   function btnSave(){
     GM_setValue("settings_submit_log_button",document.getElementById('settings_submit_log_button').checked);
+    GM_setValue("settings_log_inline",document.getElementById('settings_log_inline').checked);
     GM_setValue("settings_bookmarks_show",document.getElementById('settings_bookmarks_show').checked);
     GM_setValue("settings_bookmarks_on_top",document.getElementById('settings_bookmarks_on_top').checked);
     GM_setValue("settings_bookmarks_search",document.getElementById('settings_bookmarks_search').checked);
@@ -1657,6 +1742,7 @@ function showConfig(){
     GM_setValue("settings_tb_signature",document.getElementById('settings_tb_signature').value);
     GM_setValue("remove_navi_play",document.getElementById('remove_navi_play').checked);
     GM_setValue("remove_navi_profile",document.getElementById('remove_navi_profile').checked);
+    GM_setValue("remove_navi_join",document.getElementById('remove_navi_join').checked);
     GM_setValue("remove_navi_community",document.getElementById('remove_navi_community').checked);
     GM_setValue("remove_navi_videos",document.getElementById('remove_navi_videos').checked);
     GM_setValue("remove_navi_resources",document.getElementById('remove_navi_resources').checked);
@@ -1689,6 +1775,32 @@ function showConfig(){
       }
     }
     GM_setValue("settings_bookmarks_list",uneval(tmp));
+
+    var queue = new Array();
+    var tmp = new Array();
+    for(var i=0; i<bookmarks.length; i++){
+      if(document.getElementById('settings_bookmarks_list_beta['+i+']')){ // Avoid errors
+        if(document.getElementById('settings_bookmarks_list_beta['+i+']').checked){ // If this Bookmark should be used, go and look at the sort-order
+          if(document.getElementById('bookmarks_sort['+i+']')){ // Avoid errors
+            if(typeof(tmp[document.getElementById('bookmarks_sort['+i+']').value]) == "undefined"){ // If sort-order not used by now, use it
+              tmp[document.getElementById('bookmarks_sort['+i+']').value] = i;
+            }else{
+              queue.push(i);
+              for(var x=0; x<bookmarks.length; x++){ // Find the next free sort-order
+                if(typeof(tmp[x]) == "undefined"){
+                  tmp[x] = i;
+                  break;
+                }
+              }
+            }
+          }
+        }
+      }
+      if(document.getElementById('bookmarks_name['+i+']') && document.getElementById('bookmarks_name['+i+']') != ""){ // Set custom name
+        GM_setValue("settings_bookmarks_title["+i+"]",document.getElementById('bookmarks_name['+i+']').value);
+      }
+    }
+    GM_setValue("settings_bookmarks_list_beta",uneval(tmp));
     
     // Save custom-Link URLs
     for(var i=0; i<anzCustom; i++){
