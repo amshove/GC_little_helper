@@ -325,6 +325,8 @@ settings_show_all_logs = GM_getValue("settings_show_all_logs",false);
 settings_show_all_logs_count = GM_getValue("settings_show_all_logs_count","0");
 // Settings: Decrypt Hint
 settings_decrypt_hint = GM_getValue("settings_decrypt_hint",false);
+// Settings: Show Smilies & BBCode
+settings_show_bbcode = GM_getValue("settings_show_bbcode",true);
 // Settings: Show mail-Link
 settings_show_mail = GM_getValue("settings_show_mail",true);
 // Settings: Show google-maps Link
@@ -756,7 +758,7 @@ if(settings_decrypt_hint && document.location.href.match(/^http:\/\/www\.geocach
 }
 
 // Show Smilies & BBCode --- http://www.cachewiki.de/wiki/Formatierung
-if(true && (document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?(id|guid|ID|wp|LUID|PLogGuid)\=/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/track\/log\.aspx\?(id|wid|guid|ID|PLogGuid)\=/))){
+if(settings_show_bbcode && (document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?(id|guid|ID|wp|LUID|PLogGuid)\=/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/track\/log\.aspx\?(id|wid|guid|ID|PLogGuid)\=/)) && document.getElementById('litDescrCharCount')){
   var code = "function gclh_insert(aTag,eTag){"; // http://aktuell.de.selfhtml.org/artikel/javascript/bbcode/
   code += "  var input = document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo');";
   code += "  if(typeof input.selectionStart != 'undefined'){";
@@ -781,7 +783,7 @@ if(true && (document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/
   document.getElementsByTagName("body")[0].appendChild(script);
 
   var box = document.getElementById('litDescrCharCount');
-  var liste = "";
+  var liste = "<br>";
   liste += "<a href='#' onClick='gclh_insert(\"[:)]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile.gif' border='0'></a>";
   liste += "<a href='#' onClick='gclh_insert(\"[:D]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_big.gif' border='0'></a>";
   liste += "<a href='#' onClick='gclh_insert(\"[8D]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_cool.gif' border='0'></a>";
@@ -1629,6 +1631,10 @@ function showConfig(){
     html += "    <td align='left' colspan='3'>Decrypt Hint</td>";
     html += "  </tr>";
     html += "  <tr>";
+    html += "    <td align='left'><input type='checkbox' "+(settings_show_bbcode ? "checked='checked'" : "" )+" id='settings_show_bbcode'></td>";
+    html += "    <td align='left' colspan='3'>Show Smilies & BBCode on Log-Page</td>";
+    html += "  </tr>";
+    html += "  <tr>";
     html += "    <td align='left'><input type='checkbox' "+(settings_show_mail ? "checked='checked'" : "" )+" id='settings_show_mail'></td>";
     html += "    <td align='left' colspan='3'>Show Mail-Link beside Usernames</td>";
     html += "  </tr>";
@@ -1809,6 +1815,7 @@ function showConfig(){
     GM_setValue("settings_show_all_logs",document.getElementById('settings_show_all_logs').checked);
     GM_setValue("settings_show_all_logs_count",document.getElementById('settings_show_all_logs_count').value);
     GM_setValue("settings_decrypt_hint",document.getElementById('settings_decrypt_hint').checked);
+    GM_setValue("settings_show_bbcode",document.getElementById('settings_show_bbcode').checked);
     GM_setValue("settings_show_mail",document.getElementById('settings_show_mail').checked);
     GM_setValue("settings_show_google_maps",document.getElementById('settings_show_google_maps').checked);
     GM_setValue("settings_show_log_it",document.getElementById('settings_show_log_it').checked);
