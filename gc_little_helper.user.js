@@ -10,8 +10,13 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net>
-// Version:        4.1             - 21.05.2010
-// Changelog:      4.1             - Friendlist: Show amount of caches found sine last load of the Friendlist
+// Version:        4.2             - 25.05.2010
+// Changelog:      4.2             - Added: Smilies & BBCode on Log-Page
+//                                 - Fix: overwrite of Log-Type on edit-Log
+//                                 - Improve searchfield in linklist: Search direct by GC-ID, TB-ID or Tracking-Number
+//                                 - Highlighted "founds since last load" on Friendlist
+//                                 - Fix: Save target option of custom Bookmarks
+//                 4.1             - Friendlist: Show amount of caches found since last load of the Friendlist
 //                                 - Fix: Default-Log-Type doesn't override &LogType=
 //                                 - Post log from Listing (inline)
 //                                 - Fix: Hide Navigation on SignIn overlay
@@ -279,7 +284,7 @@ bookmarks[34]['id'] = "lnk_my_trackables";
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "4.1";
+var scriptVersion = "4.2";
 
 var anzCustom = 10;
 
@@ -559,7 +564,18 @@ if(settings_bookmarks_on_top && document.getElementById('Navigation')){
   }
 
   if(settings_bookmarks_search){
-    var searchfield = "<form style='display: inline;' action='/default.aspx' method='GET'><input type='text' size='6' name='navi_search' style='border: 1px solid #55aa22; border-radius: 7px 7px 7px 7px;'></form>";
+    var code = "function gclh_search(){";
+    code += "  var search = document.getElementById('navi_search').value;";
+    code += "  if(search.match(/^GC[A-Z0-9]{1,10}\\b/i) || search.match(/^TB[A-Z0-9]{1,10}\\b/i)) document.location.href = 'http://coord.info/'+search;";
+    code += "  else if(search.match(/^[A-Z0-9]{6}\\b$/i)) document.location.href = '/track/details.aspx?tracker='+search;";
+    code += "  else document.location.href = '/default.aspx?navi_search='+search;";
+    code += "}";
+
+    var script = document.createElement("script");
+    script.innerHTML = code;
+    document.getElementsByTagName("body")[0].appendChild(script);
+
+    var searchfield = "<form style='display: inline;' action='/default.aspx' method='GET' onSubmit='gclh_search(); return false;'><input type='text' size='6' name='navi_search' id='navi_search' style='border: 1px solid #55aa22; border-radius: 7px 7px 7px 7px;'></form>";
     var nav_list = document.getElementById('Navigation').childNodes[1];
     nav_list.innerHTML += searchfield;
   }
@@ -739,6 +755,74 @@ if(settings_decrypt_hint && document.location.href.match(/^http:\/\/www\.geocach
   unsafeWindow.dht(document.getElementById("ctl00_ContentBody_lnkDH"));
 }
 
+// Show Smilies & BBCode --- http://www.cachewiki.de/wiki/Formatierung
+if(true && (document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?(id|guid|ID|wp|LUID|PLogGuid)\=/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/track\/log\.aspx\?(id|wid|guid|ID|PLogGuid)\=/))){
+  var code = "function gclh_insert(aTag,eTag){"; // http://aktuell.de.selfhtml.org/artikel/javascript/bbcode/
+  code += "  var input = document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo');";
+  code += "  if(typeof input.selectionStart != 'undefined'){";
+  code += "    var start = input.selectionStart;";
+  code += "    var end = input.selectionEnd;";
+  code += "    var insText = input.value.substring(start, end);";
+  code += "    input.value = input.value.substr(0, start) + aTag + insText + eTag + input.value.substr(end);";
+  code += "    /* Anpassen der Cursorposition */";
+  code += "    var pos;";
+  code += "    if (insText.length == 0) {";
+  code += "      pos = start + aTag.length;";
+  code += "    } else {";
+  code += "      pos = start + aTag.length + insText.length + eTag.length;";
+  code += "    }";
+  code += "    input.selectionStart = pos;";
+  code += "    input.selectionEnd = pos;";
+  code += "  }";
+  code += "}";
+
+  var script = document.createElement("script");
+  script.innerHTML = code;
+  document.getElementsByTagName("body")[0].appendChild(script);
+
+  var box = document.getElementById('litDescrCharCount');
+  var liste = "";
+  liste += "<a href='#' onClick='gclh_insert(\"[:)]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile.gif' border='0'></a>";
+  liste += "<a href='#' onClick='gclh_insert(\"[:D]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_big.gif' border='0'></a>";
+  liste += "<a href='#' onClick='gclh_insert(\"[8D]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_cool.gif' border='0'></a>";
+  liste += "<a href='#' onClick='gclh_insert(\"[:I]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_blush.gif' border='0'></a>";
+  liste += "<a href='#' onClick='gclh_insert(\"[:P]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_tongue.gif' border='0'></a>";
+  liste += "<br>";
+  liste += "<a href='#' onClick='gclh_insert(\"[}:)]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_evil.gif' border='0'></a>";
+  liste += "<a href='#' onClick='gclh_insert(\"[;)]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_wink.gif' border='0'></a>";
+  liste += "<a href='#' onClick='gclh_insert(\"[:o)]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_clown.gif' border='0'></a>";
+  liste += "<a href='#' onClick='gclh_insert(\"[B)]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_blackeye.gif' border='0'></a>";
+  liste += "<a href='#' onClick='gclh_insert(\"[8]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_8ball.gif' border='0'></a>";
+  liste += "<br>";
+  liste += "<a href='#' onClick='gclh_insert(\"[:(]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_sad.gif' border='0'></a>";
+  liste += "<a href='#' onClick='gclh_insert(\"[8)]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_shy.gif' border='0'></a>";
+  liste += "<a href='#' onClick='gclh_insert(\"[:O]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_shock.gif' border='0'></a>";
+  liste += "<a href='#' onClick='gclh_insert(\"[:(!]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_angry.gif' border='0'></a>";
+  liste += "<a href='#' onClick='gclh_insert(\"[xx(]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_dead.gif' border='0'></a>";
+  liste += "<br>";
+  liste += "<a href='#' onClick='gclh_insert(\"[|)]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_sleepy.gif' border='0'></a>";
+  liste += "<a href='#' onClick='gclh_insert(\"[:X]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_kisses.gif' border='0'></a>";
+  liste += "<a href='#' onClick='gclh_insert(\"[^]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_approve.gif' border='0'></a>";
+  liste += "<a href='#' onClick='gclh_insert(\"[V]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_dissapprove.gif' border='0'></a>";
+  liste += "<a href='#' onClick='gclh_insert(\"[?]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_question.gif' border='0'></a>";
+  liste += "<br>";
+  liste += "BBCode:<br>";
+  liste += "<a href='#' onClick='gclh_insert(\"[black]\",\"[/black]\"); return false;'><span style='font-size: 8px; background-color: black;'>&nbsp;&nbsp;&nbsp;&nbsp;</span></a>";
+  liste += "<a href='#' onClick='gclh_insert(\"[blue]\",\"[/blue]\"); return false;'><span style='font-size: 8px; background-color: blue;'>&nbsp;&nbsp;&nbsp;&nbsp;</span></a>";
+  liste += "<a href='#' onClick='gclh_insert(\"[red]\",\"[/red]\"); return false;'><span style='font-size: 8px; background-color: red;'>&nbsp;&nbsp;&nbsp;&nbsp;</span></a>";
+  liste += "<a href='#' onClick='gclh_insert(\"[purple]\",\"[/purple]\"); return false;'><span style='font-size: 8px; background-color: purple;'>&nbsp;&nbsp;&nbsp;&nbsp;</span></a>";
+  liste += "<a href='#' onClick='gclh_insert(\"[orange]\",\"[/orange]\"); return false;'><span style='font-size: 8px; background-color: orange;'>&nbsp;&nbsp;&nbsp;&nbsp;</span></a>";
+  liste += "<a href='#' onClick='gclh_insert(\"[yellow]\",\"[/yellow]\"); return false;'><span style='font-size: 8px; background-color: yellow;'>&nbsp;&nbsp;&nbsp;&nbsp;</span></a>";
+  liste += "<a href='#' onClick='gclh_insert(\"[green]\",\"[/green]\"); return false;'><span style='font-size: 8px; background-color: green;'>&nbsp;&nbsp;&nbsp;&nbsp;</span></a>";
+  liste += "<a href='#' onClick='gclh_insert(\"[white]\",\"[/white]\"); return false;'><span style='font-size: 8px; background-color: white;'>&nbsp;&nbsp;&nbsp;&nbsp;</span></a>";
+  liste += "<br>";
+  liste += "<a href='#' onClick='gclh_insert(\"[b]\",\"[/b]\"); return false;' style='color: #000000; text-decoration: none;'><b>B</b></a>&nbsp;";
+  liste += "<a href='#' onClick='gclh_insert(\"[i]\",\"[/i]\"); return false;' style='color: #000000; text-decoration: none;'><i>I</i></a>&nbsp;";
+  liste += "<a href='#' onClick='gclh_insert(\"[s]\",\"[/s]\"); return false;' style='color: #000000; text-decoration: none;'><s>S</s></a>&nbsp;";
+  liste += "<a href='#' onClick='gclh_insert(\"[u]\",\"[/u]\"); return false;' style='color: #000000; text-decoration: none;'><u>U</u></a>&nbsp;";
+  box.innerHTML = liste;
+}
+
 // Show email-Link beside Username
 if(settings_show_mail && document.location.href.match(/^http:\/\/www\.geocaching\.com\/(seek\/cache_details|seek\/log|track\/details)\.aspx\?(guid|wp|tracker|id|LUID|ID|PLogGuid)\=[a-zA-Z0-9-]*/)){
   var links = document.getElementsByTagName('a');
@@ -805,7 +889,7 @@ if(settings_show_mail && document.location.href.match(/^http:\/\/www\.geocaching
 }
 
 // Default Log Type && Log Signature
-if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?(id|guid|ID|LUID|wp)\=/) && document.getElementById('ctl00_ContentBody_LogBookPanel1_ddLogType')){
+if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?(id|guid|ID|wp)\=/) && document.getElementById('ctl00_ContentBody_LogBookPanel1_ddLogType')){
   if(settings_default_logtype != "-1" && !document.location.href.match(/\&LogType\=/)){
     var select = document.getElementById('ctl00_ContentBody_LogBookPanel1_ddLogType');
     var childs = select.childNodes;
@@ -858,7 +942,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/myfriends\.
     var last_founds = GM_getValue("friends_founds_"+name.innerHTML);
 
     if(typeof(last_founds) == "undefined") last_founds = founds;
-    if((founds - last_founds) > 0) add = " (+"+(founds - last_founds)+")";
+    if((founds - last_founds) > 0) add = " <font color='#00AA00'><b>(+"+(founds - last_founds)+")</b></font>";
     GM_setValue("friends_founds_"+name.innerHTML,founds);
     
 //    friend.getElementsByTagName("dl")[0].lastChild.innerHTML = "<a href='/seek/nearest.aspx?ul="+name.innerHTML+"'>"+friend.getElementsByTagName("dl")[0].lastChild.innerHTML+"</a>";
@@ -1208,10 +1292,8 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx
   if(getElementsByClass('BottomSpacing')[0]) getElementsByClass('BottomSpacing')[0].style.display = "none";
   if(getElementsByClass('BottomSpacing')[1]) getElementsByClass('BottomSpacing')[1].style.display = "none";
   if(document.getElementById('ctl00_ContentBody_LogBookPanel1_WaypointLink')) document.getElementById('ctl00_ContentBody_LogBookPanel1_WaypointLink').parentNode.style.display = 'none';
-  var dts = document.getElementsByTagName("dt");
-  for(var i=0; i<dts.length; i++){
-    dts[i].style.display = "none";
-  }
+  document.getElementsByTagName("dt")[0].style.display = "none";
+
   if(document.getElementById('divAdvancedOptions')) document.getElementById('divAdvancedOptions').style.display = "none";
   if(document.getElementById('ctl00_ContentBody_LogBookPanel1_TBPanel')) document.getElementById('ctl00_ContentBody_LogBookPanel1_TBPanel').style.display = "none";
 
@@ -1806,6 +1888,7 @@ function showConfig(){
     for(var i=0; i<anzCustom; i++){
       GM_setValue("settings_custom_bookmark["+i+"]",document.getElementById("settings_custom_bookmark["+i+"]").value);
       if(document.getElementById('settings_custom_bookmark_target['+i+']').checked) GM_setValue('settings_custom_bookmark_target['+i+']',"_blank");
+      else GM_setValue('settings_custom_bookmark_target['+i+']',"");
     }
 
     document.location.reload(true);
