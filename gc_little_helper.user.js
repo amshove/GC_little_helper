@@ -10,8 +10,21 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net>
-// Version:        4.3             - 28.05.2010
-// Changelog:      4.3             - Transfer TB-Tracking Number to Log-Field
+// Version:        4.4             - 03.06.2010
+// Changelog:      4.4             - Added Log-Templates
+//                                 - Fix: Default Log-Type should not override Field-Note-Log-Type
+//                                 - Added some Code to support Google Chrome (not tested and not supported yet) - thanks to Bart
+//                                 - Added Signal-Smilies
+//                                 - Decrypt Hint on print-page
+//                                 - Fix: Now it also works if there is a ?pf= in Listing-Link (Decrypted Log)
+//                                 - Show TB-List in inline-Logs
+//                                 - Removed: Insert Home-Coords in Searchfield - gc.com fixed it
+//                                 - Save Home-Coords in Configuration
+//                                 - Default-Value for Searchfield in Navigation
+//                                 - Added Config-Link to Profile-Page
+//                                 - Hide Linklist-Settings in Configuration (let it show with a link)
+//                                 - New Design for Config and Find Player
+//                 4.3             - Transfer TB-Tracking Number to Log-Field
 //                                 - Repair gc.com-Bug: Linebreaks in decrypted hints
 //                                 - Change background of found-caches to green (instead of grey)
 //                                 - Log your visit (inline) Link in top menu
@@ -203,7 +216,6 @@ bookmarks[17]['href'] = "/notify/default.aspx";
 bookmarks[17]['title'] = "Notifications";
 
 bookmarks[18] = new Object();
-//bookmarks[18]['href'] = "/find/default.aspx";
 bookmarks[18]['href'] = "#";
 bookmarks[18]['id'] = "lnk_findplayer";
 bookmarks[18]['title'] = "Find Player";
@@ -294,32 +306,36 @@ bookmarks[34]['id'] = "lnk_my_trackables";
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "4.3";
+var scriptVersion = "4.4";
 
 var anzCustom = 10;
+var anzTemplates = 5;
 
 var bookmarks_def = new Array(16,18,13,14,17,12);
+
+// Compatibility to Google Chrome - http://devign.me/greasemonkey-gm_getvaluegm_setvalue-functions-for-google-chrome/
+if (!this.GM_getValue || (this.GM_getValue.toString && this.GM_getValue.toString().indexOf("not supported")>-1)) {
+  this.GM_getValue=function (key,def) {
+    return localStorage[key] || def;
+  };
+  this.GM_setValue=function (key,value) {
+    return localStorage[key]=value;
+  };
+}
 
 // Settings: Submit Log on F2
 settings_submit_log_button = GM_getValue("settings_submit_log_button",true);
 // Settings: Log Inline
 settings_log_inline = GM_getValue("settings_log_inline",true);
+settings_log_inline_tb = GM_getValue("settings_log_inline_tb",false);
 // Settings: Show Bookmarks
 settings_bookmarks_show = GM_getValue("settings_bookmarks_show",true);
 // Settings: Bookmarks on Top
 settings_bookmarks_on_top = GM_getValue("settings_bookmarks_on_top",true);
 settings_bookmarks_top_menu = GM_getValue("settings_bookmarks_top_menu","true");
 settings_bookmarks_search = GM_getValue("settings_bookmarks_search","true");
-// Settings: Bookmarks on Top_left
-//settings_bookmarks_top_left = GM_getValue("settings_bookmarks_top_left",true);
-// Settings: Bookmarks size
-//settings_bookmarks_top_size = GM_getValue("settings_bookmarks_top_size","85");
-// Settings: Bookmarks color
-//settings_bookmarks_top_color = GM_getValue("settings_bookmarks_top_color","#CDD8E8");
-// Settings: Redirect to Map
+settings_bookmarks_search_default = GM_getValue("settings_bookmarks_search_default","");
 settings_redirect_to_map = GM_getValue("settings_redirect_to_map",true);
-// Settings: Hide Facebook Button
-//settings_hide_facebook = GM_getValue("settings_hide_facebook",true);
 // Settings: Hide Feedback Button
 settings_hide_feedback = GM_getValue("settings_hide_feedback",false);
 // Settings: Hide Disclaimer
@@ -328,8 +344,6 @@ settings_hide_disclaimer = GM_getValue("settings_hide_disclaimer",false);
 settings_hide_cache_notes = GM_getValue("settings_hide_cache_notes",false);
 // Settings: Hide Cache Notes if empty
 settings_hide_empty_cache_notes = GM_getValue("settings_hide_empty_cache_notes",true);
-// Settings: Hide LF-Banner
-//settings_hide_lf_banner = GM_getValue("settings_hide_lf_banner",false);
 // Settings: Show all Logs
 settings_show_all_logs = GM_getValue("settings_show_all_logs",false);
 settings_show_all_logs_count = GM_getValue("settings_show_all_logs_count","0");
@@ -588,7 +602,7 @@ if(settings_bookmarks_on_top && document.getElementById('Navigation')){
     script.innerHTML = code;
     document.getElementsByTagName("body")[0].appendChild(script);
 
-    var searchfield = "<form style='display: inline;' action='/default.aspx' method='GET' onSubmit='gclh_search(); return false;'><input type='text' size='6' name='navi_search' id='navi_search' style='margin-top: 2px; padding: 1px; font-weight: bold; font-family: sans-serif; border: 2px solid #778555; border-radius: 7px 7px 7px 7px; background-color:#d8cd9d'></form>";
+    var searchfield = "<form style='display: inline;' action='/default.aspx' method='GET' onSubmit='gclh_search(); return false;'><input type='text' size='6' name='navi_search' id='navi_search' style='margin-top: 2px; padding: 1px; font-weight: bold; font-family: sans-serif; border: 2px solid #778555; border-radius: 7px 7px 7px 7px; background-color:#d8cd9d' value='"+settings_bookmarks_search_default+"'></form>";
     var nav_list = document.getElementById('Navigation').childNodes[1];
     nav_list.innerHTML += searchfield;
   }
@@ -681,7 +695,7 @@ if(settings_hide_feedback){
 }
 
 // Hide Disclaimer
-if(settings_hide_disclaimer && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx\?(guid|wp)\=[a-zA-Z0-9-]*/)){
+if(settings_hide_disclaimer && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx(\?|\?pf\=\&)(guid|wp)\=[a-zA-Z0-9-]*/)){
   var disc = getElementsByClass('DisclaimerWidget')[0];
   if(disc){
     disc.parentNode.removeChild(disc);
@@ -695,7 +709,7 @@ if(settings_hide_disclaimer && document.location.href.match(/^http:\/\/www\.geoc
 }
 
 // Hide Cache Notes
-if(settings_hide_cache_notes && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx\?(guid|wp)\=[a-zA-Z0-9-]*/)){
+if(settings_hide_cache_notes && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx(\?|\?pf\=\&)(guid|wp)\=[a-zA-Z0-9-]*/)){
   var disc = getElementsByClass('NotesWidget')[0];
   if(disc){
     disc.parentNode.removeChild(disc);
@@ -703,7 +717,7 @@ if(settings_hide_cache_notes && document.location.href.match(/^http:\/\/www\.geo
 }
 
 // Hide/Show Cache Notes
-if(settings_hide_empty_cache_notes && !settings_hide_cache_notes && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx\?(guid|wp)\=[a-zA-Z0-9-]*/)){
+if(settings_hide_empty_cache_notes && !settings_hide_cache_notes && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx(\?|\?pf\=\&)(guid|wp)\=[a-zA-Z0-9-]*/)){
   var box = getElementsByClass('NotesWidget')[0];
   if(box){
     var code = "function hide_notes(){";
@@ -733,16 +747,8 @@ if(settings_hide_empty_cache_notes && !settings_hide_cache_notes && document.loc
   }
 }
 
-// Hide LF-Banner
-//if(settings_hide_lf_banner && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx\?(guid|wp)\=[a-zA-Z0-9-]*/)){
-//  var disc = getElementsByClass('LFNominateBanner Clear')[0];
-//  if(disc){
-//    disc.parentNode.removeChild(disc);
-//  }
-//}
-
 // Show all Logs
-if(settings_show_all_logs && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx\?(guid|wp)\=[a-zA-Z0-9-]*$/)){
+if(settings_show_all_logs && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx(\?|\?pf\=\&)(guid|wp)\=[a-zA-Z0-9-]*$/)){
   if(settings_show_all_logs_count > 0){
     var p = document.getElementsByTagName("p");
     for(var i=0; i<p.length; i++){
@@ -773,6 +779,10 @@ if(settings_show_all_logs && settings_show_all_logs_count < 1){
 if(settings_decrypt_hint && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx\?(guid|wp)\=[a-zA-Z0-9-]*/)){
   unsafeWindow.dht(document.getElementById("ctl00_ContentBody_lnkDH"));
 }
+if(settings_decrypt_hint && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cdpf\.aspx/)){
+  document.getElementById('uxDecryptedHint').style.display = 'none';
+  document.getElementById('uxEncryptedHint').style.display = '';
+}
 
 // Show Smilies & BBCode --- http://www.cachewiki.de/wiki/Formatierung
 if(settings_show_bbcode && (document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?(id|guid|ID|wp|LUID|PLogGuid)\=/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/track\/log\.aspx\?(id|wid|guid|ID|PLogGuid)\=/)) && document.getElementById('litDescrCharCount')){
@@ -801,30 +811,43 @@ if(settings_show_bbcode && (document.location.href.match(/^http:\/\/www\.geocach
   document.getElementsByTagName("body")[0].appendChild(script);
 
   var box = document.getElementById('litDescrCharCount');
-  var liste = "<br>";
+  var liste = "";
   liste += "<a href='#' onClick='gclh_insert(\"[:)]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile.gif' border='0'></a>";
   liste += "<a href='#' onClick='gclh_insert(\"[:D]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_big.gif' border='0'></a>";
   liste += "<a href='#' onClick='gclh_insert(\"[8D]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_cool.gif' border='0'></a>";
   liste += "<a href='#' onClick='gclh_insert(\"[:I]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_blush.gif' border='0'></a>";
   liste += "<a href='#' onClick='gclh_insert(\"[:P]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_tongue.gif' border='0'></a>";
-  liste += "<br>";
   liste += "<a href='#' onClick='gclh_insert(\"[}:)]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_evil.gif' border='0'></a>";
   liste += "<a href='#' onClick='gclh_insert(\"[;)]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_wink.gif' border='0'></a>";
+  liste += "<br>";
   liste += "<a href='#' onClick='gclh_insert(\"[:o)]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_clown.gif' border='0'></a>";
   liste += "<a href='#' onClick='gclh_insert(\"[B)]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_blackeye.gif' border='0'></a>";
   liste += "<a href='#' onClick='gclh_insert(\"[8]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_8ball.gif' border='0'></a>";
-  liste += "<br>";
   liste += "<a href='#' onClick='gclh_insert(\"[:(]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_sad.gif' border='0'></a>";
   liste += "<a href='#' onClick='gclh_insert(\"[8)]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_shy.gif' border='0'></a>";
   liste += "<a href='#' onClick='gclh_insert(\"[:O]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_shock.gif' border='0'></a>";
   liste += "<a href='#' onClick='gclh_insert(\"[:(!]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_angry.gif' border='0'></a>";
-  liste += "<a href='#' onClick='gclh_insert(\"[xx(]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_dead.gif' border='0'></a>";
   liste += "<br>";
+  liste += "<a href='#' onClick='gclh_insert(\"[xx(]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_dead.gif' border='0'></a>";
   liste += "<a href='#' onClick='gclh_insert(\"[|)]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_sleepy.gif' border='0'></a>";
   liste += "<a href='#' onClick='gclh_insert(\"[:X]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_kisses.gif' border='0'></a>";
   liste += "<a href='#' onClick='gclh_insert(\"[^]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_approve.gif' border='0'></a>";
   liste += "<a href='#' onClick='gclh_insert(\"[V]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_dissapprove.gif' border='0'></a>";
   liste += "<a href='#' onClick='gclh_insert(\"[?]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_question.gif' border='0'></a>";
+  liste += "<br>";
+  liste += "<a href='#' onClick='gclh_insert(\":angry:\",\"\"); return false;'><img src='http://img.groundspeak.com/forums/emoticons/signal/mad.gif' border='0'></a>";
+  liste += "<a href='#' onClick='gclh_insert(\":grin:\",\"\"); return false;'><img src='http://img.groundspeak.com/forums/emoticons/signal/big_smile.gif' border='0'></a>";
+  liste += "<a href='#' onClick='gclh_insert(\":sad:\",\"\"); return false;'><img src='http://img.groundspeak.com/forums/emoticons/signal/sad.gif' border='0'></a>";
+  liste += "<a href='#' onClick='gclh_insert(\":shocked:\",\"\"); return false;'><img src='http://img.groundspeak.com/forums/emoticons/signal/shock.gif' border='0'></a>";
+  liste += "<a href='#' onClick='gclh_insert(\":smile:\",\"\"); return false;'><img src='http://img.groundspeak.com/forums/emoticons/signal/smile.gif' border='0'></a>";
+  liste += "<a href='#' onClick='gclh_insert(\":surprise:\",\"\"); return false;'><img src='http://img.groundspeak.com/forums/emoticons/signal/surprise.gif' border='0'></a>";
+  liste += "<br>";
+  liste += "<a href='#' onClick='gclh_insert(\":tired:\",\"\"); return false;'><img src='http://img.groundspeak.com/forums/emoticons/signal/tired.gif' border='0'></a>";
+  liste += "<a href='#' onClick='gclh_insert(\":yikes:\",\"\"); return false;'><img src='http://img.groundspeak.com/forums/emoticons/signal/ohh.gif' border='0'></a>";
+  liste += "<a href='#' onClick='gclh_insert(\":tongue:\",\"\"); return false;'><img src='http://img.groundspeak.com/forums/emoticons/signal/tongue.gif' border='0'></a>";
+  liste += "<a href='#' onClick='gclh_insert(\":bad:\",\"\"); return false;'><img src='http://img.groundspeak.com/forums/emoticons/signal/bad_boy_a.gif' border='0'></a>";
+  liste += "<a href='#' onClick='gclh_insert(\":back:\",\"\"); return false;'><img src='http://img.groundspeak.com/forums/emoticons/signal/back.gif' border='0'></a>";
+  liste += "<a href='#' onClick='gclh_insert(\":cute:\",\"\"); return false;'><img src='http://img.groundspeak.com/forums/emoticons/signal/cute.gif' border='0'></a>";
   liste += "<br>";
   liste += "BBCode:<br>";
   liste += "<a href='#' onClick='gclh_insert(\"[black]\",\"[/black]\"); return false;'><span style='font-size: 8px; background-color: black;'>&nbsp;&nbsp;&nbsp;&nbsp;</span></a>";
@@ -840,11 +863,19 @@ if(settings_show_bbcode && (document.location.href.match(/^http:\/\/www\.geocach
   liste += "<a href='#' onClick='gclh_insert(\"[i]\",\"[/i]\"); return false;' style='color: #000000; text-decoration: none;'><i>I</i></a>&nbsp;";
   liste += "<a href='#' onClick='gclh_insert(\"[s]\",\"[/s]\"); return false;' style='color: #000000; text-decoration: none;'><s>S</s></a>&nbsp;";
   liste += "<a href='#' onClick='gclh_insert(\"[u]\",\"[/u]\"); return false;' style='color: #000000; text-decoration: none;'><u>U</u></a>&nbsp;";
+  liste += "<br>";
+  liste += "Templates:<br>";
+  for(var i = 0; i < anzTemplates; i++){
+    if(GM_getValue("settings_log_template_name["+i+"]","") != ""){
+      liste += "<div id='gclh_template["+i+"]' style='display: none;'>"+GM_getValue("settings_log_template["+i+"]","")+"</div>";
+      liste += "<a href='#' onClick='document.getElementById(\"ctl00_ContentBody_LogBookPanel1_uxLogInfo\").innerHTML = document.getElementById(\"gclh_template["+i+"]\").innerHTML; return false;' style='color: #000000; text-decoration: none; font-weight: normal;'> - "+GM_getValue("settings_log_template_name["+i+"]","")+"</a><br>";
+    }
+  }
   box.innerHTML = liste;
 }
 
 // Show email-Link beside Username
-if(settings_show_mail && document.location.href.match(/^http:\/\/www\.geocaching\.com\/(seek\/cache_details|seek\/log|track\/details)\.aspx\?(guid|wp|tracker|id|LUID|ID|PLogGuid)\=[a-zA-Z0-9-]*/)){
+if(settings_show_mail && document.location.href.match(/^http:\/\/www\.geocaching\.com\/(seek\/cache_details|seek\/log|track\/details)\.aspx(\?|\?pf\=\&)(guid|wp|tracker|id|LUID|ID|PLogGuid)\=[a-zA-Z0-9-]*/)){
   var links = document.getElementsByTagName('a');
   if(document.getElementById('ctl00_ContentBody_CacheName'))  var name = document.getElementById('ctl00_ContentBody_CacheName').innerHTML;
   else if(document.getElementById('ctl00_ContentBody_lbHeading') && !document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?.*/))  var name = document.getElementById('ctl00_ContentBody_lbHeading').innerHTML;
@@ -881,7 +912,7 @@ if(settings_show_mail && document.location.href.match(/^http:\/\/www\.geocaching
 }
 
 // Improve EMail-Site
-if(settings_show_mail && document.location.href.match(/^http:\/\/www\.geocaching\.com\/email\//)){
+if(settings_show_mail && document.location.href.match(/^http:\/\/www\.geocaching\.com\/email\//) && document.getElementById("ctl00_ContentBody_SendMessagePanel1_tbMessage")){
   // Prevent deleting content
   document.getElementById("ctl00_ContentBody_SendMessagePanel1_tbMessage").setAttribute("onfocus","");
 
@@ -910,7 +941,7 @@ if(settings_show_mail && document.location.href.match(/^http:\/\/www\.geocaching
 
 // Default Log Type && Log Signature
 if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?(id|guid|ID|PLogGuid|wp)\=/) && document.getElementById('ctl00_ContentBody_LogBookPanel1_ddLogType')){
-  if(settings_default_logtype != "-1" && !document.location.href.match(/\&LogType\=/) && !document.location.href.match(/\&PLogGuid/)){
+  if(settings_default_logtype != "-1" && !document.location.href.match(/\&LogType\=/) && !document.location.href.match(/PLogGuid/)){
     var select = document.getElementById('ctl00_ContentBody_LogBookPanel1_ddLogType');
     var childs = select.childNodes;
 
@@ -1214,25 +1245,25 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/default\.aspx\?
 }
 
 // Home-Coords in Search-Field
-if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/$/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/default\.aspx$/)){
-  if(GM_getValue("home_lat") && GM_getValue("home_lng")){
-    var txt = "";
-    var lat = GM_getValue("home_lat")/10000000;
-    var lng = GM_getValue("home_lng")/10000000;
-
-/*    if(lat < 0) txt += "S ";
-    else txt += "N ";
-    txt += lat;
-
-    if(lng < 0) txt += " W ";
-    else txt += " E ";
-    txt += lng;*/
-
-    txt = "N "+lat+" E "+lng;
-
-    document.getElementById("tbSearch").value = txt;
-  }
-}
+//if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/$/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/default\.aspx$/)){
+//  if(GM_getValue("home_lat") && GM_getValue("home_lng")){
+//    var txt = "";
+//    var lat = GM_getValue("home_lat")/10000000;
+//    var lng = GM_getValue("home_lng")/10000000;
+//
+///*    if(lat < 0) txt += "S ";
+//    else txt += "N ";
+//    txt += lat;
+//
+//    if(lng < 0) txt += " W ";
+//    else txt += " E ";
+//    txt += lng;*/
+//
+//    txt = "N "+lat+" E "+lng;
+//
+//    document.getElementById("tbSearch").value = txt;
+//  }
+//}
 
 // Dynamic Map
 if(settings_dynamic_map && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx\?/)){
@@ -1273,7 +1304,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/(default\.a
 }
 
 // Post log from Listing (inline)
-if(settings_log_inline && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx\?(guid|wp)\=[a-zA-Z0-9-]*/)){
+if(settings_log_inline && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx(\?|\?pf\=\&)(guid|wp)\=[a-zA-Z0-9-]*/)){
   var links = document.getElementsByTagName('a');
 
   var link = false;
@@ -1303,8 +1334,8 @@ if(settings_log_inline && document.location.href.match(/^http:\/\/www\.geocachin
       var iframe = document.createElement("iframe");
       iframe.setAttribute("id","gclhFrame");
       iframe.setAttribute("width","100%");
-      iframe.setAttribute("height","450px");
-      iframe.setAttribute("style","border: 0px; overflow: hidden; display: none;");
+      iframe.setAttribute("height","500px");
+      iframe.setAttribute("style","border: 0px; overflow: auto; display: none;");
       iframe.setAttribute("src","log.aspx?guid="+match[1]+"&gclh=small");
 
 //      function hide_iframe(){
@@ -1346,10 +1377,10 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx
   if(getElementsByClass('BottomSpacing')[0]) getElementsByClass('BottomSpacing')[0].style.display = "none";
   if(getElementsByClass('BottomSpacing')[1]) getElementsByClass('BottomSpacing')[1].style.display = "none";
   if(document.getElementById('ctl00_ContentBody_LogBookPanel1_WaypointLink')) document.getElementById('ctl00_ContentBody_LogBookPanel1_WaypointLink').parentNode.style.display = 'none';
-  document.getElementsByTagName("dt")[0].style.display = "none";
+  if(document.getElementsByTagName("dt")[0]) document.getElementsByTagName("dt")[0].style.display = "none";
 
   if(document.getElementById('divAdvancedOptions')) document.getElementById('divAdvancedOptions').style.display = "none";
-  if(document.getElementById('ctl00_ContentBody_LogBookPanel1_TBPanel')) document.getElementById('ctl00_ContentBody_LogBookPanel1_TBPanel').style.display = "none";
+  if(!settings_log_inline_tb && document.getElementById('ctl00_ContentBody_LogBookPanel1_TBPanel')) document.getElementById('ctl00_ContentBody_LogBookPanel1_TBPanel').style.display = "none";
 
   if(document.getElementById('ctl00_ContentBody_uxVistOtherListingLabel')) document.getElementById('ctl00_ContentBody_uxVistOtherListingLabel').style.display = "none";
   if(document.getElementById('ctl00_ContentBody_uxVistOtherListingGC')) document.getElementById('ctl00_ContentBody_uxVistOtherListingGC').style.display = "none";
@@ -1420,6 +1451,42 @@ function toDec(coords){
   dec2 = Math.round(dec2*10000000)/10000000;
 
   return new Array(dec1,dec2);
+}
+
+// Helper: from Dec to Deg
+function DectoDeg(lat,lng){
+  lat = lat/10000000;
+  var pre = ""
+  if(lat > 0) pre = "N";
+  else{ pre = "S"; lat = lat * -1; }
+  var tmp1 = parseInt(lat);
+  var tmp2 = (lat-tmp1)*60;
+  tmp1 = String(tmp1);
+  if(tmp1.length == 1) tmp1 = "0"+tmp1;
+  tmp2 = Math.round(tmp2*10000)/10000;
+  tmp2 = String(tmp2);
+  if(tmp2.length == 3) tmp2 = tmp2+"000";
+  else if(tmp2.length == 4) tmp2 = tmp2+"00";
+  else if(tmp2.length == 5) tmp2 = tmp2+"0";
+  var new_lat = pre+" "+tmp1+"° "+tmp2;
+
+  lng = lng/10000000;
+  var pre = "";
+  if(lng > 0) pre = "E";
+  else{ pre = "W"; lng = lng * -1; }
+  var tmp1 = parseInt(lng);
+  var tmp2 = (lng-tmp1)*60;
+  tmp1 = String(tmp1);
+  if(tmp1.length == 2) tmp1 = "0"+tmp1;
+  else if(tmp1.length == 1) tmp1 = "00"+tmp1;
+  tmp2 = Math.round(tmp2*10000)/10000;
+  tmp2 = String(tmp2);
+  if(tmp2.length == 3) tmp2 = tmp2+"000";
+  else if(tmp2.length == 4) tmp2 = tmp2+"00";
+  else if(tmp2.length == 5) tmp2 = tmp2+"0";
+  var new_lng = pre+" "+tmp1+"° "+tmp2;
+
+  return new_lat+" "+new_lng;
 }
 
 // Save HomeCoords for special bookmarks - From Index
@@ -1640,13 +1707,39 @@ function createFindPlayerForm(){
     document.getElementById('findplayer_overlay').style.display = "";
   }else{
     var html = "";
+    html += "<style>";
+    html += "#findplayer_overlay {";
+    html += "  background-color: #d8cd9d; ";
+    html += "  width:350px;";
+    html += "  border: 2px solid #778555; ";
+    html += "  overflow: auto; ";
+    html += "  padding:10px; ";
+    html += "  position: absolute; ";
+    html += "  left:30%; ";
+    html += "  top:60px; ";
+    html += "  z-index:101; ";
+    html += "  -moz-border-radius:30px; ";
+    html += "  -khtml-border-radius:30px; ";
+    html += "  border-radius: 30px;";
+    html += "  overflow: auto;";
+    html += "}";
+    html += ".gclh_form {";
+    html += "  background-color: #d8cd9d;";
+    html += "  border: 2px solid #778555;";
+    html += "  -moz-border-radius: 7px;";
+    html += "  -khtml-border-radius: 7px;";
+    html += "  border-radius: 7px;";
+    html += "  padding-left: 5px;";
+    html += "  padding-right: 5px;";
+    html += "}";
+    html += "</style>";
     // Overlay erstellen
-    html += "<div id='findplayer_overlay' style='background-color:#DDDDDD; width:350px; height:60px; left:35%; outline: 2px solid black; overflow:auto; padding:10px; position:fixed; top:9%; z-index:101;' align='center'>";
+    html += "<div id='findplayer_overlay' align='center'>";
     html += "<h3 style='margin:5px;'>Find Player</h3>";
     html += "<form action=\"/find/default.aspx\" method=\"post\" name=\"aspnetForm\">";
-    html += "<input type='hidden' name='__VIEWSTATE' value=''>";
-    html += "<input id='findplayer_field' class=\"Text\" type=\"text\" maxlength=\"100\" name=\"ctl00$ContentBody$FindUserPanel1$txtUsername\"/>";
-    html += "<input class=\"Button\" type=\"submit\" value=\"Go\" name=\"ctl00$ContentBody$FindUserPanel1$GetUsers\"/><input id='btn_close' type='button' value='close'>";
+    html += "<input class='gclh_form' type='hidden' name='__VIEWSTATE' value=''>";
+    html += "<input class='gclh_form' id='findplayer_field' class=\"Text\" type=\"text\" maxlength=\"100\" name=\"ctl00$ContentBody$FindUserPanel1$txtUsername\"/>";
+    html += "<input class='gclh_form' type=\"submit\" value=\"Go\" name=\"ctl00$ContentBody$FindUserPanel1$GetUsers\"/><input class='gclh_form' id='btn_close' type='button' value='close'>";
     html += "</form>";
     html += "</div>";
     document.getElementsByTagName('body')[0].innerHTML += html;
@@ -1681,186 +1774,184 @@ function showConfig(){
     document.getElementById('settings_overlay').style.display = "";
   }else{
     var html = "";
-    // Overlay erstellen
-    html += "<div id='settings_overlay' style='background-color:#DDDDDD; width:500px; height:80%; left:35%; outline: 2px solid black; overflow:auto; padding:10px; position:fixed; top:7.5%; z-index:101;' align='center'>";
-    // Inhalt
-    html += "<h3 style='margin:5px;'>GC little helper</h3>";
+    html += "<style>";
+    html += "#settings_overlay {";
+    html += "  background-color: #d8cd9d; ";
+    html += "  width:600px;";
+    html += "  border: 2px solid #778555; ";
+    html += "  overflow: auto; ";
+    html += "  padding:10px; ";
+    html += "  position: absolute; ";
+    html += "  left:30%; ";
+    html += "  top:10px; ";
+    html += "  z-index:101; ";
+    html += "  -moz-border-radius:30px; ";
+    html += "  -khtml-border-radius:30px; ";
+    html += "  border-radius: 30px;";
+    html += "  overflow: auto;";
+    html += "}";
+    html += "";
+    html += ".gclh_headline {";
+    html += "  height: 21px; ";
+    html += "  margin:5px; ";
+    html += "  background-color: #778555; ";
+    html += "  color: #FFFFFF;";
+    html += "  -moz-border-radius:30px; ";
+    html += "  -khtml-border-radius:30px; ";
+    html += "  border-radius: 30px;";
+    html += "  text-align: center;";
+    html += "}";
+    html += "";
+    html += ".gclh_headline2 {";
+    html += "  margin: 5px;";
+    html += "}";
+    html += "";
+    html += ".gclh_content {";
+    html += "  padding: 10px;";
+    html += "  font-family: Verdana;";
+    html += "  font-size: 14px;";
+    html += "}";
+    html += "";
+    html += ".gclh_form {";
+    html += "  background-color: #d8cd9d;";
+    html += "  border: 2px solid #778555;";
+    html += "  -moz-border-radius: 7px;";
+    html += "  -khtml-border-radius: 7px;";
+    html += "  border-radius: 7px;";
+    html += "  padding-left: 5px;";
+    html += "  padding-right: 5px;";
+    html += "}";
+    html += "";
+    html += ".gclh_ref {";
+    html += "  color: #000000;";
+    html += "  text-decoration: none;";
+    html += "  border-bottom: dotted 1px black;";
+    html += "}";
+    html += "";
+    html += ".gclh_small {";
+    html += "  font-size: 10px;";
+    html += "}";
+    html += "";
+    html += "/* Highlight */";
+    html += "a.gclh_info {";
+    html += "  color: #000000;";
+    html += "  text-decoration: none;";
+    html += "}";
+    html += "";
+    html += "a.gclh_info:hover {";
+    html += "  position: relative;";
+    html += "}";
+    html += "";
+    html += "a.gclh_info span {";
+    html += "  visibility: hidden;";
+    html += "  position: absolute; top:-310px; left:0px;";
+    html += "  padding: 2px;";
+    html += "  text-decoration: none;";
+    html += "  text-align: left;";
+    html += "  vertical-align: top;";
+    html += "  font-size: 12px;";
+    html += "}";
+    html += "";
+    html += "a.gclh_info:hover span {";
+    html += "  width: 250px;";
+    html += "  visibility: visible;";
+    html += "  top: 10px;";
+    html += "  border: 1px solid #000000;";
+    html += "  background-color: #d8cd9d;";
+    html += "}";
+    html += "</style>";
+    
+    html += "<div id='settings_overlay'>";
+    html += "<h3 class='gclh_headline'>GC little helper</h3>";
+    html += "<div class='gclh_content'>";
+    html += "";
+    html += "<h4 class='gclh_headline2'>Global</h4>";
+    html += "Home-Coords: <input class='gclh_form' type='text' id='settings_home_lat_lng' value='"+DectoDeg(GM_getValue("home_lat"),GM_getValue("home_lng"))+"'> <a class='gclh_info' href='#'><b>?</b><span class='gclh_span'>The Home-Coords are filled automatically if you update your Home-Coords on gc.com. If it doesn\'t work you can insert them here. These Coords are used for some special Links (Nearest List, Nearest Map, ..) and for the homezone-circle on the map.</span></a><br>";
+    html += "<input type='checkbox' "+(settings_bookmarks_on_top ? "checked='checked'" : "" )+" id='settings_bookmarks_on_top'> Show <a class='gclh_ref' href='#gclh_linklist'>Linklist</a> on top<br>";
+    html += "<input type='checkbox' "+(settings_bookmarks_show ? "checked='checked'" : "" )+" id='settings_bookmarks_show'> Show <a class='gclh_ref' href='#gclh_linklist'>Linklist</a> in profile<br>";
+    html += "<input type='checkbox' "+(settings_hide_feedback ? "checked='checked'" : "" )+" id='settings_hide_feedback'> Hide Feedback-Button<br>";
+    html += "Page-Width: <input class='gclh_form' type='text' size='3' id='settings_new_width' value='"+GM_getValue("settings_new_width",950)+"'> px<br>";
+    html += "";
+    html += "<br>";
+    html += "";
+    html += "<h4 class='gclh_headline2'>Nearest List</h4>";
+    html += "<input type='checkbox' "+(settings_redirect_to_map ? "checked='checked'" : "" )+" id='settings_redirect_to_map'> Redirect to Map<br>";
+    html += "<input type='checkbox' "+(settings_show_log_it ? "checked='checked'" : "" )+" id='settings_show_log_it'> Show Log-It Icon<br>";
+    html += "<br>";
+    html += "";
+    html += "<h4 class='gclh_headline2'>Maps</h4>";
+    html += "<input type='checkbox' "+(settings_show_homezone ? "checked='checked'" : "" )+" id='settings_show_homezone'> Show Homezone - Radius: <input class='gclh_form' type='text' size='2' id='settings_homezone_radius' value='"+settings_homezone_radius+"'> km<br>";
+    html += "<input type='checkbox' "+(settings_old_map ? "checked='checked'" : "" )+" id='settings_old_map'> Set old map as default<br>";
+    html += "Map-Width: <input class='gclh_form' type='text' size='3' id='map_width' value='"+GM_getValue("map_width",1200)+"'> px<br>";
+    html += "";
+    html += "<br>";
+    html += "";
+    html += "<h4 class='gclh_headline2'>Listing</h4>";
+    html += "<input type='checkbox' "+(settings_log_inline ? "checked='checked'" : "" )+" id='settings_log_inline'> Log Cache from Listing (inline) - <input type='checkbox' "+(settings_log_inline_tb ? "checked='checked'" : "" )+" id='settings_log_inline_tb'> Show TB-List<br>";
+    html += "<input type='checkbox' "+(settings_hide_empty_cache_notes ? "checked='checked'" : "" )+" id='settings_hide_empty_cache_notes'> Hide Cache-Notes if empty<br>";
+    html += "<input type='checkbox' "+(settings_hide_cache_notes ? "checked='checked'" : "" )+" id='settings_hide_cache_notes'> Hide Cache-Notes completely<br>";
+    html += "<input type='checkbox' "+(settings_hide_disclaimer ? "checked='checked'" : "" )+" id='settings_hide_disclaimer'> Hide Disclaimer<br>";
+    html += "<input type='checkbox' "+(settings_show_all_logs ? "checked='checked'" : "" )+" id='settings_show_all_logs'> Show all Logs - if log-count lower than <input class='gclh_form' type='text' size='2' id='settings_show_all_logs_count' value='"+settings_show_all_logs_count+"'><br>";
+    html += "<input type='checkbox' "+(settings_decrypt_hint ? "checked='checked'" : "" )+" id='settings_decrypt_hint'> Decrypt Hint<br>";
+    html += "<input type='checkbox' "+(settings_show_mail ? "checked='checked'" : "" )+" id='settings_show_mail'> Show Mail-Link beside Usernames<br>";
+    html += "<input type='checkbox' "+(settings_show_google_maps ? "checked='checked'" : "" )+" id='settings_show_google_maps'> Show Link to and from google maps<br>";
+    html += "<input type='checkbox' "+(settings_dynamic_map ? "checked='checked'" : "" )+" id='settings_dynamic_map'> Show dynamic map<br>";
+    html += "<br>";
+    html += "";
+    html += "<h4 class='gclh_headline2'>Logging</h4>";
+    html += "<input type='checkbox' "+(settings_submit_log_button ? "checked='checked'" : "" )+" id='settings_submit_log_button'> Submit Log-Text on F2<br>";
+    html += "<input type='checkbox' "+(settings_show_bbcode ? "checked='checked'" : "" )+" id='settings_show_bbcode'> Show Smilies & BBCode<br>";
+    html += "Log-Templates: <font class='gclh_small'>(BBCodes have to be enables)</font><br>";
+    for(var i = 0; i < anzTemplates; i++){
+      html += "&nbsp;&nbsp;<input class='gclh_form' type='text' size='15' id='settings_log_template_name["+i+"]' value='"+GM_getValue('settings_log_template_name['+i+']','')+"'> ";
+      html += "<a onClick=\"if(document.getElementById(\'settings_log_template_div["+i+"]\').style.display == \'\') document.getElementById(\'settings_log_template_div["+i+"]\').style.display = \'none\'; else document.getElementById(\'settings_log_template_div["+i+"]\').style.display = \'\'; return false;\" href='#'><img src='http://www.geocaching.com/images/stockholm/16x16/page_white_edit.gif' border='0'></a><br>";
+      html += "<div id='settings_log_template_div["+i+"]' style='display: none;'>&nbsp;&nbsp;&nbsp;&nbsp;<textarea class='gclh_form' rows='6' cols='30' id='settings_log_template["+i+"]'>"+GM_getValue("settings_log_template["+i+"]","")+"</textarea></div>";
+    }
+    html += "Default Log-Type: &nbsp; &nbsp; &nbsp;<select class='gclh_form' id='settings_default_logtype'>";
+    html += "  <option value=\"-1\" "+(settings_default_logtype == "-1" ? "selected=\"selected\"" : "")+">- Select Type of Log -</option>";
+    html += "  <option value=\"2\" "+(settings_default_logtype == "2" ? "selected=\"selected\"" : "")+">Found it</option>";
+    html += "  <option value=\"3\" "+(settings_default_logtype == "3" ? "selected=\"selected\"" : "")+">Didn't find it</option>";
+    html += "  <option value=\"4\" "+(settings_default_logtype == "4" ? "selected=\"selected\"" : "")+">Write note</option>";
+    html += "  <option value=\"7\" "+(settings_default_logtype == "7" ? "selected=\"selected\"" : "")+">Needs Archived</option>";
+    html += "  <option value=\"45\" "+(settings_default_logtype == "45" ? "selected=\"selected\"" : "")+">Needs Maintenance</option>";
+    html += "</select><br>";
+    html += "Default TB-Log-Type: <select class='gclh_form' id='settings_default_tb_logtype'>";
+    html += "  <option value=\"-1\" "+(settings_default_tb_logtype == "-1" ? "selected=\"selected\"" : "")+">- Select Type of Log -</option>";
+    html += "  <option value=\"13\" "+(settings_default_tb_logtype == "13" ? "selected=\"selected\"" : "")+">Retrieve from ..</option>";
+    html += "  <option value=\"19\" "+(settings_default_tb_logtype == "19" ? "selected=\"selected\"" : "")+">Grab it from ..</option>";
+    html += "  <option value=\"4\" "+(settings_default_tb_logtype == "4" ? "selected=\"selected\"" : "")+">Write note</option>";
+    html += "  <option value=\"48\" "+(settings_default_tb_logtype == "48" ? "selected=\"selected\"" : "")+">Discovered It</option>";
+    html += "</select><br>";
+    html += "Cache-Signature: <font class='gclh_small'>(#found# will be replaced with founds+1)</font><br>";
+    html += "<textarea class='gclh_form' rows='8' cols='40' id='settings_log_signature'>"+(typeof(GM_getValue("settings_log_signature")) != "undefined" ? GM_getValue("settings_log_signature") : "")+"</textarea><br>";
+    html += "TB-Signature:<br>";
+    html += "<textarea class='gclh_form' rows='8' cols='40' id='settings_tb_signature'>"+(typeof(GM_getValue("settings_tb_signature")) != "undefined" ? GM_getValue("settings_tb_signature") : "")+"</textarea><br>";
+    html += "<br>";
+    html += "";
+    html += "<h4 class='gclh_headline2'>Mail-Form</h4>";
+    html += "Signature:<br>";
+    html += "<textarea class='gclh_form' rows='8' cols='40' id='settings_mail_signature'>"+(typeof(GM_getValue("settings_mail_signature")) != "undefined" ? GM_getValue("settings_mail_signature") : "")+"</textarea><br>";
+    html += "<br>";
+    html += "";
+    html += "<h4 class='gclh_headline2'><a name='gclh_linklist'></a>Linklist / Navigation <a class='gclh_small' href='#gclh_linklist' id='gclh_show_linklist_btn'>show</a></h4>";
+    html += "<div id='gclh_settings_linklist' style='display: none;'>";
+    html += "Remove from Navigation:<br>";
+    html += "<input type='checkbox' "+(GM_getValue('remove_navi_play') ? "checked='checked'" : "" )+" id='remove_navi_play'> Play<br>";
+    html += "<input type='checkbox' "+(GM_getValue('remove_navi_profile') ? "checked='checked'" : "" )+" id='remove_navi_profile'> Your Profile<br>";
+    html += "<input type='checkbox' "+(GM_getValue('remove_navi_join') ? "checked='checked'" : "" )+" id='remove_navi_join'> Join<br>";
+    html += "<input type='checkbox' "+(GM_getValue('remove_navi_community') ? "checked='checked'" : "" )+" id='remove_navi_community'> Community<br>";
+    html += "<input type='checkbox' "+(GM_getValue('remove_navi_videos') ? "checked='checked'" : "" )+" id='remove_navi_videos'> Videos<br>";
+    html += "<input type='checkbox' "+(GM_getValue('remove_navi_resources') ? "checked='checked'" : "" )+" id='remove_navi_resources'> Resources<br>";
+    html += "<input type='checkbox' "+(GM_getValue('remove_navi_shop') ? "checked='checked'" : "" )+" id='remove_navi_shop'> Shop<br>";
+    html += "<br>";
+    html += "<input type='checkbox' "+(settings_bookmarks_search ? "checked='checked'" : "" )+" id='settings_bookmarks_search'> Show Searchfield - Default Value: <input class='gclh_form' type='text' id='settings_bookmarks_search_default' value='"+settings_bookmarks_search_default+"' size='4'><br>";
+    html += "<input type='checkbox' "+(settings_bookmarks_top_menu ? "checked='checked'" : "" )+" id='settings_bookmarks_top_menu'> Show Linklist as Drop-Down<br>";
     html += "<br>";
     html += "<table>";
     html += "  <tr>";
-    html += "    <td align='left' colspan='4'><b>Options:</b></td>";
-    html += "  </tr>";
-    html += "  <tr>";
-    html += "    <td align='left'><input type='checkbox' "+(settings_submit_log_button ? "checked='checked'" : "" )+" id='settings_submit_log_button'></td>";
-    html += "    <td align='left' colspan='3'>Submit Log-Text on F2</td>";
-    html += "  </tr>";
-    html += "  <tr>";
-    html += "    <td align='left'><input type='checkbox' "+(settings_log_inline ? "checked='checked'" : "" )+" id='settings_log_inline'></td>";
-    html += "    <td align='left' colspan='3'>Log Cache from Listing</td>";
-    html += "  </tr>";
-    html += "  <tr>";
-    html += "    <td align='left'><input type='checkbox' "+(settings_bookmarks_show ? "checked='checked'" : "" )+" id='settings_bookmarks_show'></td>";
-    html += "    <td align='left' colspan='3'>Show Linklist in profile</td>";
-    html += "  </tr>";
-    html += "  <tr>";
-    html += "    <td align='left'><input type='checkbox' "+(settings_bookmarks_on_top ? "checked='checked'" : "" )+" id='settings_bookmarks_on_top'></td>";
-    html += "    <td align='left' colspan='3'>Show Linklist on top</td>";
-//    html += "    <td align='left'><input type='checkbox' "+(settings_bookmarks_top_left ? "checked='checked'" : "" )+" id='settings_bookmarks_top_left'> Show left?</td>";
-    html += "  </tr>";
-//    html += "  <tr>";
-//    html += "    <td align='left'>&nbsp;</td>";
-//    html += "    <td align='left' colspan='2'>Top-Bookmark-List Link Size:</td>";
-//    html += "    <td align='left'><input id='settings_bookmarks_top_size' type='text' size='10' value='"+settings_bookmarks_top_size+"'> %</td>";
-//    html += "  </tr>";
-//    html += "  <tr>";
-//    html += "    <td align='left'>&nbsp;</td>";
-//    html += "    <td align='left' colspan='2'>Top-Bookmark-List Link Color:</td>";
-//    html += "    <td align='left'><input id='settings_bookmarks_top_color' type='text' size='10' value='"+settings_bookmarks_top_color+"'></td>";
-//    html += "  </tr>";
-    html += "  <tr>";
-    html += "    <td align='left'><input type='checkbox' "+(settings_redirect_to_map ? "checked='checked'" : "" )+" id='settings_redirect_to_map'></td>";
-    html += "    <td align='left' colspan='3'>Redirect from Cache-list to map</td>";
-    html += "  </tr>";
-/*    html += "  <tr>";
-    html += "    <td align='left'><input type='checkbox' "+(settings_hide_facebook ? "checked='checked'" : "" )+" id='settings_hide_facebook'></td>";
-    html += "    <td align='left' colspan='3'>Hide Facebook-Button</td>";
-    html += "  </tr>";*/
-    html += "  <tr>";
-    html += "    <td align='left'><input type='checkbox' "+(settings_hide_feedback ? "checked='checked'" : "" )+" id='settings_hide_feedback'></td>";
-    html += "    <td align='left' colspan='3'>Hide Feedback-Button</td>";
-    html += "  </tr>";
-    html += "  <tr>";
-    html += "    <td align='left'><input type='checkbox' "+(settings_hide_disclaimer ? "checked='checked'" : "" )+" id='settings_hide_disclaimer'></td>";
-    html += "    <td align='left' colspan='3'>Hide Disclaimer in Listing</td>";
-    html += "  </tr>";
-    html += "  <tr>";
-    html += "    <td align='left'><input type='checkbox' "+(settings_hide_cache_notes ? "checked='checked'" : "" )+" id='settings_hide_cache_notes'></td>";
-    html += "    <td align='left' colspan='3'>Hide Cache Notes in Listing</td>";
-    html += "  </tr>";
-    html += "  <tr>";
-    html += "    <td align='left'><input type='checkbox' "+(settings_hide_empty_cache_notes ? "checked='checked'" : "" )+" id='settings_hide_empty_cache_notes'></td>";
-    html += "    <td align='left' colspan='3'>Hide Cache Notes if empty</td>";
-    html += "  </tr>";
-//    html += "  <tr>";
-//    html += "    <td align='left'><input type='checkbox' "+(settings_hide_lf_banner ? "checked='checked'" : "" )+" id='settings_hide_lf_banner'></td>";
-//    html += "    <td align='left' colspan='3'>Hide L&F-Banner in Listing</td>";
-//    html += "  </tr>";
-    html += "  <tr>";
-    html += "    <td align='left'><input type='checkbox' "+(settings_show_all_logs ? "checked='checked'" : "" )+" id='settings_show_all_logs'></td>";
-    html += "    <td align='left' colspan='3'>Show all logs of a cache - if log-count lower than <input type='text' size='2' id='settings_show_all_logs_count' value='"+settings_show_all_logs_count+"'></td>";
-    html += "  </tr>"
-    html += "  <tr>";
-    html += "    <td align='left'><input type='checkbox' "+(settings_decrypt_hint ? "checked='checked'" : "" )+" id='settings_decrypt_hint'></td>";
-    html += "    <td align='left' colspan='3'>Decrypt Hint</td>";
-    html += "  </tr>";
-    html += "  <tr>";
-    html += "    <td align='left'><input type='checkbox' "+(settings_show_bbcode ? "checked='checked'" : "" )+" id='settings_show_bbcode'></td>";
-    html += "    <td align='left' colspan='3'>Show Smilies & BBCode on Log-Page</td>";
-    html += "  </tr>";
-    html += "  <tr>";
-    html += "    <td align='left'><input type='checkbox' "+(settings_show_mail ? "checked='checked'" : "" )+" id='settings_show_mail'></td>";
-    html += "    <td align='left' colspan='3'>Show Mail-Link beside Usernames</td>";
-    html += "  </tr>";
-    html += "  <tr>";
-    html += "    <td align='left'><input type='checkbox' "+(settings_show_google_maps ? "checked='checked'" : "" )+" id='settings_show_google_maps'></td>";
-    html += "    <td align='left' colspan='3'>Show link to and from Google Maps</td>";
-    html += "  </tr>";
-    html += "  <tr>";
-    html += "    <td align='left'><input type='checkbox' "+(settings_show_log_it ? "checked='checked'" : "" )+" id='settings_show_log_it'></td>";
-    html += "    <td align='left' colspan='3'>Show Log It-Icon on nearest list</td>";
-    html += "  </tr>";
-    html += "  <tr>";
-    html += "    <td align='left'><input type='checkbox' "+(settings_dynamic_map ? "checked='checked'" : "" )+" id='settings_dynamic_map'></td>";
-    html += "    <td align='left' colspan='3'>Show dynamic map in Listings</td>";
-    html += "  </tr>";
-    html += "  <tr>";
-    html += "    <td align='left'><input type='checkbox' "+(settings_show_homezone ? "checked='checked'" : "" )+" id='settings_show_homezone'></td>";
-    html += "    <td align='left' colspan='2'>Show Homezone</td>";
-    html += "    <td align='left'><input id='settings_homezone_radius' type='text' size='2' value='"+settings_homezone_radius+"'> km</td>";
-    html += "  </tr>";
-    html += "  <tr>";
-    html += "    <td align='left'><input type='checkbox' "+(settings_old_map ? "checked='checked'" : "" )+" id='settings_old_map'></td>";
-    html += "    <td align='left' colspan='3'>Set old Map as default (instead of Beta)</td>";
-    html += "  </tr>";
-    html += "  <tr>";
-    html += "    <td align='left' colspan='4'>Map Width (gc.com-default: 950): <input type='text' id='map_width' value='"+GM_getValue("map_width",1200)+"' size='4'>px</td>";
-    html += "  </tr>";
-    html += "  <tr>";
-    html += "    <td align='left' colspan='4'>Page Width (gc.com-default: 950): <input type='text' id='settings_new_width' value='"+GM_getValue("settings_new_width",950)+"' size='4'>px</td>";
-    html += "  </tr>";
-    html += "  <tr>";
-    html += "    <td align='left' colspan='4'><select id='settings_default_logtype'>";
-    html += "<option value=\"-1\" "+(settings_default_logtype == "-1" ? "selected=\"selected\"" : "")+">- Select Type of Log -</option>";
-    html += "<option value=\"2\" "+(settings_default_logtype == "2" ? "selected=\"selected\"" : "")+">Found it</option>";
-    html += "<option value=\"3\" "+(settings_default_logtype == "3" ? "selected=\"selected\"" : "")+">Didn't find it</option>";
-    html += "<option value=\"4\" "+(settings_default_logtype == "4" ? "selected=\"selected\"" : "")+">Write note</option>";
-    html += "<option value=\"7\" "+(settings_default_logtype == "7" ? "selected=\"selected\"" : "")+">Needs Archived</option>";
-    html += "<option value=\"45\" "+(settings_default_logtype == "45" ? "selected=\"selected\"" : "")+">Needs Maintenance</option>";
-    html += "</select> Default Log Type</td>";
-    html += "  </tr>";
-    html += "  <tr>";
-    html += "    <td align='left' colspan='4'><select id='settings_default_tb_logtype'>";
-    html += "<option value=\"-1\" "+(settings_default_tb_logtype == "-1" ? "selected=\"selected\"" : "")+">- Select Type of Log -</option>";
-    html += "<option value=\"13\" "+(settings_default_tb_logtype == "13" ? "selected=\"selected\"" : "")+">Retrieve from ..</option>";
-    html += "<option value=\"19\" "+(settings_default_tb_logtype == "19" ? "selected=\"selected\"" : "")+">Grab it from ..</option>";
-    html += "<option value=\"4\" "+(settings_default_tb_logtype == "4" ? "selected=\"selected\"" : "")+">Write note</option>";
-    html += "<option value=\"48\" "+(settings_default_tb_logtype == "48" ? "selected=\"selected\"" : "")+">Discovered It</option>";
-    html += "</select> Default TB Log Type</td>";
-    html += "  </tr>";
-    html += "  <tr>";
-    html += "    <td align='left' colspan='4'>Mail-Signature:<br><textarea id='settings_mail_signature' rows='7' cols='50'>"+(typeof(GM_getValue("settings_mail_signature")) != "undefined" ? GM_getValue("settings_mail_signature") : "")+"</textarea></td>";
-    html += "  </tr>";
-    html += "  <tr>";
-    html += "    <td align='left' colspan='4'>Log-Signature: <font style='font-size: 10px;'>(#found# will be replaced with finds+1)</font><br><textarea id='settings_log_signature' rows='7' cols='50'>"+(typeof(GM_getValue("settings_log_signature")) != "undefined" ? GM_getValue("settings_log_signature") : "")+"</textarea></td>";
-    html += "  </tr>";
-    html += "  <tr>";
-    html += "    <td align='left' colspan='4'>TB-Signature:<br><textarea id='settings_tb_signature' rows='7' cols='50'>"+(typeof(GM_getValue("settings_tb_signature")) != "undefined" ? GM_getValue("settings_tb_signature") : "")+"</textarea></td>";
-    html += "  </tr>";
-    html += "  <tr>";
-    html += "    <td align='left' colspan='4'>&nbsp;</td>";
-    html += "  </tr>";
-    html += "  <tr>";
-    html += "    <td align='left' colspan='4'><b>Remove links from Navi:</b></td>";
-    html += "  </tr>";
-    html += "  <tr>";
-    html += "    <td><input type='checkbox' "+(GM_getValue('remove_navi_play') ? "checked='checked'" : "" )+" id='remove_navi_play'></td>";
-    html += "    <td colspan='3'>Play</td>";
-    html += "  </tr>";
-    html += "  <tr>";
-    html += "    <td><input type='checkbox' "+(GM_getValue('remove_navi_profile') ? "checked='checked'" : "" )+" id='remove_navi_profile'></td>";
-    html += "    <td colspan='3'>Your Profile</td>";
-    html += "  </tr>";
-    html += "  <tr>";
-    html += "    <td><input type='checkbox' "+(GM_getValue('remove_navi_join') ? "checked='checked'" : "" )+" id='remove_navi_join'></td>";
-    html += "    <td colspan='3'>Join</td>";
-    html += "  </tr>";
-    html += "  <tr>";
-    html += "    <td><input type='checkbox' "+(GM_getValue('remove_navi_community') ? "checked='checked'" : "" )+" id='remove_navi_community'></td>";
-    html += "    <td colspan='3'>Community</td>";
-    html += "  </tr>";
-    html += "  <tr>";
-    html += "    <td><input type='checkbox' "+(GM_getValue('remove_navi_videos') ? "checked='checked'" : "" )+" id='remove_navi_videos'></td>";
-    html += "    <td colspan='3'>Videos</td>";
-    html += "  </tr>";
-    html += "  <tr>";
-    html += "    <td><input type='checkbox' "+(GM_getValue('remove_navi_resources') ? "checked='checked'" : "" )+" id='remove_navi_resources'></td>";
-    html += "    <td colspan='3'>Resources</td>";
-    html += "  </tr>";
-    html += "  <tr>";
-    html += "    <td><input type='checkbox' "+(GM_getValue('remove_navi_shop') ? "checked='checked'" : "" )+" id='remove_navi_shop'></td>";
-    html += "    <td colspan='3'>Shop</td>";
-    html += "  </tr>";
-    html += "  <tr>";
-    html += "    <td align='left' colspan='4'>&nbsp;</td>";
-    html += "  </tr>";
-    html += "  <tr>";
-    html += "    <td><input type='checkbox' "+(settings_bookmarks_top_menu ? "checked='checked'" : "" )+" id='settings_bookmarks_top_menu'></td>";
-    html += "    <td colspan='3'>Show Linklist as Drop-Down-Menu</td>";
-    html += "  </tr>";
-    html += "  <tr>";
-    html += "    <td align='left' colspan='2'><b>Linklist:</b><br><font style='font-size: 10px;'>(second check to enable on Beta Map)</font></td>";
-    html += "    <td align='left'>Sort</td>";
-    html += "    <td align='left'>Custom Name</td>";
+    html += "    <td colspan='2'><font class='gclh_small'>(Second check to enable on Beta Map)</font></td>";
+    html += "    <th>Sort</th>";
+    html += "    <th>Custom Name</th>";
     html += "  </tr>";
 
     // Create reverse-Array
@@ -1885,36 +1976,45 @@ function showConfig(){
       html += "    <td align='left'><input type='checkbox' "+(typeof(sort[i]) != "undefined" ? "checked='checked'" : "" )+" id='settings_bookmarks_list["+i+"]'><input type='checkbox' "+(typeof(sort_beta[i]) != "undefined" ? "checked='checked'" : "" )+" id='settings_bookmarks_list_beta["+i+"]'></td>";
       html += "    <td align='left'>";
       if(typeof(bookmarks[i]['custom']) != "undefined" && bookmarks[i]['custom'] == true){
-        html += "<input type='text' id='settings_custom_bookmark["+cust+"]' value='"+bookmarks[i]['href']+"' size='15'> ";
+        html += "<input class='gclh_form' type='text' id='settings_custom_bookmark["+cust+"]' value='"+bookmarks[i]['href']+"' size='15'> ";
         html += "<input type='checkbox' title='Open in new Window' "+(bookmarks[i]['target'] == "_blank" ? "checked='checked'" : "" )+" id='settings_custom_bookmark_target["+cust+"]'>";
         cust++;
       }else{
-        html += "<a ";
+        html += "<a class='gclh_ref' ";
         for(attr in bookmarks[i]){
           html += attr+"='"+bookmarks[i][attr]+"' ";
         }
         html += ">"+(typeof(bookmarks_orig_title[i]) != "undefined" && bookmarks_orig_title[i] != "" ? bookmarks_orig_title[i] : bookmarks[i]['title'])+"</a>";
       }
       html += "</td>";
-      html += "    <td align='left'><select id='bookmarks_sort["+i+"]'>"+options+"</select></td>";
-      html += "    <td align='left'><input id='bookmarks_name["+i+"]' type='text' size='10' value='"+(typeof(GM_getValue("settings_bookmarks_title["+i+"]")) != "undefined" ? GM_getValue("settings_bookmarks_title["+i+"]") : "")+"'></td>";
+      html += "    <td align='left'><select class='gclh_form' id='bookmarks_sort["+i+"]'>"+options+"</select></td>";
+      html += "    <td align='left'><input class='gclh_form' id='bookmarks_name["+i+"]' type='text' size='15' value='"+(typeof(GM_getValue("settings_bookmarks_title["+i+"]")) != "undefined" ? GM_getValue("settings_bookmarks_title["+i+"]") : "")+"'></td>"; 
       html += "  </tr>";
     }
-
-    html += "  <tr>";
-    html += "    <td><input type='checkbox' "+(settings_bookmarks_search ? "checked='checked'" : "" )+" id='settings_bookmarks_search'></td>";
-    html += "    <td colspan='3'>Show Searchfield</td>";
-    html += "  </tr>";
-
-    html += "  <tr>";
-    html += "    <td align='left' colspan='4'>&nbsp;</td>";
-    html += "  </tr>";
-    html += "  <tr>";
-    html += "    <td align='center' colspan='4'><input id='btn_save' type='button' value='save'><input id='btn_close' type='button' value='close'></td>";
-    html += "  </tr>";
     html += "</table>";
     html += "</div>";
+    html += "<br>";
+    html += "";
+    html += "<br>";
+    html += "<input class='gclh_form' type='button' value='save' id='btn_save'> <input class='gclh_form' type='button' value='close' id='btn_close'>";
+    html += "</div>";
+    html += "</div>";
+
     document.getElementsByTagName('body')[0].innerHTML += html;
+
+    function gclh_show_linklist(){
+      var linklist = document.getElementById('gclh_settings_linklist');
+      var lnk = document.getElementById('gclh_show_linklist_btn');
+
+      if(linklist.style.display == 'none'){
+        linklist.style.display = '';
+        lnk.innerHTML = "hide";
+      }else{
+        linklist.style.display = 'none';
+        lnk.innerHTML = "show";
+      }
+    }
+    document.getElementById('gclh_show_linklist_btn').addEventListener("click",gclh_show_linklist,false);
 
     // Give the buttons an function
     document.getElementById('btn_close').addEventListener("click", btnClose, false);
@@ -1923,21 +2023,25 @@ function showConfig(){
 
   // Save Button
   function btnSave(){
+
+    var value = document.getElementById("settings_home_lat_lng").value;
+    if(value.match(/^(N|S) [0-9][0-9]. [0-9][0-9]\.[0-9][0-9][0-9] (E|W) [0-9][0-9][0-9]. [0-9][0-9]\.[0-9][0-9][0-9]$/)){
+      var latlng = toDec(value);
+      if(GM_getValue("home_lat",0) != parseInt(latlng[0]*10000000)) GM_setValue("home_lat",parseInt(latlng[0]*10000000)); // * 10000000 because GM don't know float
+      if(GM_getValue("home_lng",0) != parseInt(latlng[1]*10000000)) GM_setValue("home_lng",parseInt(latlng[1]*10000000));
+    }
     GM_setValue("settings_submit_log_button",document.getElementById('settings_submit_log_button').checked);
     GM_setValue("settings_log_inline",document.getElementById('settings_log_inline').checked);
+    GM_setValue("settings_log_inline_tb",document.getElementById('settings_log_inline_tb').checked);
     GM_setValue("settings_bookmarks_show",document.getElementById('settings_bookmarks_show').checked);
     GM_setValue("settings_bookmarks_on_top",document.getElementById('settings_bookmarks_on_top').checked);
     GM_setValue("settings_bookmarks_search",document.getElementById('settings_bookmarks_search').checked);
-//    GM_setValue("settings_bookmarks_top_left",document.getElementById('settings_bookmarks_top_left').checked);
-//    GM_setValue("settings_bookmarks_top_size",document.getElementById('settings_bookmarks_top_size').value);
-//    GM_setValue("settings_bookmarks_top_color",document.getElementById('settings_bookmarks_top_color').value);
+    GM_setValue("settings_bookmarks_search_default",document.getElementById('settings_bookmarks_search_default').value);
     GM_setValue("settings_redirect_to_map",document.getElementById('settings_redirect_to_map').checked);
-//    GM_setValue("settings_hide_facebook",document.getElementById('settings_hide_facebook').checked);
     GM_setValue("settings_hide_feedback",document.getElementById('settings_hide_feedback').checked);
     GM_setValue("settings_hide_disclaimer",document.getElementById('settings_hide_disclaimer').checked);
     GM_setValue("settings_hide_cache_notes",document.getElementById('settings_hide_cache_notes').checked);
     GM_setValue("settings_hide_empty_cache_notes",document.getElementById('settings_hide_empty_cache_notes').checked);
-//    GM_setValue("settings_hide_lf_banner",document.getElementById('settings_hide_lf_banner').checked);
     GM_setValue("settings_show_all_logs",document.getElementById('settings_show_all_logs').checked);
     GM_setValue("settings_show_all_logs_count",document.getElementById('settings_show_all_logs_count').value);
     GM_setValue("settings_decrypt_hint",document.getElementById('settings_decrypt_hint').checked);
@@ -1964,6 +2068,16 @@ function showConfig(){
     GM_setValue("remove_navi_resources",document.getElementById('remove_navi_resources').checked);
     GM_setValue("remove_navi_shop",document.getElementById('remove_navi_shop').checked);
     GM_setValue("settings_bookmarks_top_menu",document.getElementById('settings_bookmarks_top_menu').checked);
+
+    // Save Log-Templates
+    for(var i = 0; i < anzTemplates; i++){
+      var name = document.getElementById('settings_log_template_name['+i+']');
+      var text = document.getElementById('settings_log_template['+i+']');
+      if(name && text){
+        GM_setValue('settings_log_template_name['+i+']',name.value);
+        GM_setValue('settings_log_template['+i+']',text.value);
+      }
+    }
 
     // Create the confusing settings_bookmarks_list Array :)
     var queue = new Array();
@@ -2028,7 +2142,12 @@ function showConfig(){
     document.location.reload(true);
   }
 }
-GM_registerMenuCommand("little helper config", showConfig);
+if(this.GM_registerMenuCommand) GM_registerMenuCommand("little helper config", showConfig);
+if(window.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/default\.aspx/) && document.getElementById('ctl00_ContentBody_WidgetMiniProfile1_logOutLink')){
+  var lnk = " | <a href='#' id='gclh_config_lnk'>GClh Config</a>";
+  document.getElementById('ctl00_ContentBody_WidgetMiniProfile1_logOutLink').parentNode.innerHTML += lnk;
+  document.getElementById('gclh_config_lnk').addEventListener("click", showConfig, false);
+}
 
 // Check for Updates
 function checkVersion(){
@@ -2040,7 +2159,7 @@ function checkVersion(){
   if(!last_check) last_check = 0;
 
   if((last_check + next_check) < time){
-    GM_xmlhttpRequest({
+    if(GM_xmlhttpRequest) GM_xmlhttpRequest({
       method: 'GET',
       url: url,
       headers: {'User-Agent' : 'GM ' + scriptName + ' v' + scriptVersion + ' ' + last_check},
