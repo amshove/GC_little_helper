@@ -10,8 +10,14 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net>
-// Version:        4.4             - 03.06.2010
-// Changelog:      4.4             - Added Log-Templates
+// Version:        4.5             - 04.06.2010
+// Changelog:      4.5             - Show other Coordinate-Formats in Listing and on print-page
+//                                 - Show amount of different Coins found in public profile
+//                                 - Now the HomeCoords are also parsed from http://www.geocaching.com/account/default.aspx
+//                                 - Fix: Insert template doesn't replace text now
+//                                 - Fix: Redirect to Map
+//                                 - Fix: Inline-Log does work on Pages without Gallery now
+//                 4.4             - Added Log-Templates
 //                                 - Fix: Default Log-Type should not override Field-Note-Log-Type
 //                                 - Added some Code to support Google Chrome (not tested and not supported yet) - thanks to Bart
 //                                 - Added Signal-Smilies
@@ -306,7 +312,7 @@ bookmarks[34]['id'] = "lnk_my_trackables";
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "4.4";
+var scriptVersion = "4.5";
 
 var anzCustom = 10;
 var anzTemplates = 5;
@@ -656,13 +662,17 @@ if(document.getElementById('Navigation')){
 
 // Redirect to Map
 if(settings_redirect_to_map && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/nearest\.aspx\?/)){
-  var lat = document.location.href.match(/lat_h=([0-9.]*)/);
-  var lng = document.location.href.match(/long_h=([0-9.]*)/);
-
-  if(!lat) var lat = document.location.href.match(/lat=([0-9.]*)/);
-  if(!lng) var lng = document.location.href.match(/lng=([0-9.]*)/);
-  
-  if(!document.location.href.match(/&disable_redirect/)) document.location.href = map_url+"?lat="+lat[1]+"&lng="+lng[1];
+//   var lat = document.location.href.match(/lat_h=([0-9.]*)/);
+//   var lng = document.location.href.match(/long_h=([0-9.]*)/);
+// 
+//   if(!lat) var lat = document.location.href.match(/lat=([0-9.]*)/);
+//   if(!lng) var lng = document.location.href.match(/lng=([0-9.]*)/);
+//
+//  if(!document.location.href.match(/&disable_redirect/)) document.location.href = map_url+"?lat="+lat[1]+"&lng="+lng[1];
+  if(!document.location.href.match(/&disable_redirect/) && document.getElementById('ctl00_ContentBody_LocationPanel1_lnkMapIt')){
+    var match = document.getElementById('ctl00_ContentBody_LocationPanel1_lnkMapIt').href.match(/\.aspx\?(.*)/);
+    if(match[1]) document.location.href = map_url+"?"+match[1];
+  }
 }
 
 
@@ -780,8 +790,8 @@ if(settings_decrypt_hint && document.location.href.match(/^http:\/\/www\.geocach
   unsafeWindow.dht(document.getElementById("ctl00_ContentBody_lnkDH"));
 }
 if(settings_decrypt_hint && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cdpf\.aspx/)){
-  document.getElementById('uxDecryptedHint').style.display = 'none';
-  document.getElementById('uxEncryptedHint').style.display = '';
+  if(document.getElementById('uxDecryptedHint')) document.getElementById('uxDecryptedHint').style.display = 'none';
+  if(document.getElementById('uxEncryptedHint')) document.getElementById('uxEncryptedHint').style.display = '';
 }
 
 // Show Smilies & BBCode --- http://www.cachewiki.de/wiki/Formatierung
@@ -800,6 +810,22 @@ if(settings_show_bbcode && (document.location.href.match(/^http:\/\/www\.geocach
   code += "    } else {";
   code += "      pos = start + aTag.length + insText.length + eTag.length;";
   code += "    }";
+  code += "    input.selectionStart = pos;";
+  code += "    input.selectionEnd = pos;";
+  code += "  }";
+  code += "  input.focus();";
+  code += "}";
+  code += "function gclh_insert_from_div(id){";
+  code += "  var input = document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo');";
+  code += "  var inhalt = document.getElementById(id).innerHTML;";
+  code += "  if(typeof input.selectionStart != 'undefined' && inhalt){";
+  code += "    var start = input.selectionStart;";
+  code += "    var end = input.selectionEnd;";
+  code += "    var insText = input.value.substring(start, end);";
+  code += "    input.value = input.value.substr(0, start) + inhalt + input.value.substr(end);";
+  code += "    /* Anpassen der Cursorposition */";
+  code += "    var pos;";
+  code += "    pos = start + inhalt.length;";
   code += "    input.selectionStart = pos;";
   code += "    input.selectionEnd = pos;";
   code += "  }";
@@ -868,7 +894,7 @@ if(settings_show_bbcode && (document.location.href.match(/^http:\/\/www\.geocach
   for(var i = 0; i < anzTemplates; i++){
     if(GM_getValue("settings_log_template_name["+i+"]","") != ""){
       liste += "<div id='gclh_template["+i+"]' style='display: none;'>"+GM_getValue("settings_log_template["+i+"]","")+"</div>";
-      liste += "<a href='#' onClick='document.getElementById(\"ctl00_ContentBody_LogBookPanel1_uxLogInfo\").innerHTML = document.getElementById(\"gclh_template["+i+"]\").innerHTML; return false;' style='color: #000000; text-decoration: none; font-weight: normal;'> - "+GM_getValue("settings_log_template_name["+i+"]","")+"</a><br>";
+      liste += "<a href='#' onClick='gclh_insert_from_div(\"gclh_template["+i+"]\"); return false;' style='color: #000000; text-decoration: none; font-weight: normal;'> - "+GM_getValue("settings_log_template_name["+i+"]","")+"</a><br>";
     }
   }
   box.innerHTML = liste;
@@ -1307,20 +1333,28 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/(default\.a
 if(settings_log_inline && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx(\?|\?pf\=\&)(guid|wp)\=[a-zA-Z0-9-]*/)){
   var links = document.getElementsByTagName('a');
 
-  var link = false;
   var menu = false;
-  var first = true;
+  var watch = false;
+  var gallery = false;
   for(var i = 0; i < links.length; i++){
-    if(links[i].href.match(/gallery\.aspx/)){
-      if(first){
-        first = false; // First Link ist on Top
-        menu = links[i];
-      }else{
-        link = links[i];
-        break;
-      }
+    if(links[i].href.match(/log\.aspx/) && !menu){
+      menu = links[i];
+    }else if(links[i].href.match(/gallery\.aspx/) && !gallery){
+      gallery = links[i];
+    }else if(links[i].href.match(/watchlist\.aspx/) && !watch){
+      watch = links[i];
     }
   }
+  
+  var heads = document.getElementsByTagName("h3");
+  var head = false;
+  for(var i = 0; i < heads.length; i++){
+    if(heads[i].className == "clear"){
+      head = heads[i];
+      break;
+    }
+  }
+  
 
   function hide_iframe(){
     var frame = document.getElementById('gclhFrame');
@@ -1328,21 +1362,15 @@ if(settings_log_inline && document.location.href.match(/^http:\/\/www\.geocachin
     else frame.style.display = "";
   }
 
-  if(link){
-    var match = link.href.match(/gallery\.aspx\?guid=(.*)/);
-    if(match[1]){
+  if(head && menu){
+    var match = menu.href.match(/\?ID=(.*)/);
+    if(match && match[1]){
       var iframe = document.createElement("iframe");
       iframe.setAttribute("id","gclhFrame");
       iframe.setAttribute("width","100%");
       iframe.setAttribute("height","500px");
       iframe.setAttribute("style","border: 0px; overflow: auto; display: none;");
-      iframe.setAttribute("src","log.aspx?guid="+match[1]+"&gclh=small");
-
-//      function hide_iframe(){
-//        var frame = document.getElementById('gclhFrame');
-//        if(frame.style.display == "") frame.style.display = "none";
-//        else frame.style.display = "";
-//      }
+      iframe.setAttribute("src","log.aspx?ID="+match[1]+"&gclh=small");
 
       var a = document.createElement("a");
       a.setAttribute("href","#gclhLogIt");
@@ -1350,12 +1378,10 @@ if(settings_log_inline && document.location.href.match(/^http:\/\/www\.geocachin
       a.appendChild(document.createTextNode("Log your visit"));
       a.addEventListener("click", hide_iframe, false);
 
-      link.parentNode.parentNode.insertBefore(a,link.parentNode);
-      link.parentNode.parentNode.insertBefore(iframe,link.parentNode);
+      head.parentNode.insertBefore(a,head);
+      head.parentNode.insertBefore(iframe,head);
     }
-  }
 
-  if(menu){
     var a = document.createElement("a");
     a.setAttribute("href","#gclhLogIt");
     a.setAttribute("class","lnk");
@@ -1364,10 +1390,15 @@ if(settings_log_inline && document.location.href.match(/^http:\/\/www\.geocachin
 
     var li = document.createElement('li');
     li.appendChild(a);
-    menu.parentNode.parentNode.insertBefore(li,menu.parentNode);
+
+    var link = false;
+    if(gallery) link = gallery;
+    else link = watch;
+    
+    if(link) link.parentNode.parentNode.insertBefore(li,link.parentNode);
   }
 }
-if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?guid\=[a-zA-Z0-9-]*\&gclh\=small/)){ // Hide everything to be smart for the iframe :)
+if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?(ID|guid)\=[a-zA-Z0-9-]*\&gclh\=small/)){ // Hide everything to be smart for the iframe :)
   if(document.getElementsByTagName('html')[0]) document.getElementsByTagName('html')[0].style.backgroundColor = "#FFFFFF";
 
   if(document.getElementsByTagName("header")[0]) document.getElementsByTagName("header")[0].style.display = "none";
@@ -1436,6 +1467,22 @@ alert(uneval(score));
   window.addEventListener("load", gclh_load_score, false);
 }
 
+// Show amount of different Coins in public profile
+if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/profile\//) && document.getElementById('ctl00_ContentBody_ProfilePanel1_lnkCollectibles').className == "Active"){
+  var tables = getElementsByClass("Table");
+  if(tables){
+    var table = tables[0];
+    var rows = table.getElementsByTagName("tr");
+    var last = rows[rows.length-1];
+    last.childNodes[1].innerHTML = "<strong>"+(rows.length-2)+"</strong>";
+
+    var table = tables[1];
+    var rows = table.getElementsByTagName("tr");
+    var last = rows[rows.length-1];
+    last.childNodes[1].innerHTML = "<strong>"+(rows.length-2)+"</strong>";
+  }
+}
+
 ////////////////////////////////////////////////////////////////////////////
 
 // Helper: from N/S/E/W Deg Min.Sec to Dec
@@ -1451,6 +1498,23 @@ function toDec(coords){
   dec2 = Math.round(dec2*10000000)/10000000;
 
   return new Array(dec1,dec2);
+}
+
+// Helper: from Deg to DMS
+function DegtoDMS(coords){
+  var match = coords.match(/^(N|S) ([0-9][0-9]). ([0-9][0-9])\.([0-9][0-9][0-9]) (E|W) ([0-9][0-9][0-9]). ([0-9][0-9])\.([0-9][0-9][0-9])$/);
+
+  var lat1 = parseInt(match[2],10);
+  var lat2 = parseInt(match[3],10);
+  var lat3 = parseFloat("0."+match[4])*60;
+  lat3 = Math.round(lat3*10000)/10000;
+
+  var lng1 = parseInt(match[6],10); 
+  var lng2 = parseInt(match[7],10);
+  var lng3 = parseFloat("0."+match[8])*60;
+  lng3 = Math.round(lng3*10000)/10000;
+
+  return match[1]+" "+lat1+"° "+lat2+"' "+lat3+"\" "+match[5]+" "+lng1+"° "+lng2+"' "+lng3+"\"";
 }
 
 // Helper: from Dec to Deg
@@ -1487,6 +1551,47 @@ function DectoDeg(lat,lng){
   var new_lng = pre+" "+tmp1+"° "+tmp2;
 
   return new_lat+" "+new_lng;
+}
+
+// Show other Coord-Formats in Listing
+if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/) && document.getElementById('ctl00_ContentBody_LatLon')){
+  var box = document.getElementById('ctl00_ContentBody_LocationSubPanel').firstChild;
+  var coords = document.getElementById('ctl00_ContentBody_LatLon').innerHTML;
+  if(coords.match(/^(N|S) [0-9][0-9]. [0-9][0-9]\.[0-9][0-9][0-9] (E|W) [0-9][0-9][0-9]. [0-9][0-9]\.[0-9][0-9][0-9]$/)){
+    var dec = toDec(coords);
+    var lat = dec[0];
+    var lng = dec[1];
+    if(lat < 0) lat = "S "+(lat*-1);
+    else lat = "N "+lat;
+    if(lng < 0) lng = "W "+(lng*-1);
+    else lng = "E "+lng;
+    box.innerHTML += " - Dec: "+lat+" "+lng;
+
+    var dms = DegtoDMS(coords);
+    box.innerHTML += " - DMS: "+dms;
+  }
+}
+// ... and on print-page
+if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cdpf\.aspx/)){
+  var box = getElementsByClass("UTM Meta")[0];
+  var coords = getElementsByClass("LatLong Meta")[0];
+  if(box && coords){
+    var match = coords.innerHTML.match(/((N|S) [0-9][0-9]. [0-9][0-9]\.[0-9][0-9][0-9] (E|W) [0-9][0-9][0-9]. [0-9][0-9]\.[0-9][0-9][0-9])/);
+    if(match && match[1]){
+      coords = match[1];
+      var dec = toDec(coords);
+      var lat = dec[0];
+      var lng = dec[1];
+      if(lat < 0) lat = "S "+(lat*-1);
+      else lat = "N "+lat;
+      if(lng < 0) lng = "W "+(lng*-1);
+      else lng = "E "+lng;
+      box.innerHTML += "<br>Dec: "+lat+" "+lng;
+
+      var dms = DegtoDMS(coords);
+      box.innerHTML += "<br>DMS: "+dms;
+    }
+  }
 }
 
 // Save HomeCoords for special bookmarks - From Index
@@ -1563,6 +1668,21 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/account\/Manage
   }
 
   window.addEventListener("load", setCoordsHelper, false); // On first hit, the search-field ist filled after loading - so we have to wait
+}
+
+// Save HomeCoords - From Account Details
+if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/account\/default\.aspx/)){
+  var link = document.getElementById('ctl00_ContentBody_uxMapLocations_ctl01_uxMapLocation');
+
+  if(link){
+    var match = link.innerHTML.match(/((N|S) [0-9][0-9]. [0-9][0-9]\.[0-9][0-9][0-9] (E|W) [0-9][0-9][0-9]. [0-9][0-9]\.[0-9][0-9][0-9])/);
+    if(match[1]){
+      var latlng = toDec(match[1]);
+
+      if(GM_getValue("home_lat",0) != parseInt(latlng[0]*10000000)) GM_setValue("home_lat",parseInt(latlng[0]*10000000)); // * 10000000 because GM don't know float
+      if(GM_getValue("home_lng",0) != parseInt(latlng[1]*10000000)) GM_setValue("home_lng",parseInt(latlng[1]*10000000));
+    }
+  }
 }
 
 // Save uid for special bookmarks - From My Profile
@@ -2143,7 +2263,7 @@ function showConfig(){
   }
 }
 if(this.GM_registerMenuCommand) GM_registerMenuCommand("little helper config", showConfig);
-if(window.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/default\.aspx/) && document.getElementById('ctl00_ContentBody_WidgetMiniProfile1_logOutLink')){
+if((document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/[#a-zA-Z-_]*$/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/default\.aspx/)) && document.getElementById('ctl00_ContentBody_WidgetMiniProfile1_logOutLink')){
   var lnk = " | <a href='#' id='gclh_config_lnk'>GClh Config</a>";
   document.getElementById('ctl00_ContentBody_WidgetMiniProfile1_logOutLink').parentNode.innerHTML += lnk;
   document.getElementById('gclh_config_lnk').addEventListener("click", showConfig, false);
