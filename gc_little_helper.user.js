@@ -10,8 +10,19 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net>
-// Version:        4.5             - 04.06.2010
-// Changelog:      4.5             - Show other Coordinate-Formats in Listing and on print-page
+// Version:        4.6             - 12.06.2010
+// Changelog:      4.6             - Fix: Click on grey background to close configuration
+//                                 - Fix: newlines as first character of signatures and templates
+//                                 - New Variable: #found_no# = founds (without +1)
+//                                 - Added #found# Variable to Templates an TB-Signature
+//                                 - Set cursor to first character in Log-fields
+//                                 - Allow GCVote in inline logs
+//                                 - Fix: do not redirect to map from links of friend list
+//                                 - Append GCcode to Cache-Name on mail links
+//                                 - Hide Config-Link in beta map, because it doesn't work fine
+//                                 - BugFix: First box in sidebar was hidden
+//                                 - Changed some default-settings
+//                 4.5             - Show other Coordinate-Formats in Listing and on print-page
 //                                 - Show amount of different Coins found in public profile
 //                                 - Now the HomeCoords are also parsed from http://www.geocaching.com/account/default.aspx
 //                                 - Fix: Insert template doesn't replace text now
@@ -312,7 +323,7 @@ bookmarks[34]['id'] = "lnk_my_trackables";
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "4.5";
+var scriptVersion = "4.6";
 
 var anzCustom = 10;
 var anzTemplates = 5;
@@ -341,11 +352,12 @@ settings_bookmarks_on_top = GM_getValue("settings_bookmarks_on_top",true);
 settings_bookmarks_top_menu = GM_getValue("settings_bookmarks_top_menu","true");
 settings_bookmarks_search = GM_getValue("settings_bookmarks_search","true");
 settings_bookmarks_search_default = GM_getValue("settings_bookmarks_search_default","");
-settings_redirect_to_map = GM_getValue("settings_redirect_to_map",true);
+// Settings: Redirect to Map
+settings_redirect_to_map = GM_getValue("settings_redirect_to_map",false);
 // Settings: Hide Feedback Button
 settings_hide_feedback = GM_getValue("settings_hide_feedback",false);
 // Settings: Hide Disclaimer
-settings_hide_disclaimer = GM_getValue("settings_hide_disclaimer",false);
+settings_hide_disclaimer = GM_getValue("settings_hide_disclaimer",true);
 // Settings: Hide Cache Notes
 settings_hide_cache_notes = GM_getValue("settings_hide_cache_notes",false);
 // Settings: Hide Cache Notes if empty
@@ -796,6 +808,12 @@ if(settings_decrypt_hint && document.location.href.match(/^http:\/\/www\.geocach
 
 // Show Smilies & BBCode --- http://www.cachewiki.de/wiki/Formatierung
 if(settings_show_bbcode && (document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?(id|guid|ID|wp|LUID|PLogGuid)\=/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/track\/log\.aspx\?(id|wid|guid|ID|PLogGuid)\=/)) && document.getElementById('litDescrCharCount')){
+  // Get foinds to replace #found# variable
+  if(getElementsByClass('SignedInText')[0]){
+    var text = getElementsByClass('SignedInText')[0].childNodes[7].innerHTML;
+    var finds = parseInt(text.match(/([0-9,]{1,10})/)[1].replace(/,/g,""));
+  }
+
   var code = "function gclh_insert(aTag,eTag){"; // http://aktuell.de.selfhtml.org/artikel/javascript/bbcode/
   code += "  var input = document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo');";
   code += "  if(typeof input.selectionStart != 'undefined'){";
@@ -816,8 +834,14 @@ if(settings_show_bbcode && (document.location.href.match(/^http:\/\/www\.geocach
   code += "  input.focus();";
   code += "}";
   code += "function gclh_insert_from_div(id){";
+  code += "  var finds = '"+finds+"';";
   code += "  var input = document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo');";
   code += "  var inhalt = document.getElementById(id).innerHTML;";
+  code += "  if(finds){";
+  code += "    inhalt = inhalt.replace(/#found_no#/g,finds);";
+  code += "    finds++;";
+  code += "    inhalt = inhalt.replace(/#found#/g,finds);";
+  code += "  }";
   code += "  if(typeof input.selectionStart != 'undefined' && inhalt){";
   code += "    var start = input.selectionStart;";
   code += "    var end = input.selectionEnd;";
@@ -900,11 +924,13 @@ if(settings_show_bbcode && (document.location.href.match(/^http:\/\/www\.geocach
   box.innerHTML = liste;
 }
 
-// Show email-Link beside Username
+// Show eMail-Link beside Username
 if(settings_show_mail && document.location.href.match(/^http:\/\/www\.geocaching\.com\/(seek\/cache_details|seek\/log|track\/details)\.aspx(\?|\?pf\=\&)(guid|wp|tracker|id|LUID|ID|PLogGuid)\=[a-zA-Z0-9-]*/)){
   var links = document.getElementsByTagName('a');
-  if(document.getElementById('ctl00_ContentBody_CacheName'))  var name = document.getElementById('ctl00_ContentBody_CacheName').innerHTML;
-  else if(document.getElementById('ctl00_ContentBody_lbHeading') && !document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?.*/))  var name = document.getElementById('ctl00_ContentBody_lbHeading').innerHTML;
+  if(document.getElementById('ctl00_ContentBody_CacheName')){
+    var name = document.getElementById('ctl00_ContentBody_CacheName').innerHTML;
+    if(document.getElementById('ctl00_ContentBody_uxWaypointName')) name += " ("+document.getElementById('ctl00_ContentBody_uxWaypointName').innerHTML+")";
+  }else if(document.getElementById('ctl00_ContentBody_lbHeading') && !document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?.*/))  var name = document.getElementById('ctl00_ContentBody_lbHeading').innerHTML;
   else if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?.*/)){
     var name = "";
     var image = true;
@@ -981,10 +1007,22 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx
   // Signature
   if(document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML == "" || document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?PLogGuid\=/)) document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML += GM_getValue("settings_log_signature","");
 
+  // Set Cursor do Pos1
+  function gclh_setForcus(){
+    var input = document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo');
+    if(input){
+      input.selectionStart = 0;
+      input.selectionEnd = 0;
+      input.focus();
+    }
+  }
+  window.addEventListener("load", gclh_setForcus, false);
+
   // Replace #found# variable
   if(getElementsByClass('SignedInText')[0]){
     var text = getElementsByClass('SignedInText')[0].childNodes[7].innerHTML;
     var finds = parseInt(text.match(/([0-9,]{1,10})/)[1].replace(/,/g,""));
+    document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML = document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML.replace(/#found_no#/g,finds);
     finds++;
     document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML = document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML.replace(/#found#/g,finds);
   }
@@ -1004,7 +1042,27 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/track\/log\.asp
   }
 
   // Signature
-  if(document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML == "") document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML = GM_getValue("settings_tb_signature","");
+  if(document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo') && document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML == "") document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML = GM_getValue("settings_tb_signature","");
+
+  // Set Cursor do Pos1
+  function gclh_setForcus(){
+    var input = document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo');
+    if(input){
+      input.selectionStart = 0;
+      input.selectionEnd = 0;
+      input.focus();
+    }
+  }
+  window.addEventListener("load", gclh_setForcus, false);
+
+  // Replace #found# variable
+  if(getElementsByClass('SignedInText')[0]){
+    var text = getElementsByClass('SignedInText')[0].childNodes[7].innerHTML;
+    var finds = parseInt(text.match(/([0-9,]{1,10})/)[1].replace(/,/g,""));
+    document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML = document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML.replace(/#found_no#/g,finds);
+    finds++;
+    document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML = document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML.replace(/#found#/g,finds);
+  }
 }
 
 // Show Coin-series in TB-Listing
@@ -1036,9 +1094,9 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/myfriends\.
     GM_setValue("friends_founds_"+name.innerHTML,founds);
     
 //    friend.getElementsByTagName("dl")[0].lastChild.innerHTML = "<a href='/seek/nearest.aspx?ul="+name.innerHTML+"'>"+friend.getElementsByTagName("dl")[0].lastChild.innerHTML+"</a>";
-    friend.getElementsByTagName("dd")[4].innerHTML = "<a href='/seek/nearest.aspx?ul="+name.innerHTML+"'>"+founds+"</a>"+add;
+    friend.getElementsByTagName("dd")[4].innerHTML = "<a href='/seek/nearest.aspx?ul="+name.innerHTML+"&disable_redirect'>"+founds+"</a>"+add;
     
-    friend.getElementsByTagName("p")[0].innerHTML = "<a name='lnk_profilegallery2' href='"+name.href+"'>Gallery</a> | <a href='/seek/nearest.aspx?u="+name.innerHTML+"'>Hidden Caches</a> | "+friend.getElementsByTagName("p")[0].innerHTML
+    friend.getElementsByTagName("p")[0].innerHTML = "<a name='lnk_profilegallery2' href='"+name.href+"'>Gallery</a> | <a href='/seek/nearest.aspx?u="+name.innerHTML+"&disable_redirect'>Hidden Caches</a> | "+friend.getElementsByTagName("p")[0].innerHTML
   }
 }
 
@@ -1149,6 +1207,8 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my/)){
   code += "    document.getElementById('lnk_'+i).title = 'show';";
   code += "  }";
   code += "}";
+
+  if(GM_getValue("show_box[0]","" == "none")) GM_setValue("show_box[0]","block"); // Bugfix: First Box was hidden because of the temporary "+" beside Linklist
   
   var script = document.createElement("script");
   script.innerHTML = code;
@@ -1156,7 +1216,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my/)){
 
   var boxes = getElementsByClass("WidgetHeader");
   function saveStates(){
-    for(var i=0; i<boxes.length; i++){
+    for(var i=1; i<boxes.length; i++){
       var box = boxes[i].parentNode.childNodes[3];
     
       if(boxes[i].innerHTML.match(/Bookmarks/)) continue;
@@ -1170,7 +1230,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my/)){
     }
   }
   
-  for(var i=0; i<boxes.length; i++){
+  for(var i=1; i<boxes.length; i++){
     var box = boxes[i].parentNode.childNodes[3];
     if(typeof(box) != "undefined"){
       if(boxes[i].innerHTML.match(/Bookmarks/)) continue;
@@ -1368,7 +1428,7 @@ if(settings_log_inline && document.location.href.match(/^http:\/\/www\.geocachin
       var iframe = document.createElement("iframe");
       iframe.setAttribute("id","gclhFrame");
       iframe.setAttribute("width","100%");
-      iframe.setAttribute("height","500px");
+      iframe.setAttribute("height","600px");
       iframe.setAttribute("style","border: 0px; overflow: auto; display: none;");
       iframe.setAttribute("src","log.aspx?ID="+match[1]+"&gclh=small");
 
@@ -1407,8 +1467,8 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx
 
   if(getElementsByClass('BottomSpacing')[0]) getElementsByClass('BottomSpacing')[0].style.display = "none";
   if(getElementsByClass('BottomSpacing')[1]) getElementsByClass('BottomSpacing')[1].style.display = "none";
-  if(document.getElementById('ctl00_ContentBody_LogBookPanel1_WaypointLink')) document.getElementById('ctl00_ContentBody_LogBookPanel1_WaypointLink').parentNode.style.display = 'none';
-  if(document.getElementsByTagName("dt")[0]) document.getElementsByTagName("dt")[0].style.display = "none";
+//  if(document.getElementById('ctl00_ContentBody_LogBookPanel1_WaypointLink')) document.getElementById('ctl00_ContentBody_LogBookPanel1_WaypointLink').parentNode.style.display = 'none';
+//  if(document.getElementsByTagName("dt")[0]) document.getElementsByTagName("dt")[0].style.display = "none";
 
   if(document.getElementById('divAdvancedOptions')) document.getElementById('divAdvancedOptions').style.display = "none";
   if(!settings_log_inline_tb && document.getElementById('ctl00_ContentBody_LogBookPanel1_TBPanel')) document.getElementById('ctl00_ContentBody_LogBookPanel1_TBPanel').style.display = "none";
@@ -1432,6 +1492,11 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx
   window.addEventListener("load", hide_feedback, false);
 
   if(getElementsByClass('container')[1]) getElementsByClass('container')[1].style.display = "inline";
+
+  var links = document.getElementsByTagName("a");
+  for(var i=0; i<links.length; i++){
+    links[i].setAttribute("target","_blank");
+  }
 }
 
 // New Width
@@ -1875,17 +1940,21 @@ if(document.getElementById('lnk_findplayer')){
 }
 
 // Configuration Menu
-function showConfig(){
+function gclh_showConfig(){
+
   if(document.getElementById('bg_shadow')){
     // If shadow-box already created, just show it
     if(document.getElementById('bg_shadow').style.display == "none"){
       document.getElementById('bg_shadow').style.display = "";
     }
   }else{
-    var html = "";
     // Seite abdunkeln
-    html += "<div id='bg_shadow' style='width: 100%; height: 100%; background-color: #000000; position:fixed; top: 0; left: 0; opacity: 0.5; filter: alpha(opacity=50);'></div>";
-    document.getElementsByTagName('body')[0].innerHTML += html;
+    var shadow = document.createElement("div");
+    shadow.setAttribute("id","bg_shadow");
+    shadow.setAttribute("style","width: 100%; height: 100%; background-color: #000000; position:fixed; top: 0; left: 0; opacity: 0.5; filter: alpha(opacity=50);");
+    document.getElementsByTagName('body')[0].appendChild(shadow);
+//    html += "<div id='bg_shadow' style='width: 100%; height: 100%; background-color: #000000; position:fixed; top: 0; left: 0; opacity: 0.5; filter: alpha(opacity=50);'></div>";
+//    document.getElementsByTagName('body')[0].innerHTML += html;
     document.getElementById('bg_shadow').addEventListener("click", btnClose, false);
   }
 
@@ -1893,8 +1962,9 @@ function showConfig(){
     // If menu already created, just show it
     document.getElementById('settings_overlay').style.display = "";
   }else{
+    var css = document.createElement("style");
     var html = "";
-    html += "<style>";
+//    html += "<style>";
     html += "#settings_overlay {";
     html += "  background-color: #d8cd9d; ";
     html += "  width:600px;";
@@ -1952,7 +2022,7 @@ function showConfig(){
     html += "  font-size: 10px;";
     html += "}";
     html += "";
-    html += "/* Highlight */";
+    // Highlight
     html += "a.gclh_info {";
     html += "  color: #000000;";
     html += "  text-decoration: none;";
@@ -1979,9 +2049,13 @@ function showConfig(){
     html += "  border: 1px solid #000000;";
     html += "  background-color: #d8cd9d;";
     html += "}";
-    html += "</style>";
-    
-    html += "<div id='settings_overlay'>";
+//    html += "</style>";
+    css.innerHTML = html;
+  
+    var div = document.createElement("div");
+    div.setAttribute("id","settings_overlay");
+    var html = "";  
+//    html += "<div id='settings_overlay'>";
     html += "<h3 class='gclh_headline'>GC little helper</h3>";
     html += "<div class='gclh_content'>";
     html += "";
@@ -2021,11 +2095,11 @@ function showConfig(){
     html += "<h4 class='gclh_headline2'>Logging</h4>";
     html += "<input type='checkbox' "+(settings_submit_log_button ? "checked='checked'" : "" )+" id='settings_submit_log_button'> Submit Log-Text on F2<br>";
     html += "<input type='checkbox' "+(settings_show_bbcode ? "checked='checked'" : "" )+" id='settings_show_bbcode'> Show Smilies & BBCode<br>";
-    html += "Log-Templates: <font class='gclh_small'>(BBCodes have to be enables)</font><br>";
+    html += "Log-Templates: <font class='gclh_small'>(BBCodes have to be enabled - #found# will be replaced with founds+1 - #found_no# will be replaced with founds)</font><br>";
     for(var i = 0; i < anzTemplates; i++){
       html += "&nbsp;&nbsp;<input class='gclh_form' type='text' size='15' id='settings_log_template_name["+i+"]' value='"+GM_getValue('settings_log_template_name['+i+']','')+"'> ";
       html += "<a onClick=\"if(document.getElementById(\'settings_log_template_div["+i+"]\').style.display == \'\') document.getElementById(\'settings_log_template_div["+i+"]\').style.display = \'none\'; else document.getElementById(\'settings_log_template_div["+i+"]\').style.display = \'\'; return false;\" href='#'><img src='http://www.geocaching.com/images/stockholm/16x16/page_white_edit.gif' border='0'></a><br>";
-      html += "<div id='settings_log_template_div["+i+"]' style='display: none;'>&nbsp;&nbsp;&nbsp;&nbsp;<textarea class='gclh_form' rows='6' cols='30' id='settings_log_template["+i+"]'>"+GM_getValue("settings_log_template["+i+"]","")+"</textarea></div>";
+      html += "<div id='settings_log_template_div["+i+"]' style='display: none;'>&nbsp;&nbsp;&nbsp;&nbsp;<textarea class='gclh_form' rows='6' cols='30' id='settings_log_template["+i+"]'>&zwnj;"+GM_getValue("settings_log_template["+i+"]","")+"</textarea></div>";
     }
     html += "Default Log-Type: &nbsp; &nbsp; &nbsp;<select class='gclh_form' id='settings_default_logtype'>";
     html += "  <option value=\"-1\" "+(settings_default_logtype == "-1" ? "selected=\"selected\"" : "")+">- Select Type of Log -</option>";
@@ -2042,15 +2116,15 @@ function showConfig(){
     html += "  <option value=\"4\" "+(settings_default_tb_logtype == "4" ? "selected=\"selected\"" : "")+">Write note</option>";
     html += "  <option value=\"48\" "+(settings_default_tb_logtype == "48" ? "selected=\"selected\"" : "")+">Discovered It</option>";
     html += "</select><br>";
-    html += "Cache-Signature: <font class='gclh_small'>(#found# will be replaced with founds+1)</font><br>";
-    html += "<textarea class='gclh_form' rows='8' cols='40' id='settings_log_signature'>"+(typeof(GM_getValue("settings_log_signature")) != "undefined" ? GM_getValue("settings_log_signature") : "")+"</textarea><br>";
-    html += "TB-Signature:<br>";
-    html += "<textarea class='gclh_form' rows='8' cols='40' id='settings_tb_signature'>"+(typeof(GM_getValue("settings_tb_signature")) != "undefined" ? GM_getValue("settings_tb_signature") : "")+"</textarea><br>";
+    html += "Cache-Signature: <font class='gclh_small'>(#found# will be replaced with founds+1 - #found_no# will be replaced with founds)</font><br>";
+    html += "<textarea class='gclh_form' rows='8' cols='40' id='settings_log_signature'>&zwnj;"+GM_getValue("settings_log_signature","")+"</textarea><br>";
+    html += "TB-Signature: <font class='gclh_small'>(#found# will be replaced with founds+1 - #found_no# will be replaced with founds)</font><br>";
+    html += "<textarea class='gclh_form' rows='8' cols='40' id='settings_tb_signature'>&zwnj;"+GM_getValue("settings_tb_signature","")+"</textarea><br>";
     html += "<br>";
     html += "";
     html += "<h4 class='gclh_headline2'>Mail-Form</h4>";
     html += "Signature:<br>";
-    html += "<textarea class='gclh_form' rows='8' cols='40' id='settings_mail_signature'>"+(typeof(GM_getValue("settings_mail_signature")) != "undefined" ? GM_getValue("settings_mail_signature") : "")+"</textarea><br>";
+    html += "<textarea class='gclh_form' rows='8' cols='40' id='settings_mail_signature'>&zwnj;"+GM_getValue("settings_mail_signature","")+"</textarea><br>";
     html += "<br>";
     html += "";
     html += "<h4 class='gclh_headline2'><a name='gclh_linklist'></a>Linklist / Navigation <a class='gclh_small' href='#gclh_linklist' id='gclh_show_linklist_btn'>show</a></h4>";
@@ -2118,9 +2192,12 @@ function showConfig(){
     html += "<br>";
     html += "<input class='gclh_form' type='button' value='save' id='btn_save'> <input class='gclh_form' type='button' value='close' id='btn_close'>";
     html += "</div>";
-    html += "</div>";
+//    html += "</div>";
+    div.innerHTML = html;
 
-    document.getElementsByTagName('body')[0].innerHTML += html;
+//    document.getElementsByTagName('body')[0].innerHTML += html;
+    document.getElementsByTagName('body')[0].appendChild(css);
+    document.getElementsByTagName('body')[0].appendChild(div);
 
     function gclh_show_linklist(){
       var linklist = document.getElementById('gclh_settings_linklist');
@@ -2143,7 +2220,6 @@ function showConfig(){
 
   // Save Button
   function btnSave(){
-
     var value = document.getElementById("settings_home_lat_lng").value;
     if(value.match(/^(N|S) [0-9][0-9]. [0-9][0-9]\.[0-9][0-9][0-9] (E|W) [0-9][0-9][0-9]. [0-9][0-9]\.[0-9][0-9][0-9]$/)){
       var latlng = toDec(value);
@@ -2262,11 +2338,11 @@ function showConfig(){
     document.location.reload(true);
   }
 }
-if(this.GM_registerMenuCommand) GM_registerMenuCommand("little helper config", showConfig);
+if(this.GM_registerMenuCommand && !document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\/beta/)) GM_registerMenuCommand("little helper config", gclh_showConfig); // Hide on Beta-Map
 if((document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/[#a-zA-Z-_]*$/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/default\.aspx/)) && document.getElementById('ctl00_ContentBody_WidgetMiniProfile1_logOutLink')){
   var lnk = " | <a href='#' id='gclh_config_lnk'>GClh Config</a>";
   document.getElementById('ctl00_ContentBody_WidgetMiniProfile1_logOutLink').parentNode.innerHTML += lnk;
-  document.getElementById('gclh_config_lnk').addEventListener("click", showConfig, false);
+  document.getElementById('gclh_config_lnk').addEventListener("click", gclh_showConfig, false);
 }
 
 // Check for Updates
