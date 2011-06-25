@@ -12,6 +12,9 @@
 // Author:         Torsten Amshove <torsten@amshove.net>
 // Version:        4.6             - 12.06.2010
 // Changelog:
+//                                 - New: remove spoiler warning
+//                                 - New: remove link to advertisement instructions
+//                                 - New: remove unneeded line breaks
 //                                 - Fix: scroll to top when opening config dialog
 //                                 - Some improvements to autoupdate
 //                 4.6             - Fix: Click on grey background to close configuration
@@ -394,6 +397,9 @@ settings_bookmarks_list = eval(GM_getValue("settings_bookmarks_list",uneval(book
 settings_bookmarks_list_beta = eval(GM_getValue("settings_bookmarks_list_beta",uneval(bookmarks_def)));
 // Settinks: Dynamic Map
 settings_dynamic_map = GM_getValue("settings_dynamic_map",true);
+settings_hide_advert_link = GM_getValue('settings_hide_advert_link',true);
+settings_hide_line_breaks = GM_getValue('settings_hide_line_breaks',true);
+settings_hide_spoilerwarning = GM_getValue('settings_hide_spoilerwarning',true);
 
 
 // Settings: Custom Bookmarks
@@ -730,6 +736,51 @@ if(settings_hide_disclaimer && document.location.href.match(/^http:\/\/www\.geoc
   var disc = getElementsByClass('TermsWidget no-print')[0];
   if(disc){
     disc.parentNode.removeChild(disc);
+  }
+}
+
+//remove paragraph containing the link to the advertisement instructions (not the advertisements itself!)
+if (settings_hide_advert_link) {
+  var links = document.getElementsByTagName('a');
+  for(var i=0; i<links.length; i++){
+    if(links[i].href.indexOf('advertising.aspx') > 0) {
+      var del = links[i];
+      while (del.parentNode != null && (del.parentNode.nodeName != 'P')) {
+        del = del.parentNode;
+      }
+      del.parentNode.removeChild(del);
+      break;
+    }
+  }
+}
+
+if (settings_hide_line_breaks) {
+  //remove line break after "Print" label
+  var printHeader = document.getElementById('ctl00_ContentBody_uxPrintHeader');
+  if (printHeader) {
+    var br = printHeader.nextSibling.nextSibling;
+    if (br) {
+      br.parentNode.removeChild(br);
+    }
+  }
+  // remove line break between "distance from home" and "Bundesland, Land"
+  var distFromHome = document.getElementById('ctl00_ContentBody_lblDistFromHome');
+  if (distFromHome) {
+    var br = distFromHome.nextSibling.nextSibling;
+    if (br && br.nodeName == 'BR') {
+      br.parentNode.removeChild(br);
+    }
+  }
+}
+
+// remove "Warning! Spoilers may be included in the descriptions or links."
+if (settings_hide_spoilerwarning) {
+  var findCounts = document.getElementById('ctl00_ContentBody_lblFindCounts');
+  if (findCounts) {
+    var para = findCounts.nextSibling.nextSibling;
+    if (para && para.nodeName == 'P') {
+      para.parentNode.removeChild(para);
+    }
   }
 }
 
@@ -1953,6 +2004,10 @@ if(document.getElementById('lnk_findplayer')){
   document.getElementById('lnk_findplayer').addEventListener("click", createFindPlayerForm, false);
 }
 
+function checkbox(setting_id, label) {
+  return "<input type='checkbox' "+(eval(setting_id) ? "checked='checked'" : "" )+" id='" + setting_id + "'> " + label;
+}
+
 // Configuration Menu
 function gclh_showConfig(){
   // the configuration is always displayed at the top, so scroll away from logs or other lower stuff
@@ -2077,40 +2132,43 @@ function gclh_showConfig(){
     html += "";
     html += "<h4 class='gclh_headline2'>Global</h4>";
     html += "Home-Coords: <input class='gclh_form' type='text' id='settings_home_lat_lng' value='"+DectoDeg(GM_getValue("home_lat"),GM_getValue("home_lng"))+"'> <a class='gclh_info' href='#'><b>?</b><span class='gclh_span'>The Home-Coords are filled automatically if you update your Home-Coords on gc.com. If it doesn\'t work you can insert them here. These Coords are used for some special Links (Nearest List, Nearest Map, ..) and for the homezone-circle on the map.</span></a><br>";
-    html += "<input type='checkbox' "+(settings_bookmarks_on_top ? "checked='checked'" : "" )+" id='settings_bookmarks_on_top'> Show <a class='gclh_ref' href='#gclh_linklist'>Linklist</a> on top<br>";
-    html += "<input type='checkbox' "+(settings_bookmarks_show ? "checked='checked'" : "" )+" id='settings_bookmarks_show'> Show <a class='gclh_ref' href='#gclh_linklist'>Linklist</a> in profile<br>";
-    html += "<input type='checkbox' "+(settings_hide_feedback ? "checked='checked'" : "" )+" id='settings_hide_feedback'> Hide Feedback-Button<br>";
+    html += checkbox('settings_bookmarks_on_top', "Show <a class='gclh_ref' href='#gclh_linklist'>Linklist</a> on top") + "<br/>";
+    html += checkbox('settings_bookmarks_show', "Show <a class='gclh_ref' href='#gclh_linklist'>Linklist</a> in profile") + "<br/>";
+    html += checkbox('settings_hide_feedback', 'Hide Feedback-Button') + "<br/>";
+    html += checkbox('settings_hide_advert_link', 'Hide link to advertisement instructions') + "<br/>";
+    html += checkbox('settings_hide_line_breaks', 'Hide superfluous line breaks') + "<br/>";
+    html += checkbox('settings_hide_spoilerwarning', 'Hide spoiler warning') + "<br/>";
     html += "Page-Width: <input class='gclh_form' type='text' size='3' id='settings_new_width' value='"+GM_getValue("settings_new_width",950)+"'> px<br>";
     html += "";
     html += "<br>";
     html += "";
     html += "<h4 class='gclh_headline2'>Nearest List</h4>";
-    html += "<input type='checkbox' "+(settings_redirect_to_map ? "checked='checked'" : "" )+" id='settings_redirect_to_map'> Redirect to Map<br>";
-    html += "<input type='checkbox' "+(settings_show_log_it ? "checked='checked'" : "" )+" id='settings_show_log_it'> Show Log-It Icon<br>";
+    html += checkbox('settings_redirect_to_map', 'Redirect to Map') + "<br/>";
+    html += checkbox('settings_show_log_it', 'Show Log-It Icon') + "<br/>";
     html += "<br>";
     html += "";
     html += "<h4 class='gclh_headline2'>Maps</h4>";
-    html += "<input type='checkbox' "+(settings_show_homezone ? "checked='checked'" : "" )+" id='settings_show_homezone'> Show Homezone - Radius: <input class='gclh_form' type='text' size='2' id='settings_homezone_radius' value='"+settings_homezone_radius+"'> km<br>";
-    html += "<input type='checkbox' "+(settings_old_map ? "checked='checked'" : "" )+" id='settings_old_map'> Set old map as default<br>";
+    html += checkbox('settings_show_homezone', 'Show Homezone') + " - Radius: <input class='gclh_form' type='text' size='2' id='settings_homezone_radius' value='"+settings_homezone_radius+"'> km<br>";
+    html += checkbox('settings_old_map', 'Set old map as default') + "<br/>";
     html += "Map-Width: <input class='gclh_form' type='text' size='3' id='map_width' value='"+GM_getValue("map_width",1200)+"'> px<br>";
     html += "";
     html += "<br>";
     html += "";
     html += "<h4 class='gclh_headline2'>Listing</h4>";
-    html += "<input type='checkbox' "+(settings_log_inline ? "checked='checked'" : "" )+" id='settings_log_inline'> Log Cache from Listing (inline) - <input type='checkbox' "+(settings_log_inline_tb ? "checked='checked'" : "" )+" id='settings_log_inline_tb'> Show TB-List<br>";
-    html += "<input type='checkbox' "+(settings_hide_empty_cache_notes ? "checked='checked'" : "" )+" id='settings_hide_empty_cache_notes'> Hide Cache-Notes if empty<br>";
-    html += "<input type='checkbox' "+(settings_hide_cache_notes ? "checked='checked'" : "" )+" id='settings_hide_cache_notes'> Hide Cache-Notes completely<br>";
-    html += "<input type='checkbox' "+(settings_hide_disclaimer ? "checked='checked'" : "" )+" id='settings_hide_disclaimer'> Hide Disclaimer<br>";
-    html += "<input type='checkbox' "+(settings_show_all_logs ? "checked='checked'" : "" )+" id='settings_show_all_logs'> Show all Logs - if log-count lower than <input class='gclh_form' type='text' size='2' id='settings_show_all_logs_count' value='"+settings_show_all_logs_count+"'><br>";
-    html += "<input type='checkbox' "+(settings_decrypt_hint ? "checked='checked'" : "" )+" id='settings_decrypt_hint'> Decrypt Hint<br>";
-    html += "<input type='checkbox' "+(settings_show_mail ? "checked='checked'" : "" )+" id='settings_show_mail'> Show Mail-Link beside Usernames<br>";
-    html += "<input type='checkbox' "+(settings_show_google_maps ? "checked='checked'" : "" )+" id='settings_show_google_maps'> Show Link to and from google maps<br>";
-    html += "<input type='checkbox' "+(settings_dynamic_map ? "checked='checked'" : "" )+" id='settings_dynamic_map'> Show dynamic map<br>";
+    html += checkbox('settings_log_inline', 'Log Cache from Listing (inline)') + " - " + checkbox('settings_log_inline_tb', 'Show TB-List') + "<br/>";
+    html += checkbox('settings_hide_empty_cache_notes', 'Hide Cache Notes if empty') + "<br/>";
+    html += checkbox('settings_hide_cache_notes', 'Hide Cache-Notes completely') + "<br/>";
+    html += checkbox('settings_hide_disclaimer', 'Hide Disclaimer') + "<br/>";
+    html += checkbox('settings_show_all_logs', 'Show all Logs - if log-count lower than') + " <input class='gclh_form' type='text' size='2' id='settings_show_all_logs_count' value='"+settings_show_all_logs_count+"'><br>";
+    html += checkbox('settings_decrypt_hint', 'Decrypt Hint') + "<br/>";
+    html += checkbox('settings_show_mail', 'Show Mail Link beside Usernames') + "<br/>";
+    html += checkbox('settings_show_google_maps', 'Show Link to and from google maps') + "<br/>";
+    html += checkbox('settings_dynamic_map', 'Show dynamic map') + "<br/>";
     html += "<br>";
     html += "";
     html += "<h4 class='gclh_headline2'>Logging</h4>";
-    html += "<input type='checkbox' "+(settings_submit_log_button ? "checked='checked'" : "" )+" id='settings_submit_log_button'> Submit Log-Text on F2<br>";
-    html += "<input type='checkbox' "+(settings_show_bbcode ? "checked='checked'" : "" )+" id='settings_show_bbcode'> Show Smilies & BBCode<br>";
+    html += checkbox('settings_submit_log_button', 'Submit Log Text on F2') + "<br/>";
+    html += checkbox('settings_show_bbcode', 'Show Smilies and BBCode') + "<br/>";
     html += "Log-Templates: <font class='gclh_small'>(BBCodes have to be enabled - #found# will be replaced with founds+1 - #found_no# will be replaced with founds)</font><br>";
     for(var i = 0; i < anzTemplates; i++){
       html += "&nbsp;&nbsp;<input class='gclh_form' type='text' size='15' id='settings_log_template_name["+i+"]' value='"+GM_getValue('settings_log_template_name['+i+']','')+"'> ";
@@ -2280,6 +2338,11 @@ function gclh_showConfig(){
     GM_setValue("remove_navi_resources",document.getElementById('remove_navi_resources').checked);
     GM_setValue("remove_navi_shop",document.getElementById('remove_navi_shop').checked);
     GM_setValue("settings_bookmarks_top_menu",document.getElementById('settings_bookmarks_top_menu').checked);
+
+//    var checkboxes = ['settings_hide_advert_link', 'settings_hide_line_breaks', 'settings_hide_spoilerwarning'];
+//    for (var i = 0; i < checkboxes.length; i++) {
+//      GM_setValue(checkboxes[i],document.getElementById(checkboxes[i]).checked);
+//    }
 
     // Save Log-Templates
     for(var i = 0; i < anzTemplates; i++){
