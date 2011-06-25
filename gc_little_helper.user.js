@@ -12,6 +12,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net>
 // Version:        4.6             - 12.06.2010
 // Changelog:
+//                                 - Fix: scroll to top when opening config dialog
 //                                 - Some improvements to autoupdate
 //                 4.6             - Fix: Click on grey background to close configuration
 //                                 - Fix: newlines as first character of signatures and templates
@@ -1954,6 +1955,8 @@ if(document.getElementById('lnk_findplayer')){
 
 // Configuration Menu
 function gclh_showConfig(){
+  // the configuration is always displayed at the top, so scroll away from logs or other lower stuff
+  scroll(0, 0);
 
   if(document.getElementById('bg_shadow')){
     // If shadow-box already created, just show it
