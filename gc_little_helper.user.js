@@ -746,7 +746,7 @@ if(settings_hide_empty_cache_notes && !settings_hide_cache_notes && document.loc
   if(box){
     var code = "function hide_notes(){";
     code += "  if(document.getElementById('box_notes').style.display == 'none'){";
-    code += "    document.getElementById('box_notes').style.display = 'block';"
+    code += "    document.getElementById('box_notes').style.display = 'block';";
     code += "  }else{";
     code += "    document.getElementById('box_notes').style.display = 'none';";
     code += "  }";
@@ -986,7 +986,7 @@ if(settings_show_mail && document.location.href.match(/^http:\/\/www\.geocaching
   document.getElementById('ctl00_ContentBody_SendMessagePanel1_chkEmailCopy').addEventListener("click", chgDefaultMailcopy, false);
   
   // Grab Text from URL
-  var matches = document.location.href.match(/&text=(.*)/)
+  var matches = document.location.href.match(/&text=(.*)/);
   if(matches) document.getElementById("ctl00_ContentBody_SendMessagePanel1_tbMessage").innerHTML = decodeURIComponent(matches[1]);
   
   // Add Mail-Signature
@@ -1098,7 +1098,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/myfriends\.
 //    friend.getElementsByTagName("dl")[0].lastChild.innerHTML = "<a href='/seek/nearest.aspx?ul="+name.innerHTML+"'>"+friend.getElementsByTagName("dl")[0].lastChild.innerHTML+"</a>";
     friend.getElementsByTagName("dd")[4].innerHTML = "<a href='/seek/nearest.aspx?ul="+name.innerHTML+"&disable_redirect'>"+founds+"</a>"+add;
     
-    friend.getElementsByTagName("p")[0].innerHTML = "<a name='lnk_profilegallery2' href='"+name.href+"'>Gallery</a> | <a href='/seek/nearest.aspx?u="+name.innerHTML+"&disable_redirect'>Hidden Caches</a> | "+friend.getElementsByTagName("p")[0].innerHTML
+    friend.getElementsByTagName("p")[0].innerHTML = "<a name='lnk_profilegallery2' href='"+name.href+"'>Gallery</a> | <a href='/seek/nearest.aspx?u="+name.innerHTML+"&disable_redirect'>Hidden Caches</a> | "+friend.getElementsByTagName("p")[0].innerHTML;
   }
 }
 
@@ -1191,7 +1191,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/bookmarks\/defa
     if(links[i].title == "Download Google Earth KML"){
 
       var matches = links[i].href.match(/guid=([a-zA-Z0-9-]*)/);
-      links[i].parentNode.innerHTML += "<br><a title='Show in google maps' href='http://maps.google.com/?q=http://www.geocaching.com/kml/bmkml.aspx?bmguid="+matches[1]+"' target='_blank'>Show in google maps</a>"
+      links[i].parentNode.innerHTML += "<br><a title='Show in google maps' href='http://maps.google.com/?q=http://www.geocaching.com/kml/bmkml.aspx?bmguid="+matches[1]+"' target='_blank'>Show in google maps</a>";
     }
   }
 }
@@ -1322,7 +1322,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\/default.as
 
 // Aplly Search-field in Navigation
 if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/default\.aspx\?navi_search=/)){
-  var matches = document.location.href.match(/\?navi_search=(.*)/)
+  var matches = document.location.href.match(/\?navi_search=(.*)/);
   if(matches) document.getElementById("tbSearch").value = decodeURIComponent(matches[1]).replace(/\+/g," ");
 
   function click_search(){
@@ -1384,7 +1384,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/(default\.a
     if(links[i].href.match(/\/seek\/cache_details\.aspx\?/)){
       var headline = links[i].parentNode.parentNode.parentNode.childNodes[1].innerHTML;
       if(headline){
-        var match = links[i].href.match(/\/seek\/cache_details\.aspx\?guid=(.*)/)
+        var match = links[i].href.match(/\/seek\/cache_details\.aspx\?guid=(.*)/);
         if(match[1]) links[i].parentNode.innerHTML += " <a href='/hide/report.aspx?guid="+match[1]+"'><img src='/images/stockholm/16x16/page_white_edit.gif'></a>";
       }
     }
@@ -1598,7 +1598,7 @@ function DegtoDMS(coords){
 // Helper: from Dec to Deg
 function DectoDeg(lat,lng){
   lat = lat/10000000;
-  var pre = ""
+  var pre = "";
   if(lat > 0) pre = "N";
   else{ pre = "S"; lat = lat * -1; }
   var tmp1 = parseInt(lat);
