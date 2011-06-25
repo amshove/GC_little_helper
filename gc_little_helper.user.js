@@ -11,7 +11,9 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net>
 // Version:        4.6             - 12.06.2010
-// Changelog:      4.6             - Fix: Click on grey background to close configuration
+// Changelog:
+//                                 - Some improvements to autoupdate
+//                 4.6             - Fix: Click on grey background to close configuration
 //                                 - Fix: newlines as first character of signatures and templates
 //                                 - New Variable: #found_no# = founds (without +1)
 //                                 - Added #found# Variable to Templates an TB-Signature
@@ -620,7 +622,7 @@ if(settings_bookmarks_on_top && document.getElementById('Navigation')){
     script.innerHTML = code;
     document.getElementsByTagName("body")[0].appendChild(script);
 
-    var searchfield = "<form style='display: inline;' action='/default.aspx' method='GET' onSubmit='gclh_search(); return false;'><input type='text' size='6' name='navi_search' id='navi_search' style='margin-top: 2px; padding: 1px; font-weight: bold; font-family: sans-serif; border: 2px solid #778555; border-radius: 7px 7px 7px 7px; background-color:#d8cd9d' value='"+settings_bookmarks_search_default+"'></form>";
+    var searchfield = "<form style='display: inline;' action='/default.aspx' method='GET' onSubmit='gclh_search(); return false;'><input type='text' size='6' name='navi_search' id='navi_search' style='margin-top: 2px; padding: 1px; font-weight: bold; font-family: sans-serif; border: 2px solid #778555; border-radius: 7px 7px 7px 7px; -moz-border-radius: 7px; -khtml-border-radius: 7px; background-color:#d8cd9d' value='"+settings_bookmarks_search_default+"'></form>";
     var nav_list = document.getElementById('Navigation').childNodes[1];
     nav_list.innerHTML += searchfield;
   }
@@ -1548,6 +1550,17 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/profile\//) && 
   }
 }
 
+// Auto-Visit
+/*if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx/){
+  var selects = document.getElementsByTagName("select");
+  for (var i=0; i < selects.length; i++){
+    if(selects[i].id.match(/ctl00_ContentBody_LogBookPanel1_uxTrackables_repTravelBugs_ctl[0-9]*_ddlAction/)){
+// blabla
+
+    }
+  }
+}*/
+
 ////////////////////////////////////////////////////////////////////////////
 
 // Helper: from N/S/E/W Deg Min.Sec to Dec
@@ -2190,7 +2203,7 @@ function gclh_showConfig(){
     html += "<br>";
     html += "";
     html += "<br>";
-    html += "<input class='gclh_form' type='button' value='save' id='btn_save'> <input class='gclh_form' type='button' value='close' id='btn_close'>";
+    html += "<input class='gclh_form' type='button' value='save' id='btn_save'> <input class='gclh_form' type='button' value='close' id='btn_close'> <div width='400px' align='right' class='gclh_small' style='float: right;'>GC little helper by <a href='http://www.amshove.net/' target='_blank'>Torsten Amshove</a></div>";
     html += "</div>";
 //    html += "</div>";
     div.innerHTML = html;
@@ -2351,6 +2364,8 @@ function checkVersion(){
   var time = new Date().getTime();
   var next_check = 24 * 60 * 60 * 1000; // Milliseconds
   var last_check = parseInt(GM_getValue("update_last_check"),10);
+  var token = GM_getValue("token","");
+  if(token == "") GM_setValue("token",""+Math.random());
 
   if(!last_check) last_check = 0;
 
@@ -2358,14 +2373,17 @@ function checkVersion(){
     if(GM_xmlhttpRequest) GM_xmlhttpRequest({
       method: 'GET',
       url: url,
-      headers: {'User-Agent' : 'GM ' + scriptName + ' v' + scriptVersion + ' ' + last_check},
+      headers: {'User-Agent' : 'GM ' + scriptName + ' v' + scriptVersion + ' ' + last_check + ' ' + token},
       onload: function(result) {
-        var version = result.responseText.match(/^([a-zA-Z0-9-_.]*)=([0-9.]*)$/);
+        var version = result.responseText.match(/^([a-zA-Z0-9-_.]*)=([0-9.]*)/);
+        var changelog = result.responseText.match(/changelog=((.*\n*)*)/);
 
         if(version[1] == scriptName && version[2] != scriptVersion){
-          if(window.confirm("Version "+version[2]+" of "+scriptName+" greasemonkey script is available.\n"+
+          var text = "Version "+version[2]+" of "+scriptName+" greasemonkey script is available.\n"+
                   "You are currently using version "+scriptVersion+".\n\n"+
-                  "Click OK for upgrade.\n")) GM_openInTab(url);
+                  "Click OK for upgrade.\n";
+          if(changelog) text += "\n\nChangelog:\n"+changelog[1];
+          if(window.confirm(text)) GM_openInTab(url);
         }
       }
     });
