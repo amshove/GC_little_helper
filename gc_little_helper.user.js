@@ -12,6 +12,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net>
 // Version:        4.6             - 12.06.2010
 // Changelog:
+//                                 - Fix: illegal character in signature/template for leading newlines (configuration has to be saved again to fix it!)
 //                                 - New: hide hint behind a link
 //                                 - New: remove spoiler warning
 //                                 - New: remove link to advertisement instructions
@@ -2384,9 +2385,9 @@ function gclh_showConfig(){
     GM_setValue("settings_new_width",document.getElementById('settings_new_width').value);
     GM_setValue("settings_default_logtype",document.getElementById('settings_default_logtype').value);
     GM_setValue("settings_default_tb_logtype",document.getElementById('settings_default_tb_logtype').value);
-    GM_setValue("settings_mail_signature",document.getElementById('settings_mail_signature').value);
-    GM_setValue("settings_log_signature",document.getElementById('settings_log_signature').value);
-    GM_setValue("settings_tb_signature",document.getElementById('settings_tb_signature').value);
+    GM_setValue("settings_mail_signature",document.getElementById('settings_mail_signature').value.replace(/‌/g,"")); // Fix: Entfernt das Steuerzeichen
+    GM_setValue("settings_log_signature",document.getElementById('settings_log_signature').value.replace(/‌/g,""));
+    GM_setValue("settings_tb_signature",document.getElementById('settings_tb_signature').value.replace(/‌/g,""));
     GM_setValue("remove_navi_play",document.getElementById('remove_navi_play').checked);
     GM_setValue("remove_navi_profile",document.getElementById('remove_navi_profile').checked);
     GM_setValue("remove_navi_join",document.getElementById('remove_navi_join').checked);
@@ -2407,7 +2408,7 @@ function gclh_showConfig(){
       var text = document.getElementById('settings_log_template['+i+']');
       if(name && text){
         GM_setValue('settings_log_template_name['+i+']',name.value);
-        GM_setValue('settings_log_template['+i+']',text.value);
+        GM_setValue('settings_log_template['+i+']',text.value.replace(/‌/g,"")); // Fix: Entfernt das Steuerzeichen
       }
     }
 
