@@ -9,10 +9,9 @@
 // @description    Some little things to make life easy (on www.geocaching.com).
 // ==/UserScript==
 //
-// Author:         Torsten Amshove <torsten@amshove.net>
-// Version:        4.6             - 12.06.2010
-// Changelog:
-//                                 - Fix: workaround to not make &amp; of & in templates
+// Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler
+// Version:        4.7             - 26.06.2010
+// Changelog:      4.7             - Fix: workaround to not make &amp; of & in templates
 //                                 - Fix: illegal character in signature/template for leading newlines (configuration has to be saved again to fix it!)
 //                                 - New: hide hint behind a link
 //                                 - New: remove spoiler warning
@@ -332,7 +331,7 @@ bookmarks[34]['id'] = "lnk_my_trackables";
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "4.6";
+var scriptVersion = "4.7";
 
 var anzCustom = 10;
 var anzTemplates = 5;
