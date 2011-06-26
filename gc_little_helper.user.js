@@ -12,6 +12,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net>
 // Version:        4.6             - 12.06.2010
 // Changelog:
+//                                 - Fix: workaround to not make &amp; of & in templates
 //                                 - Fix: illegal character in signature/template for leading newlines (configuration has to be saved again to fix it!)
 //                                 - New: hide hint behind a link
 //                                 - New: remove spoiler warning
@@ -944,10 +945,12 @@ if(settings_show_bbcode && (document.location.href.match(/^http:\/\/www\.geocach
   code += "  }";
   code += "  input.focus();";
   code += "}";
+
   code += "function gclh_insert_from_div(id){";
   code += "  var finds = '"+finds+"';";
   code += "  var input = document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo');";
   code += "  var inhalt = document.getElementById(id).innerHTML;";
+  code += "  inhalt = inhalt.replace(/\\&amp\\;/g,'&');";
   code += "  if(finds){";
   code += "    inhalt = inhalt.replace(/#found_no#/g,finds);";
   code += "    finds++;";
