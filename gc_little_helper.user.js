@@ -10,8 +10,9 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler
-// Version:        4.7             - 26.06.2010
-// Changelog:      4.7             - Fix: workaround to not make &amp; of & in templates
+// Version:        4.8             - 26.06.2010
+// Changelog:      4.8             - Fix: a bug in "remove advertise" function
+//                 4.7             - Fix: workaround to not make &amp; of & in templates
 //                                 - Fix: illegal character in signature/template for leading newlines (configuration has to be saved again to fix it!)
 //                                 - New: hide hint behind a link
 //                                 - New: remove spoiler warning
@@ -331,7 +332,7 @@ bookmarks[34]['id'] = "lnk_my_trackables";
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "4.7";
+var scriptVersion = "4.8";
 
 var anzCustom = 10;
 var anzTemplates = 5;
@@ -751,7 +752,7 @@ if (settings_hide_advert_link) {
       while (del.parentNode != null && (del.parentNode.nodeName != 'P')) {
         del = del.parentNode;
       }
-      del.parentNode.removeChild(del);
+      if(del.parentNode) del.parentNode.removeChild(del);
       break;
     }
   }
