@@ -2193,7 +2193,6 @@ function gclh_showConfig(){
     html += checkbox('settings_hide_feedback', 'Hide Feedback-Button') + "<br/>";
     html += checkbox('settings_hide_advert_link', 'Hide link to advertisement instructions') + "<br/>";
     html += checkbox('settings_hide_line_breaks', 'Hide superfluous line breaks') + "<br/>";
-    html += checkbox('settings_hide_spoilerwarning', 'Hide spoiler warning') + "<br/>";
     html += "Page-Width: <input class='gclh_form' type='text' size='3' id='settings_new_width' value='"+GM_getValue("settings_new_width",950)+"'> px<br>";
     html += "";
     html += "<br>";
@@ -2215,6 +2214,7 @@ function gclh_showConfig(){
     html += checkbox('settings_hide_empty_cache_notes', 'Hide Cache Notes if empty') + "<br/>";
     html += checkbox('settings_hide_cache_notes', 'Hide Cache-Notes completely') + "<br/>";
     html += checkbox('settings_hide_disclaimer', 'Hide Disclaimer') + "<br/>";
+    html += checkbox('settings_hide_spoilerwarning', 'Hide spoiler warning') + "<br/>";
     html += checkbox('settings_show_all_logs', 'Show all Logs - if log-count lower than') + " <input class='gclh_form' type='text' size='2' id='settings_show_all_logs_count' value='"+settings_show_all_logs_count+"'><br>";
     html += checkbox('settings_hide_hint', 'Hide hint behind a link') + "<br/>";
     html += checkbox('settings_decrypt_hint', 'Decrypt Hint') + "<br/>";
