@@ -12,6 +12,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net>
 // Version:        4.6             - 12.06.2010
 // Changelog:
+//                                 - New: hide hint behind a link
 //                                 - New: remove spoiler warning
 //                                 - New: remove link to advertisement instructions
 //                                 - New: remove unneeded line breaks
@@ -400,6 +401,7 @@ settings_dynamic_map = GM_getValue("settings_dynamic_map",true);
 settings_hide_advert_link = GM_getValue('settings_hide_advert_link',true);
 settings_hide_line_breaks = GM_getValue('settings_hide_line_breaks',true);
 settings_hide_spoilerwarning = GM_getValue('settings_hide_spoilerwarning',true);
+settings_hide_hint = GM_getValue('settings_hide_hint',true);
 
 
 // Settings: Custom Bookmarks
@@ -823,6 +825,60 @@ if(settings_hide_empty_cache_notes && !settings_hide_cache_notes && document.loc
   }
 }
 
+function trim(s) {
+  var whitespace = ' \n';
+  for (var i = 0; i < whitespace.length; i++) {
+    while (s.substring(0, 1) == whitespace.charAt(i)) {
+      s = s.substring(1, s.length);
+    }
+    while (s.substring(s.length - 1, s.length) == whitespace.charAt(i)) {
+      s = s.substring(0, s.length - 1);
+    }
+  }
+  return s;
+}
+
+if (settings_hide_hint) {
+  //replace hint by a link which shows the hint dynamically
+  var hint = document.getElementById('div_hint');
+  if (hint) {
+    var para = hint.previousSibling.previousSibling;
+    if (para && para.nodeName == 'P') {
+      if (trim(hint.innerHTML).length > 0) {
+        var label = para.getElementsByTagName('strong')[0];
+        var code = "function hide_hint(){";
+        code += "  var hint = document.getElementById('div_hint');";
+        code += "  if(hint.style.display == 'none'){";
+        code += "    hint.style.display = 'block';";
+        code += "  }else{";
+        code += "    hint.style.display = 'none';";
+        code += "  }";
+        code += "  hint.innerHTML = convertROTStringWithBrackets(hint.innerHTML);";
+        code += "  return false;";
+        code += "}";
+        
+        var script = document.createElement("script");
+        script.innerHTML = code;
+        document.getElementsByTagName("body")[0].appendChild(script);
+        var link = document.createElement('a');
+        link.setAttribute('href','javascript:void(0);');
+        var text = document.createTextNode(""+label.innerHTML);
+        link.appendChild(text);
+        link.setAttribute('onclick', 'hide_hint();');
+        para.previousSibling.previousSibling.appendChild(link);
+        para.style.display = 'none';
+      }
+      hint.style.display = 'none';
+      
+      // remove hint description
+      var decryptKey = document.getElementById('dk');
+      if (decryptKey) {
+        decryptKey.parentNode.removeChild(decryptKey);
+      }      
+    }
+  }
+}
+
 // Show all Logs
 if(settings_show_all_logs && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx(\?|\?pf\=\&)(guid|wp)\=[a-zA-Z0-9-]*$/)){
   if(settings_show_all_logs_count > 0){
@@ -852,7 +908,7 @@ if(settings_show_all_logs && settings_show_all_logs_count < 1){
 }
 
 // Decrypt Hint
-if(settings_decrypt_hint && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx\?(guid|wp)\=[a-zA-Z0-9-]*/)){
+if(settings_decrypt_hint && !settings_hide_hint && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx\?(guid|wp)\=[a-zA-Z0-9-]*/)){
   unsafeWindow.dht(document.getElementById("ctl00_ContentBody_lnkDH"));
 }
 if(settings_decrypt_hint && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cdpf\.aspx/)){
@@ -2160,6 +2216,7 @@ function gclh_showConfig(){
     html += checkbox('settings_hide_cache_notes', 'Hide Cache-Notes completely') + "<br/>";
     html += checkbox('settings_hide_disclaimer', 'Hide Disclaimer') + "<br/>";
     html += checkbox('settings_show_all_logs', 'Show all Logs - if log-count lower than') + " <input class='gclh_form' type='text' size='2' id='settings_show_all_logs_count' value='"+settings_show_all_logs_count+"'><br>";
+    html += checkbox('settings_hide_hint', 'Hide hint behind a link') + "<br/>";
     html += checkbox('settings_decrypt_hint', 'Decrypt Hint') + "<br/>";
     html += checkbox('settings_show_mail', 'Show Mail Link beside Usernames') + "<br/>";
     html += checkbox('settings_show_google_maps', 'Show Link to and from google maps') + "<br/>";
@@ -2339,10 +2396,10 @@ function gclh_showConfig(){
     GM_setValue("remove_navi_shop",document.getElementById('remove_navi_shop').checked);
     GM_setValue("settings_bookmarks_top_menu",document.getElementById('settings_bookmarks_top_menu').checked);
 
-//    var checkboxes = ['settings_hide_advert_link', 'settings_hide_line_breaks', 'settings_hide_spoilerwarning'];
-//    for (var i = 0; i < checkboxes.length; i++) {
-//      GM_setValue(checkboxes[i],document.getElementById(checkboxes[i]).checked);
-//    }
+    var checkboxes = new Array('settings_hide_advert_link', 'settings_hide_line_breaks', 'settings_hide_spoilerwarning', 'settings_hide_hint');
+    for (var i = 0; i < checkboxes.length; i++) {
+      GM_setValue(checkboxes[i],document.getElementById(checkboxes[i]).checked);
+    }
 
     // Save Log-Templates
     for(var i = 0; i < anzTemplates; i++){
