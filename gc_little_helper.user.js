@@ -11,7 +11,10 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler
 // Version:        4.8             - 26.06.2010
-// Changelog:      4.8             - Fix: a bug in "remove advertise" function
+// Changelog:      
+//                 ?               - change: insert a dot where the line breaks are removed
+//                                 - Fix: exception when setting focus
+//                 4.8             - Fix: a bug in "remove advertise" function
 //                 4.7             - Fix: workaround to not make &amp; of & in templates
 //                                 - Fix: illegal character in signature/template for leading newlines (configuration has to be saved again to fix it!)
 //                                 - New: hide hint behind a link
@@ -1129,16 +1132,22 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx
   // Signature
   if(document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML == "" || document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?PLogGuid\=/)) document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML += GM_getValue("settings_log_signature","");
 
-  // Set Cursor do Pos1
-  function gclh_setForcus(){
+  // Set Cursor to Pos1
+  function gclh_setFocus(){
     var input = document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo');
     if(input){
-      input.selectionStart = 0;
-      input.selectionEnd = 0;
-      input.focus();
+      try {
+        input.selectionStart = 0;
+        input.selectionEnd = 0;
+        input.focus();
+      }
+      catch (e) {
+        // TODO: according to Google this exception occurs if the text field is not visible,
+        // but I have no clue what exactly is wrong here 
+      }
     }
   }
-  window.addEventListener("load", gclh_setForcus, false);
+  window.addEventListener("load", gclh_setFocus, false);
 
   // Replace #found# variable
   if(getElementsByClass('SignedInText')[0]){
@@ -1166,16 +1175,21 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/track\/log\.asp
   // Signature
   if(document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo') && document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML == "") document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML = GM_getValue("settings_tb_signature","");
 
-  // Set Cursor do Pos1
-  function gclh_setForcus(){
+  // Set Cursor to Pos1
+  function gclh_setFocus(){
     var input = document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo');
     if(input){
-      input.selectionStart = 0;
-      input.selectionEnd = 0;
-      input.focus();
+      try {
+        input.selectionStart = 0;
+        input.selectionEnd = 0;
+        input.focus();
+      } catch (e) {
+        // TODO: according to Google this exception occurs if the text field is not visible,
+        // but I have no clue what exactly is wrong here 
+      }
     }
   }
-  window.addEventListener("load", gclh_setForcus, false);
+  window.addEventListener("load", gclh_setFocus, false);
 
   // Replace #found# variable
   if(getElementsByClass('SignedInText')[0]){
