@@ -773,6 +773,14 @@ if (settings_hide_line_breaks) {
     var br = distFromHome.nextSibling.nextSibling;
     if (br && br.nodeName == 'BR') {
       br.parentNode.removeChild(br);
+      // append dots to the former 2 lines to avoid confusion when reading
+      if (("" + distFromHome.innerHTML).length > 0) {
+        distFromHome.innerHTML += '.';
+        var loc = document.getElementById('ctl00_ContentBody_Location');
+        if (loc) {
+          loc.innerHTML += '.';
+        }
+      }
     }
   }
 }
