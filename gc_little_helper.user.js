@@ -15,6 +15,7 @@
 //                 ?               - change: insert a dot where the line breaks are removed
 //                                 - Fix: exception when setting focus
 //                                 - New: strikeout title of archived/disabled caches
+//                                 - New: hide found/hidden caches by default
 //                 4.8             - Fix: a bug in "remove advertise" function
 //                 4.7             - Fix: workaround to not make &amp; of & in templates
 //                                 - Fix: illegal character in signature/template for leading newlines (configuration has to be saved again to fix it!)
@@ -409,6 +410,8 @@ settings_hide_line_breaks = GM_getValue('settings_hide_line_breaks',true);
 settings_hide_spoilerwarning = GM_getValue('settings_hide_spoilerwarning',true);
 settings_hide_hint = GM_getValue('settings_hide_hint',true);
 settings_strike_archived = GM_getValue('settings_strike_archived',true);
+settings_map_hide_found = GM_getValue('settings_map_hide_found', false);
+settings_map_hide_hidden = GM_getValue('settings_map_hide_hidden', false);
 
 
 // Settings: Custom Bookmarks
@@ -673,7 +676,9 @@ if(settings_bookmarks_on_top && document.location.href.match(/^http:\/\/www\.geo
     hyperlink.appendChild(document.createTextNode(bookmarks[x]['title']));
 
     navi.insertBefore(hyperlink, strong);
-    if(i != (settings_bookmarks_list_beta.length-1)) navi.insertBefore(document.createTextNode(' | '), strong);
+    if (i != (settings_bookmarks_list_beta.length-1)) {
+      navi.insertBefore(document.createTextNode(' | '), strong);
+    }
   }
   navi.removeChild(strong);
 }
@@ -757,7 +762,9 @@ if (settings_hide_advert_link) {
       while (del.parentNode != null && (del.parentNode.nodeName != 'P')) {
         del = del.parentNode;
       }
-      if(del.parentNode) del.parentNode.removeChild(del);
+      if(del.parentNode) {
+        del.parentNode.removeChild(del);
+      }
       break;
     }
   }
@@ -831,9 +838,11 @@ if(settings_hide_empty_cache_notes && !settings_hide_cache_notes && document.loc
     getElementsByClass("UserSuppliedContent")[0].innerHTML = "<font style='font-size: 10px;'><a href='#' onClick='hide_notes();'>Show/Hide Cache Notes</a></font><br><br>"+getElementsByClass("UserSuppliedContent")[0].innerHTML;
   
     function hide_on_load(){
-      var box = getElementsByClass('NotesWidget')[0];
-      var text = document.getElementById("cache_note").innerHTML;
-      if(text == "Click to enter a note" || text == "Klicken zum Eingeben einer Notiz") box.style.display = "none";
+      var notes = getElementsByClass('NotesWidget')[0];
+      var notesText = document.getElementById("cache_note").innerHTML;
+      if(notesText == "Click to enter a note" || text == "Klicken zum Eingeben einer Notiz") {
+        notes.style.display = "none";
+      }
     }
   
     window.addEventListener("load", hide_on_load, false);
@@ -1465,6 +1474,37 @@ if(settings_show_homezone && document.location.href.match(/^http:\/\/www\.geocac
   document.getElementById('uxMapRefresh').parentNode.insertBefore(br,document.getElementById('uxMapRefresh'));
 }
 
+if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\/beta/)) {
+  // hide my finds
+  var code = 
+    "function hideCaches(id) {" +
+    "  if (google.maps) {" +
+  	"    var button = document.getElementById(id);" +
+  	"    if (button) {" +
+  	"      button.click();" +
+  	"    }" +
+  	"  }" +
+  	"}";
+  
+  var script = document.createElement("script");
+  script.innerHTML = code;
+  document.getElementsByTagName("body")[0].appendChild(script);
+    
+  function hideFound(){
+    unsafeWindow.hideCaches('chkMyFinds');
+  }
+  function hideHidden(){
+    unsafeWindow.hideCaches('chkMyHides');
+  }
+  
+  if (settings_map_hide_found) {
+    window.addEventListener("load", hideFound, false);
+  }
+  if (settings_map_hide_hidden) {
+    window.addEventListener("load", hideHidden, false);
+  }
+}
+
 // Change Map width
 if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\/default.aspx/) && document.getElementById("Content")){
   var map_width = GM_getValue("map_width","1200");
@@ -1930,11 +1970,23 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\//)){
   }
 }
 
+/**
+ * check whether the user has set his home coordinates
+ * @returns {Boolean}
+ */
+function homeCoordinatesSet() {
+  if(typeof(GM_getValue("home_lat")) == "undefined" || typeof(GM_getValue("home_lng")) == "undefined"){
+    if (window.confirm("To use this link, you have to set your home coordinates.")) {
+      document.location.href = "http://www.geocaching.com/account/ManageLocations.aspx";
+    }
+    return false;
+  }
+  return true;
+}
+
 // Redirect to Neares List/Map
 function linkToNearesList(){
-  if(typeof(GM_getValue("home_lat")) == "undefined" || typeof(GM_getValue("home_lng")) == "undefined"){
-    if(window.confirm("To use this Link, you have to set your Home-Coordinates.")) document.location.href = "http://www.geocaching.com/account/ManageLocations.aspx";
-  }else{
+  if (homeCoordinatesSet()) {
     document.location.href = "http://www.geocaching.com/seek/nearest.aspx?lat="+(GM_getValue("home_lat")/10000000)+"&lng="+(GM_getValue("home_lng")/10000000)+"&dist=25&disable_redirect";
   }
 }
@@ -1943,9 +1995,7 @@ if(document.getElementById('lnk_nearestlist')){
 }
 
 function linkToNearesMap(){
-  if(typeof(GM_getValue("home_lat")) == "undefined" || typeof(GM_getValue("home_lng")) == "undefined"){
-    if(window.confirm("To use this Link, you have to set your Home-Coordinates.")) document.location.href = "http://www.geocaching.com/account/ManageLocations.aspx";
-  }else{
+  if (homeCoordinatesSet()) {
     document.location.href = map_url+"?lat="+(GM_getValue("home_lat")/10000000)+"&lng="+(GM_getValue("home_lng")/10000000);
   }
 }
@@ -1955,9 +2005,7 @@ if(document.getElementById('lnk_nearestmap')){
 
 // Redirect to Neares List without Founds
 function linkToNearesListWo(){
-  if(typeof(GM_getValue("home_lat")) == "undefined" || typeof(GM_getValue("home_lng")) == "undefined"){
-    if(window.confirm("To use this Link, you have to set your Home-Coordinates.")) document.location.href = "http://www.geocaching.com/account/ManageLocations.aspx";
-  }else{
+  if (homeCoordinatesSet()) {
     document.location.href = "http://www.geocaching.com/seek/nearest.aspx?lat="+(GM_getValue("home_lat")/10000000)+"&lng="+(GM_getValue("home_lng")/10000000)+"&dist=25&f=1&disable_redirect";
   }
 }
@@ -2250,6 +2298,8 @@ function gclh_showConfig(){
     html += "<h4 class='gclh_headline2'>Maps</h4>";
     html += checkbox('settings_show_homezone', 'Show Homezone') + " - Radius: <input class='gclh_form' type='text' size='2' id='settings_homezone_radius' value='"+settings_homezone_radius+"'> km<br>";
     html += checkbox('settings_old_map', 'Set old map as default') + "<br/>";
+    html += checkbox('settings_map_hide_found', 'Hide found caches by default') + "<br/>";
+    html += checkbox('settings_map_hide_hidden', 'Hide own caches by default') + "<br/>";
     html += "Map-Width: <input class='gclh_form' type='text' size='3' id='map_width' value='"+GM_getValue("map_width",1200)+"'> px<br>";
     html += "";
     html += "<br>";
@@ -2403,28 +2453,8 @@ function gclh_showConfig(){
       if(GM_getValue("home_lat",0) != parseInt(latlng[0]*10000000)) GM_setValue("home_lat",parseInt(latlng[0]*10000000)); // * 10000000 because GM don't know float
       if(GM_getValue("home_lng",0) != parseInt(latlng[1]*10000000)) GM_setValue("home_lng",parseInt(latlng[1]*10000000));
     }
-    GM_setValue("settings_submit_log_button",document.getElementById('settings_submit_log_button').checked);
-    GM_setValue("settings_log_inline",document.getElementById('settings_log_inline').checked);
-    GM_setValue("settings_log_inline_tb",document.getElementById('settings_log_inline_tb').checked);
-    GM_setValue("settings_bookmarks_show",document.getElementById('settings_bookmarks_show').checked);
-    GM_setValue("settings_bookmarks_on_top",document.getElementById('settings_bookmarks_on_top').checked);
-    GM_setValue("settings_bookmarks_search",document.getElementById('settings_bookmarks_search').checked);
     GM_setValue("settings_bookmarks_search_default",document.getElementById('settings_bookmarks_search_default').value);
-    GM_setValue("settings_redirect_to_map",document.getElementById('settings_redirect_to_map').checked);
-    GM_setValue("settings_hide_feedback",document.getElementById('settings_hide_feedback').checked);
-    GM_setValue("settings_hide_disclaimer",document.getElementById('settings_hide_disclaimer').checked);
-    GM_setValue("settings_hide_cache_notes",document.getElementById('settings_hide_cache_notes').checked);
-    GM_setValue("settings_hide_empty_cache_notes",document.getElementById('settings_hide_empty_cache_notes').checked);
-    GM_setValue("settings_show_all_logs",document.getElementById('settings_show_all_logs').checked);
     GM_setValue("settings_show_all_logs_count",document.getElementById('settings_show_all_logs_count').value);
-    GM_setValue("settings_decrypt_hint",document.getElementById('settings_decrypt_hint').checked);
-    GM_setValue("settings_show_bbcode",document.getElementById('settings_show_bbcode').checked);
-    GM_setValue("settings_show_mail",document.getElementById('settings_show_mail').checked);
-    GM_setValue("settings_show_google_maps",document.getElementById('settings_show_google_maps').checked);
-    GM_setValue("settings_show_log_it",document.getElementById('settings_show_log_it').checked);
-    GM_setValue("settings_dynamic_map",document.getElementById('settings_dynamic_map').checked);
-    GM_setValue("settings_show_homezone",document.getElementById('settings_show_homezone').checked);
-    GM_setValue("settings_old_map",document.getElementById('settings_old_map').checked);
     GM_setValue("settings_homezone_radius",document.getElementById('settings_homezone_radius').value);
     GM_setValue("map_width",document.getElementById('map_width').value);
     GM_setValue("settings_new_width",document.getElementById('settings_new_width').value);
@@ -2433,18 +2463,46 @@ function gclh_showConfig(){
     GM_setValue("settings_mail_signature",document.getElementById('settings_mail_signature').value.replace(/‌/g,"")); // Fix: Entfernt das Steuerzeichen
     GM_setValue("settings_log_signature",document.getElementById('settings_log_signature').value.replace(/‌/g,""));
     GM_setValue("settings_tb_signature",document.getElementById('settings_tb_signature').value.replace(/‌/g,""));
-    GM_setValue("remove_navi_play",document.getElementById('remove_navi_play').checked);
-    GM_setValue("remove_navi_profile",document.getElementById('remove_navi_profile').checked);
-    GM_setValue("remove_navi_join",document.getElementById('remove_navi_join').checked);
-    GM_setValue("remove_navi_community",document.getElementById('remove_navi_community').checked);
-    GM_setValue("remove_navi_videos",document.getElementById('remove_navi_videos').checked);
-    GM_setValue("remove_navi_resources",document.getElementById('remove_navi_resources').checked);
-    GM_setValue("remove_navi_shop",document.getElementById('remove_navi_shop').checked);
-    GM_setValue("settings_bookmarks_top_menu",document.getElementById('settings_bookmarks_top_menu').checked);
 
-    var checkboxes = new Array('settings_hide_advert_link', 'settings_hide_line_breaks', 'settings_hide_spoilerwarning', 'settings_hide_hint', 'settings_strike_archived');
+    var checkboxes = new Array(
+      'settings_submit_log_button',
+      'settings_log_inline',
+      'settings_log_inline_tb',
+      'settings_bookmarks_show',
+      'settings_bookmarks_on_top',
+      'settings_bookmarks_search',
+      'settings_redirect_to_map',
+      'settings_hide_feedback',
+      'settings_hide_disclaimer',
+      'settings_hide_cache_notes',
+      'settings_hide_empty_cache_notes',
+      'settings_show_all_logs',
+      'settings_decrypt_hint',
+      'settings_show_bbcode',
+      'settings_show_mail',
+      'settings_show_google_maps',
+      'settings_show_log_it',
+      'settings_dynamic_map',
+      'settings_show_homezone',
+      'settings_old_map',
+      'remove_navi_play',
+      'remove_navi_profile',
+      'remove_navi_join',
+      'remove_navi_community',
+      'remove_navi_videos',
+      'remove_navi_resources',
+      'remove_navi_shop',
+      'settings_bookmarks_top_menu',
+      'settings_hide_advert_link',
+      'settings_hide_line_breaks',
+      'settings_hide_spoilerwarning',
+      'settings_hide_hint',
+      'settings_strike_archived',
+      'settings_map_hide_found',
+      'settings_map_hide_hidden'
+    );
     for (var i = 0; i < checkboxes.length; i++) {
-      GM_setValue(checkboxes[i],document.getElementById(checkboxes[i]).checked);
+      GM_setValue(checkboxes[i], document.getElementById(checkboxes[i]).checked);
     }
 
     // Save Log-Templates
@@ -2550,7 +2608,7 @@ function checkVersion(){
         if(version[1] == scriptName && version[2] != scriptVersion){
           var text = "Version "+version[2]+" of "+scriptName+" greasemonkey script is available.\n"+
                   "You are currently using version "+scriptVersion+".\n\n"+
-                  "Click OK for upgrade.\n";
+                  "Click OK to upgrade.\n";
           if(changelog) text += "\n\nChangelog:\n"+changelog[1];
           if(window.confirm(text)) GM_openInTab(url);
         }
