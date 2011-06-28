@@ -9,11 +9,12 @@
 // @description    Some little things to make life easy (on www.geocaching.com).
 // ==/UserScript==
 //
-// Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler
+// Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de>
 // Version:        4.8             - 26.06.2010
 // Changelog:      
 //                 ?               - change: insert a dot where the line breaks are removed
 //                                 - Fix: exception when setting focus
+//                                 - New: strikeout title of archived/disabled caches
 //                 4.8             - Fix: a bug in "remove advertise" function
 //                 4.7             - Fix: workaround to not make &amp; of & in templates
 //                                 - Fix: illegal character in signature/template for leading newlines (configuration has to be saved again to fix it!)
@@ -407,6 +408,7 @@ settings_hide_advert_link = GM_getValue('settings_hide_advert_link',true);
 settings_hide_line_breaks = GM_getValue('settings_hide_line_breaks',true);
 settings_hide_spoilerwarning = GM_getValue('settings_hide_spoilerwarning',true);
 settings_hide_hint = GM_getValue('settings_hide_hint',true);
+settings_strike_archived = GM_getValue('settings_strike_archived',true);
 
 
 // Settings: Custom Bookmarks
@@ -888,6 +890,23 @@ if (settings_hide_hint) {
       if (decryptKey) {
         decryptKey.parentNode.removeChild(decryptKey);
       }      
+    }
+  }
+}
+
+//show disabled/archived caches with strikeout in title
+if(settings_strike_archived && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx\?(guid|wp)\=[a-zA-Z0-9-]*/)){
+  var warnings = getElementsByClass('OldWarning');
+  if (warnings[0]) {
+    var cacheTitle = document.getElementById('ctl00_ContentBody_CacheName');
+    if (cacheTitle) {
+      var parent = cacheTitle.parentNode;
+      if (parent) {
+        parent.removeChild(cacheTitle);
+        var strike = document.createElement('strike');
+        parent.appendChild(strike);
+        strike.appendChild(cacheTitle);
+      }
     }
   }
 }
@@ -2247,6 +2266,7 @@ function gclh_showConfig(){
     html += checkbox('settings_show_mail', 'Show Mail Link beside Usernames') + "<br/>";
     html += checkbox('settings_show_google_maps', 'Show Link to and from google maps') + "<br/>";
     html += checkbox('settings_dynamic_map', 'Show dynamic map') + "<br/>";
+    html += checkbox('settings_strike_archived', 'Strike through title of archived/disabled caches') + "<br/>";
     html += "<br>";
     html += "";
     html += "<h4 class='gclh_headline2'>Logging</h4>";
@@ -2422,7 +2442,7 @@ function gclh_showConfig(){
     GM_setValue("remove_navi_shop",document.getElementById('remove_navi_shop').checked);
     GM_setValue("settings_bookmarks_top_menu",document.getElementById('settings_bookmarks_top_menu').checked);
 
-    var checkboxes = new Array('settings_hide_advert_link', 'settings_hide_line_breaks', 'settings_hide_spoilerwarning', 'settings_hide_hint');
+    var checkboxes = new Array('settings_hide_advert_link', 'settings_hide_line_breaks', 'settings_hide_spoilerwarning', 'settings_hide_hint', 'settings_strike_archived');
     for (var i = 0; i < checkboxes.length; i++) {
       GM_setValue(checkboxes[i],document.getElementById(checkboxes[i]).checked);
     }
