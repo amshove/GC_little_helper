@@ -16,6 +16,7 @@
 //                                 - Fix: exception when setting focus
 //                                 - New: strikeout title of archived/disabled caches
 //                                 - New: hide found/hidden caches by default
+//                                 - Fix: adapt to changes of 2011-06-28 (feedback button)
 //                 4.8             - Fix: a bug in "remove advertise" function
 //                 4.7             - Fix: workaround to not make &amp; of & in templates
 //                                 - Fix: illegal character in signature/template for leading newlines (configuration has to be saved again to fix it!)
@@ -723,14 +724,9 @@ if(settings_redirect_to_map && document.location.href.match(/^http:\/\/www\.geoc
 }*/
 
 // Hide Feedback-Button
-if(settings_hide_feedback){
-//  var button = document.getElementById('fdbk_tab');
-//  if(button){
-//    button.parentNode.removeChild(button);
-//  }
-
-  function hide_feedback(){
-    var button = document.getElementById('uservoice-feedback');
+if(settings_hide_feedback) {
+  function hide_feedback() {
+    var button = document.getElementById('feedback-tab');
     if(button){
       button.parentNode.removeChild(button);
     }
