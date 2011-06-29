@@ -17,6 +17,7 @@
 //                                 - New: strikeout title of archived/disabled caches
 //                                 - New: hide found/hidden caches by default
 //                                 - Fix: adapt to changes of 2011-06-28 (feedback button)
+//                                 - New: show "n/81" in cache matrix (statistics page) 
 //                 4.8             - Fix: a bug in "remove advertise" function
 //                 4.7             - Fix: workaround to not make &amp; of & in templates
 //                                 - Fix: illegal character in signature/template for leading newlines (configuration has to be saved again to fix it!)
@@ -1962,6 +1963,29 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\//)){
       uid = uid[1];
 
       if(GM_getValue["uid"] != uid) GM_setValue("uid",uid);
+    }
+  }
+}
+
+// count cache matrix on statistics page
+if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/statistics\.aspx/)) {
+  var table = document.getElementById('ctl00_ContentBody_StatsDifficultyTerrainControl1_uxDifficultyTerrainTable');
+  if (table) {
+    var zeros = 0;
+    var cells = table.getElementsByTagName('td');
+    for (var i = 0; i < cells.length; i++) {
+      var cell = cells[i];
+      if (cell.className == 'stats_cellzero') {
+        zeros++;
+      }
+    }
+    var foundMatrix = (9*9)-zeros; 
+    var link = document.getElementById('uxDifficultyTerrainHelp');
+    if (link) {
+      var headline = link.previousSibling;
+      if (headline) {
+        headline.nodeValue += (' (' + foundMatrix + '/' + (9*9) + ')'); 
+      }
     }
   }
 }
