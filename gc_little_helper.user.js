@@ -712,18 +712,6 @@ if(settings_redirect_to_map && document.location.href.match(/^http:\/\/www\.geoc
   }
 }
 
-
-// Hide Facebook-Button
-//if(settings_hide_facebook && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx\?(guid|wp)\=[a-zA-Z0-9-]*/)){
-/*  var iframes = document.getElementsByTagName('iframe');
-  for(var i=0; i<iframes.length; i++){
-    if(iframes[i].src.match(/^http:\/\/www\.facebook\.com/)){
-      iframes[i].parentNode.removeChild(iframes[i]);
-      break;
-    }
-  }
-}*/
-
 // Hide Feedback-Button
 if(settings_hide_feedback) {
   function hide_feedback() {
@@ -817,27 +805,26 @@ if(settings_hide_cache_notes && document.location.href.match(/^http:\/\/www\.geo
 if(settings_hide_empty_cache_notes && !settings_hide_cache_notes && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx(\?|\?pf\=\&)(guid|wp)\=[a-zA-Z0-9-]*/)){
   var box = getElementsByClass('NotesWidget')[0];
   if(box){
-    var code = "function hide_notes(){";
-    code += "  if(document.getElementById('box_notes').style.display == 'none'){";
-    code += "    document.getElementById('box_notes').style.display = 'block';";
-    code += "  }else{";
-    code += "    document.getElementById('box_notes').style.display = 'none';";
-    code += "  }";
-    code += "}";
+    var code = 
+      "function hide_notes() {" +
+      "  if(document.getElementById('box_notes').style.display == 'none') {" +
+      "    document.getElementById('box_notes').style.display = 'block';" +
+      "  } else {" +
+      "    document.getElementById('box_notes').style.display = 'none';" +
+      "  }" +
+      "}";
   
     var script = document.createElement("script");
     script.innerHTML = code;
     document.getElementsByTagName("body")[0].appendChild(script);
 
-//    box.style.display = "none";
     box.setAttribute("id","box_notes");
-
     getElementsByClass("UserSuppliedContent")[0].innerHTML = "<font style='font-size: 10px;'><a href='#' onClick='hide_notes();'>Show/Hide Cache Notes</a></font><br><br>"+getElementsByClass("UserSuppliedContent")[0].innerHTML;
   
-    function hide_on_load(){
+    function hide_on_load() {
       var notes = getElementsByClass('NotesWidget')[0];
       var notesText = document.getElementById("cache_note").innerHTML;
-      if(notesText == "Click to enter a note" || text == "Klicken zum Eingeben einer Notiz") {
+      if (notesText == "Click to enter a note" || notesText == "Klicken zum Eingeben einer Notiz") {
         notes.style.display = "none";
       }
     }
@@ -867,16 +854,17 @@ if (settings_hide_hint) {
     if (para && para.nodeName == 'P') {
       if (trim(hint.innerHTML).length > 0) {
         var label = para.getElementsByTagName('strong')[0];
-        var code = "function hide_hint(){";
-        code += "  var hint = document.getElementById('div_hint');";
-        code += "  if(hint.style.display == 'none'){";
-        code += "    hint.style.display = 'block';";
-        code += "  }else{";
-        code += "    hint.style.display = 'none';";
-        code += "  }";
-        code += "  hint.innerHTML = convertROTStringWithBrackets(hint.innerHTML);";
-        code += "  return false;";
-        code += "}";
+        var code = 
+          "function hide_hint() {" +
+          "  var hint = document.getElementById('div_hint');" +
+          "  if(hint.style.display == 'none') {" +
+          "    hint.style.display = 'block';" +
+          "  } else {" +
+          "    hint.style.display = 'none';" +
+          "  }" +
+          "  hint.innerHTML = convertROTStringWithBrackets(hint.innerHTML);" +
+          "  return false;" +
+          "}";
         
         var script = document.createElement("script");
         script.innerHTML = code;
