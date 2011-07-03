@@ -10,12 +10,11 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de>
-// Version:        4.8             - 26.06.2010
-// Changelog:      
-//                 ?               - change: insert a dot where the line breaks are removed
+// Version:        4.9             - 03.07.2011
+// Changelog:      4.9             - change: insert a dot where the line breaks are removed
 //                                 - Fix: exception when setting focus
 //                                 - New: strikeout title of archived/disabled caches
-//                                 - New: hide found/hidden caches by default
+//                                 - New: beta map: hide found/hidden caches by default
 //                                 - Fix: adapt to changes of 2011-06-28 (feedback button)
 //                                 - New: show "n/81" in cache matrix (statistics page)
 //                                 - Fix: don't automatically decrypt unencrypted hints
@@ -340,7 +339,7 @@ bookmarks[34]['id'] = "lnk_my_trackables";
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "4.8";
+var scriptVersion = "4.9";
 
 var anzCustom = 10;
 var anzTemplates = 5;
