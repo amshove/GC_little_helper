@@ -6,6 +6,7 @@
 // @include        http://maps.google.com/*
 // @include        http://www.google.de/maps*
 // @include        http://www.google.com/maps*
+// @exclude        http://www.geocaching.com/seek/sendtogps.aspx*
 // @description    Some little things to make life easy (on www.geocaching.com).
 // ==/UserScript==
 //
