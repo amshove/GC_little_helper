@@ -17,7 +17,8 @@
 //                                 - New: strikeout title of archived/disabled caches
 //                                 - New: hide found/hidden caches by default
 //                                 - Fix: adapt to changes of 2011-06-28 (feedback button)
-//                                 - New: show "n/81" in cache matrix (statistics page) 
+//                                 - New: show "n/81" in cache matrix (statistics page)
+//                                 - Fix: don't automatically decrypt unencrypted hints
 //                 4.8             - Fix: a bug in "remove advertise" function
 //                 4.7             - Fix: workaround to not make &amp; of & in templates
 //                                 - Fix: illegal character in signature/template for leading newlines (configuration has to be saved again to fix it!)
@@ -862,7 +863,9 @@ if (settings_hide_hint) {
           "  } else {" +
           "    hint.style.display = 'none';" +
           "  }" +
-          "  hint.innerHTML = convertROTStringWithBrackets(hint.innerHTML);" +
+          "  if (document.getElementById('DecryptionKeyWidget')) {" +
+          "    hint.innerHTML = convertROTStringWithBrackets(hint.innerHTML);" +
+          "  }" +
           "  return false;" +
           "}";
         
@@ -935,7 +938,9 @@ if(settings_show_all_logs && settings_show_all_logs_count < 1){
 
 // Decrypt Hint
 if(settings_decrypt_hint && !settings_hide_hint && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx\?(guid|wp)\=[a-zA-Z0-9-]*/)){
-  unsafeWindow.dht(document.getElementById("ctl00_ContentBody_lnkDH"));
+  if (document.getElementById('DecryptionKeyWidget')) {
+    unsafeWindow.dht(document.getElementById("ctl00_ContentBody_lnkDH"));
+  }
 }
 if(settings_decrypt_hint && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cdpf\.aspx/)){
   if(document.getElementById('uxDecryptedHint')) document.getElementById('uxDecryptedHint').style.display = 'none';
