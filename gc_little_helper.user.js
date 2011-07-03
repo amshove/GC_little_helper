@@ -892,7 +892,7 @@ if (settings_hide_hint) {
 }
 
 //show disabled/archived caches with strikeout in title
-if(settings_strike_archived && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx\?(guid|wp)\=[a-zA-Z0-9-]*/)){
+if(settings_strike_archived && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx(\?|\?pf\=\&)(guid|wp)\=[a-zA-Z0-9-]*/)){
   var warnings = getElementsByClass('OldWarning');
   if (warnings[0]) {
     var cacheTitle = document.getElementById('ctl00_ContentBody_CacheName');
@@ -937,7 +937,7 @@ if(settings_show_all_logs && settings_show_all_logs_count < 1){
 }
 
 // Decrypt Hint
-if(settings_decrypt_hint && !settings_hide_hint && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx\?(guid|wp)\=[a-zA-Z0-9-]*/)){
+if(settings_decrypt_hint && !settings_hide_hint && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx(\?|\?pf\=\&)(guid|wp)\=[a-zA-Z0-9-]*/)){
   if (document.getElementById('DecryptionKeyWidget')) {
     unsafeWindow.dht(document.getElementById("ctl00_ContentBody_lnkDH"));
   }
