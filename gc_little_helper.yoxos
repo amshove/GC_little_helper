@@ -1,0 +1,37 @@
+{
+  "profile":{
+    "administrators":[
+      
+    ],
+    "components":[
+      "org.eclipse.team.svn.feature.group",
+      "org.polarion.eclipse.team.svn.connector.svnkit16.feature.group",
+      "com.yoxos.provisioning.team.feature.group",
+      "net.trajano.eclipse.platform.feature.group",
+      "org.eclipse.wst.jsdt.feature.feature.group",
+      "org.polarion.eclipse.team.svn.connector.feature.group",
+      "org.eclipse.team.svn.resource.ignore.rules.jdt.feature.group",
+      "com.yoxos.provisioning.team.feature.group"
+    ],
+    "configurations":[
+      {
+        "id":"team",
+        "configuration":"<psf><xml name=\"2011-07-04 19:38\">&lt;?xml version=\"1.0\" encoding=\"UTF-8\"?&gt;\r\n&lt;psf version=\"2.0\"&gt;\r\n&lt;provider id=\"org.eclipse.team.svn.core.svnnature\"&gt;\r\n&lt;project reference=\"1.0.1,https:\/\/svn.amshove.net\/svn\/greasemonkey\/gc_little_helper\/trunk,GC little helper,5006fdd35b9f00101c29d3bcb932bb97;https:\/\/svn.amshove.net\/svn\/greasemonkey\/gc_little_helper;https:\/\/svn.amshove.net\/svn\/greasemonkey\/gc_little_helper;branches;tags;trunk;true;86eb8f87-0a62-4e27-838e-ff29c026b070;https:\/\/svn.amshove.net\/svn\/greasemonkey\/gc_little_helper;;false;&amp;lt;https:\/\/svn.amshove.net:443&amp;gt; WebSVNAdmin;;0\"\/&gt;\r\n&lt;\/provider&gt;\r\n&lt;\/psf&gt;<\/xml><\/psf>"
+      }
+    ],
+    "description":"",
+    "doctype":"profile",
+    "folder":"",
+    "followExperimental":false,
+    "_id":"d36c446868498fc01ceabe139bb43f3a",
+    "name":"gc_little_helper",
+    "owner":"",
+    "placeID":"yoxos",
+    "sliceID":"3.7.0.20110621-1930",
+    "teams":[
+      
+    ],
+    "type":"PRIVATE",
+    "updateStrategy":"ALL"
+  }
+}
