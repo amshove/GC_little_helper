@@ -11,8 +11,8 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de>
-// Version:        4.9             - 03.07.2011
-// Changelog:      5.0
+// Version:        5.0             - 05.07.2011
+// Changelog:      5.0             - Fix: hint-decryption
 //                                 - Fix: show Coin-Series
 //                                 - Fix: show BBCode while editing logs of trackables
 //                                 - Fix: exclude script on "send to gps" page to prevent destroying the design
@@ -344,7 +344,7 @@ bookmarks[34]['id'] = "lnk_my_trackables";
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "4.9";
+var scriptVersion = "5.0";
 
 var anzCustom = 10;
 var anzTemplates = 5;
@@ -867,9 +867,9 @@ if (settings_hide_hint) {
           "  } else {" +
           "    hint.style.display = 'none';" +
           "  }" +
-          "  if (document.getElementById('DecryptionKeyWidget')) {" +
+//          "  if (document.getElementById('ctl00_ContentBody_EncryptionKey')) {" +
           "    hint.innerHTML = convertROTStringWithBrackets(hint.innerHTML);" +
-          "  }" +
+//          "  }" +
           "  return false;" +
           "}";
         
@@ -942,7 +942,7 @@ if(settings_show_all_logs && settings_show_all_logs_count < 1){
 
 // Decrypt Hint
 if(settings_decrypt_hint && !settings_hide_hint && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx(\?|\?pf\=\&)(guid|wp)\=[a-zA-Z0-9-]*/)){
-  if (document.getElementById('DecryptionKeyWidget')) {
+  if (document.getElementById('ctl00_ContentBody_EncryptionKey')) {
     unsafeWindow.dht(document.getElementById("ctl00_ContentBody_lnkDH"));
   }
 }
