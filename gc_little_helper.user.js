@@ -12,7 +12,10 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de>
 // Version:        4.9             - 03.07.2011
-// Changelog:      4.9             - change: insert a dot where the line breaks are removed
+// Changelog:      5.0
+//                                 - Fix: show BBCode while editing logs of trackables
+//                                 - Fix: exclude script on "send to gps" page to prevent destroying the design
+//                 4.9             - change: insert a dot where the line breaks are removed
 //                                 - Fix: exception when setting focus
 //                                 - New: strikeout title of archived/disabled caches
 //                                 - New: beta map: hide found/hidden caches by default
@@ -948,7 +951,7 @@ if(settings_decrypt_hint && document.location.href.match(/^http:\/\/www\.geocach
 }
 
 // Show Smilies & BBCode --- http://www.cachewiki.de/wiki/Formatierung
-if(settings_show_bbcode && (document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?(id|guid|ID|wp|LUID|PLogGuid)\=/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/track\/log\.aspx\?(id|wid|guid|ID|PLogGuid)\=/)) && document.getElementById('litDescrCharCount')){
+if(settings_show_bbcode && (document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?(id|guid|ID|wp|LUID|PLogGuid)\=/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/track\/log\.aspx\?(id|wid|guid|ID|LUID|PLogGuid)\=/)) && document.getElementById('litDescrCharCount')){
   // Get foinds to replace #found# variable
   if(getElementsByClass('SignedInText')[0]){
     var text = getElementsByClass('SignedInText')[0].childNodes[7].innerHTML;
