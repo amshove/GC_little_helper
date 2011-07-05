@@ -13,6 +13,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de>
 // Version:        4.9             - 03.07.2011
 // Changelog:      5.0
+//                                 - Fix: show Coin-Series
 //                                 - Fix: show BBCode while editing logs of trackables
 //                                 - Fix: exclude script on "send to gps" page to prevent destroying the design
 //                 4.9             - change: insert a dot where the line breaks are removed
@@ -1229,7 +1230,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/track\/details\
   if(dl){
     var title = document.getElementsByTagName('title')[0].innerHTML;
     if(title){
-      var matches = title.match(/\([A-Za-z0-9]*\) ([A-Za-z0-9-_.,\s]*) - /);
+      var matches = title.match(/\([A-Za-z0-9]*\) ([A-Za-z0-9-–_.,\s]*) - /);
       if(matches) dl.innerHTML += "<dt>Series:</dt><dd>"+matches[1]+"</dd>";
     }
   }
