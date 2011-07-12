@@ -11,7 +11,7 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de>
-// Version:        5.0             - 05.07.2011
+// Version:        5.1             - 12.07.2011
 // Changelog:      5.1             - New: new update advice
 //                                 - New: show percentage of favourite points in listing
 //                                 - Fix: redirect to map on search by keyword
