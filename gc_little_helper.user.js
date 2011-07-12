@@ -12,7 +12,9 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de>
 // Version:        5.0             - 05.07.2011
-// Changelog:      5.0             - Fix: hint-decryption
+// Changelog:      5.1
+//                                 - New: AutoVisit for TBs/Coins
+//                 5.0             - Fix: hint-decryption
 //                                 - Fix: show Coin-Series
 //                                 - Fix: show BBCode while editing logs of trackables
 //                                 - Fix: exclude script on "send to gps" page to prevent destroying the design
@@ -1738,15 +1740,45 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/profile\//) && 
 }
 
 // Auto-Visit
-/*if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx/){
+if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx/)){
+  function gclh_autovisit_save(){
+    var match = this.value.match(/([0-9]*)/);
+    if(this.value == match[1]){
+      GM_setValue("autovisit_"+match[1],false);
+    }else{
+      GM_setValue("autovisit_"+match[1],true);
+    }
+  }
+
+  // Add new option
   var selects = document.getElementsByTagName("select");
   for (var i=0; i < selects.length; i++){
     if(selects[i].id.match(/ctl00_ContentBody_LogBookPanel1_uxTrackables_repTravelBugs_ctl[0-9]*_ddlAction/)){
-// blabla
-
+      var val = selects[i].childNodes[1].value;
+      var autovisit = document.createElement("option");
+      autovisit.value = val+"_Visited";
+      autovisit.innerHTML = "AutoVisit";
+      selects[i].appendChild(autovisit);
+      autovisit.addEventListener("click", gclh_autovisit_save, false);
+      selects[i].childNodes[1].addEventListener("click", gclh_autovisit_save , false);
     }
   }
-}*/
+
+  // Select AutoVisit
+  function gclh_autovisit(){
+    var selects = document.getElementsByTagName("select");
+    for (var i=0; i < selects.length; i++){
+      if(selects[i].id.match(/ctl00_ContentBody_LogBookPanel1_uxTrackables_repTravelBugs_ctl[0-9]*_ddlAction/)){
+        var val = selects[i].childNodes[1].value;
+        if(GM_getValue("autovisit_"+val,false)){
+          selects[i].selectedIndex = 3;
+          document.getElementById("ctl00_ContentBody_LogBookPanel1_uxTrackables_hdnSelectedActions").value += val+"_Visited,";
+        }
+      }
+    }
+  }
+  window.addEventListener("load", gclh_autovisit, false);
+}
 
 ////////////////////////////////////////////////////////////////////////////
 
