@@ -13,6 +13,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de>
 // Version:        5.0             - 05.07.2011
 // Changelog:      5.1
+//                                 - Fix: redirect to map on search by keyword
 //                                 - New: AutoVisit for TBs/Coins
 //                 5.0             - Fix: hint-decryption
 //                                 - Fix: show Coin-Series
@@ -713,7 +714,7 @@ if(settings_redirect_to_map && document.location.href.match(/^http:\/\/www\.geoc
 //   if(!lng) var lng = document.location.href.match(/lng=([0-9.]*)/);
 //
 //  if(!document.location.href.match(/&disable_redirect/)) document.location.href = map_url+"?lat="+lat[1]+"&lng="+lng[1];
-  if(!document.location.href.match(/&disable_redirect/) && document.getElementById('ctl00_ContentBody_LocationPanel1_lnkMapIt')){
+  if(!document.location.href.match(/&disable_redirect/) && !document.location.href.match(/key=/) && document.getElementById('ctl00_ContentBody_LocationPanel1_lnkMapIt')){
     var match = document.getElementById('ctl00_ContentBody_LocationPanel1_lnkMapIt').href.match(/\.aspx\?(.*)/);
     if(match[1]) document.location.href = map_url+"?"+match[1];
   }
@@ -1710,17 +1711,17 @@ if(GM_getValue("settings_new_width") > 0 && GM_getValue("settings_new_width") !=
 
 // Show Favourite percentage
 if(false){
-  var fav = getElementsByClass('favorite-container')[0];
-  if(fav){
-    var score = document.getElementById('uxFavoriteScore').innerHTML.match(/([0-9]*)/);
-alert(uneval(score));
-    if(score) fav.innerHTML = "<span class='favorite-value'> 9</span><br>&nbsp;&nbsp;&nbsp;&nbsp;"+score+"% &nbsp;&nbsp;&nbsp;&nbsp;<img id='imgFavoriteArrow' src='/images/arrow-down.png' alt='Expand' title='Expand'>";
-  }
-
   function gclh_load_score(){
     unsafeWindow.showFavoriteScore();
+    var fav = getElementsByClass('favorite-container')[0];
+    if(fav){
+      var score = document.getElementById('uxFavoriteScore').innerHTML.match(/([0-9]*)/);
+//  alert(uneval(score));
+alert(document.getElementById('uxFavoriteScore').innerHTML);
+      if(score) fav.innerHTML = "<span class='favorite-value'> 9</span><br>&nbsp;&nbsp;&nbsp;&nbsp;"+score+"% &nbsp;&nbsp;&nbsp;&nbsp;<img id='imgFavoriteArrow' src='/images/arrow-down.png' alt='Expand' title='Expand'>";
+    }
   }
-  window.addEventListener("load", gclh_load_score, false);
+  if(getElementsByClass('favorite-container')[0]) window.addEventListener("load", gclh_load_score, false);
 }
 
 // Show amount of different Coins in public profile
