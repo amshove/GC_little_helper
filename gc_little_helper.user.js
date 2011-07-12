@@ -13,6 +13,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de>
 // Version:        5.0             - 05.07.2011
 // Changelog:      5.1
+//                                 - New: show percentage of favourite points in listing
 //                                 - Fix: redirect to map on search by keyword
 //                                 - New: AutoVisit for TBs/Coins
 //                 5.0             - Fix: hint-decryption
@@ -422,6 +423,7 @@ settings_hide_hint = GM_getValue('settings_hide_hint',true);
 settings_strike_archived = GM_getValue('settings_strike_archived',true);
 settings_map_hide_found = GM_getValue('settings_map_hide_found', false);
 settings_map_hide_hidden = GM_getValue('settings_map_hide_hidden', false);
+settings_show_fav_percentage = GM_getValue('settings_show_fav_percentage', false);
 
 
 // Settings: Custom Bookmarks
@@ -1710,16 +1712,22 @@ if(GM_getValue("settings_new_width") > 0 && GM_getValue("settings_new_width") !=
 }
 
 // Show Favourite percentage
-if(false){
+if(settings_show_fav_percentage && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details.aspx/)){
   function gclh_load_score(){
     unsafeWindow.showFavoriteScore();
-    var fav = getElementsByClass('favorite-container')[0];
-    if(fav){
-      var score = document.getElementById('uxFavoriteScore').innerHTML.match(/([0-9]*)/);
-//  alert(uneval(score));
-alert(document.getElementById('uxFavoriteScore').innerHTML);
-      if(score) fav.innerHTML = "<span class='favorite-value'> 9</span><br>&nbsp;&nbsp;&nbsp;&nbsp;"+score+"% &nbsp;&nbsp;&nbsp;&nbsp;<img id='imgFavoriteArrow' src='/images/arrow-down.png' alt='Expand' title='Expand'>";
-    }
+
+    setTimeout(function(){
+      var fav = getElementsByClass('favorite-container')[0];
+      if(fav){
+        var score = document.getElementById('uxFavoriteScore').innerHTML.match(/<strong>(.*)<\/strong>/);
+        if(score[1]){
+          var val = getElementsByClass("favorite-value");
+          if(val[0]){
+            fav.innerHTML = "<span class='favorite-value'> "+val[0].innerHTML+"</span><br>&nbsp;&nbsp;&nbsp;&nbsp;"+score[1]+" &nbsp;&nbsp;&nbsp;&nbsp;<img id='imgFavoriteArrow' src='/images/arrow-down.png' alt='Expand' title='Expand'>";
+          }
+        }
+      }
+    },2000);
   }
   if(getElementsByClass('favorite-container')[0]) window.addEventListener("load", gclh_load_score, false);
 }
@@ -2367,6 +2375,7 @@ function gclh_showConfig(){
     html += checkbox('settings_show_google_maps', 'Show Link to and from google maps') + "<br/>";
     html += checkbox('settings_dynamic_map', 'Show dynamic map') + "<br/>";
     html += checkbox('settings_strike_archived', 'Strike through title of archived/disabled caches') + "<br/>";
+    html += checkbox('settings_show_fav_percentage', 'Show percentage of favourite points') + "<br/>";
     html += "<br>";
     html += "";
     html += "<h4 class='gclh_headline2'>Logging</h4>";
@@ -2549,7 +2558,8 @@ function gclh_showConfig(){
       'settings_hide_hint',
       'settings_strike_archived',
       'settings_map_hide_found',
-      'settings_map_hide_hidden'
+      'settings_map_hide_hidden',
+      'settings_show_fav_percentage'
     );
     for (var i = 0; i < checkboxes.length; i++) {
       GM_setValue(checkboxes[i], document.getElementById(checkboxes[i]).checked);
