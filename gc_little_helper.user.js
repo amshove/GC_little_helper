@@ -12,7 +12,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de>
 // Version:        5.0             - 05.07.2011
-// Changelog:      5.1
+// Changelog:      5.1             - New: new update advice
 //                                 - New: show percentage of favourite points in listing
 //                                 - Fix: redirect to map on search by keyword
 //                                 - New: AutoVisit for TBs/Coins
@@ -348,7 +348,7 @@ bookmarks[34]['id'] = "lnk_my_trackables";
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "5.0";
+var scriptVersion = "5.1";
 
 var anzCustom = 10;
 var anzTemplates = 5;
@@ -539,6 +539,14 @@ function getElementsByClass(classname){
 
   return result;
 }
+
+// Show Update-Banner
+if(GM_getValue("new_version",scriptVersion) > scriptVersion){
+  var banner = "";
+  banner = "<div align='center' style='background-color: #FF8888;'>There is an update available for <b>GC little helper</b> - you can update <a href='http://www.amshove.net/greasemonkey/updates.php' target='_blank'>here</a></div>";
+  document.getElementsByTagName("body")[0].innerHTML = banner+document.getElementsByTagName("body")[0].innerHTML;
+}
+////////////////////////////////////////////////////////////////////////////
 
 // F2 zum Log abschicken
 if(settings_submit_log_button && (document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?(id|guid|ID|wp|LUID|PLogGuid)\=/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/track\/log\.aspx\?(id|wid|guid|ID|PLogGuid)\=/))){
@@ -2664,6 +2672,8 @@ function checkVersion(){
       onload: function(result) {
         var version = result.responseText.match(/^([a-zA-Z0-9-_.]*)=([0-9.]*)/);
         var changelog = result.responseText.match(/changelog=((.*\n*)*)/);
+
+        GM_setValue("new_version",version[2]);
 
         if(version[1] == scriptName && version[2] != scriptVersion){
           var text = "Version "+version[2]+" of "+scriptName+" greasemonkey script is available.\n"+
