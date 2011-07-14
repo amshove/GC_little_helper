@@ -11,8 +11,9 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de>
-// Version:        5.1             - 12.07.2011
-// Changelog:      5.1             - New: new update advice
+// Version:        5.2             - 14.07.2011
+// Changelog:      5.2             - New: VIP-List
+//                 5.1             - New: new update advice
 //                                 - New: show percentage of favourite points in listing
 //                                 - Fix: redirect to map on search by keyword
 //                                 - New: AutoVisit for TBs/Coins
@@ -348,7 +349,7 @@ bookmarks[34]['id'] = "lnk_my_trackables";
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "5.1";
+var scriptVersion = "5.2";
 
 var anzCustom = 10;
 var anzTemplates = 5;
@@ -424,6 +425,7 @@ settings_strike_archived = GM_getValue('settings_strike_archived',true);
 settings_map_hide_found = GM_getValue('settings_map_hide_found', false);
 settings_map_hide_hidden = GM_getValue('settings_map_hide_hidden', false);
 settings_show_fav_percentage = GM_getValue('settings_show_fav_percentage', false);
+settings_show_vip_list = GM_getValue('settings_show_vip_list', true);
 
 
 // Settings: Custom Bookmarks
@@ -1803,7 +1805,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx
 }
 
 // VIP
-if(true && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/)){
+if(settings_show_vip_list && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/)){
   var img_vip_off = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAKCAYAAAC9vt6cAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9sHDhEzBX83tZcAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAsElEQVQoz6WSsQ2DUAxEz4gdfkdBQQUlDAU9E0ALHQWLsMAfA8o/BNVLkYCS0ETkGstn6+kk2yShPxRLEtxjmJmio8nzXN57SZL3XkVRnEtHNTNlWaZ5nj9AAHRdR9M0ANR1Td/38Iz2UZdlIUmS0zsB67rinGPfd5xzbNt2AUgiTVOmaboCAMqypG1bqqo6ve8E77oAhmEgiiLGcbwHCCEQxzEhhJ8B9hrcPqP9+0gPbh/tf/c8szwAAAAASUVORK5CYII=";
   var img_vip_on = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAKCAYAAAC9vt6cAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9sHDhE0Aq4StvMAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAzklEQVQoz6WSwQvBcBTHP7/lanFT3DdzV9yw+RNc8E/s6A/YSa6KUrs4u4omB6KUKJoc5a+Q5rRlOCz7Xl7feu/zXu89AXjEUAKgszb/KrbKPSTfDJo2t8MdgNvhzrBlB0l+tMo9+o0R+8kxgASAgqFynrsAnGYumqF+deysTepmhZW9/QZouoLrXHk+nlwWVzRd+TnytOtQahfDOwBI51LImSTLwQo5I5POpn5O8Cnp3WiGyma8o1BXIi8yDKgpCEmQr0YHCMCLc0YR95Fe0bc6eQ97MqYAAAAASUVORK5CYII=";
   var vips = GM_getValue("vips",false);
@@ -2519,6 +2521,7 @@ function gclh_showConfig(){
     html += checkbox('settings_dynamic_map', 'Show dynamic map') + "<br/>";
     html += checkbox('settings_strike_archived', 'Strike through title of archived/disabled caches') + "<br/>";
     html += checkbox('settings_show_fav_percentage', 'Show percentage of favourite points') + "<br/>";
+    html += checkbox('settings_show_vip_list', 'Show VIP-List') + "<br/>";
     html += "<br>";
     html += "";
     html += "<h4 class='gclh_headline2'>Logging</h4>";
@@ -2702,7 +2705,8 @@ function gclh_showConfig(){
       'settings_strike_archived',
       'settings_map_hide_found',
       'settings_map_hide_hidden',
-      'settings_show_fav_percentage'
+      'settings_show_fav_percentage',
+      'settings_show_vip_list'
     );
     for (var i = 0; i < checkboxes.length; i++) {
       GM_setValue(checkboxes[i], document.getElementById(checkboxes[i]).checked);
