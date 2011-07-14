@@ -540,6 +540,11 @@ function getElementsByClass(classname){
   return result;
 }
 
+function in_array(search,arr){
+  for(var i=0; i<arr.length;i++) if(arr[i] == search) return true;
+  return false;
+}
+
 // Show Update-Banner
 if(GM_getValue("new_version",scriptVersion) > scriptVersion){
   var banner = "";
@@ -1795,6 +1800,136 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx
     }
   }
   window.addEventListener("load", gclh_autovisit, false);
+}
+
+// VIP
+if(true && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/)){
+  var img_vip_off = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAKCAYAAAC9vt6cAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9sHDhEzBX83tZcAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAsElEQVQoz6WSsQ2DUAxEz4gdfkdBQQUlDAU9E0ALHQWLsMAfA8o/BNVLkYCS0ETkGstn6+kk2yShPxRLEtxjmJmio8nzXN57SZL3XkVRnEtHNTNlWaZ5nj9AAHRdR9M0ANR1Td/38Iz2UZdlIUmS0zsB67rinGPfd5xzbNt2AUgiTVOmaboCAMqypG1bqqo6ve8E77oAhmEgiiLGcbwHCCEQxzEhhJ8B9hrcPqP9+0gPbh/tf/c8szwAAAAASUVORK5CYII=";
+  var img_vip_on = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAKCAYAAAC9vt6cAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9sHDhE0Aq4StvMAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAzklEQVQoz6WSwQvBcBTHP7/lanFT3DdzV9yw+RNc8E/s6A/YSa6KUrs4u4omB6KUKJoc5a+Q5rRlOCz7Xl7feu/zXu89AXjEUAKgszb/KrbKPSTfDJo2t8MdgNvhzrBlB0l+tMo9+o0R+8kxgASAgqFynrsAnGYumqF+deysTepmhZW9/QZouoLrXHk+nlwWVzRd+TnytOtQahfDOwBI51LImSTLwQo5I5POpn5O8Cnp3WiGyma8o1BXIi8yDKgpCEmQr0YHCMCLc0YR95Fe0bc6eQ97MqYAAAAASUVORK5CYII=";
+  var vips = GM_getValue("vips",false);
+  if(!vips) vips = new Array();
+  else vips = eval(vips);
+
+  // Add to VIP - image
+  function gclh_add_vip(){
+    var user = this.name;
+    var img = this.childNodes[0];
+
+    vips.push(user);
+    GM_setValue("vips",uneval(vips));
+
+    img.setAttribute("src",img_vip_on);
+    img.setAttribute("title","Remove User "+user+" from VIP-List");
+
+    this.removeEventListener("click",gclh_add_vip,false);
+    this.addEventListener("click",gclh_del_vip,false);
+
+    gclh_build_vip_list();
+  }
+
+  function gclh_del_vip(){
+    var vips_new = new Array();
+    var user = this.name;
+    var img = this.childNodes[0];
+
+    for(var i=0; i<vips.length; i++){
+      if(vips[i] != user) vips_new.push(vips[i]);
+    }
+    vips = vips_new;
+    GM_setValue("vips",uneval(vips));
+
+    img.setAttribute("src",img_vip_off);
+    img.setAttribute("title","Add User "+user+" to VIP-List");
+
+    this.removeEventListener("click",gclh_del_vip,false);
+    this.addEventListener("click",gclh_add_vip,false);
+
+    gclh_build_vip_list();
+  }
+
+  var all_users = new Array();
+  var links = document.getElementsByTagName('a');
+  for(var i=0; i<links.length; i++){
+    if(links[i].href.match(/http:\/\/www\.geocaching\.com\/profile\/\?guid=/)){
+      var user = links[i].innerHTML;
+      all_users.push(user);
+
+      var link = document.createElement("a");
+      var img = document.createElement("img");
+      img.setAttribute("border","0");
+      link.appendChild(img);
+      link.setAttribute("href","javascript:void(0);");
+      link.setAttribute("name",user);
+
+      if(in_array(user,vips)){
+        img.setAttribute("src",img_vip_on);
+        img.setAttribute("title","Remove User "+user+" from VIP-List");
+        link.addEventListener("click",gclh_del_vip,false);
+      }else{
+        img.setAttribute("src",img_vip_off);
+        img.setAttribute("title","Add User "+user+" to VIP-List");
+        link.addEventListener("click",gclh_add_vip,false);
+      } 
+
+      links[i].parentNode.appendChild(document.createTextNode("   "));
+      links[i].parentNode.appendChild(link);
+    }
+  }
+
+  // Show VIP List
+  var map = document.getElementById("lnkSmallMap").parentNode;
+  var box = document.createElement("div");
+  var headline = document.createElement("h3");
+  var body = document.createElement("div");
+  box.setAttribute("class","CacheDetailNavigationWidget NoPrint");
+  headline.setAttribute("class","WidgetHeader");
+  body.setAttribute("class","WidgetBody");
+  body.setAttribute("id","gclh_vip_list");
+  headline.innerHTML = "<img width=\"16\" height=\"16\" title=\"VIP-List\" alt=\"VIP-List\" src=\"http://www.geocaching.com/images/icons/icon_attended.gif\"> VIP-List";
+  box.appendChild(headline);
+  box.appendChild(body);
+  box.innerHTML = "<br>"+box.innerHTML;
+  map.parentNode.insertBefore(box,map);
+
+  function gclh_build_vip_list(){
+    var list = document.getElementById("gclh_vip_list");
+    list.innerHTML = "";
+
+    for(var i=0; i<vips.length; i++){
+      var user = vips[i];
+      if(in_array(user,all_users)){
+        var span = document.createElement("span");
+        var profile = document.createElement("a");
+        profile.setAttribute("href","http://www.geocaching.com/profile/?u="+vips[i]);
+        profile.innerHTML = user;
+        span.appendChild(profile);
+  
+        // VIP-Link
+        var link = document.createElement("a");
+        var img = document.createElement("img");
+        img.setAttribute("border","0");
+        link.appendChild(img);
+        link.setAttribute("href","javascript:void(0);");
+        link.setAttribute("name",user);
+        img.setAttribute("src",img_vip_on);
+        img.setAttribute("title","Remove User "+user+" from VIP-List");
+        link.addEventListener("click",gclh_del_vip,false);
+  
+        list.appendChild(span);
+        list.appendChild(document.createTextNode("   "));
+        list.appendChild(link);
+        list.appendChild(document.createElement("br"));
+      }
+    }
+    if(!window.location.href.match(/log=y/)){
+      var advice = document.createElement("div");
+      advice.setAttribute("style","background-color: #FCE6A4; width: 100%; padding: 2px; text-align: center;");
+      advice.innerHTML = "this list is not complete<br>please load <a href='"+(window.location.href.replace(/#/,""))+"&log=y'>all</a> logs";
+      list.appendChild(document.createElement("br"));
+      list.appendChild(advice);
+    }
+  }
+  gclh_build_vip_list();
 }
 
 ////////////////////////////////////////////////////////////////////////////
