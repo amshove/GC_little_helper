@@ -12,7 +12,9 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de>
 // Version:        5.2             - 14.07.2011
-// Changelog:      5.2             - New: VIP-List
+// Changelog:
+//                 ?               - change: enable matrix statistics also on profile page
+//                 5.2             - New: VIP-List
 //                 5.1             - New: new update advice
 //                                 - New: show percentage of favourite points in listing
 //                                 - Fix: redirect to map on search by keyword
@@ -184,164 +186,95 @@
 
 ////////////////////////////////////////////////////////////////////////////
   
+/**
+ * create a bookmark to a page in the geocaching.com name space
+ * @param {String} title
+ * @param {String} href
+ * @returns {Object} bookmark
+ */
+function bookmark(title, href) {
+  var bm = new Object();
+  bookmarks[bookmarks.length] = bm;
+  bm['href'] = href;
+  bm['title'] = title;
+  return bm;
+}
+
+/**
+ * create a bookmark to an external site
+ * @param {String} title
+ * @param {String} href
+ */
+function externalBookmark(title, href) {
+  var bm = bookmark(title, href);
+  bm['rel'] = "external";
+  bm['target'] = "_blank";
+}
+
+/**
+ * create a bookmark to a profile sub site
+ * @param {String} title
+ * @param {String} id
+ */
+function profileBookmark(title, id) {
+  var bm = bookmark(title, "#");
+  bm['id'] = id;
+}
+
+/**
+ * check if the current document location matches the the given path
+ * @param {String} path partial or full path to a geocaching.com web page
+ * @returns {Boolean} true if the current page matches the path
+ */
+function isLocation(path) {
+  path = path.toLowerCase();
+  if (path.indexOf("http") != 0) {
+    if (path.charAt(0) != '/') {
+      path = "/" + path;
+    }
+    path = "http://www.geocaching.com" + path;
+  }
+  return document.location.href.toLowerCase().indexOf(path) == 0;
+}
+
+// define bookmarks
 var bookmarks = new Array();
 
-bookmarks[0] = new Object();
-bookmarks[0]['href'] = "/my/watchlist.aspx";
-bookmarks[0]['title'] = "Watchlist";
-
-bookmarks[1] = new Object();
-bookmarks[1]['href'] = "/my/geocaches.aspx";
-bookmarks[1]['title'] = "Geocaches";
-
-bookmarks[2] = new Object();
-bookmarks[2]['href'] = "/my/owned.aspx";
-bookmarks[2]['title'] = "My Geocaches";
-
-bookmarks[3] = new Object();
-bookmarks[3]['href'] = "/my/travelbugs.aspx";
-bookmarks[3]['title'] = "Trackable Items";
-
-bookmarks[4] = new Object();
-bookmarks[4]['href'] = "/my/inventory.aspx";
-bookmarks[4]['title'] = "Trackables Inventory";
-
-bookmarks[5] = new Object();
-bookmarks[5]['href'] = "/my/collection.aspx";
-bookmarks[5]['title'] = "Trackables Collection";
-
-bookmarks[6] = new Object();
-bookmarks[6]['href'] = "/my/benchmarks.aspx";
-bookmarks[6]['title'] = "Benchmarks";
-
-bookmarks[7] = new Object();
-bookmarks[7]['href'] = "/my/subscription.aspx";
-bookmarks[7]['title'] = "Member Features";
-
-bookmarks[8] = new Object();
-bookmarks[8]['href'] = "/my/myfriends.aspx";
-bookmarks[8]['title'] = "Friends";
-
-bookmarks[9] = new Object();
-bookmarks[9]['href'] = "/account/default.aspx";
-bookmarks[9]['title'] = "Account Details";
-
-bookmarks[10] = new Object();
-bookmarks[10]['href'] = "/profile/";
-bookmarks[10]['title'] = "Public Profile";
-
-bookmarks[11] = new Object();
-bookmarks[11]['href'] = "/seek/nearest.aspx";
-bookmarks[11]['title'] = "Search";
-
-bookmarks[12] = new Object();
-bookmarks[12]['href'] = "/my/userroutes.aspx#find";
-bookmarks[12]['title'] = "Routes";
-
-bookmarks[13] = new Object();
-bookmarks[13]['href'] = "/my/uploadfieldnotes.aspx";
-bookmarks[13]['title'] = "Field Notes";
-
-bookmarks[14] = new Object();
-bookmarks[14]['href'] = "/pocket/default.aspx";
-bookmarks[14]['title'] = "Pocket Queries";
-
-bookmarks[15] = new Object();
-bookmarks[15]['href'] = "/pocket/saved.aspx";
-bookmarks[15]['title'] = "Saved GPX";
-
-bookmarks[16] = new Object();
-bookmarks[16]['href'] = "/bookmarks/default.aspx";
-bookmarks[16]['title'] = "Bookmarks";
-
-bookmarks[17] = new Object();
-bookmarks[17]['href'] = "/notify/default.aspx";
-bookmarks[17]['title'] = "Notifications";
-
-bookmarks[18] = new Object();
-bookmarks[18]['href'] = "#";
-bookmarks[18]['id'] = "lnk_findplayer";
-bookmarks[18]['title'] = "Find Player";
-
-bookmarks[19] = new Object();
-bookmarks[19]['href'] = "/email/default.aspx";
-bookmarks[19]['title'] = "E-Mail";
-
-bookmarks[20] = new Object();
-bookmarks[20]['href'] = "/my/statbar.aspx";
-bookmarks[20]['title'] = "Statbar";
-
-bookmarks[21] = new Object();
-bookmarks[21]['href'] = "/about/guidelines.aspx";
-bookmarks[21]['title'] = "Guidelines";
-
-bookmarks[22] = new Object();
-bookmarks[22]['href'] = "http://forums.groundspeak.com/";
-bookmarks[22]['title'] = "Forum";
-bookmarks[22]['rel'] = "external";
-bookmarks[22]['target'] = "_blank";
-
-bookmarks[23] = new Object();
-bookmarks[23]['href'] = "http://blog.geocaching.com/";
-bookmarks[23]['title'] = "Blog";
-bookmarks[23]['rel'] = "external";
-bookmarks[23]['target'] = "_blank";
-
-bookmarks[24] = new Object();
-bookmarks[24]['href'] = "http://feedback.geocaching.com/";
-bookmarks[24]['title'] = "Feedback";
-bookmarks[24]['rel'] = "external";
-bookmarks[24]['target'] = "_blank";
-
-bookmarks[25] = new Object();
-bookmarks[25]['href'] = "http://www.geoclub.de/";
-bookmarks[25]['title'] = "Geoclub";
-bookmarks[25]['rel'] = "external";
-bookmarks[25]['target'] = "_blank";
-
-bookmarks[26] = new Object();
-bookmarks[26]['href'] = "#";
-bookmarks[26]['title'] = "Profile Geocaches";
-bookmarks[26]['id'] = "lnk_profilegeocaches";
-
-bookmarks[27] = new Object();
-bookmarks[27]['href'] = "#";
-bookmarks[27]['title'] = "Profile Trackables";
-bookmarks[27]['id'] = "lnk_profiletrackables";
-
-bookmarks[28] = new Object();
-bookmarks[28]['href'] = "#";
-bookmarks[28]['title'] = "Profile Gallery";
-bookmarks[28]['id'] = "lnk_profilegallery";
-
-bookmarks[29] = new Object();
-bookmarks[29]['href'] = "#";
-bookmarks[29]['title'] = "Profile Bookmarks";
-bookmarks[29]['id'] = "lnk_profilebookmarks";
-
-bookmarks[30] = new Object();
-bookmarks[30]['href'] = "/my/";
-bookmarks[30]['title'] = "My Profile";
-
-bookmarks[31] = new Object();
-bookmarks[31]['href'] = "#";
-bookmarks[31]['title'] = "Nearest List";
-bookmarks[31]['id'] = "lnk_nearestlist";
-
-bookmarks[32] = new Object();
-bookmarks[32]['href'] = "#";
-bookmarks[32]['title'] = "Nearest Map";
-bookmarks[32]['id'] = "lnk_nearestmap";
-
-bookmarks[33] = new Object();
-bookmarks[33]['href'] = "#";
-bookmarks[33]['title'] = "Nearest List (w/o Founds)";
-bookmarks[33]['id'] = "lnk_nearestlist_wo";
-
-bookmarks[34] = new Object();
-bookmarks[34]['href'] = "#";
-bookmarks[34]['title'] = "My Trackables";
-bookmarks[34]['id'] = "lnk_my_trackables";
+bookmark("Watchlist", "/my/watchlist.aspx");
+bookmark("Geocaches", "/my/geocaches.aspx");
+bookmark("My Geocaches", "/my/owned.aspx");
+bookmark("Trackable Items", "/my/travelbugs.aspx");
+bookmark("Trackables Inventory", "/my/inventory.aspx");
+bookmark("Trackables Collection", "/my/collection.aspx");
+bookmark("Benchmarks", "/my/benchmarks.aspx");
+bookmark("Member Features", "/my/subscription.aspx");
+bookmark("Friends", "/my/myfriends.aspx");
+bookmark("Account Details", "/account/default.aspx");
+bookmark("Public Profile", "/profile/");
+bookmark("Search", "/seek/nearest.aspx");
+bookmark("Routes", "/my/userroutes.aspx#find");
+bookmark("Field Notes", "/my/uploadfieldnotes.aspx");
+bookmark("Pocket Queries", "/pocket/default.aspx");
+bookmark("Saved GPX", "/pocket/saved.aspx");
+bookmark("Bookmarks", "/bookmarks/default.aspx");
+bookmark("Notifications", "/notify/default.aspx");
+profileBookmark("Find Player", "lnk_findplayer");
+bookmark("E-Mail", "/email/default.aspx");
+bookmark("Statbar", "/my/statbar.aspx");
+bookmark("Guidelines", "/about/guidelines.aspx");
+externalBookmark("Forum", "http://forums.groundspeak.com/");
+externalBookmark("Blog", "http://blog.geocaching.com/");
+externalBookmark("Feedback", "http://feedback.geocaching.com/");
+externalBookmark("Geoclub", "http://www.geoclub.de/");
+profileBookmark("Profile Geocaches", "lnk_profilegeocaches");
+profileBookmark("Profile Trackables", "lnk_profiletrackables");
+profileBookmark("Profile Gallery", "lnk_profilegallery");
+profileBookmark("Profile Bookmarks", "lnk_profilebookmarks");
+bookmark("My Profile", "/my/");
+profileBookmark("Nearest List", "lnk_nearestlist");
+profileBookmark("Nearest Map", "lnk_nearestmap");
+profileBookmark("Nearest List (w/o Founds)", "lnk_nearestlist_wo");
+profileBookmark("My Trackables", "lnk_my_trackables");
 
 // New Bookmarks under custom_Bookmarks ..
 
@@ -458,16 +391,8 @@ for(var i=0; i<anzCustom; i++){
 }
 
 // Some more Bookmarks ..
-bookmarks[num] = new Object();
-bookmarks[num]['href'] = "#";
-bookmarks[num]['title'] = "Profile Souvenirs";
-bookmarks[num]['id'] = "lnk_profilesouvenirs";
-
-num++;
-bookmarks[num] = new Object();
-bookmarks[num]['href'] = "#";
-bookmarks[num]['title'] = "Profile Statistics";
-bookmarks[num]['id'] = "lnk_profilestatistics";
+profileBookmark("Profile Souvenirs", "lnk_profilesouvenirs");
+bookmark("Profile Statistics", "/my/statistics.aspx");
 
 // Settings: Custom Bookmark-title
 var bookmarks_orig_title = new Array();
@@ -525,7 +450,9 @@ if(document.location.href.match(/^http:\/\/maps\.google\.(de|com)/) || document.
 if(GM_getValue("run_after_redirect") != ""){
   try{
     eval("unsafeWindow."+GM_getValue("run_after_redirect"));
-  }catch(e){}
+  }catch(e){
+    // ignore exceptions
+  }
   GM_setValue("run_after_redirect","no");
 }
 
@@ -2150,9 +2077,13 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\//)){
   }
 }
 
-// count cache matrix on statistics page
-if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/statistics\.aspx/)) {
+// count cache matrix on statistics page or profile page
+if (isLocation("my/statistics.aspx") || isLocation("profile/?guid")) {
   var table = document.getElementById('ctl00_ContentBody_StatsDifficultyTerrainControl1_uxDifficultyTerrainTable');
+  if (null == table) {
+    // on the profile page the ID is different than on the statistics page
+    table = document.getElementById("ctl00_ContentBody_ProfilePanel1_StatsDifficultyTerrainControl1_uxDifficultyTerrainTable");
+  }
   if (table) {
     var zeros = 0;
     var cells = table.getElementsByTagName('td');
