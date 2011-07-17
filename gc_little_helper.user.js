@@ -13,6 +13,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de>
 // Version:        5.2             - 14.07.2011
 // Changelog:
+//                                 - Change: My Statistics-Bookmark updated to other URL
 //                                 - Fix: Default-Log-Type was selected on yes/no-question at NM-Logs
 //                                 - New: Autovisit now selects "visited" only if you select LogType "found" or "attended"
 //                                 - Fix: Autovisit now doesn't distrub "All visited"
