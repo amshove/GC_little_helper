@@ -14,6 +14,8 @@
 // Version:        5.2             - 14.07.2011
 // Changelog:
 //                 ?               - change: enable matrix statistics also on profile page
+//                                 - change: use GC logo for link on google maps
+//                                 - fix: google maps link can't be used directly after searching
 //                 5.2             - New: VIP-List
 //                 5.1             - New: new update advice
 //                                 - New: show percentage of favourite points in listing
@@ -339,8 +341,11 @@ settings_show_homezone = GM_getValue("settings_show_homezone",true);
 settings_homezone_radius = GM_getValue("settings_homezone_radius","10");
 // Settings: default Map
 settings_old_map = GM_getValue("settings_old_map",false);
-if(settings_old_map) map_url = "http://www.geocaching.com/map/default.aspx";
-else map_url = "http://www.geocaching.com/map/beta/default.aspx";
+if (settings_old_map) {
+  map_url = "http://www.geocaching.com/map/default.aspx";
+} else {
+  map_url = "http://www.geocaching.com/map/beta/default.aspx";
+}
 // Settings: default Log Type
 settings_default_logtype = GM_getValue("settings_default_logtype","-1");
 // Settings: default TB-Log Type
@@ -411,32 +416,30 @@ if(document.location.href.match(/^http:\/\/maps\.google\.(de|com)/) || document.
     var ref_link = document.getElementById("link");
     if(ref_link){
       function open_gc(){
-        var matches = document.getElementById("link").href.match(/&ll=([-0-9]*\.[0-9]*),([-0-9]*\.[0-9]*)/);
-        var zoom = document.getElementById("link").href.match(/z=([0-9]*)/);
-        window.open(map_url+"?lat="+matches[1]+"&lng="+matches[2]+"&zm="+zoom[1]);
+        var matches = ref_link.href.match(/&ll=([-0-9]*\.[0-9]*),([-0-9]*\.[0-9]*)/);
+        var zoom = ref_link.href.match(/z=([0-9]*)/);
+        if (matches != null && zoom != null) {
+          var gc_map_url = map_url + "?lat=" + matches[1] + "&lng=" + matches[2] + "&zm=" + zoom[1];
+          window.open(gc_map_url);
+        }
+        else {
+          alert("This map has no geographical coordinates in its link. Just zoom or drag the map, afterwards this will work fine.");
+        }
       }
     
       var box = ref_link.parentNode;
       
-      box.appendChild(document.createTextNode(" "));
-      
-      var divider = document.createElement("img");
-      divider.setAttribute("class","bar-icon-divider bar-divider");
-      divider.setAttribute("src","http://maps.gstatic.com/intl/de_de/mapfiles/transparent.png");
-      box.appendChild(divider);
-      
-      box.appendChild(document.createTextNode(" "));
-      
+      var gcImage = document.createElement("img");
+      gcImage.setAttribute("src","http://www.geocaching.com/images/about/logos/geocaching/Logo_Geocaching_color_notext_32.png");
+      gcImage.setAttribute("title", "Show area at geocaching.com");
+      gcImage.setAttribute("alt", "Show area at geocaching.com");
+
       var link = document.createElement("a");
       link.setAttribute("title","Show area at geocaching.com");
       link.setAttribute("href","#");
       link.setAttribute("id","gc_com_lnk");
-      
-      var span = document.createElement("span");
-      span.setAttribute("class","link-text");
-      span.appendChild(document.createTextNode("gc.com"));
-      link.appendChild(span);
-      
+
+      link.appendChild(gcImage);
       box.appendChild(link);
       
       document.getElementById('gc_com_lnk').addEventListener("click", open_gc, false);
