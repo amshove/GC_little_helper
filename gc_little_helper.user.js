@@ -13,6 +13,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de>
 // Version:        5.2             - 14.07.2011
 // Changelog:
+//                                 - Fix: Default-Log-Type was selected on yes/no-question at NM-Logs
 //                                 - New: Autovisit now selects "visited" only if you select LogType "found" or "attended"
 //                                 - Fix: Autovisit now doesn't distrub "All visited"
 //                                 - change: enable matrix statistics also on profile page
@@ -1097,15 +1098,19 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx
     var select = document.getElementById('ctl00_ContentBody_LogBookPanel1_ddLogType');
     var childs = select.childNodes;
 
-    for(var i=0; i<childs.length; i++){
-      if(childs[i].value == settings_default_logtype){
-        childs[i].setAttribute("selected","selected");
+    if(select.value == "-1"){
+      for(var i=0; i<childs.length; i++){
+        if(childs[i].value == settings_default_logtype){
+          childs[i].setAttribute("selected","selected");
+        }
       }
     }
   }
 
   // Signature
-  if(document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML == "" || document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?PLogGuid\=/)) document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML += GM_getValue("settings_log_signature","");
+  if(document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML == "" || document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?PLogGuid\=/)){
+    document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML += GM_getValue("settings_log_signature","");
+  }
 
   // Set Cursor to Pos1
   function gclh_setFocus(){
