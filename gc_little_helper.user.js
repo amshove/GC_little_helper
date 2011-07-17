@@ -11,7 +11,7 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de>
-// Version:        5.2             - 14.07.2011
+// Version:        5.3             - 17.07.2011
 // Changelog:      5.3             - New: "Top"-Link at Logs
 //                                 - New: Show owner at VIP-List
 //                                 - New: Show one icon per log at the VIP-List
@@ -290,7 +290,7 @@ profileBookmark("My Trackables", "lnk_my_trackables");
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "5.2";
+var scriptVersion = "5.3";
 
 var anzCustom = 10;
 var anzTemplates = 5;
