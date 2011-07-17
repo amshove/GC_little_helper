@@ -13,7 +13,9 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de>
 // Version:        5.2             - 14.07.2011
 // Changelog:
-//                 ?               - change: enable matrix statistics also on profile page
+//                                 - New: Autovisit now selects "visited" only if you select LogType "found" or "attended"
+//                                 - Fix: Autovisit now doesn't distrub "All visited"
+//                                 - change: enable matrix statistics also on profile page
 //                                 - change: use GC logo for link on google maps
 //                                 - fix: google maps link can't be used directly after searching
 //                 5.2             - New: VIP-List
@@ -364,6 +366,7 @@ settings_map_hide_found = GM_getValue('settings_map_hide_found', false);
 settings_map_hide_hidden = GM_getValue('settings_map_hide_hidden', false);
 settings_show_fav_percentage = GM_getValue('settings_show_fav_percentage', false);
 settings_show_vip_list = GM_getValue('settings_show_vip_list', true);
+settings_autovisit = GM_getValue("settings_autovisit","true");
 
 
 // Settings: Custom Bookmarks
@@ -1694,7 +1697,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/profile\//) && 
 }
 
 // Auto-Visit
-if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx/)){
+if(settings_autovisit && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx/)){
   function gclh_autovisit_save(){
     var match = this.value.match(/([0-9]*)/);
     if(this.value == match[1]){
@@ -1709,29 +1712,48 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx
   for (var i=0; i < selects.length; i++){
     if(selects[i].id.match(/ctl00_ContentBody_LogBookPanel1_uxTrackables_repTravelBugs_ctl[0-9]*_ddlAction/)){
       var val = selects[i].childNodes[1].value;
-      var autovisit = document.createElement("option");
-      autovisit.value = val+"_Visited";
-      autovisit.innerHTML = "AutoVisit";
-      selects[i].appendChild(autovisit);
+      var autovisit = document.createElement("input");
+      autovisit.setAttribute("type","checkbox");
+      autovisit.setAttribute("id",selects[i].id+"_auto");
+      autovisit.setAttribute("value",val);
+      if(GM_getValue("autovisit_"+val,false)){
+        autovisit.setAttribute("checked","checked");
+        selects[i].selectedIndex = 2;
+      }
       autovisit.addEventListener("click", gclh_autovisit_save, false);
-      selects[i].childNodes[1].addEventListener("click", gclh_autovisit_save , false);
+
+      selects[i].parentNode.appendChild(autovisit);
+      selects[i].parentNode.appendChild(document.createTextNode(" AutoVisit"));
+
+//      var autovisit = document.createElement("option");
+//      autovisit.value = val+"_Visited";
+//      autovisit.innerHTML = "AutoVisit";
+//      selects[i].appendChild(autovisit);
+//      autovisit.addEventListener("click", gclh_autovisit_save, false);
+//      selects[i].childNodes[1].addEventListener("click", gclh_autovisit_save , false);
     }
   }
 
   // Select AutoVisit
   function gclh_autovisit(){
-    var selects = document.getElementsByTagName("select");
-    for (var i=0; i < selects.length; i++){
-      if(selects[i].id.match(/ctl00_ContentBody_LogBookPanel1_uxTrackables_repTravelBugs_ctl[0-9]*_ddlAction/)){
-        var val = selects[i].childNodes[1].value;
-        if(GM_getValue("autovisit_"+val,false)){
-          selects[i].selectedIndex = 3;
-          document.getElementById("ctl00_ContentBody_LogBookPanel1_uxTrackables_hdnSelectedActions").value += val+"_Visited,";
+    var logtype = document.getElementById("ctl00_ContentBody_LogBookPanel1_ddLogType").value;
+    if(logtype == 2 || logtype == 10){
+      var selects = document.getElementsByTagName("select");
+      for (var i=0; i < selects.length; i++){
+        if(selects[i].id.match(/ctl00_ContentBody_LogBookPanel1_uxTrackables_repTravelBugs_ctl[0-9]*_ddlAction/)){
+          var val = selects[i].childNodes[1].value;
+          if(GM_getValue("autovisit_"+val,false)){
+            selects[i].selectedIndex = 2;
+            document.getElementById("ctl00_ContentBody_LogBookPanel1_uxTrackables_hdnSelectedActions").value += val+"_Visited,";
+          }
         }
       }
     }
   }
-  window.addEventListener("load", gclh_autovisit, false);
+  if(document.getElementById("ctl00_ContentBody_LogBookPanel1_ddLogType")){
+    window.addEventListener("load", gclh_autovisit, false);
+    document.getElementById("ctl00_ContentBody_LogBookPanel1_ddLogType").addEventListener("click", gclh_autovisit, false);
+  }
 }
 
 // VIP
@@ -2461,6 +2483,7 @@ function gclh_showConfig(){
     html += "<h4 class='gclh_headline2'>Logging</h4>";
     html += checkbox('settings_submit_log_button', 'Submit Log Text on F2') + "<br/>";
     html += checkbox('settings_show_bbcode', 'Show Smilies and BBCode') + "<br/>";
+    html += checkbox('settings_autovisit', 'Enable AutoVisit-Feature for TBs/Coins') + "<br/>";
     html += "Log-Templates: <font class='gclh_small'>(BBCodes have to be enabled - #found# will be replaced with founds+1 - #found_no# will be replaced with founds)</font><br>";
     for(var i = 0; i < anzTemplates; i++){
       html += "&nbsp;&nbsp;<input class='gclh_form' type='text' size='15' id='settings_log_template_name["+i+"]' value='"+GM_getValue('settings_log_template_name['+i+']','')+"'> ";
@@ -2640,7 +2663,8 @@ function gclh_showConfig(){
       'settings_map_hide_found',
       'settings_map_hide_hidden',
       'settings_show_fav_percentage',
-      'settings_show_vip_list'
+      'settings_show_vip_list',
+      'settings_autovisit'
     );
     for (var i = 0; i < checkboxes.length; i++) {
       GM_setValue(checkboxes[i], document.getElementById(checkboxes[i]).checked);
