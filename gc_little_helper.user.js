@@ -12,7 +12,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de>
 // Version:        5.2             - 14.07.2011
-// Changelog:      
+// Changelog:      5.3             - New: "Top"-Link at Logs
 //                                 - New: Show owner at VIP-List
 //                                 - New: Show one icon per log at the VIP-List
 //                                 - Change: My Statistics-Bookmark updated to other URL
@@ -1964,6 +1964,23 @@ if(settings_show_vip_list && document.location.href.match(/^http:\/\/www\.geocac
     }
   }
   gclh_build_vip_list();
+}
+
+// Show "top"-Link in Logs
+if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/)){
+  document.getElementsByTagName("body")[0].innerHTML = "<a href='#' name='gclh_top'></a>"+document.getElementsByTagName("body")[0].innerHTML;
+  var links = document.getElementsByTagName('a');
+  for(var i=0; i<links.length; i++){
+    if(links[i].href.match(/http:\/\/www\.geocaching\.com\/profile\/\?guid=/) && links[i].id){
+      var link = document.createElement("a");
+      link.innerHTML = "↑";
+      link.setAttribute("title","Top");
+      link.setAttribute("href","#gclh_top");
+      link.setAttribute("style","color: #000000; text-decoration: none;");
+      links[i].parentNode.appendChild(document.createTextNode("   "));
+      links[i].parentNode.appendChild(link);      
+    }
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////
