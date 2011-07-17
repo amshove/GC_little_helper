@@ -12,8 +12,9 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de>
 // Version:        5.2             - 14.07.2011
-// Changelog:
-//                                 - New: Show one icon per log at the vip-list
+// Changelog:      
+//                                 - New: Show owner at VIP-List
+//                                 - New: Show one icon per log at the VIP-List
 //                                 - Change: My Statistics-Bookmark updated to other URL
 //                                 - Fix: Default-Log-Type was selected on yes/no-question at NM-Logs
 //                                 - New: Autovisit now selects "visited" only if you select LogType "found" or "attended"
@@ -481,6 +482,16 @@ function getElementsByClass(classname){
 function in_array(search,arr){
   for(var i=0; i<arr.length;i++) if(arr[i] == search) return true;
   return false;
+}
+
+function caseInsensitiveSort(a, b){  // http://www.codingforums.com/showthread.php?t=10477
+  var ret = 0;
+  a = a.toLowerCase();b = b.toLowerCase();
+  if(a > b) 
+    ret = 1;
+  if(a < b) 
+    ret = -1; 
+  return ret;
 }
 
 // Show Update-Banner
@@ -1777,6 +1788,7 @@ if(settings_show_vip_list && document.location.href.match(/^http:\/\/www\.geocac
     var img = this.childNodes[0];
 
     vips.push(user);
+    vips.sort(caseInsensitiveSort);
     GM_setValue("vips",uneval(vips));
 
     img.setAttribute("src",img_vip_on);
@@ -1816,7 +1828,15 @@ if(settings_show_vip_list && document.location.href.match(/^http:\/\/www\.geocac
     if(links[i].href.match(/http:\/\/www\.geocaching\.com\/profile\/\?guid=/)){
       if(links[i].id) links[i].name = links[i].id; // To be able to jump to this location
 
+      var matches = links[i].href.match(/http:\/\/www\.geocaching\.com\/profile\/\?guid=([a-zA-Z0-9]*)/);
       var user = links[i].innerHTML;
+
+      if(links[i].parentNode.className == "minorCacheDetails" && matches && !owner){
+        var owner = matches[1];
+      }
+      if(owner && matches && matches[1] == owner){
+        var owner_name = user;
+      }
 
       // Infos for List
       all_users.push(user);
@@ -1873,16 +1893,21 @@ if(settings_show_vip_list && document.location.href.match(/^http:\/\/www\.geocac
   map.parentNode.insertBefore(box,map);
 
   function gclh_build_vip_list(){
+    var show_owner = true;
     var list = document.getElementById("gclh_vip_list");
     list.innerHTML = "";
 
-    for(var i=0; i<vips.length; i++){
-      var user = vips[i];
+    function gclh_build_list(user){
+      if(!show_owner && owner_name && owner_name == user) return true;
       if(in_array(user,all_users)){
         var span = document.createElement("span");
         var profile = document.createElement("a");
-        profile.setAttribute("href","http://www.geocaching.com/profile/?u="+vips[i]);
+        profile.setAttribute("href","http://www.geocaching.com/profile/?u="+user);
         profile.innerHTML = user;
+        if(show_owner && owner_name && owner_name == user){
+          span.appendChild(document.createTextNode("Owner: "));
+          show_owner = false;
+        }
         span.appendChild(profile);
 
         // VIP-Link
@@ -1924,6 +1949,12 @@ if(settings_show_vip_list && document.location.href.match(/^http:\/\/www\.geocac
         list.appendChild(document.createElement("br"));
       }
     }
+
+    if(owner_name) gclh_build_list(owner_name);
+    for(var i=0; i<vips.length; i++){
+      gclh_build_list(vips[i]);
+    }
+
     if(!window.location.href.match(/log=y/)){
       var advice = document.createElement("div");
       advice.setAttribute("style","background-color: #FCE6A4; width: 100%; padding: 2px; text-align: center;");
