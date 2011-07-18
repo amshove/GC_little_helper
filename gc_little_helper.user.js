@@ -13,6 +13,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de>
 // Version:        5.3             - 17.07.2011
 // Changelog:
+//                                 - Fix: Autovisit state wasn't saved
 //                                 - Fix: Many things were broken by "to top"-feature -> fixed
 //                 5.3             - New: "Top"-Link at Logs
 //                                 - New: Show owner at VIP-List
@@ -1720,7 +1721,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/profile\//) && 
 if(settings_autovisit && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx/)){
   function gclh_autovisit_save(){
     var match = this.value.match(/([0-9]*)/);
-    if(this.value == match[1]){
+    if(!this.checked){
       GM_setValue("autovisit_"+match[1],false);
     }else{
       GM_setValue("autovisit_"+match[1],true);
