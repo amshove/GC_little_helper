@@ -11,7 +11,7 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de>
-// Version:        5.3             - 17.07.2011
+// Version:        5.4             - 17.07.2011
 // Changelog:      5.4             - New: Show Map-It button at Listing
 //                                 - New: VIP-Icon at friendlist
 //                                 - New: "All my VIPs"-List at profile-page
@@ -296,7 +296,7 @@ profileBookmark("My Trackables", "lnk_my_trackables");
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "5.3";
+var scriptVersion = "5.4";
 
 var anzCustom = 10;
 var anzTemplates = 5;
