@@ -13,6 +13,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de>
 // Version:        5.3             - 17.07.2011
 // Changelog:
+//                                 - New: "All my VIPs"-List at profile-page
 //                                 - Change: improved "show area on google maps"-link at listing
 //                                 - Fix: Autovisit state wasn't saved
 //                                 - Fix: Many things were broken by "to top"-feature -> fixed
@@ -1780,7 +1781,7 @@ if(settings_autovisit && document.location.href.match(/^http:\/\/www\.geocaching
 }
 
 // VIP
-if(settings_show_vip_list && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/)){
+if(settings_show_vip_list && (document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/default\.aspx/))){
   var img_vip_off = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAKCAYAAAC9vt6cAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9sHDhEzBX83tZcAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAsElEQVQoz6WSsQ2DUAxEz4gdfkdBQQUlDAU9E0ALHQWLsMAfA8o/BNVLkYCS0ETkGstn6+kk2yShPxRLEtxjmJmio8nzXN57SZL3XkVRnEtHNTNlWaZ5nj9AAHRdR9M0ANR1Td/38Iz2UZdlIUmS0zsB67rinGPfd5xzbNt2AUgiTVOmaboCAMqypG1bqqo6ve8E77oAhmEgiiLGcbwHCCEQxzEhhJ8B9hrcPqP9+0gPbh/tf/c8szwAAAAASUVORK5CYII=";
   var img_vip_on = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAKCAYAAAC9vt6cAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9sHDhE0Aq4StvMAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAzklEQVQoz6WSwQvBcBTHP7/lanFT3DdzV9yw+RNc8E/s6A/YSa6KUrs4u4omB6KUKJoc5a+Q5rRlOCz7Xl7feu/zXu89AXjEUAKgszb/KrbKPSTfDJo2t8MdgNvhzrBlB0l+tMo9+o0R+8kxgASAgqFynrsAnGYumqF+deysTepmhZW9/QZouoLrXHk+nlwWVzRd+TnytOtQahfDOwBI51LImSTLwQo5I5POpn5O8Cnp3WiGyma8o1BXIi8yDKgpCEmQr0YHCMCLc0YR95Fe0bc6eQ97MqYAAAAASUVORK5CYII=";
   var vips = GM_getValue("vips",false);
@@ -1825,96 +1826,181 @@ if(settings_show_vip_list && document.location.href.match(/^http:\/\/www\.geocac
     gclh_build_vip_list();
   }
 
-  var all_users = new Array();
-  var log_infos = new Object();
-  var index = 0;
-  var links = document.getElementsByTagName('a');
-  for(var i=0; i<links.length; i++){
-    if(links[i].href.match(/http:\/\/www\.geocaching\.com\/profile\/\?guid=/)){
-      if(links[i].id) links[i].name = links[i].id; // To be able to jump to this location
-
-      var matches = links[i].href.match(/http:\/\/www\.geocaching\.com\/profile\/\?guid=([a-zA-Z0-9]*)/);
-      var user = links[i].innerHTML;
-
-      if(links[i].parentNode.className == "minorCacheDetails" && matches && !owner){
-        var owner = matches[1];
-      }
-      if(owner && matches && matches[1] == owner){
-        var owner_name = user;
-      }
-
-      // Infos for List
-      all_users.push(user);
-      if(!log_infos[user]) log_infos[user] = new Array();
-      log_infos[user][index] = new Object();
-      if(links[i].parentNode.childNodes[0].src){
-        log_infos[user][index]["icon"] = links[i].parentNode.childNodes[0].src;
-        if(links[i].parentNode.childNodes[1].textContent){
-          log_infos[user][index]["date"] = links[i].parentNode.childNodes[1].textContent.replace(/by $/,"");
+  // Listing
+  if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/)){
+    var all_users = new Array();
+    var log_infos = new Object();
+    var index = 0;
+    var links = document.getElementsByTagName('a');
+    for(var i=0; i<links.length; i++){
+      if(links[i].href.match(/http:\/\/www\.geocaching\.com\/profile\/\?guid=/)){
+        if(links[i].id) links[i].name = links[i].id; // To be able to jump to this location
+  
+        var matches = links[i].href.match(/http:\/\/www\.geocaching\.com\/profile\/\?guid=([a-zA-Z0-9]*)/);
+        var user = links[i].innerHTML;
+  
+        if(links[i].parentNode.className == "minorCacheDetails" && matches && !owner){
+          var owner = matches[1];
         }
-        if(links[i].id){
-          log_infos[user][index]["id"] = links[i].id;
+        if(owner && matches && matches[1] == owner){
+          var owner_name = user;
         }
+  
+        // Infos for List
+        all_users.push(user);
+        if(!log_infos[user]) log_infos[user] = new Array();
+        log_infos[user][index] = new Object();
+        if(links[i].parentNode.childNodes[0].src){
+          log_infos[user][index]["icon"] = links[i].parentNode.childNodes[0].src;
+          if(links[i].parentNode.childNodes[1].textContent){
+            log_infos[user][index]["date"] = links[i].parentNode.childNodes[1].textContent.replace(/by $/,"");
+          }
+          if(links[i].id){
+            log_infos[user][index]["id"] = links[i].id;
+          }
+        }
+  
+        // Icon
+        var link = document.createElement("a");
+        var img = document.createElement("img");
+        img.setAttribute("border","0");
+        link.appendChild(img);
+        link.setAttribute("href","javascript:void(0);");
+        link.setAttribute("name",user);
+  
+        if(in_array(user,vips)){
+          img.setAttribute("src",img_vip_on);
+          img.setAttribute("title","Remove User "+user+" from VIP-List");
+          link.addEventListener("click",gclh_del_vip,false);
+        }else{
+          img.setAttribute("src",img_vip_off);
+          img.setAttribute("title","Add User "+user+" to VIP-List");
+          link.addEventListener("click",gclh_add_vip,false);
+        } 
+  
+        links[i].parentNode.appendChild(document.createTextNode("   "));
+        links[i].parentNode.appendChild(link);
+  
+        index++;
       }
-
-      // Icon
-      var link = document.createElement("a");
-      var img = document.createElement("img");
-      img.setAttribute("border","0");
-      link.appendChild(img);
-      link.setAttribute("href","javascript:void(0);");
-      link.setAttribute("name",user);
-
-      if(in_array(user,vips)){
-        img.setAttribute("src",img_vip_on);
-        img.setAttribute("title","Remove User "+user+" from VIP-List");
-        link.addEventListener("click",gclh_del_vip,false);
-      }else{
-        img.setAttribute("src",img_vip_off);
-        img.setAttribute("title","Add User "+user+" to VIP-List");
-        link.addEventListener("click",gclh_add_vip,false);
-      } 
-
-      links[i].parentNode.appendChild(document.createTextNode("   "));
-      links[i].parentNode.appendChild(link);
-
-      index++;
     }
-  }
+  
+    // Show VIP List
+    var map = document.getElementById("lnkSmallMap").parentNode;
+    var box = document.createElement("div");
+    var headline = document.createElement("h3");
+    var body = document.createElement("div");
+    box.setAttribute("class","CacheDetailNavigationWidget NoPrint");
+    headline.setAttribute("class","WidgetHeader");
+    body.setAttribute("class","WidgetBody");
+    body.setAttribute("id","gclh_vip_list");
+    headline.innerHTML = "<img width=\"16\" height=\"16\" title=\"VIP-List\" alt=\"VIP-List\" src=\"http://www.geocaching.com/images/icons/icon_attended.gif\"> VIP-List";
+    box.appendChild(headline);
+    box.appendChild(body);
+    box.innerHTML = "<br>"+box.innerHTML;
+    map.parentNode.insertBefore(box,map);
+  
+    function gclh_build_vip_list(){
+      var show_owner = true;
+      var list = document.getElementById("gclh_vip_list");
+      list.innerHTML = "";
+  
+      function gclh_build_list(user){
+        if(!show_owner && owner_name && owner_name == user) return true;
+        if(in_array(user,all_users)){
+          var span = document.createElement("span");
+          var profile = document.createElement("a");
+          profile.setAttribute("href","http://www.geocaching.com/profile/?u="+user);
+          profile.innerHTML = user;
+          if(show_owner && owner_name && owner_name == user){
+            span.appendChild(document.createTextNode("Owner: "));
+            show_owner = false;
+          }
+          span.appendChild(profile);
+  
+          // VIP-Link
+          var link = document.createElement("a");
+          var img = document.createElement("img");
+          img.setAttribute("border","0");
+          link.appendChild(img);
+          link.setAttribute("href","javascript:void(0);");
+          link.setAttribute("name",user);
+          img.setAttribute("src",img_vip_on);
+          img.setAttribute("title","Remove User "+user+" from VIP-List");
+          link.addEventListener("click",gclh_del_vip,false);
+  
+          list.appendChild(span);
+          list.appendChild(document.createTextNode("   "));
+          list.appendChild(link);
+  
+          // Log-Links
+          for(var x=0; x<log_infos[user].length; x++){
+            if(log_infos[user][x] && log_infos[user][x]["icon"] && log_infos[user][x]["id"]){
+              var image = document.createElement("img");
+              image.setAttribute("src",log_infos[user][x]["icon"]);
+              image.setAttribute("border","0");
+  
+              if(log_infos[user][x]["date"]){
+                image.setAttribute("title",log_infos[user][x]["date"]);
+                image.setAttribute("alt",log_infos[user][x]["date"]);
+              }
+  
+              var a = document.createElement("a");
+              a.setAttribute("href","#"+log_infos[user][x]["id"]);
+              a.appendChild(image); 
+             
+              list.appendChild(document.createTextNode(" "));
+              list.appendChild(a);
+            }
+          }
+  
+          list.appendChild(document.createElement("br"));
+        }
+      }
+  
+      if(owner_name) gclh_build_list(owner_name);
+      for(var i=0; i<vips.length; i++){
+        gclh_build_list(vips[i]);
+      }
+  
+      if(!window.location.href.match(/log=y/)){
+        var advice = document.createElement("div");
+        advice.setAttribute("style","background-color: #FCE6A4; width: 100%; padding: 2px; text-align: center;");
+        advice.innerHTML = "this list is not complete<br>please load <a href='"+(window.location.href.replace(/#/,""))+"&log=y'>all</a> logs";
+        list.appendChild(document.createElement("br"));
+        list.appendChild(advice);
+      }
+    }
+    gclh_build_vip_list();
+  // Listing (All-VIP-List)
+  }else if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/default\.aspx/) && document.getElementById("ctl00_ContentBody_uxBanManWidget")){
+    var widget = document.createElement("div");
+    var headline = document.createElement("h3");
+    var box = document.createElement("div");
 
-  // Show VIP List
-  var map = document.getElementById("lnkSmallMap").parentNode;
-  var box = document.createElement("div");
-  var headline = document.createElement("h3");
-  var body = document.createElement("div");
-  box.setAttribute("class","CacheDetailNavigationWidget NoPrint");
-  headline.setAttribute("class","WidgetHeader");
-  body.setAttribute("class","WidgetBody");
-  body.setAttribute("id","gclh_vip_list");
-  headline.innerHTML = "<img width=\"16\" height=\"16\" title=\"VIP-List\" alt=\"VIP-List\" src=\"http://www.geocaching.com/images/icons/icon_attended.gif\"> VIP-List";
-  box.appendChild(headline);
-  box.appendChild(body);
-  box.innerHTML = "<br>"+box.innerHTML;
-  map.parentNode.insertBefore(box,map);
+    widget.setAttribute("class","YourProfileWidget");
+    headline.setAttribute("class","WidgetHeader");
+    headline.appendChild(document.createTextNode("All my VIPs"));
+    box.setAttribute("id","box_vips");
+    box.setAttribute("class","WidgetBody");
 
-  function gclh_build_vip_list(){
-    var show_owner = true;
-    var list = document.getElementById("gclh_vip_list");
-    list.innerHTML = "";
+    widget.appendChild(headline);
+    widget.appendChild(box);
+    document.getElementById("ctl00_ContentBody_uxBanManWidget").parentNode.insertBefore(widget,document.getElementById("ctl00_ContentBody_uxBanManWidget"));
 
-    function gclh_build_list(user){
-      if(!show_owner && owner_name && owner_name == user) return true;
-      if(in_array(user,all_users)){
+    function gclh_build_vip_list(){
+      var box = document.getElementById("box_vips");
+      if(!box) return false;
+      box.innerHTML = "";
+
+      for(var i=0; i<vips.length; i++){
+        var user = vips[i];
         var span = document.createElement("span");
         var profile = document.createElement("a");
         profile.setAttribute("href","http://www.geocaching.com/profile/?u="+user);
         profile.innerHTML = user;
-        if(show_owner && owner_name && owner_name == user){
-          span.appendChild(document.createTextNode("Owner: "));
-          show_owner = false;
-        }
         span.appendChild(profile);
-
+  
         // VIP-Link
         var link = document.createElement("a");
         var img = document.createElement("img");
@@ -1925,50 +2011,15 @@ if(settings_show_vip_list && document.location.href.match(/^http:\/\/www\.geocac
         img.setAttribute("src",img_vip_on);
         img.setAttribute("title","Remove User "+user+" from VIP-List");
         link.addEventListener("click",gclh_del_vip,false);
-
-        list.appendChild(span);
-        list.appendChild(document.createTextNode("   "));
-        list.appendChild(link);
-
-        // Log-Links
-        for(var x=0; x<log_infos[user].length; x++){
-          if(log_infos[user][x] && log_infos[user][x]["icon"] && log_infos[user][x]["id"]){
-            var image = document.createElement("img");
-            image.setAttribute("src",log_infos[user][x]["icon"]);
-            image.setAttribute("border","0");
-
-            if(log_infos[user][x]["date"]){
-              image.setAttribute("title",log_infos[user][x]["date"]);
-              image.setAttribute("alt",log_infos[user][x]["date"]);
-            }
-
-            var a = document.createElement("a");
-            a.setAttribute("href","#"+log_infos[user][x]["id"]);
-            a.appendChild(image); 
-           
-            list.appendChild(document.createTextNode(" "));
-            list.appendChild(a);
-          }
-        }
-
-        list.appendChild(document.createElement("br"));
+  
+        box.appendChild(span);
+        box.appendChild(document.createTextNode("   "));
+        box.appendChild(link);
+        box.appendChild(document.createElement("br"));
       }
     }
-
-    if(owner_name) gclh_build_list(owner_name);
-    for(var i=0; i<vips.length; i++){
-      gclh_build_list(vips[i]);
-    }
-
-    if(!window.location.href.match(/log=y/)){
-      var advice = document.createElement("div");
-      advice.setAttribute("style","background-color: #FCE6A4; width: 100%; padding: 2px; text-align: center;");
-      advice.innerHTML = "this list is not complete<br>please load <a href='"+(window.location.href.replace(/#/,""))+"&log=y'>all</a> logs";
-      list.appendChild(document.createElement("br"));
-      list.appendChild(advice);
-    }
+    gclh_build_vip_list();
   }
-  gclh_build_vip_list();
 }
 
 // Show "top"-Link in Logs
