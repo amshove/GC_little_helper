@@ -13,6 +13,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de>
 // Version:        5.3             - 17.07.2011
 // Changelog:
+//                                 - Change: improved "show area on google maps"-link at listing
 //                                 - Fix: Autovisit state wasn't saved
 //                                 - Fix: Many things were broken by "to top"-feature -> fixed
 //                 5.3             - New: "Top"-Link at Logs
@@ -1233,10 +1234,10 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/myfriends\.
 }
 
 // Show Google-Maps Link on Cache Page
-if(settings_show_google_maps && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx\?/) && document.getElementById("ctl00_ContentBody_uxViewLargerMap")){
+if(settings_show_google_maps && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx\?/) && document.getElementById("ctl00_ContentBody_uxViewLargerMap") && document.getElementById("ctl00_ContentBody_LatLon") && document.getElementById("ctl00_ContentBody_uxWaypointName")){
   var ref_link = document.getElementById("ctl00_ContentBody_uxViewLargerMap");
   var box = ref_link.parentNode;
-  var matches = ref_link.href.match(/lat=([-0-9]*\.[0-9]*)\&lng=([-0-9]*\.[0-9]*)/);
+//  var matches = ref_link.href.match(/lat=([-0-9]*\.[0-9]*)\&lng=([-0-9]*\.[0-9]*)/);
     
   box.appendChild(document.createElement("br"));
   
@@ -1244,7 +1245,8 @@ if(settings_show_google_maps && document.location.href.match(/^http:\/\/www\.geo
   link.setAttribute("class","lnk");
   link.setAttribute("target","_blank");
   link.setAttribute("title","Show area at Google Maps");
-  link.setAttribute("href","http://maps.google.de/?ll="+matches[1]+","+matches[2]);
+//  link.setAttribute("href","http://maps.google.de/?ll="+matches[1]+","+matches[2]);
+  link.setAttribute("href","http://maps.google.com/maps?q="+document.getElementById("ctl00_ContentBody_LatLon").innerHTML+" ("+document.getElementById("ctl00_ContentBody_uxWaypointName").innerHTML+")");
   
   var img = document.createElement("img");
   img.setAttribute("src","/images/silk/map_go.png");
