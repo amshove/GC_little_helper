@@ -12,7 +12,9 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de>
 // Version:        5.3             - 17.07.2011
-// Changelog:      5.3             - New: "Top"-Link at Logs
+// Changelog:
+//                                 - Fix: Many things were broken by "to top"-feature -> fixed
+//                 5.3             - New: "Top"-Link at Logs
 //                                 - New: Show owner at VIP-List
 //                                 - New: Show one icon per log at the VIP-List
 //                                 - Change: My Statistics-Bookmark updated to other URL
@@ -1968,7 +1970,10 @@ if(settings_show_vip_list && document.location.href.match(/^http:\/\/www\.geocac
 
 // Show "top"-Link in Logs
 if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/)){
-  document.getElementsByTagName("body")[0].innerHTML = "<a href='#' name='gclh_top'></a>"+document.getElementsByTagName("body")[0].innerHTML;
+  var a = document.createElement("a");
+  a.setAttribute("href","#");
+  a.setAttribute("name","gclh_top");
+  document.getElementsByTagName("body")[0].insertBefore(a,document.getElementsByTagName("body")[0].childNodes[0]);
   var links = document.getElementsByTagName('a');
   for(var i=0; i<links.length; i++){
     if(links[i].href.match(/http:\/\/www\.geocaching\.com\/profile\/\?guid=/) && links[i].id){
