@@ -12,7 +12,8 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de>
 // Version:        5.3             - 17.07.2011
-// Changelog:      5.4             - New: VIP-Icon at friendlist
+// Changelog:      5.4             - New: Show Map-It button at Listing
+//                                 - New: VIP-Icon at friendlist
 //                                 - New: "All my VIPs"-List at profile-page
 //                                 - Change: improved "show area on google maps"-link at listing
 //                                 - Fix: Autovisit state wasn't saved
@@ -2180,6 +2181,17 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cdpf\.asp
       box.innerHTML += "<br>DMS: "+dms;
     }
   }
+}
+
+// Show Map-It button at Listing
+if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/) && document.getElementById('ctl00_ContentBody_LatLon')){
+  var coords = toDec(document.getElementById("ctl00_ContentBody_LatLon").innerHTML);
+  var link = document.getElementById("ctl00_ContentBody_LatLon").nextSibling.nextSibling;
+  var a = document.createElement("a");
+  a.setAttribute("href",map_url+"?ll="+coords[0]+","+coords[1]);
+  a.appendChild(document.createTextNode("Map this Location"));
+  link.appendChild(document.createTextNode(" - "));
+  link.appendChild(a);
 }
 
 // Save HomeCoords for special bookmarks - From Index
