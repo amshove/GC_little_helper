@@ -12,7 +12,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de>
 // Version:        5.3             - 17.07.2011
-// Changelog:
+// Changelog:      5.4             - New: VIP-Icon at friendlist
 //                                 - New: "All my VIPs"-List at profile-page
 //                                 - Change: improved "show area on google maps"-link at listing
 //                                 - Fix: Autovisit state wasn't saved
@@ -1781,7 +1781,7 @@ if(settings_autovisit && document.location.href.match(/^http:\/\/www\.geocaching
 }
 
 // VIP
-if(settings_show_vip_list && (document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/default\.aspx/))){
+if(settings_show_vip_list && (document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/default\.aspx/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/myfriends\.aspx/))){
   var img_vip_off = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAKCAYAAAC9vt6cAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9sHDhEzBX83tZcAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAsElEQVQoz6WSsQ2DUAxEz4gdfkdBQQUlDAU9E0ALHQWLsMAfA8o/BNVLkYCS0ETkGstn6+kk2yShPxRLEtxjmJmio8nzXN57SZL3XkVRnEtHNTNlWaZ5nj9AAHRdR9M0ANR1Td/38Iz2UZdlIUmS0zsB67rinGPfd5xzbNt2AUgiTVOmaboCAMqypG1bqqo6ve8E77oAhmEgiiLGcbwHCCEQxzEhhJ8B9hrcPqP9+0gPbh/tf/c8szwAAAAASUVORK5CYII=";
   var img_vip_on = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAKCAYAAAC9vt6cAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9sHDhE0Aq4StvMAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAzklEQVQoz6WSwQvBcBTHP7/lanFT3DdzV9yw+RNc8E/s6A/YSa6KUrs4u4omB6KUKJoc5a+Q5rRlOCz7Xl7feu/zXu89AXjEUAKgszb/KrbKPSTfDJo2t8MdgNvhzrBlB0l+tMo9+o0R+8kxgASAgqFynrsAnGYumqF+deysTepmhZW9/QZouoLrXHk+nlwWVzRd+TnytOtQahfDOwBI51LImSTLwQo5I5POpn5O8Cnp3WiGyma8o1BXIi8yDKgpCEmQr0YHCMCLc0YR95Fe0bc6eQ97MqYAAAAASUVORK5CYII=";
   var vips = GM_getValue("vips",false);
@@ -2019,6 +2019,35 @@ if(settings_show_vip_list && (document.location.href.match(/^http:\/\/www\.geoca
       }
     }
     gclh_build_vip_list();
+  }else if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/myfriends\.aspx/)){
+  // Friendlist - VIP-Icon
+    function gclh_build_vip_list(){} // There is no list to show, but ths function will be called from gclh_del_vip/gclh_add_vip
+    var links = document.getElementsByTagName('a');
+    for(var i=0; i<links.length; i++){
+      if(links[i].href.match(/http:\/\/www\.geocaching\.com\/profile\/\?guid=/) && links[i].id){
+        // VIP-Link
+        var user = links[i].innerHTML;
+        var link = document.createElement("a");
+        var img = document.createElement("img");
+        img.setAttribute("border","0");
+        link.appendChild(img);
+        link.setAttribute("href","javascript:void(0);");
+        link.setAttribute("name",user);
+
+        if(in_array(user,vips)){
+          img.setAttribute("src",img_vip_on);
+          img.setAttribute("title","Remove User "+user+" from VIP-List");
+          link.addEventListener("click",gclh_del_vip,false);
+        }else{
+          img.setAttribute("src",img_vip_off);
+          img.setAttribute("title","Add User "+user+" to VIP-List");
+          link.addEventListener("click",gclh_add_vip,false);
+        }
+
+        links[i].parentNode.appendChild(document.createTextNode("   "));
+        links[i].parentNode.appendChild(link);
+      }
+    }
   }
 }
 
