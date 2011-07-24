@@ -10,8 +10,8 @@
 // @description    Some little things to make life easy (on www.geocaching.com).
 // ==/UserScript==
 //
-// Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de>
-// Version:        5.4             - 17.07.2011
+// Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
+// Version:        5.5             - 24.07.2011
 // Changelog:      5.5             - New: Bookmark it-Icon at nearest list
 //                                 - Fix: if one VIP-Icon changes, all others change too
 //                                 - Fix: VIP-Icon besife owner in list no shows the correct color
@@ -304,7 +304,7 @@ profileBookmark("My Trackables", "lnk_my_trackables");
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "5.4";
+var scriptVersion = "5.5";
 
 var anzCustom = 10;
 var anzTemplates = 5;
