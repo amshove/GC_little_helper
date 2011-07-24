@@ -12,7 +12,8 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        5.5             - 24.07.2011
-// Changelog:      5.5             - New: Bookmark it-Icon at nearest list
+// Changelog:      5.6             - New: Loglenght counter (max 4000)
+//                 5.5             - New: Bookmark it-Icon at nearest list
 //                                 - Fix: if one VIP-Icon changes, all others change too
 //                                 - Fix: VIP-Icon besife owner in list no shows the correct color
 //                                 - Change: disable AutoVisit on logedit-page
@@ -1051,6 +1052,35 @@ if(settings_show_bbcode && (document.location.href.match(/^http:\/\/www\.geocach
     }
   }
   box.innerHTML = liste;
+}
+
+//Maxlength of Logtext
+if((document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?(id|guid|ID|wp|LUID|PLogGuid)\=/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/track\/log\.aspx\?(id|wid|guid|ID|LUID|PLogGuid)\=/)) && document.getElementById('litDescrCharCount')){
+  function limitLogText(limitField) {
+    var limitNum = 4000;
+    if (limitField.value.length > limitNum) {
+      limitField.value = limitField.value.substring(0, limitNum);
+      counterelement.innerHTML = '<font color="red">' + limitField.value.length + '</font>';
+      limitField.scrollTop = limitField.scrollHeight;
+      limitField.selectionStart = 4000;
+      limitField.selectionEnd = 4000;
+    }else{
+      counterelement.innerHTML = limitField.value.length;
+    }
+  }
+
+  var logfield = document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo');
+  logfield.addEventListener("keyup", function(){ limitLogText(logfield); }, false);
+  logfield.addEventListener("change", function(){ limitLogText(logfield); }, false);
+
+  var counterpos = document.getElementById('litDescrCharCount').parentNode;
+  var counterspan = document.createElement('p');
+  counterspan.id = "logtextcounter";
+  counterspan.innerHTML = "<b>Loglength:</b><br />"
+  var counterelement = document.createElement('span');
+  counterelement.innerHTML = "0";
+  counterspan.appendChild(counterelement);
+  counterpos.appendChild(counterspan);
 }
 
 // Show eMail-Link beside Username
