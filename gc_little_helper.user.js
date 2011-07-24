@@ -13,6 +13,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de>
 // Version:        5.4             - 17.07.2011
 // Changelog:
+//                                 - Fix: if one VIP-Icon changes, all others change too
 //                                 - Fix: VIP-Icon besife owner in list no shows the correct color
 //                                 - Change: disable AutoVisit on logedit-page
 //                                 - Fix: AutoVisit select by value, enable for Webcam caches
@@ -1819,17 +1820,20 @@ if(settings_show_vip_list && (document.location.href.match(/^http:\/\/www\.geoca
   // Add to VIP - image
   function gclh_add_vip(){
     var user = this.name;
-    var img = this.childNodes[0];
 
     vips.push(user);
     vips.sort(caseInsensitiveSort);
     GM_setValue("vips",uneval(vips));
 
-    img.setAttribute("src",img_vip_on);
-    img.setAttribute("title","Remove User "+user+" from VIP-List");
+    var icons = document.getElementsByName(user);
+    for(var i=0; i<icons.length; i++){
+      var img = icons[i].childNodes[0];
+      img.setAttribute("src",img_vip_on);
+      img.setAttribute("title","Remove User "+user+" from VIP-List");
 
-    this.removeEventListener("click",gclh_add_vip,false);
-    this.addEventListener("click",gclh_del_vip,false);
+      icons[i].removeEventListener("click",gclh_add_vip,false);
+      icons[i].addEventListener("click",gclh_del_vip,false);
+    }
 
     gclh_build_vip_list();
   }
@@ -1837,7 +1841,6 @@ if(settings_show_vip_list && (document.location.href.match(/^http:\/\/www\.geoca
   function gclh_del_vip(){
     var vips_new = new Array();
     var user = this.name;
-    var img = this.childNodes[0];
 
     for(var i=0; i<vips.length; i++){
       if(vips[i] != user) vips_new.push(vips[i]);
@@ -1845,11 +1848,15 @@ if(settings_show_vip_list && (document.location.href.match(/^http:\/\/www\.geoca
     vips = vips_new;
     GM_setValue("vips",uneval(vips));
 
-    img.setAttribute("src",img_vip_off);
-    img.setAttribute("title","Add User "+user+" to VIP-List");
+    var icons = document.getElementsByName(user);
+    for(var i=0; i<icons.length; i++){
+      var img = icons[i].childNodes[0];
+      img.setAttribute("src",img_vip_off);
+      img.setAttribute("title","Add User "+user+" to VIP-List");
 
-    this.removeEventListener("click",gclh_del_vip,false);
-    this.addEventListener("click",gclh_add_vip,false);
+      icons[i].removeEventListener("click",gclh_del_vip,false);
+      icons[i].addEventListener("click",gclh_add_vip,false);
+    }
 
     gclh_build_vip_list();
   }
