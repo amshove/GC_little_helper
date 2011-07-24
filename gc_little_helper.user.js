@@ -13,6 +13,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        5.5             - 24.07.2011
 // Changelog:      5.6             - New: Loglenght counter (max 4000)
+//                                 - New: Homezone color editable via menu
 //                 5.5             - New: Bookmark it-Icon at nearest list
 //                                 - Fix: if one VIP-Icon changes, all others change too
 //                                 - Fix: VIP-Icon besife owner in list no shows the correct color
@@ -360,6 +361,7 @@ settings_show_log_it = GM_getValue("settings_show_log_it",true);
 // Settings: Show Homezone
 settings_show_homezone = GM_getValue("settings_show_homezone",true);
 settings_homezone_radius = GM_getValue("settings_homezone_radius","10");
+settings_homezone_color = GM_getValue("settings_homezone_color","#0000FF");
 // Settings: default Map
 settings_old_map = GM_getValue("settings_old_map",false);
 if (settings_old_map) {
@@ -1434,7 +1436,7 @@ if(settings_show_homezone && document.location.href.match(/^http:\/\/www\.geocac
   var code = "function drawCircle(){ ";
   code += "if(google.maps){";
   code += "  var home_coord = new google.maps.LatLng("+(GM_getValue("home_lat")/10000000)+", "+(GM_getValue("home_lng")/10000000)+");";
-  code += "  var circle = new google.maps.Circle({center:home_coord,map:map,radius:"+settings_homezone_radius+"000,strokeColor:'#0000FF',fillColor:'#0000FF',fillOpacity:0.1,clickable:false});";
+  code += "  var circle = new google.maps.Circle({center:home_coord,map:map,radius:"+settings_homezone_radius+"000,strokeColor:'" + settings_homezone_color + "',fillColor:'"+ settings_homezone_color +"',fillOpacity:0.1,clickable:false});";
   code += "}}";
   
   var script = document.createElement("script");
@@ -1451,7 +1453,7 @@ if(settings_show_homezone && document.location.href.match(/^http:\/\/www\.geocac
   var code = "function drawCircle() {"; // Code from http://www.geocodezip.com/GoogleEx_markerinfowindowCircle.asp
   code += "var point = new GLatLng("+(GM_getValue("home_lat")/10000000)+", "+(GM_getValue("home_lng")/10000000)+");";
   code += "var radius = "+settings_homezone_radius+";";
-  code += "  var cColor = '#0000FF';";
+  code += "  var cColor = '"+ settings_homezone_color +"';";
   code += "  var cWidth = 5;";
   code += "  var Cradius = radius;   ";
   code += "  var d2r = Math.PI/180; ";
@@ -2740,6 +2742,7 @@ function gclh_showConfig(){
     html += "";
     html += "<h4 class='gclh_headline2'>Maps</h4>";
     html += checkbox('settings_show_homezone', 'Show Homezone') + " - Radius: <input class='gclh_form' type='text' size='2' id='settings_homezone_radius' value='"+settings_homezone_radius+"'> km<br>";
+    html += "Homezone-Color: <input class='gclh_form' type='text' id='settings_homezone_color' value='"+settings_homezone_color+"'><br>";
     html += checkbox('settings_old_map', 'Set old map as default') + "<br/>";
     html += checkbox('settings_map_hide_found', 'Hide found caches by default') + "<br/>";
     html += checkbox('settings_map_hide_hidden', 'Hide own caches by default') + "<br/>";
@@ -2902,6 +2905,7 @@ function gclh_showConfig(){
     GM_setValue("settings_bookmarks_search_default",document.getElementById('settings_bookmarks_search_default').value);
     GM_setValue("settings_show_all_logs_count",document.getElementById('settings_show_all_logs_count').value);
     GM_setValue("settings_homezone_radius",document.getElementById('settings_homezone_radius').value);
+    GM_setValue("settings_homezone_color",document.getElementById('settings_homezone_color').value);
     GM_setValue("map_width",document.getElementById('map_width').value);
     GM_setValue("settings_new_width",document.getElementById('settings_new_width').value);
     GM_setValue("settings_default_logtype",document.getElementById('settings_default_logtype').value);
