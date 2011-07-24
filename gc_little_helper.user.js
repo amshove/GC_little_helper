@@ -13,6 +13,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de>
 // Version:        5.4             - 17.07.2011
 // Changelog:
+//                                 - New: TB-ID inserted in mail
 //                                 - New: [URL]-Tag for bbcode
 //                                 - New: Show version in configuration
 //                 5.4             - New: Show Map-It button at Listing
@@ -1054,8 +1055,13 @@ if(settings_show_mail && document.location.href.match(/^http:\/\/www\.geocaching
   if(document.getElementById('ctl00_ContentBody_CacheName')){
     var name = document.getElementById('ctl00_ContentBody_CacheName').innerHTML;
     if(document.getElementById('ctl00_ContentBody_uxWaypointName')) name += " ("+document.getElementById('ctl00_ContentBody_uxWaypointName').innerHTML+")";
-  }else if(document.getElementById('ctl00_ContentBody_lbHeading') && !document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?.*/))  var name = document.getElementById('ctl00_ContentBody_lbHeading').innerHTML;
-  else if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?.*/)){
+  }else if(document.getElementById('ctl00_ContentBody_lbHeading') && !document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?.*/)){
+    var name = document.getElementById('ctl00_ContentBody_lbHeading').innerHTML;
+    if(document.getElementById('ctl00_ContentBody_BugDetails_BugTBNum') && document.getElementById('ctl00_ContentBody_BugDetails_BugTBNum').getElementsByTagName('strong')){
+      var tbnr = document.getElementById('ctl00_ContentBody_BugDetails_BugTBNum').getElementsByTagName('strong')[0]; 
+      if(tbnr != "")name = name + " (" + tbnr.innerHTML + ")";
+    }
+  }else if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?.*/)){
     var name = "";
     var image = true;
     for(var i=0; i<links.length; i++){
