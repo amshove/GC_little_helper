@@ -12,7 +12,9 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de>
 // Version:        5.4             - 17.07.2011
-// Changelog:      5.4             - New: Show Map-It button at Listing
+// Changelog:
+//                                 - New: Show version in configuration
+//                 5.4             - New: Show Map-It button at Listing
 //                                 - New: VIP-Icon at friendlist
 //                                 - New: "All my VIPs"-List at profile-page
 //                                 - Change: improved "show area on google maps"-link at listing
@@ -2632,7 +2634,7 @@ function gclh_showConfig(){
     div.setAttribute("id","settings_overlay");
     var html = "";  
 //    html += "<div id='settings_overlay'>";
-    html += "<h3 class='gclh_headline'>GC little helper</h3>";
+    html += "<h3 class='gclh_headline'>GC little helper <font class='gclh_small'>v"+scriptVersion+"</font></h3>";
     html += "<div class='gclh_content'>";
     html += "";
     html += "<h4 class='gclh_headline2'>Global</h4>";
