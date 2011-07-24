@@ -13,6 +13,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de>
 // Version:        5.4             - 17.07.2011
 // Changelog:
+//                                 - New: [URL]-Tag for bbcode
 //                                 - New: Show version in configuration
 //                 5.4             - New: Show Map-It button at Listing
 //                                 - New: VIP-Icon at friendlist
@@ -1035,6 +1036,7 @@ if(settings_show_bbcode && (document.location.href.match(/^http:\/\/www\.geocach
   liste += "<a href='#' onClick='gclh_insert(\"[i]\",\"[/i]\"); return false;' style='color: #000000; text-decoration: none;'><i>I</i></a>&nbsp;";
   liste += "<a href='#' onClick='gclh_insert(\"[s]\",\"[/s]\"); return false;' style='color: #000000; text-decoration: none;'><s>S</s></a>&nbsp;";
   liste += "<a href='#' onClick='gclh_insert(\"[u]\",\"[/u]\"); return false;' style='color: #000000; text-decoration: none;'><u>U</u></a>&nbsp;";
+  liste += "<a href='#' onClick='gclh_insert(\"[url=\"+prompt(\"URL\",\"http://\")+\"]\",\"[/url]\"); return false;'><img border='0' height='14px' src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9sHGBAABIjrgkUAAAAIdEVYdENvbW1lbnQA9syWvwAAAP5JREFUOMulk21vwjAMhM99idTy/38oqlqqpvGzDywerDDYZimKEtuXs88xAP3DulcBZvbU5+5qXgFUgoDcXYD2ff964N0SzEyAAJlZnJtKZdu2Az1A67rKzDRNk9xd7q6cc8Tok8HTlVICwN1ZloVrNcRuAGamZVkEqO979X0ftN1dZqacs1JK18Y1zZGBu8dLpRQkUUqJO0nknAFY1zVydEsHiOR5ngHIOUc5jywAtm27d0hcLpdDzd8t5uBW23oehkHAQaE7eed55nQ66dU4VN0P91WFUkp09zcAzTtT+BO7+Ext2/79N9Ym1REdx1Hn81kpJQHquk4ppYcAH5ciQg1K86RjAAAAAElFTkSuQmCC'></a>";
   liste += "<br>";
   liste += "Templates:<br>";
   for(var i = 0; i < anzTemplates; i++){
