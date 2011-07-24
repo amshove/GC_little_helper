@@ -1736,7 +1736,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/profile\//) && 
 }
 
 // Auto-Visit
-if(settings_autovisit && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx?ID=/)){
+if(settings_autovisit && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx/) && !document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?LUID=/)){
   function gclh_autovisit_save(){
     var match = this.value.match(/([0-9]*)/);
     if(!this.checked){
