@@ -12,7 +12,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de>
 // Version:        5.4             - 17.07.2011
-// Changelog:
+// Changelog:      5.5             - New: Bookmark it-Icon at nearest list
 //                                 - Fix: if one VIP-Icon changes, all others change too
 //                                 - Fix: VIP-Icon besife owner in list no shows the correct color
 //                                 - Change: disable AutoVisit on logedit-page
@@ -2111,6 +2111,22 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_det
       links[i].parentNode.appendChild(link);      
     }
   }
+}
+
+// Show Bookmark-It Icon
+if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/nearest\.aspx?/)){
+  var links = document.getElementsByTagName("a");
+
+  for(var i=0; i<links.length; i++){
+    if(links[i].href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx\?.*/) && links[i].innerHTML.match(/^<span>/)){
+      var wpt = 2;
+      try{
+        var match = links[i].parentNode.previousSibling.childNodes[1].childNodes[0].src.match(/([0-9]*)\.gif/);
+        if(match[1]) wpt = match[1];
+      }catch(e) { }
+      links[i].parentNode.innerHTML = links[i].parentNode.innerHTML.replace("<br>","&nbsp;<a title='Bookmark it' href='"+links[i].href.replace("seek\/cache_details","bookmarks\/mark")+"&WptTypeID="+wpt+"'><img src='/images/stockholm/16x16/book_open_mark.gif'></a><br>");
+    }
+  }  
 }
 
 ////////////////////////////////////////////////////////////////////////////
