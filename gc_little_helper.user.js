@@ -13,6 +13,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de>
 // Version:        5.4             - 17.07.2011
 // Changelog:
+//                                 - Fix: VIP-Icon besife owner in list no shows the correct color
 //                                 - Change: disable AutoVisit on logedit-page
 //                                 - Fix: AutoVisit select by value, enable for Webcam caches
 //                                 - New: TB-ID inserted in mail
@@ -1952,9 +1953,16 @@ if(settings_show_vip_list && (document.location.href.match(/^http:\/\/www\.geoca
           link.appendChild(img);
           link.setAttribute("href","javascript:void(0);");
           link.setAttribute("name",user);
-          img.setAttribute("src",img_vip_on);
-          img.setAttribute("title","Remove User "+user+" from VIP-List");
-          link.addEventListener("click",gclh_del_vip,false);
+
+          if(owner_name && owner_name == user && !in_array(user,vips)){
+            img.setAttribute("src",img_vip_off);
+            img.setAttribute("title","Add User "+user+" to VIP-List");
+            link.addEventListener("click",gclh_add_vip,false);
+          }else{
+            img.setAttribute("src",img_vip_on);
+            img.setAttribute("title","Remove User "+user+" from VIP-List");
+            link.addEventListener("click",gclh_del_vip,false);
+          }
   
           list.appendChild(span);
           list.appendChild(document.createTextNode("   "));
