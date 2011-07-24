@@ -13,6 +13,8 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de>
 // Version:        5.4             - 17.07.2011
 // Changelog:
+//                                 - Change: disable AutoVisit on logedit-page
+//                                 - Fix: AutoVisit select by value, enable for Webcam caches
 //                                 - New: TB-ID inserted in mail
 //                                 - New: [URL]-Tag for bbcode
 //                                 - New: Show version in configuration
@@ -1732,7 +1734,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/profile\//) && 
 }
 
 // Auto-Visit
-if(settings_autovisit && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx/)){
+if(settings_autovisit && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx?ID=/)){
   function gclh_autovisit_save(){
     var match = this.value.match(/([0-9]*)/);
     if(!this.checked){
@@ -1772,19 +1774,33 @@ if(settings_autovisit && document.location.href.match(/^http:\/\/www\.geocaching
   // Select AutoVisit
   function gclh_autovisit(){
     var logtype = document.getElementById("ctl00_ContentBody_LogBookPanel1_ddLogType").value;
-    if(logtype == 2 || logtype == 10){
+    if(logtype == 2 || logtype == 10 || logtype == 11){
       var selects = document.getElementsByTagName("select");
       for (var i=0; i < selects.length; i++){
         if(selects[i].id.match(/ctl00_ContentBody_LogBookPanel1_uxTrackables_repTravelBugs_ctl[0-9]*_ddlAction/)){
           var val = selects[i].childNodes[1].value;
           if(GM_getValue("autovisit_"+val,false)){
-            selects[i].selectedIndex = 2;
+            var logoptions = selects[i].getElementsByTagName("option");
+            for(var k = 0; k < logoptions.length; k++){
+              if(logoptions[k].value == val + "_Visited"){
+                selects[i].selectedIndex = k;
+                break;
+              }
+            }
+            //selects[i].selectedIndex = 2;
             document.getElementById("ctl00_ContentBody_LogBookPanel1_uxTrackables_hdnSelectedActions").value += val+"_Visited,";
           }
         }
       }
+    }else{
+      var selects = document.getElementsByTagName("select");
+      for (var i=0; i < selects.length; i++){
+        if(selects[i].id.match(/ctl00_ContentBody_LogBookPanel1_uxTrackables_repTravelBugs_ctl[0-9]*_ddlAction/))
+          selects[i].selectedIndex = 0;
+      }
     }
   }
+
   if(document.getElementById("ctl00_ContentBody_LogBookPanel1_ddLogType")){
     window.addEventListener("load", gclh_autovisit, false);
     document.getElementById("ctl00_ContentBody_LogBookPanel1_ddLogType").addEventListener("click", gclh_autovisit, false);
