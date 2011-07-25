@@ -16,7 +16,7 @@
 //                                 - New: Homezone color editable via menu
 //                 5.5             - New: Bookmark it-Icon at nearest list
 //                                 - Fix: if one VIP-Icon changes, all others change too
-//                                 - Fix: VIP-Icon besife owner in list no shows the correct color
+//                                 - Fix: VIP-Icon beside owner in list no shows the correct color
 //                                 - Change: disable AutoVisit on logedit-page
 //                                 - Fix: AutoVisit select by value, enable for Webcam caches
 //                                 - New: TB-ID inserted in mail
@@ -1062,12 +1062,12 @@ if((document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.asp
     var limitNum = 4000;
     if (limitField.value.length > limitNum) {
       limitField.value = limitField.value.substring(0, limitNum);
-      counterelement.innerHTML = '<font color="red">' + limitField.value.length + '</font>';
+      counterelement.innerHTML = '<font color="red">' + limitField.value.length + '/' + limitNum  + '</font>';
       limitField.scrollTop = limitField.scrollHeight;
       limitField.selectionStart = 4000;
       limitField.selectionEnd = 4000;
     }else{
-      counterelement.innerHTML = limitField.value.length;
+      counterelement.innerHTML = limitField.value.length + '/' + limitNum;
     }
   }
 
@@ -1080,7 +1080,7 @@ if((document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.asp
   counterspan.id = "logtextcounter";
   counterspan.innerHTML = "<b>Loglength:</b><br />"
   var counterelement = document.createElement('span');
-  counterelement.innerHTML = "0";
+  counterelement.innerHTML = "0/4000";
   counterspan.appendChild(counterelement);
   counterpos.appendChild(counterspan);
 }
@@ -2742,7 +2742,7 @@ function gclh_showConfig(){
     html += "";
     html += "<h4 class='gclh_headline2'>Maps</h4>";
     html += checkbox('settings_show_homezone', 'Show Homezone') + " - Radius: <input class='gclh_form' type='text' size='2' id='settings_homezone_radius' value='"+settings_homezone_radius+"'> km<br>";
-    html += "Homezone-Color: <input class='gclh_form' type='text' id='settings_homezone_color' value='"+settings_homezone_color+"'><br>";
+    html += "Homezone-Color: <input class='gclh_form' type='text' size='5' id='settings_homezone_color' value='"+settings_homezone_color+"'><br>";
     html += checkbox('settings_old_map', 'Set old map as default') + "<br/>";
     html += checkbox('settings_map_hide_found', 'Hide found caches by default') + "<br/>";
     html += checkbox('settings_map_hide_hidden', 'Hide own caches by default') + "<br/>";
