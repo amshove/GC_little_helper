@@ -11,7 +11,7 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
-// Version:        5.5             - 24.07.2011
+// Version:        5.6             - 28.07.2011
 // Changelog:      5.6             - Fix: eMail-Link on disabled / archived caches
 //                                 - New: Loglenght counter (max 4000)
 //                                 - New: Homezone color editable via menu
@@ -307,7 +307,7 @@ profileBookmark("My Trackables", "lnk_my_trackables");
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "5.5";
+var scriptVersion = "5.6";
 
 var anzCustom = 10;
 var anzTemplates = 5;
