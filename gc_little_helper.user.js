@@ -12,7 +12,8 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        5.5             - 24.07.2011
-// Changelog:      5.6             - New: Loglenght counter (max 4000)
+// Changelog:      5.6             - Fix: eMail-Link on disabled / archived caches
+//                                 - New: Loglenght counter (max 4000)
 //                                 - New: Homezone color editable via menu
 //                 5.5             - New: Bookmark it-Icon at nearest list
 //                                 - Fix: if one VIP-Icon changes, all others change too
@@ -1102,8 +1103,15 @@ if(settings_show_mail && document.location.href.match(/^http:\/\/www\.geocaching
     var image = true;
     for(var i=0; i<links.length; i++){
       if(links[i].href.match(/http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/)){
-        if(image) image = false;  // First hit is an Image
-        else name = links[i].innerHTML;
+        if(image){
+          image = false;  // First hit is an Image
+        }else{
+          if(links[i].getElementsByTagName('span')[0] !== undefined){
+            name = links[i].getElementsByTagName('span')[0].innerHTML;
+          }else{
+            name = links[i].innerHTML
+          }
+        }
       }
     }
   }else var name = ""; 
