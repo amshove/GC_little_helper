@@ -7,12 +7,14 @@
 // @include        http://www.google.de/maps*
 // @include        http://www.google.com/maps*
 // @exclude        http://www.geocaching.com/seek/sendtogps.aspx*
+// @resource jscolor http://www.amshove.net/greasemonkey/js/jscolor/jscolor.js
 // @description    Some little things to make life easy (on www.geocaching.com).
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        5.6             - 28.07.2011
-// Changelog:      5.6             - Fix: eMail-Link on disabled / archived caches
+// Changelog:      5.7             - New: ColorPicker for Homezone
+//                 5.6             - Fix: eMail-Link on disabled / archived caches
 //                                 - New: Loglenght counter (max 4000)
 //                                 - New: Homezone color editable via menu
 //                 5.5             - New: Bookmark it-Icon at nearest list
@@ -2882,6 +2884,13 @@ function gclh_showConfig(){
 //    document.getElementsByTagName('body')[0].innerHTML += html;
     document.getElementsByTagName('body')[0].appendChild(css);
     document.getElementsByTagName('body')[0].appendChild(div);
+    
+    var code = GM_getResourceText("jscolor");
+    code += 'var homezonepic = new jscolor.color(document.getElementById("settings_homezone_color"), {required:true, adjust:true, hash:true, caps:true, pickerMode:\'HSV\', pickerPosition:\'right\'});'
+    var script = document.createElement("script");
+    script.innerHTML = code;
+    document.getElementsByTagName("body")[0].appendChild(script);
+
 
     function gclh_show_linklist(){
       var linklist = document.getElementById('gclh_settings_linklist');
