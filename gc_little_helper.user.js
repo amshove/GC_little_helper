@@ -14,6 +14,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        5.6             - 28.07.2011
 // Changelog:      5.7
+//                                 - New: Issue #1 - Highlight myself in VIP-List
 //                                 - Fix: VIP-Icon-Status at bookmark-tables
 //                                 - Fix: Bug #26 - Owner not correctly determined in VIP-List
 //                                 - New: ColorPicker for Homezone
@@ -1861,6 +1862,7 @@ if(settings_show_vip_list && (document.location.href.match(/^http:\/\/www\.geoca
   var vips = GM_getValue("vips",false);
   if(!vips) vips = new Array();
   else vips = eval(vips);
+  var myself = getElementsByClass("SignedInProfileLink")[0].innerHTML;
 
   // Add to VIP - image
   function gclh_add_vip(){
@@ -1918,7 +1920,6 @@ if(settings_show_vip_list && (document.location.href.match(/^http:\/\/www\.geoca
   
         var matches = links[i].href.match(/http:\/\/www\.geocaching\.com\/profile\/\?guid=([a-zA-Z0-9]*)/);
         var user = trim(links[i].innerHTML);
-alert("#"+user+"#");
   
         if(links[i].parentNode.className == "minorCacheDetails" && matches && !owner){
           var owner = matches[1];
@@ -1996,6 +1997,8 @@ alert("#"+user+"#");
           if(show_owner && owner_name && owner_name == user){
             span.appendChild(document.createTextNode("Owner: "));
             show_owner = false;
+          }else if(user == myself){
+            span.appendChild(document.createTextNode("Me: "));
           }
           span.appendChild(profile);
   
