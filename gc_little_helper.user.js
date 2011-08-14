@@ -13,7 +13,9 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        5.7             - 14.08.2011
-// Changelog:      5.7             - New: Issue #1 - Highlight myself in VIP-List
+// Changelog:      
+//                                 - Fix: Bug #28 - Coin Series Info is sometimes missing
+//                 5.7             - New: Issue #1 - Highlight myself in VIP-List
 //                                 - Fix: VIP-Icon-Status at bookmark-tables
 //                                 - Fix: Bug #26 - Owner not correctly determined in VIP-List
 //                                 - New: ColorPicker for Homezone
@@ -1266,7 +1268,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/track\/details\
   if(dl){
     var title = document.getElementsByTagName('title')[0].innerHTML;
     if(title){
-      var matches = title.match(/\([A-Za-z0-9]*\) ([A-Za-z0-9-–_.,\s]*) - /);
+      var matches = title.match(/\([A-Za-z0-9]*\) ([A-Za-z0-9-!–_.,\s]*) - /);
       if(matches) dl.innerHTML += "<dt>Series:</dt><dd>"+matches[1]+"</dd>";
     }
   }
