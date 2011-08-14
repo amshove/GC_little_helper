@@ -14,6 +14,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        5.6             - 28.07.2011
 // Changelog:      5.7
+//                                 - Fix: VIP-Icon-Status at bookmark-tables
 //                                 - Fix: Bug #26 - Owner not correctly determined in VIP-List
 //                                 - New: ColorPicker for Homezone
 //                 5.6             - Fix: eMail-Link on disabled / archived caches
@@ -828,7 +829,7 @@ if(settings_hide_empty_cache_notes && !settings_hide_cache_notes && document.loc
 }
 
 function trim(s) {
-  var whitespace = ' \n';
+  var whitespace = ' \n ';
   for (var i = 0; i < whitespace.length; i++) {
     while (s.substring(0, 1) == whitespace.charAt(i)) {
       s = s.substring(1, s.length);
@@ -1863,7 +1864,7 @@ if(settings_show_vip_list && (document.location.href.match(/^http:\/\/www\.geoca
 
   // Add to VIP - image
   function gclh_add_vip(){
-    var user = this.name;
+    var user = trim(this.name);
 
     vips.push(user);
     vips.sort(caseInsensitiveSort);
@@ -1884,7 +1885,7 @@ if(settings_show_vip_list && (document.location.href.match(/^http:\/\/www\.geoca
 
   function gclh_del_vip(){
     var vips_new = new Array();
-    var user = this.name;
+    var user = trim(this.name);
 
     for(var i=0; i<vips.length; i++){
       if(vips[i] != user) vips_new.push(vips[i]);
@@ -1916,7 +1917,8 @@ if(settings_show_vip_list && (document.location.href.match(/^http:\/\/www\.geoca
         if(links[i].id) links[i].name = links[i].id; // To be able to jump to this location
   
         var matches = links[i].href.match(/http:\/\/www\.geocaching\.com\/profile\/\?guid=([a-zA-Z0-9]*)/);
-        var user = links[i].innerHTML;
+        var user = trim(links[i].innerHTML);
+alert("#"+user+"#");
   
         if(links[i].parentNode.className == "minorCacheDetails" && matches && !owner){
           var owner = matches[1];
