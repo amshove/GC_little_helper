@@ -13,7 +13,9 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        5.6             - 28.07.2011
-// Changelog:      5.7             - New: ColorPicker for Homezone
+// Changelog:      5.7
+//                                 - Fix: Bug #26 - Owner not correctly determined in VIP-List
+//                                 - New: ColorPicker for Homezone
 //                 5.6             - Fix: eMail-Link on disabled / archived caches
 //                                 - New: Loglenght counter (max 4000)
 //                                 - New: Homezone color editable via menu
@@ -1919,7 +1921,7 @@ if(settings_show_vip_list && (document.location.href.match(/^http:\/\/www\.geoca
         if(links[i].parentNode.className == "minorCacheDetails" && matches && !owner){
           var owner = matches[1];
         }
-        if(owner && matches && matches[1] == owner){
+        if(!owner_name && owner && matches && matches[1] == owner){
           var owner_name = user;
         }
   
