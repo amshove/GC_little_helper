@@ -12,9 +12,8 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
-// Version:        5.6             - 28.07.2011
-// Changelog:      5.7
-//                                 - New: Issue #1 - Highlight myself in VIP-List
+// Version:        5.7             - 14.08.2011
+// Changelog:      5.7             - New: Issue #1 - Highlight myself in VIP-List
 //                                 - Fix: VIP-Icon-Status at bookmark-tables
 //                                 - Fix: Bug #26 - Owner not correctly determined in VIP-List
 //                                 - New: ColorPicker for Homezone
@@ -313,7 +312,7 @@ profileBookmark("My Trackables", "lnk_my_trackables");
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "5.6";
+var scriptVersion = "5.7";
 
 var anzCustom = 10;
 var anzTemplates = 5;
