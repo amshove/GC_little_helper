@@ -14,6 +14,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        5.7             - 14.08.2011
 // Changelog:      
+//                                 - Fix: Bug #29 - Mail Icon in Trackable Logs is missing 
 //                                 - Fix: Bug #28 - Coin Series Info is sometimes missing
 //                 5.7             - New: Issue #1 - Highlight myself in VIP-List
 //                                 - Fix: VIP-Icon-Status at bookmark-tables
@@ -1094,7 +1095,7 @@ if((document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.asp
 }
 
 // Show eMail-Link beside Username
-if(settings_show_mail && document.location.href.match(/^http:\/\/www\.geocaching\.com\/(seek\/cache_details|seek\/log|track\/details)\.aspx(\?|\?pf\=\&)(guid|wp|tracker|id|LUID|ID|PLogGuid)\=[a-zA-Z0-9-]*/)){
+if(settings_show_mail && document.location.href.match(/^http:\/\/www\.geocaching\.com\/(seek\/cache_details|seek\/log|track\/details|track\/log)\.aspx(\?|\?pf\=\&)(guid|wp|tracker|id|LUID|ID|PLogGuid)\=[a-zA-Z0-9-]*/)){
   var links = document.getElementsByTagName('a');
   if(document.getElementById('ctl00_ContentBody_CacheName')){
     var name = document.getElementById('ctl00_ContentBody_CacheName').innerHTML;
@@ -1252,7 +1253,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/track\/log\.asp
   window.addEventListener("load", gclh_setFocus, false);
 
   // Replace #found# variable
-  if(getElementsByClass('SignedInText')[0]){
+  if(getElementsByClass('SignedInText')[0] && document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo')){
     var text = getElementsByClass('SignedInText')[0].childNodes[7].innerHTML;
     var finds = parseInt(text.match(/([0-9,]{1,10})/)[1].replace(/,/g,""));
     document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML = document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML.replace(/#found_no#/g,finds);
