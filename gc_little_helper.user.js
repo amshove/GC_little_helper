@@ -14,6 +14,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        5.7             - 14.08.2011
 // Changelog:      
+//                                 - New: Issue #5 - Highlight "Related Website"
 //                                 - New: Issue #13 - Show gallery-link at own caches in profile
 //                                 - Fix: Bug #25 - AutoVisit - TB is visited
 //                                 - Fix: Bug #29 - Mail Icon in Trackable Logs is missing 
@@ -2196,6 +2197,20 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/nearest\.
       links[i].parentNode.innerHTML = links[i].parentNode.innerHTML.replace("<br>","&nbsp;<a title='Bookmark it' href='"+links[i].href.replace("seek\/cache_details","bookmarks\/mark")+"&WptTypeID="+wpt+"'><img src='/images/stockholm/16x16/book_open_mark.gif'></a><br>");
     }
   }  
+}
+
+// Highlight related web page link
+if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx?/) && document.getElementById("ctl00_ContentBody_uxCacheUrl")){
+  var lnk = document.getElementById("ctl00_ContentBody_uxCacheUrl");
+
+  var html = "<fieldset class=\"DisclaimerWidget\">";
+  html += "  <legend class=\"warning\">Please note</legend>";
+  html += "  <p class=\"NoBottomSpacing\">";
+  html += lnk.parentNode.innerHTML;
+  html += "  </p>";
+  html += "</fieldset>";
+
+  lnk.parentNode.innerHTML = html;
 }
 
 ////////////////////////////////////////////////////////////////////////////
