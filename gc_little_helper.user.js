@@ -14,6 +14,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        5.7             - 14.08.2011
 // Changelog:      
+//                                 - New: Issue #13 - Show gallery-link at own caches in profile
 //                                 - Fix: Bug #25 - AutoVisit - TB is visited
 //                                 - Fix: Bug #29 - Mail Icon in Trackable Logs is missing 
 //                                 - Fix: Bug #28 - Coin Series Info is sometimes missing
@@ -1614,6 +1615,21 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/(default\.a
       if(headline){
         var match = links[i].href.match(/\/seek\/cache_details\.aspx\?guid=(.*)/);
         if(match[1]) links[i].parentNode.innerHTML += " <a href='/hide/report.aspx?guid="+match[1]+"'><img src='/images/stockholm/16x16/page_white_edit.gif'></a>";
+      }
+    }
+  }
+}
+
+// Image-Link at own caches
+if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/owned\.aspx/)){
+  var links = document.getElementsByTagName("a");
+
+  for(var i = 0; i < links.length; i++){
+    if(links[i].href.match(/\/seek\/cache_details\.aspx\?/)){
+      var headline = links[i].parentNode.parentNode.parentNode.childNodes[1].innerHTML;
+      if(headline){
+        var match = links[i].href.match(/\/seek\/cache_details\.aspx\?guid=(.*)/);
+        if(match[1]) links[i].parentNode.innerHTML += " <a href='/seek/gallery.aspx?guid="+match[1]+"'><img src='/images/stockholm/16x16/photos.gif'></a>";
       }
     }
   }
