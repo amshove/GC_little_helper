@@ -2213,6 +2213,53 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_det
   lnk.parentNode.innerHTML = html;
 }
 
+// Show thumbnails
+if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx?/)){
+  var links = document.getElementsByTagName("a");
+  
+  var css = "a.gclh_thumb:hover { " + 
+    "  text-decoration:underline;" +
+    "  position: relative;" +
+    "}" +
+    "a.gclh_thumb span {" +
+    "  visibility: hidden;" +
+    "  position: absolute;" +
+    "  top:-310px;" +
+    "  left:0px;" +
+    "  padding: 2px;" +
+    "  text-decoration:none;" +
+    "  text-align:left;" +
+    "  vertical-align:top;" +
+    "}" +
+    "a.gclh_thumb:hover span { " +
+    "  visibility: visible;" +
+    "  top: 10px;" + 
+    "  border: 1px solid #8c9e65;" +
+    "  background-color:#dfe1d2;" +
+    "}";
+
+  GM_addStyle(css);
+
+  for(var i=0; i<links.length; i++){
+    if(links[i].href.match(/^http:\/\/img\.geocaching\.com\/cache\/log/)){
+      var thumb = links[i].childNodes[0];
+      var span = links[i].childNodes[2];
+      thumb.src = links[i].href.replace(/cache\/log/,"cache/log/thumb");
+      thumb.title = span.innerHTML;
+      thumb.alt = span.innerHTML;
+      
+      links[i].className = links[i].className+" gclh_thumb";
+
+      var big_img = document.createElement("img");
+      big_img.src = links[i].href;
+
+      span.insertBefore(big_img,span.childNodes[0]);
+
+      links[i].parentNode.removeChild(links[i].nextSibling);
+    }
+  }
+}
+
 ////////////////////////////////////////////////////////////////////////////
 
 // Helper: from N/S/E/W Deg Min.Sec to Dec
