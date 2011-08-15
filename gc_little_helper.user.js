@@ -14,6 +14,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        5.7             - 14.08.2011
 // Changelog:      
+//                                 - Fix: Bug #25 - AutoVisit - TB is visited
 //                                 - Fix: Bug #29 - Mail Icon in Trackable Logs is missing 
 //                                 - Fix: Bug #28 - Coin Series Info is sometimes missing
 //                 5.7             - New: Issue #1 - Highlight myself in VIP-List
@@ -1837,7 +1838,6 @@ if(settings_autovisit && document.location.href.match(/^http:\/\/www\.geocaching
                 break;
               }
             }
-            //selects[i].selectedIndex = 2;
             document.getElementById("ctl00_ContentBody_LogBookPanel1_uxTrackables_hdnSelectedActions").value += val+"_Visited,";
           }
         }
@@ -1845,10 +1845,12 @@ if(settings_autovisit && document.location.href.match(/^http:\/\/www\.geocaching
     }else{
       var selects = document.getElementsByTagName("select");
       for (var i=0; i < selects.length; i++){
-        if(selects[i].id.match(/ctl00_ContentBody_LogBookPanel1_uxTrackables_repTravelBugs_ctl[0-9]*_ddlAction/))
+        if(selects[i].id.match(/ctl00_ContentBody_LogBookPanel1_uxTrackables_repTravelBugs_ctl[0-9]*_ddlAction/) && selects[i].value.match(/_Visited/)){
           selects[i].selectedIndex = 0;
+        }
       }
     }
+    unsafeWindow.setSelectedActions();
   }
 
   if(document.getElementById("ctl00_ContentBody_LogBookPanel1_ddLogType")){
