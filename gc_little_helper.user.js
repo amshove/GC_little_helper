@@ -12,7 +12,7 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
-// Version:        5.7             - 14.08.2011
+// Version:        5.8             - 17.08.2011
 // Changelog:      5.8             - New: Issue #9 - Thumbnails of images in listing an logs
 //                                 - New: Issue #5 - Highlight "Related Website"
 //                                 - New: Issue #13 - Show gallery-link at own caches in profile
@@ -318,7 +318,7 @@ profileBookmark("My Trackables", "lnk_my_trackables");
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "5.7";
+var scriptVersion = "5.8";
 
 var anzCustom = 10;
 var anzTemplates = 5;
