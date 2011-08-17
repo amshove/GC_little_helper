@@ -13,7 +13,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        5.7             - 14.08.2011
-// Changelog:      
+// Changelog:      5.8             - New: Issue #9 - Thumbnails of images in listing an logs
 //                                 - New: Issue #5 - Highlight "Related Website"
 //                                 - New: Issue #13 - Show gallery-link at own caches in profile
 //                                 - Fix: Bug #25 - AutoVisit - TB is visited
@@ -400,6 +400,7 @@ settings_map_hide_hidden = GM_getValue('settings_map_hide_hidden', false);
 settings_show_fav_percentage = GM_getValue('settings_show_fav_percentage', false);
 settings_show_vip_list = GM_getValue('settings_show_vip_list', true);
 settings_autovisit = GM_getValue("settings_autovisit","true");
+settings_show_thumbnails = GM_getValue("settings_show_thumbnails","true");
 
 
 // Settings: Custom Bookmarks
@@ -2214,7 +2215,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_det
 }
 
 // Show thumbnails
-if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx?/)){
+if(settings_show_thumbnails && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx?/)){
   var links = document.getElementsByTagName("a");
   
   var css = "a.gclh_thumb:hover { " + 
@@ -2241,10 +2242,15 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_det
   GM_addStyle(css);
 
   for(var i=0; i<links.length; i++){
-    if(links[i].href.match(/^http:\/\/img\.geocaching\.com\/cache\/log/)){
+    if(links[i].href.match(/^http:\/\/img\.geocaching\.com\/cache/)){
       var thumb = links[i].childNodes[0];
       var span = links[i].childNodes[2];
-      thumb.src = links[i].href.replace(/cache\/log/,"cache/log/thumb");
+      if(links[i].href.match(/cache\/log/)){
+        thumb.src = links[i].href.replace(/cache\/log/,"cache/log/thumb");
+      }else{
+        thumb.src = links[i].href;
+        thumb.style.height = "100px";
+      }
       thumb.title = span.innerHTML;
       thumb.alt = span.innerHTML;
       
@@ -2864,6 +2870,7 @@ function gclh_showConfig(){
     html += checkbox('settings_strike_archived', 'Strike through title of archived/disabled caches') + "<br/>";
     html += checkbox('settings_show_fav_percentage', 'Show percentage of favourite points') + "<br/>";
     html += checkbox('settings_show_vip_list', 'Show VIP-List') + "<br/>";
+    html += checkbox('settings_show_thumbnails', 'Show Thumbnails of Images') + "<br/>";
     html += "<br>";
     html += "";
     html += "<h4 class='gclh_headline2'>Logging</h4>";
@@ -3058,7 +3065,8 @@ function gclh_showConfig(){
       'settings_map_hide_hidden',
       'settings_show_fav_percentage',
       'settings_show_vip_list',
-      'settings_autovisit'
+      'settings_autovisit',
+      'settings_show_thumbnails'
     );
     for (var i = 0; i < checkboxes.length; i++) {
       GM_setValue(checkboxes[i], document.getElementById(checkboxes[i]).checked);
