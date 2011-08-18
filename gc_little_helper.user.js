@@ -14,6 +14,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        5.8             - 17.08.2011
 // Changelog:
+//                                 - Fix: Bug #32 - [gc.com update] Hide social buttons in linklist 
 //                                 - Fix: Bug #33 - [gc.com update] Redundant Mail an VIP-Icons at logs 
 //                 5.8             - New: Issue #9 - Thumbnails of images in listing an logs
 //                                 - New: Issue #5 - Highlight "Related Website"
@@ -402,7 +403,7 @@ settings_map_hide_hidden = GM_getValue('settings_map_hide_hidden', false);
 settings_show_fav_percentage = GM_getValue('settings_show_fav_percentage', false);
 settings_show_vip_list = GM_getValue('settings_show_vip_list', true);
 settings_autovisit = GM_getValue("settings_autovisit","true");
-settings_show_thumbnails = GM_getValue("settings_show_thumbnails","true");
+settings_show_thumbnails = GM_getValue("settings_show_thumbnails",true);
 
 
 // Settings: Custom Bookmarks
@@ -699,6 +700,7 @@ if(document.getElementById('Navigation')){
   if(GM_getValue('remove_navi_videos') && document.getElementById('ctl00_hlNavVideos')) liste.removeChild(document.getElementById('ctl00_hlNavVideos').parentNode);
   if(GM_getValue('remove_navi_resources') && document.getElementById('ctl00_hlNavResources')) liste.removeChild(document.getElementById('ctl00_hlNavResources').parentNode);
   if(GM_getValue('remove_navi_shop') && document.getElementById('ctl00_hlNavShop')) liste.removeChild(document.getElementById('ctl00_hlNavShop').parentNode);
+  if(GM_getValue('remove_navi_social', true)) document.getElementById("Navigation").removeChild(document.getElementById("Navigation").childNodes[3]);
 }
 
 // Redirect to Map
@@ -2921,6 +2923,7 @@ function gclh_showConfig(){
     html += "<input type='checkbox' "+(GM_getValue('remove_navi_videos') ? "checked='checked'" : "" )+" id='remove_navi_videos'> Videos<br>";
     html += "<input type='checkbox' "+(GM_getValue('remove_navi_resources') ? "checked='checked'" : "" )+" id='remove_navi_resources'> Resources<br>";
     html += "<input type='checkbox' "+(GM_getValue('remove_navi_shop') ? "checked='checked'" : "" )+" id='remove_navi_shop'> Shop<br>";
+    html += "<input type='checkbox' "+(GM_getValue('remove_navi_social',true) ? "checked='checked'" : "" )+" id='remove_navi_social'> Social Buttons<br>";
     html += "<br>";
     html += "<input type='checkbox' "+(settings_bookmarks_search ? "checked='checked'" : "" )+" id='settings_bookmarks_search'> Show Searchfield - Default Value: <input class='gclh_form' type='text' id='settings_bookmarks_search_default' value='"+settings_bookmarks_search_default+"' size='4'><br>";
     html += "<input type='checkbox' "+(settings_bookmarks_top_menu ? "checked='checked'" : "" )+" id='settings_bookmarks_top_menu'> Show Linklist as Drop-Down<br>";
@@ -3057,6 +3060,7 @@ function gclh_showConfig(){
       'remove_navi_videos',
       'remove_navi_resources',
       'remove_navi_shop',
+      'remove_navi_social',
       'settings_bookmarks_top_menu',
       'settings_hide_advert_link',
       'settings_hide_line_breaks',
