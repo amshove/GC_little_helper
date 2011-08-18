@@ -12,9 +12,8 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
-// Version:        5.8             - 17.08.2011
-// Changelog:
-//                                 - Fix: Bug #32 - [gc.com update] Hide social buttons in linklist 
+// Version:        5.9             - 18.08.2011
+// Changelog:      5.9             - Fix: Bug #32 - [gc.com update] Hide social buttons in linklist 
 //                                 - Fix: Bug #33 - [gc.com update] Redundant Mail an VIP-Icons at logs 
 //                 5.8             - New: Issue #9 - Thumbnails of images in listing an logs
 //                                 - New: Issue #5 - Highlight "Related Website"
@@ -321,7 +320,7 @@ profileBookmark("My Trackables", "lnk_my_trackables");
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "5.8";
+var scriptVersion = "5.9";
 
 var anzCustom = 10;
 var anzTemplates = 5;
