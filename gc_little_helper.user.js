@@ -13,7 +13,9 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        5.8             - 17.08.2011
-// Changelog:      5.8             - New: Issue #9 - Thumbnails of images in listing an logs
+// Changelog:
+//                                 - Fix: Bug #33 - [gc.com update] Redundant Mail an VIP-Icons at logs 
+//                 5.8             - New: Issue #9 - Thumbnails of images in listing an logs
 //                                 - New: Issue #5 - Highlight "Related Website"
 //                                 - New: Issue #13 - Show gallery-link at own caches in profile
 //                                 - Fix: Bug #25 - AutoVisit - TB is visited
@@ -1129,7 +1131,7 @@ if(settings_show_mail && document.location.href.match(/^http:\/\/www\.geocaching
   }else var name = ""; 
 
   for(var i=0; i<links.length; i++){
-    if(links[i].href.match(/http:\/\/www\.geocaching\.com\/profile\/\?guid=/)){
+    if(links[i].href.match(/http:\/\/www\.geocaching\.com\/profile\/\?guid=/) && links[i].parentNode.className != "logOwnerStats"){
       var guid = links[i].href.match(/http:\/\/www\.geocaching\.com\/profile\/\?guid=(.*)/);
       guid = guid[1];
 
@@ -1937,7 +1939,7 @@ if(settings_show_vip_list && (document.location.href.match(/^http:\/\/www\.geoca
     var index = 0;
     var links = document.getElementsByTagName('a');
     for(var i=0; i<links.length; i++){
-      if(links[i].href.match(/http:\/\/www\.geocaching\.com\/profile\/\?guid=/)){
+      if(links[i].href.match(/http:\/\/www\.geocaching\.com\/profile\/\?guid=/) && links[i].parentNode.className != "logOwnerStats"){
         if(links[i].id) links[i].name = links[i].id; // To be able to jump to this location
   
         var matches = links[i].href.match(/http:\/\/www\.geocaching\.com\/profile\/\?guid=([a-zA-Z0-9]*)/);
