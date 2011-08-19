@@ -13,7 +13,9 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        5.9             - 18.08.2011
-// Changelog:      5.9             - Fix: Bug #32 - [gc.com update] Hide social buttons in linklist 
+// Changelog:
+//                                 - Fix: Bug #34 - [gc.com update] VIP-Log-Icons disappeared 
+//                 5.9             - Fix: Bug #32 - [gc.com update] Hide social buttons in linklist 
 //                                 - Fix: Bug #33 - [gc.com update] Redundant Mail an VIP-Icons at logs 
 //                 5.8             - New: Issue #9 - Thumbnails of images in listing an logs
 //                                 - New: Issue #5 - Highlight "Related Website"
@@ -1957,15 +1959,22 @@ if(settings_show_vip_list && (document.location.href.match(/^http:\/\/www\.geoca
         all_users.push(user);
         if(!log_infos[user]) log_infos[user] = new Array();
         log_infos[user][index] = new Object();
-        if(links[i].parentNode.childNodes[0].src){
-          log_infos[user][index]["icon"] = links[i].parentNode.childNodes[0].src;
-          if(links[i].parentNode.childNodes[1].textContent){
-            log_infos[user][index]["date"] = links[i].parentNode.childNodes[1].textContent.replace(/by $/,"");
+        try {
+          var src = links[i].parentNode.parentNode.parentNode.parentNode.childNodes[1].childNodes[0].childNodes[0].childNodes[0].src;
+          if(src){
+            log_infos[user][index]["icon"] = src;
+            if(links[i].id){
+              log_infos[user][index]["id"] = links[i].id;
+            }
+
+            try {
+              var date = links[i].parentNode.parentNode.parentNode.parentNode.childNodes[1].childNodes[1].childNodes[0].textContent;
+              if(date){
+                log_infos[user][index]["date"] = date;
+              }
+            } catch (e) { }
           }
-          if(links[i].id){
-            log_infos[user][index]["id"] = links[i].id;
-          }
-        }
+        } catch(e) { }
   
         // Icon
         var link = document.createElement("a");
