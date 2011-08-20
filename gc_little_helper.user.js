@@ -1134,7 +1134,7 @@ if(settings_show_mail && document.location.href.match(/^http:\/\/www\.geocaching
   }else var name = ""; 
 
   for(var i=0; i<links.length; i++){
-    if(links[i].href.match(/http:\/\/www\.geocaching\.com\/profile\/\?guid=/) && links[i].parentNode.className != "logOwnerStats"){
+    if(links[i].href.match(/http:\/\/www\.geocaching\.com\/profile\/\?guid=/) && links[i].parentNode.className != "logOwnerStats" && !links[i].childNodes[0].src){
       var guid = links[i].href.match(/http:\/\/www\.geocaching\.com\/profile\/\?guid=(.*)/);
       guid = guid[1];
 
@@ -1942,7 +1942,7 @@ if(settings_show_vip_list && (document.location.href.match(/^http:\/\/www\.geoca
     var index = 0;
     var links = document.getElementsByTagName('a');
     for(var i=0; i<links.length; i++){
-      if(links[i].href.match(/http:\/\/www\.geocaching\.com\/profile\/\?guid=/) && links[i].parentNode.className != "logOwnerStats"){
+      if(links[i].href.match(/http:\/\/www\.geocaching\.com\/profile\/\?guid=/) && links[i].parentNode.className != "logOwnerStats" && !links[i].childNodes[0].src){
         if(links[i].id) links[i].name = links[i].id; // To be able to jump to this location
   
         var matches = links[i].href.match(/http:\/\/www\.geocaching\.com\/profile\/\?guid=([a-zA-Z0-9]*)/);
@@ -2718,6 +2718,16 @@ if(document.getElementById('lnk_findplayer')){
 function checkbox(setting_id, label) {
   return "<input type='checkbox' "+(eval(setting_id) ? "checked='checked'" : "" )+" id='" + setting_id + "'> " + label;
 }
+
+// Sync settings
+function get_settings(){
+  var vals = [];
+  for each (var val in GM_listValues()) {
+    vals.push(GM_getValue(val));
+  }
+  alert(uneval(vals));
+}
+//get_settings();
 
 // Configuration Menu
 function gclh_showConfig(){
