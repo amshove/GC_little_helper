@@ -12,9 +12,8 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
-// Version:        5.9             - 18.08.2011
-// Changelog:      
-//                                 - Fix: Bug #43 - JS-Links doesn't work in linklist on profile page
+// Version:        6.0             - 23.08.2011
+// Changelog:      6.0             - Fix: Bug #43 - JS-Links doesn't work in linklist on profile page
 //                                 - Fix: Bug #41 - Trackable name is not read correctly from Mail-Icon
 //                                 - Fix: Bug #34 - [gc.com update] VIP-Log-Icons disappeared 
 //                 5.9             - Fix: Bug #32 - [gc.com update] Hide social buttons in linklist 
@@ -325,7 +324,7 @@ profileBookmark("My Trackables", "lnk_my_trackables");
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "5.9";
+var scriptVersion = "6.0";
 
 var anzCustom = 10;
 var anzTemplates = 5;
