@@ -13,7 +13,8 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        5.9             - 18.08.2011
-// Changelog:
+// Changelog:      
+//                                 - Fix: Bug #43 - JS-Links doesn't work in linklist on profile page
 //                                 - Fix: Bug #41 - Trackable name is not read correctly from Mail-Icon
 //                                 - Fix: Bug #34 - [gc.com update] VIP-Log-Icons disappeared 
 //                 5.9             - Fix: Bug #32 - [gc.com update] Hide social buttons in linklist 
@@ -260,6 +261,7 @@ function externalBookmark(title, href) {
 function profileBookmark(title, id) {
   var bm = bookmark(title, "#");
   bm['id'] = id;
+  bm['name'] = id;
 }
 
 /**
@@ -549,7 +551,7 @@ if(settings_submit_log_button && (document.location.href.match(/^http:\/\/www\.g
 }
 
 // Bookmark-Liste im Profil
-if(settings_bookmarks_show && (document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/$/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/default\.aspx$/))){
+if(settings_bookmarks_show && (document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/$/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/default\.aspx/))){
   var side = document.getElementById("ctl00_ContentBody_WidgetMiniProfile1_LoggedInPanel");
 
   var header = document.createElement("h3");
@@ -2552,24 +2554,32 @@ function homeCoordinatesSet() {
   return true;
 }
 
+// Helper
+function addLinkEvent(name,fkt){
+  if(document.getElementsByName(name).length > 0){
+    var links = document.getElementsByName(name);
+    for(var i = 0; i < links.length; i++){
+      links[i].addEventListener("click", fkt, false);
+    }
+  }else if(document.getElementById(name)){
+    document.getElementById(name).addEventListener("click", fkt, false);
+  }
+}
+
 // Redirect to Neares List/Map
 function linkToNearesList(){
   if (homeCoordinatesSet()) {
     document.location.href = "http://www.geocaching.com/seek/nearest.aspx?lat="+(GM_getValue("home_lat")/10000000)+"&lng="+(GM_getValue("home_lng")/10000000)+"&dist=25&disable_redirect";
   }
 }
-if(document.getElementById('lnk_nearestlist')){
-  document.getElementById('lnk_nearestlist').addEventListener("click", linkToNearesList, false);
-}
+addLinkEvent('lnk_nearestlist',linkToNearesList);
 
 function linkToNearesMap(){
   if (homeCoordinatesSet()) {
     document.location.href = map_url+"?lat="+(GM_getValue("home_lat")/10000000)+"&lng="+(GM_getValue("home_lng")/10000000);
   }
 }
-if(document.getElementById('lnk_nearestmap')){
-  document.getElementById('lnk_nearestmap').addEventListener("click", linkToNearesMap, false);
-}
+addLinkEvent('lnk_nearestmap',linkToNearesMap);
 
 // Redirect to Neares List without Founds
 function linkToNearesListWo(){
@@ -2577,9 +2587,7 @@ function linkToNearesListWo(){
     document.location.href = "http://www.geocaching.com/seek/nearest.aspx?lat="+(GM_getValue("home_lat")/10000000)+"&lng="+(GM_getValue("home_lng")/10000000)+"&dist=25&f=1&disable_redirect";
   }
 }
-if(document.getElementById('lnk_nearestlist_wo')){
-  document.getElementById('lnk_nearestlist_wo').addEventListener("click", linkToNearesListWo, false);
-}
+addLinkEvent('lnk_nearestlist_wo',linkToNearesListWo);
 
 // Redirect to My Trackables
 function linkToMyTrackables(){
@@ -2589,62 +2597,49 @@ function linkToMyTrackables(){
     document.location.href = "http://www.geocaching.com/track/search.aspx?o=1&uid="+GM_getValue("uid");
   }
 }
-if(document.getElementById('lnk_my_trackables')){
-  document.getElementById('lnk_my_trackables').addEventListener("click", linkToMyTrackables, false);
-}
+addLinkEvent('lnk_my_trackables',linkToMyTrackables);
 
 // Redirect + JS-Exec
 function linkToGeocaches(){
   GM_setValue("run_after_redirect","__doPostBack('ctl00$ContentBody$ProfilePanel1$lnkUserStats','')");
   document.location.href = "/profile/default.aspx";
 }
-if(document.getElementById('lnk_profilegeocaches')){
-  document.getElementById('lnk_profilegeocaches').addEventListener("click", linkToGeocaches, false);
-}
+addLinkEvent('lnk_profilegeocaches',linkToGeocaches);
 
 function linkToTrackables(){
   GM_setValue("run_after_redirect","__doPostBack('ctl00$ContentBody$ProfilePanel1$lnkCollectibles','')");
   document.location.href = "/profile/default.aspx";
 }
-if(document.getElementById('lnk_profiletrackables')){
-  document.getElementById('lnk_profiletrackables').addEventListener("click", linkToTrackables, false);
-}
+addLinkEvent('lnk_profiletrackables',linkToTrackables);
 
 function linkToGallery(){
   GM_setValue("run_after_redirect","__doPostBack('ctl00$ContentBody$ProfilePanel1$lnkGallery','')");
   document.location.href = "/profile/default.aspx";
 }
-if(document.getElementById('lnk_profilegallery')){
-  document.getElementById('lnk_profilegallery').addEventListener("click", linkToGallery, false);
-}
-var links = document.getElementsByName('lnk_profilegallery2');
-for(var i=0; i<links.length; i++){ // Friendlist
-  links[i].addEventListener("click", linkToGallery, false);
-}
+addLinkEvent('lnk_profilegallery',linkToGallery);
+addLinkEvent('lnk_profilegallery2',linkToGallery);
+//var links = document.getElementsByName('lnk_profilegallery2');
+//for(var i=0; i<links.length; i++){ // Friendlist
+//  links[i].addEventListener("click", linkToGallery, false);
+//}
 
 function linkToBookmarks(){
   GM_setValue("run_after_redirect","__doPostBack('ctl00$ContentBody$ProfilePanel1$lnkLists','')");
   document.location.href = "/profile/default.aspx";
 }
-if(document.getElementById('lnk_profilebookmarks')){
-  document.getElementById('lnk_profilebookmarks').addEventListener("click", linkToBookmarks, false);
-}
+addLinkEvent('lnk_profilebookmarks',linkToBookmarks);
 
 function linkToSouvenirs(){
   GM_setValue("run_after_redirect","__doPostBack('ctl00$ContentBody$ProfilePanel1$lnkSouvenirs','')");
   document.location.href = "/profile/default.aspx";
 }
-if(document.getElementById('lnk_profilesouvenirs')){
-  document.getElementById('lnk_profilesouvenirs').addEventListener("click", linkToSouvenirs, false);
-}
+addLinkEvent('lnk_profilesouvenirs',linkToSouvenirs);
 
 function linkToStatistics(){
   GM_setValue("run_after_redirect","__doPostBack('ctl00$ContentBody$ProfilePanel1$lnkStatistics','')");
   document.location.href = "/profile/default.aspx";
 }
-if(document.getElementById('lnk_profilestatistics')){
-  document.getElementById('lnk_profilestatistics').addEventListener("click", linkToStatistics, false);
-}
+addLinkEvent('lnk_profilestatistics',linkToStatistics);
 
 // Close the Overlays
 function btnClose(){
