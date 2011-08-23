@@ -14,6 +14,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        5.9             - 18.08.2011
 // Changelog:
+//                                 - Fix: Bug #41 - Trackable name is not read correctly from Mail-Icon
 //                                 - Fix: Bug #34 - [gc.com update] VIP-Log-Icons disappeared 
 //                 5.9             - Fix: Bug #32 - [gc.com update] Hide social buttons in linklist 
 //                                 - Fix: Bug #33 - [gc.com update] Redundant Mail an VIP-Icons at logs 
@@ -1109,12 +1110,17 @@ if(settings_show_mail && document.location.href.match(/^http:\/\/www\.geocaching
   if(document.getElementById('ctl00_ContentBody_CacheName')){
     var name = document.getElementById('ctl00_ContentBody_CacheName').innerHTML;
     if(document.getElementById('ctl00_ContentBody_uxWaypointName')) name += " ("+document.getElementById('ctl00_ContentBody_uxWaypointName').innerHTML+")";
-  }else if(document.getElementById('ctl00_ContentBody_lbHeading') && !document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?.*/)){
+  }else if(document.getElementById('ctl00_ContentBody_lbHeading') && !document.location.href.match(/^http:\/\/www\.geocaching\.com\/(seek|track)\/log\.aspx\?.*/)){
     var name = document.getElementById('ctl00_ContentBody_lbHeading').innerHTML;
     if(document.getElementById('ctl00_ContentBody_BugDetails_BugTBNum') && document.getElementById('ctl00_ContentBody_BugDetails_BugTBNum').getElementsByTagName('strong')){
       var tbnr = document.getElementById('ctl00_ContentBody_BugDetails_BugTBNum').getElementsByTagName('strong')[0]; 
       if(tbnr != "")name = name + " (" + tbnr.innerHTML + ")";
     }
+  }else if(document.getElementById('ctl00_ContentBody_LogBookPanel1_lbLogText')){
+    var name = "";
+    try {
+      name = document.getElementById('ctl00_ContentBody_LogBookPanel1_lbLogText').childNodes[4].innerHTML;
+    } catch(e) {}
   }else if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?.*/)){
     var name = "";
     var image = true;
