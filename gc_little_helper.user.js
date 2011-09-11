@@ -13,7 +13,9 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        6.0             - 23.08.2011
-// Changelog:      6.0             - Fix: Bug #43 - JS-Links doesn't work in linklist on profile page
+// Changelog:      6.1
+//                                 - Fix: Bug #45 - [gc.com update] Difference-counter at friendlist doesn't work if there are more than 1000 finds 
+//                 6.0             - Fix: Bug #43 - JS-Links doesn't work in linklist on profile page
 //                                 - Fix: Bug #41 - Trackable name is not read correctly from Mail-Icon
 //                                 - Fix: Bug #34 - [gc.com update] VIP-Log-Icons disappeared 
 //                 5.9             - Fix: Bug #32 - [gc.com update] Hide social buttons in linklist 
@@ -1299,12 +1301,12 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/myfriends\.
     var friend = friends[i];
     var name = friend.getElementsByTagName("a")[0];
     var add = "";
-    var founds = friend.getElementsByTagName("dd")[4].innerHTML;
+    var founds = trim(friend.getElementsByTagName("dd")[4].innerHTML).replace(/[,.]*/g,"");
     var last_founds = GM_getValue("friends_founds_"+name.innerHTML);
 
     if(typeof(last_founds) == "undefined") last_founds = founds;
     if((founds - last_founds) > 0) add = " <font color='#00AA00'><b>(+"+(founds - last_founds)+")</b></font>";
-    GM_setValue("friends_founds_"+name.innerHTML,founds);
+    GM_setValue("friends_founds_"+name.innerHTML,trim(founds));
     
 //    friend.getElementsByTagName("dl")[0].lastChild.innerHTML = "<a href='/seek/nearest.aspx?ul="+name.innerHTML+"'>"+friend.getElementsByTagName("dl")[0].lastChild.innerHTML+"</a>";
     friend.getElementsByTagName("dd")[4].innerHTML = "<a href='/seek/nearest.aspx?ul="+name.innerHTML+"&disable_redirect'>"+founds+"</a>"+add;
