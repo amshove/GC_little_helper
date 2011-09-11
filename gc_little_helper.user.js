@@ -14,6 +14,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        6.0             - 23.08.2011
 // Changelog:      6.1
+//                                 - Change: Issue #42 - Count TBs and Coins separately
 //                                 - New: Issue #48 - Filter for Logs
 //                                 - New: Reset difference-counter at friendlist automatically if day changes
 //                                 - Change: Issue #6 - Reset difference-counter at friendlist with a button
@@ -1844,13 +1845,35 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/profile\//) && 
   if(tables){
     var table = tables[0];
     var rows = table.getElementsByTagName("tr");
+    var tbs = 0;
+    var coins = 0;
+
+    for(var i=1; i<(rows.length-1); i++){
+      if(rows[i].innerHTML.match(/geocoin/i)){
+        coins++;
+      }else{
+        tbs++;
+      }
+    }
     var last = rows[rows.length-1];
-    last.childNodes[1].innerHTML = "<strong>"+(rows.length-2)+"</strong>";
+//    last.childNodes[1].innerHTML = "<strong>"+(rows.length-2)+"</strong>";
+    last.childNodes[1].innerHTML = "<strong>"+coins+"<br>"+tbs+"</strong>";
 
     var table = tables[1];
     var rows = table.getElementsByTagName("tr");
+    var tbs = 0;
+    var coins = 0;
+
+    for(var i=1; i<(rows.length-1); i++){
+      if(rows[i].innerHTML.match(/geocoin/i)){
+        coins++;
+      }else{
+        tbs++;
+      }
+    }
     var last = rows[rows.length-1];
-    last.childNodes[1].innerHTML = "<strong>"+(rows.length-2)+"</strong>";
+//    last.childNodes[1].innerHTML = "<strong>"+(rows.length-2)+"</strong>";
+    last.childNodes[1].innerHTML = "<strong>"+coins+"<br>"+tbs+"</strong>";
   }
 }
 
@@ -2349,7 +2372,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_det
       var link = document.createElement("a");
       link.setAttribute("href","javascript:void(0);");
       link.style.textDecoration = 'none';
-      link.style.color = '#000000';
+//      link.style.color = '#000000';
       link.addEventListener("click",gclh_filter_logs,false);
       
       link.appendChild(legend.childNodes[i].cloneNode(true));
