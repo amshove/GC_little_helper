@@ -14,6 +14,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        6.0             - 23.08.2011
 // Changelog:      6.1
+//                                 - Change: Issue #52 - Don't show thumbnail of spoilers 
 //                                 - Change: Issue #42 - Count TBs and Coins separately
 //                                 - New: Issue #48 - Filter for Logs
 //                                 - New: Reset difference-counter at friendlist automatically if day changes
@@ -2324,7 +2325,7 @@ if(settings_show_thumbnails && document.location.href.match(/^http:\/\/www\.geoc
   GM_addStyle(css);
 
   for(var i=0; i<links.length; i++){
-    if(links[i].href.match(/^http:\/\/img\.geocaching\.com\/cache/)){
+    if(links[i].href.match(/^http:\/\/img\.geocaching\.com\/cache/) && !links[i].innerHTML.match(/(spoiler|hinweis)/i)){
       var thumb = links[i].childNodes[0];
       var span = links[i].childNodes[2];
       if(links[i].href.match(/cache\/log/)){
