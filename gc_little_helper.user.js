@@ -14,6 +14,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        6.0             - 23.08.2011
 // Changelog:      6.1
+//                                 - Change: Issue #53 - Increase number of log-templates 
 //                                 - Change: Issue #52 - Don't show thumbnail of spoilers 
 //                                 - Change: Issue #42 - Count TBs and Coins separately
 //                                 - New: Issue #48 - Filter for Logs
@@ -334,7 +335,7 @@ var scriptName = "gc_little_helper";
 var scriptVersion = "6.0";
 
 var anzCustom = 10;
-var anzTemplates = 5;
+var anzTemplates = 10;
 
 var bookmarks_def = new Array(16,18,13,14,17,12);
 
