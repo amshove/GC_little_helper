@@ -2346,7 +2346,7 @@ if(settings_show_thumbnails && document.location.href.match(/^http:\/\/www\.geoc
       span.insertBefore(big_img,span.childNodes[0]);
 
       links[i].parentNode.removeChild(links[i].nextSibling);
-    }else if(links[i].href.match(/^http:\/\/www\.geocaching\.com\/seek\//) && links[i].childNodes[0].tagName == 'IMG'){
+    }else if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/gallery\.aspx?/) && links[i].href.match(/^http:\/\/www\.geocaching\.com\/seek\//) && links[i].childNodes[0] && links[i].childNodes[0].tagName == 'IMG'){
       var thumb = links[i].childNodes[0];
       var span = document.createElement('span');
       var img = document.createElement('img');
