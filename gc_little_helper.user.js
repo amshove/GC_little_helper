@@ -14,6 +14,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        6.0             - 23.08.2011
 // Changelog:      6.1
+//                                 - New: Issue #30 - Show bigger Image on mouseover in gallery 
 //                                 - Change: Issue #53 - Increase number of log-templates 
 //                                 - Change: Issue #52 - Don't show thumbnail of spoilers 
 //                                 - Change: Issue #42 - Count TBs and Coins separately
@@ -2299,7 +2300,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_det
 }
 
 // Show thumbnails
-if(settings_show_thumbnails && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx?/)){
+if(settings_show_thumbnails && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/(cache_details|gallery)\.aspx?/)){
   var links = document.getElementsByTagName("a");
   
   var css = "a.gclh_thumb:hover { " + 
@@ -2346,6 +2347,18 @@ if(settings_show_thumbnails && document.location.href.match(/^http:\/\/www\.geoc
       span.insertBefore(big_img,span.childNodes[0]);
 
       links[i].parentNode.removeChild(links[i].nextSibling);
+    }else if(links[i].href.match(/^http:\/\/www\.geocaching\.com\/seek\//) && links[i].childNodes[0].tagName == 'IMG'){
+      var thumb = links[i].childNodes[0];
+      var span = document.createElement('span');
+      var img = document.createElement('img');
+
+      img.src = thumb.src.replace(/thumb\//,"");
+      span.appendChild(img);
+      span.appendChild(document.createTextNode(thumb.parentNode.parentNode.childNodes[7].childNodes[0].innerHTML));
+      
+      links[i].className = links[i].className+" gclh_thumb";
+
+      links[i].appendChild(span);
     }
   }
 }
