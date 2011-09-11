@@ -12,9 +12,8 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
-// Version:        6.0             - 23.08.2011
-// Changelog:      6.1
-//                                 - New: Issue #30 - Show bigger Image on mouseover in gallery 
+// Version:        6.1             - 11.09.2011
+// Changelog:      6.1             - New: Issue #30 - Show bigger Image on mouseover in gallery 
 //                                 - Change: Issue #53 - Increase number of log-templates 
 //                                 - Change: Issue #52 - Don't show thumbnail of spoilers 
 //                                 - Change: Issue #42 - Count TBs and Coins separately
@@ -333,7 +332,7 @@ profileBookmark("My Trackables", "lnk_my_trackables");
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "6.0";
+var scriptVersion = "6.1";
 
 var anzCustom = 10;
 var anzTemplates = 10;
