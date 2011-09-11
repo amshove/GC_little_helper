@@ -14,6 +14,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        6.0             - 23.08.2011
 // Changelog:      6.1
+//                                 - New: Issue #48 - Filter for Logs
 //                                 - New: Reset difference-counter at friendlist automatically if day changes
 //                                 - Change: Issue #6 - Reset difference-counter at friendlist with a button
 //                                 - Fix: Bug #45 - [gc.com update] Difference-counter at friendlist doesn't work if there are more than 1000 finds 
@@ -2322,6 +2323,42 @@ if(settings_show_thumbnails && document.location.href.match(/^http:\/\/www\.geoc
       links[i].parentNode.removeChild(links[i].nextSibling);
     }
   }
+}
+
+if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/)){
+  var legend = document.getElementById('ctl00_ContentBody_lblFindCounts').childNodes[0];
+
+  function gclh_filter_logs(){
+    var logs = getElementsByClass('LogsTable')[0].getElementsByTagName('img');
+    for(var i=0; i<logs.length; i++){
+      if(logs[i].alt){
+        if(logs[i].title != this.childNodes[0].title){
+          logs[i].parentNode.parentNode.parentNode.parentNode.parentNode.style.display = "none";
+        }else{
+          logs[i].parentNode.parentNode.parentNode.parentNode.parentNode.style.display = "";
+        }
+      }
+    }
+  }
+
+  var new_legend = document.createElement("p");
+  new_legend.className = "LogTotals";
+
+  for(var i=0; i<legend.childNodes.length; i++){
+    if(legend.childNodes[i].tagName == "IMG"){
+      var link = document.createElement("a");
+      link.setAttribute("href","javascript:void(0);");
+      link.style.textDecoration = 'none';
+      link.style.color = '#000000';
+      link.addEventListener("click",gclh_filter_logs,false);
+      
+      link.appendChild(legend.childNodes[i].cloneNode(true));
+      i++;
+      link.appendChild(legend.childNodes[i].cloneNode(true));
+      new_legend.appendChild(link);
+    }
+  } 
+  document.getElementById('ctl00_ContentBody_lblFindCounts').replaceChild(new_legend,document.getElementById('ctl00_ContentBody_lblFindCounts').childNodes[0]);
 }
 
 ////////////////////////////////////////////////////////////////////////////
