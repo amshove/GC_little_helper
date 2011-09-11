@@ -14,6 +14,8 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        6.0             - 23.08.2011
 // Changelog:      6.1
+//                                 - New: Reset difference-counter at friendlist automatically if day changes
+//                                 - Change: Issue #6 - Reset difference-counter at friendlist with a button
 //                                 - Fix: Bug #45 - [gc.com update] Difference-counter at friendlist doesn't work if there are more than 1000 finds 
 //                 6.0             - Fix: Bug #43 - JS-Links doesn't work in linklist on profile page
 //                                 - Fix: Bug #41 - Trackable name is not read correctly from Mail-Icon
@@ -1296,6 +1298,20 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/track\/details\
 // Improve Friendlist
 if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/myfriends\.aspx/)){
   var friends = getElementsByClass("FriendText");
+  var day = new Date().getDate();
+  var last_check = parseInt(GM_getValue("friends_founds_last","0"),10);
+
+  if(last_check != day){
+    for(var i=0; i<friends.length; i++){
+      var friend = friends[i];
+      var name = friend.getElementsByTagName("a")[0];
+
+      if(GM_getValue("friends_founds_new_"+name.innerHTML)){
+        GM_setValue("friends_founds_"+name.innerHTML,GM_getValue("friends_founds_new_"+name.innerHTML));
+      }
+    }  
+    GM_setValue("friends_founds_last",day);
+  }
   
   for(var i=0; i<friends.length; i++){
     var friend = friends[i];
@@ -1306,13 +1322,34 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/myfriends\.
 
     if(typeof(last_founds) == "undefined") last_founds = founds;
     if((founds - last_founds) > 0) add = " <font color='#00AA00'><b>(+"+(founds - last_founds)+")</b></font>";
-    GM_setValue("friends_founds_"+name.innerHTML,trim(founds));
+    GM_setValue("friends_founds_new_"+name.innerHTML,trim(founds));
     
-//    friend.getElementsByTagName("dl")[0].lastChild.innerHTML = "<a href='/seek/nearest.aspx?ul="+name.innerHTML+"'>"+friend.getElementsByTagName("dl")[0].lastChild.innerHTML+"</a>";
     friend.getElementsByTagName("dd")[4].innerHTML = "<a href='/seek/nearest.aspx?ul="+name.innerHTML+"&disable_redirect'>"+founds+"</a>"+add;
     
     friend.getElementsByTagName("p")[0].innerHTML = "<a name='lnk_profilegallery2' href='"+name.href+"'>Gallery</a> | <a href='/seek/nearest.aspx?u="+name.innerHTML+"&disable_redirect'>Hidden Caches</a> | "+friend.getElementsByTagName("p")[0].innerHTML;
   }
+
+  function gclh_reset_counter(){
+    var friends = getElementsByClass("FriendText");
+  
+    for(var i=0; i<friends.length; i++){
+      var friend = friends[i];
+      var name = friend.getElementsByTagName("a")[0];
+      var founds = friend.getElementsByTagName("dd")[4].innerHTML.match(/>([0-9]*)<\/a>/);
+      if(founds[1]){
+        GM_setValue("friends_founds_"+name.innerHTML,trim(founds[1]));
+  
+        friend.getElementsByTagName("dd")[4].innerHTML = "<a href='/seek/nearest.aspx?ul="+name.innerHTML+"&disable_redirect'>"+founds[1]+"</a>";
+      }
+    }
+  }
+
+  var button = document.createElement("input");
+  button.setAttribute("type","button");
+  button.setAttribute("value","Reset counter");
+  button.addEventListener("click", gclh_reset_counter, false);
+
+  document.getElementById('ctl00_ContentBody_FindUserPanel1_GetUsers').parentNode.insertBefore(button,document.getElementById('ctl00_ContentBody_FindUserPanel1_GetUsers').nextSibling);
 }
 
 // Show Google-Maps Link on Cache Page
