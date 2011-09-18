@@ -13,7 +13,10 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        6.1             - 11.09.2011
-// Changelog:      6.1             - New: Issue #30 - Show bigger Image on mouseover in gallery 
+// Changelog:
+//                                 - Disabled: Log-Filter (Bug #68)
+//                                 - Fix: Bug: #64 & #60 - [gc.com update] "Hide spoiler warning" doesn't work  - [gc.com update] View Logbook link not visible 
+//                 6.1             - New: Issue #30 - Show bigger Image on mouseover in gallery 
 //                                 - Change: Issue #53 - Increase number of log-templates 
 //                                 - Change: Issue #52 - Don't show thumbnail of spoilers 
 //                                 - Change: Issue #42 - Count TBs and Coins separately
@@ -800,12 +803,13 @@ if (settings_hide_line_breaks) {
 }
 
 // remove "Warning! Spoilers may be included in the descriptions or links."
-if (settings_hide_spoilerwarning) {
+if ( settings_hide_spoilerwarning) {
   var findCounts = document.getElementById('ctl00_ContentBody_lblFindCounts');
   if (findCounts) {
-    var para = findCounts.nextSibling.nextSibling;
+    var para = findCounts.nextSibling.nextSibling.nextSibling.nextSibling;
     if (para && para.nodeName == 'P') {
-      para.parentNode.removeChild(para);
+//      para.parentNode.removeChild(para);
+      para.innerHTML = "&nbsp;";
     }
   }
 }
@@ -2362,7 +2366,8 @@ if(settings_show_thumbnails && document.location.href.match(/^http:\/\/www\.geoc
   }
 }
 
-if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/)){
+// Log-Filter
+if(false && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/)){
   var legend = document.getElementById('ctl00_ContentBody_lblFindCounts').childNodes[0];
 
   function gclh_filter_logs(){
