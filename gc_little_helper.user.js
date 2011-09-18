@@ -8,6 +8,7 @@
 // @include        http://www.google.com/maps*
 // @exclude        http://www.geocaching.com/seek/sendtogps.aspx*
 // @resource jscolor http://www.amshove.net/greasemonkey/js/jscolor/jscolor.js
+// @resource jquery http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js
 // @description    Some little things to make life easy (on www.geocaching.com).
 // ==/UserScript==
 //
