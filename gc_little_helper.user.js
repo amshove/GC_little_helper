@@ -14,8 +14,9 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        6.1             - 11.09.2011
 // Changelog:
+//                                 - Fix: Bug #67 - [gc.com update] Mouseover on images doesn't work
 //                                 - Disabled: Log-Filter (Bug #68)
-//                                 - Fix: Bug: #64 & #60 - [gc.com update] "Hide spoiler warning" doesn't work  - [gc.com update] View Logbook link not visible 
+//                                 - Fix: Bug #64 & #60 - [gc.com update] "Hide spoiler warning" doesn't work  - [gc.com update] View Logbook link not visible 
 //                 6.1             - New: Issue #30 - Show bigger Image on mouseover in gallery 
 //                                 - Change: Issue #53 - Increase number of log-templates 
 //                                 - Change: Issue #52 - Don't show thumbnail of spoilers 
@@ -2330,9 +2331,9 @@ if(settings_show_thumbnails && document.location.href.match(/^http:\/\/www\.geoc
   GM_addStyle(css);
 
   for(var i=0; i<links.length; i++){
-    if(links[i].href.match(/^http:\/\/img\.geocaching\.com\/cache/) && !links[i].innerHTML.match(/(spoiler|hinweis)/i)){
+    if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx?/) && links[i].href.match(/^http:\/\/img\.geocaching\.com\/cache/) && !links[i].innerHTML.match(/(spoiler|hinweis)/i)){
       var thumb = links[i].childNodes[0];
-      var span = links[i].childNodes[2];
+      var span = links[i].childNodes[1];
       if(links[i].href.match(/cache\/log/)){
         thumb.src = links[i].href.replace(/cache\/log/,"cache/log/thumb");
       }else{
@@ -2350,7 +2351,8 @@ if(settings_show_thumbnails && document.location.href.match(/^http:\/\/www\.geoc
       span.insertBefore(big_img,span.childNodes[0]);
 
       links[i].parentNode.removeChild(links[i].nextSibling);
-    }else if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/gallery\.aspx?/) && links[i].href.match(/^http:\/\/www\.geocaching\.com\/seek\//) && links[i].childNodes[0] && links[i].childNodes[0].tagName == 'IMG'){
+//    }else if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/gallery\.aspx?/) && links[i].href.match(/^http:\/\/www\.geocaching\.com\/seek\//) && links[i].childNodes[0] && links[i].childNodes[0].tagName == 'IMG'){
+    }else if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/gallery\.aspx?/) && links[i].href.match(/^http:\/\/img\.geocaching\.com\/cache\//) && links[i].childNodes[0] && links[i].childNodes[0].tagName == 'IMG'){
       var thumb = links[i].childNodes[0];
       var span = document.createElement('span');
       var img = document.createElement('img');
