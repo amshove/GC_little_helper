@@ -8,13 +8,14 @@
 // @include        http://www.google.com/maps*
 // @exclude        http://www.geocaching.com/seek/sendtogps.aspx*
 // @resource jscolor http://www.amshove.net/greasemonkey/js/jscolor/jscolor.js
-// @resource jquery http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js
+// @require http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js
 // @description    Some little things to make life easy (on www.geocaching.com).
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        6.1             - 11.09.2011
 // Changelog:
+//                                 - Fix: Bug #66 - [gc.com update] Thumbnails in Logs doesn't work
 //                                 - Fix: Bug #67 - [gc.com update] Mouseover on images doesn't work
 //                                 - Disabled: Log-Filter (Bug #68)
 //                                 - Fix: Bug #64 & #60 - [gc.com update] "Hide spoiler warning" doesn't work  - [gc.com update] View Logbook link not visible 
@@ -1961,7 +1962,7 @@ if(settings_autovisit && document.location.href.match(/^http:\/\/www\.geocaching
 }
 
 // VIP
-if(settings_show_vip_list && (document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/default\.aspx/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/myfriends\.aspx/))){
+if(settings_show_vip_list && getElementsByClass("SignedInProfileLink")[0] && (document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/default\.aspx/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/myfriends\.aspx/))){
   var img_vip_off = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAKCAYAAAC9vt6cAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9sHDhEzBX83tZcAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAsElEQVQoz6WSsQ2DUAxEz4gdfkdBQQUlDAU9E0ALHQWLsMAfA8o/BNVLkYCS0ETkGstn6+kk2yShPxRLEtxjmJmio8nzXN57SZL3XkVRnEtHNTNlWaZ5nj9AAHRdR9M0ANR1Td/38Iz2UZdlIUmS0zsB67rinGPfd5xzbNt2AUgiTVOmaboCAMqypG1bqqo6ve8E77oAhmEgiiLGcbwHCCEQxzEhhJ8B9hrcPqP9+0gPbh/tf/c8szwAAAAASUVORK5CYII=";
   var img_vip_on = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAKCAYAAAC9vt6cAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9sHDhE0Aq4StvMAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAzklEQVQoz6WSwQvBcBTHP7/lanFT3DdzV9yw+RNc8E/s6A/YSa6KUrs4u4omB6KUKJoc5a+Q5rRlOCz7Xl7feu/zXu89AXjEUAKgszb/KrbKPSTfDJo2t8MdgNvhzrBlB0l+tMo9+o0R+8kxgASAgqFynrsAnGYumqF+deysTepmhZW9/QZouoLrXHk+nlwWVzRd+TnytOtQahfDOwBI51LImSTLwQo5I5POpn5O8Cnp3WiGyma8o1BXIi8yDKgpCEmQr0YHCMCLc0YR95Fe0bc6eQ97MqYAAAAASUVORK5CYII=";
   var vips = GM_getValue("vips",false);
@@ -2331,6 +2332,29 @@ if(settings_show_thumbnails && document.location.href.match(/^http:\/\/www\.geoc
 
   GM_addStyle(css);
 
+  if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx?/)){
+    var newImageTmpl = "<tr>" +
+    "      <td>" +
+    "          <a class='tb_images lnk gclh_thumb' rel='tb_images[grp${LogID}]' href='http://img.geocaching.com/cache/log/${FileName}' title='${Descr}'>" +
+    "              <img title='${Name}' alt='${Name}' src='http://img.geocaching.com/cache/log/thumb/${FileName}'>" +
+    "              <span><img src='http://img.geocaching.com/cache/log/${FileName}'> ${Name}</span>" +
+    "          </a>" +
+    "      </td>" +
+    "  </tr>";
+
+    var code = "function gclh_updateTmpl() { " +
+    "  delete $.template['tmplCacheLogImages'];" +
+    "  $.template(\"tmplCacheLogImages\",\""+newImageTmpl+"\");" +
+    "}";
+
+    var script = document.createElement("script");
+    script.innerHTML = code;
+    document.getElementsByTagName("body")[0].appendChild(script);
+
+    unsafeWindow.gclh_updateTmpl();
+  }
+
+
   for(var i=0; i<links.length; i++){
     if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx?/) && links[i].href.match(/^http:\/\/img\.geocaching\.com\/cache/) && !links[i].innerHTML.match(/(spoiler|hinweis)/i)){
       var thumb = links[i].childNodes[0];
@@ -2412,15 +2436,17 @@ if(false && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/
 function toDec(coords){
   var match = coords.match(/^(N|S) ([0-9][0-9]). ([0-9][0-9])\.([0-9][0-9][0-9]) (E|W) ([0-9][0-9][0-9]). ([0-9][0-9])\.([0-9][0-9][0-9])$/);
 
-  var dec1 = parseInt(match[2],10) + (parseFloat(match[3]+"."+match[4])/60);
-  if(match[1] == "S") dec1 = dec1 * -1;
-  dec1 = Math.round(dec1*10000000)/10000000;
+  if(match){
+    var dec1 = parseInt(match[2],10) + (parseFloat(match[3]+"."+match[4])/60);
+    if(match[1] == "S") dec1 = dec1 * -1;
+    dec1 = Math.round(dec1*10000000)/10000000;
 
-  var dec2 = parseInt(match[6],10) + (parseFloat(match[7]+"."+match[8])/60);
-  if(match[5] == "W") dec2 = dec2 * -1;
-  dec2 = Math.round(dec2*10000000)/10000000;
+    var dec2 = parseInt(match[6],10) + (parseFloat(match[7]+"."+match[8])/60);
+    if(match[5] == "W") dec2 = dec2 * -1;
+    dec2 = Math.round(dec2*10000000)/10000000;
 
-  return new Array(dec1,dec2);
+    return new Array(dec1,dec2);
+  }else return false;
 }
 
 // Helper: from Deg to DMS
