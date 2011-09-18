@@ -13,9 +13,8 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
-// Version:        6.1             - 11.09.2011
-// Changelog:
-//                                 - Fix: Bug #66 - [gc.com update] Thumbnails in Logs doesn't work
+// Version:        6.2             - 18.09.2011
+// Changelog:      6.2             - Fix: Bug #66 - [gc.com update] Thumbnails in Logs doesn't work
 //                                 - Fix: Bug #67 - [gc.com update] Mouseover on images doesn't work
 //                                 - Disabled: Log-Filter (Bug #68)
 //                                 - Fix: Bug #64 & #60 - [gc.com update] "Hide spoiler warning" doesn't work  - [gc.com update] View Logbook link not visible 
@@ -338,7 +337,7 @@ profileBookmark("My Trackables", "lnk_my_trackables");
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "6.1";
+var scriptVersion = "6.2";
 
 var anzCustom = 10;
 var anzTemplates = 10;
@@ -2429,6 +2428,18 @@ if(false && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/
   } 
   document.getElementById('ctl00_ContentBody_lblFindCounts').replaceChild(new_legend,document.getElementById('ctl00_ContentBody_lblFindCounts').childNodes[0]);
 }
+
+//// Overwrite Log-Template
+//if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx?/)){
+//  unsafeWindow.$(window).endlessScroll({
+//        fireOnce: true,
+//        fireDelay: 500,
+//        bottomPixels: ($(document).height() - $("#cache_logs_container").offset().top) + 50,
+//        callback: function() {
+//alert("test");
+//        }
+//  });
+//}
 
 ////////////////////////////////////////////////////////////////////////////
 
