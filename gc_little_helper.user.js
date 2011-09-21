@@ -15,6 +15,8 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        6.2             - 18.09.2011
 // Changelog:      
+//                                 - Fix: Bug #71 - [gc.com update] VIP-Icons are not displayed in logs
+//                                 - Fix: Bug #63 - [gc.com update] VIP-List doesn't work
 //                                 - Fix: Bug #65 - [gc.com update] Mail-Icon and top-link are not displayed in logs
 //                 6.2             - Fix: Bug #66 - [gc.com update] Thumbnails in Logs doesn't work
 //                                 - Fix: Bug #67 - [gc.com update] Mouseover on images doesn't work
@@ -935,32 +937,32 @@ if(settings_strike_archived && document.location.href.match(/^http:\/\/www\.geoc
 }
 
 // Show all Logs
-if(settings_show_all_logs && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx(\?|\?pf\=\&)(guid|wp)\=[a-zA-Z0-9-]*$/)){
-  if(settings_show_all_logs_count > 0){
-    var p = document.getElementsByTagName("p");
-    for(var i=0; i<p.length; i++){
-      if(p[i].innerHTML.match(/There are [0-9]* additional logs/)){
-        var matches = p[i].innerHTML.match(/[0-9]+/);
-        if(matches) if(matches[0] < settings_show_all_logs_count-5){
-          document.location.href = document.location.href+"&log=y";
-        }
-        break;
-      }
-    }
-  }else document.location.href = document.location.href+"&log=y";
-}
-if(settings_show_all_logs && settings_show_all_logs_count < 1){
-  function change_cache_link(){
-    var links = document.getElementsByTagName('a');
-    for(var i=0; i<links.length; i++){
-      if(links[i].href.match(/seek\/cache_details\.aspx\?/) && !links[i].href.match(/&log=y/)){
-        links[i].href += "&log=y";
-      }
-    }
-  }
-  
-  window.addEventListener("load", change_cache_link, false);
-}
+//if(settings_show_all_logs && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx(\?|\?pf\=\&)(guid|wp)\=[a-zA-Z0-9-]*$/)){
+//  if(settings_show_all_logs_count > 0){
+//    var p = document.getElementsByTagName("p");
+//    for(var i=0; i<p.length; i++){
+//      if(p[i].innerHTML.match(/There are [0-9]* additional logs/)){
+//        var matches = p[i].innerHTML.match(/[0-9]+/);
+//        if(matches) if(matches[0] < settings_show_all_logs_count-5){
+//          document.location.href = document.location.href+"&log=y";
+//        }
+//        break;
+//      }
+//    }
+//  }else document.location.href = document.location.href+"&log=y";
+//}
+//if(settings_show_all_logs && settings_show_all_logs_count < 1){
+//  function change_cache_link(){
+//    var links = document.getElementsByTagName('a');
+//    for(var i=0; i<links.length; i++){
+//      if(links[i].href.match(/seek\/cache_details\.aspx\?/) && !links[i].href.match(/&log=y/)){
+//        links[i].href += "&log=y";
+//      }
+//    }
+//  }
+//  
+//  window.addEventListener("load", change_cache_link, false);
+//}
 
 // Decrypt Hint
 if(settings_decrypt_hint && !settings_hide_hint && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx(\?|\?pf\=\&)(guid|wp)\=[a-zA-Z0-9-]*/)){
@@ -2171,14 +2173,15 @@ if(settings_show_vip_list && getElementsByClass("SignedInProfileLink")[0] && (do
       for(var i=0; i<vips.length; i++){
         gclh_build_list(vips[i]);
       }
-  
-      if(!window.location.href.match(/log=y/)){
-        var advice = document.createElement("div");
-        advice.setAttribute("style","background-color: #FCE6A4; width: 100%; padding: 2px; text-align: center;");
-        advice.innerHTML = "this list is not complete<br>please load <a href='"+(window.location.href.replace(/#/,""))+"&log=y'>all</a> logs";
-        list.appendChild(document.createElement("br"));
-        list.appendChild(advice);
-      }
+
+ 
+//      if(!window.location.href.match(/log=y/)){
+//        var advice = document.createElement("div");
+//        advice.setAttribute("style","background-color: #FCE6A4; width: 100%; padding: 2px; text-align: center;");
+//        advice.innerHTML = "this list is not complete<br>please load <a href='"+(window.location.href.replace(/#/,""))+"&log=y'>all</a> logs";
+//        list.appendChild(document.createElement("br"));
+//        list.appendChild(advice);
+//      }
     }
     gclh_build_vip_list();
   // Listing (All-VIP-List)
@@ -2448,9 +2451,10 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_det
     '        <td>' +
     '            <div class="FloatLeft LogDisplayLeft" >' +
     '                <p class="logOwnerProfileName">' +
-    '                    <strong><a id="143568283" href="/profile/?guid=${AccountGuid}">${UserName}</a>';
+    '                    <strong><a id="${LogID}" name="${LogID}" href="/profile/?guid=${AccountGuid}">${UserName}</a>';
 
   if(settings_show_mail) new_tmpl += ' <a href="http://www.geocaching.com/email/?guid=${AccountGuid}&text='+global_cache_name+'"><img border=0 title="Send a mail to this user" src="'+global_mail_icon+'"></a>';
+  if(settings_show_vip_list) new_tmpl += ' <a href="javascript:void(0);" name="${UserName}" class="gclh_vip"><img class="gclh_vip" border=0></a>';
 
   new_tmpl += '&nbsp;&nbsp;<a title="Top" href="#gclh_top" style="color: #000000; text-decoration: none;">↑</a>';
   
@@ -2520,49 +2524,153 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_det
   unsafeWindow.totalPages = 1;
   
   // Rebuild function - but with full control :)
-  var isBusy = false;
-  var gclh_currentPageIdx = 1, gclh_totalPages = 1;
-  var logInitialLoaded = false;
-  unsafeWindow.$(window).endlessScroll({
-    fireOnce: true,
-    fireDelay: 500,
-    bottomPixels: ($(document).height() - $("#cache_logs_container").offset().top) + 50,
-    ceaseFire: function(){
-      // stop the scrolling if the last page is reached.
-      return (gclh_totalPages < gclh_currentPageIdx);
-    },
-    callback: function() {
-      if (!isBusy) {                          
-        isBusy = true;
-        unsafeWindow.$tfoot.show();
-        unsafeWindow.$.getJSON("/seek/geocache.logbook", { tkn: unsafeWindow.userToken, idx: gclh_currentPageIdx, num: 10, decrypt: unsafeWindow.decryptLogs },
-        function (response) {
-          if (response.status == "success") {
-            if (!logInitialLoaded) {
-              logInitialLoaded = true;
-              gclh_totalPages = response.pageInfo.totalPages;
-              unsafeWindow.$tfoot.hide();
-            } else {
-              unsafeWindow.$tfoot.hide();
+  function gclh_dynamic_load(){
+    var isBusy = false;
+    var gclh_currentPageIdx = 1, gclh_totalPages = 1;
+    var logInitialLoaded = false;
+    unsafeWindow.$(window).endlessScroll({
+      fireOnce: true,
+      fireDelay: 500,
+      bottomPixels: ($(document).height() - $("#cache_logs_container").offset().top) + 50,
+      ceaseFire: function(){
+        // stop the scrolling if the last page is reached.
+        return (gclh_totalPages < gclh_currentPageIdx);
+      },
+      callback: function() {
+        if (!isBusy) {                          
+          isBusy = true;
+          unsafeWindow.$tfoot.show();
+          unsafeWindow.$.getJSON("/seek/geocache.logbook", { tkn: unsafeWindow.userToken, idx: gclh_currentPageIdx, num: 10, decrypt: unsafeWindow.decryptLogs },
+          function (response) {
+            if (response.status == "success") {
+              if (!logInitialLoaded) {
+                logInitialLoaded = true;
+                gclh_totalPages = response.pageInfo.totalPages;
+                unsafeWindow.$tfoot.hide();
+              } else {
+                unsafeWindow.$tfoot.hide();
+              }
+              var $newBody = unsafeWindow.$(document.createElement("TBODY"));
+                 
+              unsafeWindow.$("#tmpl_CacheLogRow_gclh").tmpl(response.data).appendTo($newBody);
+  
+              $newBody.find("a.tb_images").fancybox({'type': 'image', 'titlePosition': 'inside', 'padding': 10 });
+  
+              unsafeWindow.$("#cache_logs_table").append($newBody.children());
+              // set the current page index
+              gclh_currentPageIdx = response.pageInfo.idx + 1;
+            } else if (response.status == "error" && response.value == "1") {
+              // reload the page since the data had expired.
+              window.location.reload();
             }
-            var $newBody = unsafeWindow.$(document.createElement("TBODY"));
-               
-            unsafeWindow.$("#tmpl_CacheLogRow_gclh").tmpl(response.data).appendTo($newBody);
+            isBusy = false;
+          });
+        }
+  	  }
+    });
+  }
+  
+  // Load "num" Logs
+  function gclh_load_logs(num){
+    var numPages = 1;
+    var curIdx = 1;
+    var numLoad = 0;
+    var pagesLoad = 0;
+    
+    if(num == 0){
+      numLoad = 100;
+      pagesLoad = 99999;
+    }else if(num <= 100){
+      numLoad = num;
+      pagesLoad = 1;
+    }else{
+      numLoad = 100;
+      pagesLoad = num/100;
+    }
+  	    
+    function gclh_load_helper(){
+      if(num > 100 && pagesLoad < 1) numLoad = num % 100;
+    	if(numPages >= curIdx && pagesLoad > 0){
+    	  unsafeWindow.$tfoot.show();
+        GM_xmlhttpRequest({
+          method: "GET",
+          url: "/seek/geocache.logbook?tkn="+unsafeWindow.userToken+"&idx="+curIdx+"&num="+numLoad+"&decrypt=false",
+          onload: function(response){
+            var json = JSON.parse(response.responseText);
+            if(numPages == 1){
+              numPages = json.pageInfo.totalPages;
+            }
 
-            $newBody.find("a.tb_images").fancybox({'type': 'image', 'titlePosition': 'inside', 'padding': 10 });
+            unsafeWindow.$tfoot.hide();
+            
+            curIdx++;
+            pagesLoad--;
+            
 
-            unsafeWindow.$("#cache_logs_table").append($newBody.children());
-            // set the current page index
-            gclh_currentPageIdx = response.pageInfo.idx + 1;
-          } else if (response.status == "error" && response.value == "1") {
-            // reload the page since the data had expired.
-            window.location.reload();
+  
+//        if(in_array(user,vips)){
+//          img.setAttribute("src",img_vip_on);
+//          img.setAttribute("title","Remove User "+user+" from VIP-List");
+//          link.addEventListener("click",gclh_del_vip,false);
+//        }else{
+//          img.setAttribute("src",img_vip_off);
+//          img.setAttribute("title","Add User "+user+" to VIP-List");
+//          link.addEventListener("click",gclh_add_vip,false);
+//        } 
+            
+            for(var i = 0; i < json.data.length; i++){
+              var user = json.data[i].UserName;
+              
+              var newBody = unsafeWindow.$(document.createElement("TBODY"));
+              unsafeWindow.$("#tmpl_CacheLogRow_gclh").tmpl(json.data[i]).appendTo(newBody);
+              newBody.find("a.tb_images").fancybox({'type': 'image', 'titlePosition': 'inside'});
+              unsafeWindow.$("#cache_logs_table").append(newBody.children());
+              
+              if(settings_show_vip_list){
+                all_users.push(user);
+              
+                if(!log_infos[user]) log_infos[user] = new Array();
+
+                log_infos[user][index] = new Object();
+                log_infos[user][index]["icon"] = "/images/icons/"+json.data[i].LogTypeImage;
+                log_infos[user][index]["id"] = json.data[i].LogID;
+                log_infos[user][index]["date"] = json.data[i].Visited;
+                index++;
+              }
+            }
+            if(settings_show_vip_list){
+              gclh_build_vip_list();
+              
+              for(var i = 0; i < document.getElementById("cache_logs_table").getElementsByTagName("a").length; i++){
+                if(document.getElementById("cache_logs_table").getElementsByTagName("a")[i].className == "gclh_vip"){
+                  // Icon
+                  var link = document.getElementById("cache_logs_table").getElementsByTagName("a")[i];
+                  var img = link.childNodes[0];
+
+                  if(in_array(link.name,vips)){
+                    img.src = img_vip_on;
+                    img.title = "Remove User "+user+" from VIP-List";
+                    link.addEventListener("click",gclh_del_vip,false);
+                  }else{
+                    img.src = img_vip_off;
+                    img.title = "Add User "+user+" to VIP-List";
+                    link.addEventListener("click",gclh_add_vip,false);
+                  } 
+                }
+              }
+            }
+            gclh_load_helper();
           }
-          isBusy = false;
         });
       }
-	  }
-  });
+    }
+    
+    gclh_load_helper();
+  }
+  
+  gclh_load_logs(0);
+//  if(settings_show_all_logs) gclh_load_logs(settings_show_all_logs_count);
+//  gclh_dynamic_load();
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -3165,7 +3273,7 @@ function gclh_showConfig(){
     html += checkbox('settings_hide_cache_notes', 'Hide Cache-Notes completely') + "<br/>";
     html += checkbox('settings_hide_disclaimer', 'Hide Disclaimer') + "<br/>";
     html += checkbox('settings_hide_spoilerwarning', 'Hide spoiler warning') + "<br/>";
-    html += checkbox('settings_show_all_logs', 'Show all Logs - if log-count lower than') + " <input class='gclh_form' type='text' size='2' id='settings_show_all_logs_count' value='"+settings_show_all_logs_count+"'><br>";
+    html += checkbox('settings_show_all_logs', 'Show ') + " <input class='gclh_form' type='text' size='2' id='settings_show_all_logs_count' value='"+settings_show_all_logs_count+"'> logs (0 = all)<br>";
     html += checkbox('settings_hide_hint', 'Hide hint behind a link') + "<br/>";
     html += checkbox('settings_decrypt_hint', 'Decrypt Hint') + "<br/>";
     html += checkbox('settings_show_mail', 'Show Mail Link beside Usernames') + "<br/>";
