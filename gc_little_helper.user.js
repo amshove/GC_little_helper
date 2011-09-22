@@ -15,6 +15,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        6.2             - 18.09.2011
 // Changelog:      
+//                                 - Fix: Bug #74 - [gc.com update] Difference-counter at friendlist doesn't work
 //                                 - Fix: Bug #71 - [gc.com update] VIP-Icons are not displayed in logs
 //                                 - Fix: Bug #63 - [gc.com update] VIP-List doesn't work
 //                                 - Fix: Bug #65 - [gc.com update] Mail-Icon and top-link are not displayed in logs
@@ -872,6 +873,9 @@ function trim(s) {
       s = s.substring(0, s.length - 1);
     }
   }
+
+  if(s.substring(s.length-6,s.length) == "&nbsp;") s = s.substring(0,s.length-6);
+s
   return s;
 }
 
@@ -1353,7 +1357,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/myfriends\.
     for(var i=0; i<friends.length; i++){
       var friend = friends[i];
       var name = friend.getElementsByTagName("a")[0];
-      var founds = friend.getElementsByTagName("dd")[4].innerHTML.match(/>([0-9]*)<\/a>/);
+      var founds = friend.getElementsByTagName("dd")[4].innerHTML.match(/>([0-9]*)/);
       if(founds[1]){
         GM_setValue("friends_founds_"+name.innerHTML,trim(founds[1]));
   
