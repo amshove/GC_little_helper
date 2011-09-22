@@ -15,6 +15,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        6.2             - 18.09.2011
 // Changelog:      
+//                                 - Fix: Bug #72 - html in cachename on mail icon at disabled caches 
 //                                 - Fix: Bug #74 - [gc.com update] Difference-counter at friendlist doesn't work
 //                                 - Fix: Bug #71 - [gc.com update] VIP-Icons are not displayed in logs
 //                                 - Fix: Bug #63 - [gc.com update] VIP-List doesn't work
@@ -1132,21 +1133,7 @@ if((document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.asp
 // Show eMail-Link beside Username
 if(settings_show_mail && document.location.href.match(/^http:\/\/www\.geocaching\.com\/(seek\/cache_details|seek\/log|track\/details|track\/log)\.aspx(\?|\?pf\=\&)(guid|wp|tracker|id|LUID|ID|PLogGuid)\=[a-zA-Z0-9-]*/)){
   var links = document.getElementsByTagName('a');
-  if(document.getElementById('ctl00_ContentBody_CacheName')){
-    var name = document.getElementById('ctl00_ContentBody_CacheName').innerHTML;
-    if(document.getElementById('ctl00_ContentBody_uxWaypointName')) name += " ("+document.getElementById('ctl00_ContentBody_uxWaypointName').innerHTML+")";
-  }else if(document.getElementById('ctl00_ContentBody_lbHeading') && !document.location.href.match(/^http:\/\/www\.geocaching\.com\/(seek|track)\/log\.aspx\?.*/)){
-    var name = document.getElementById('ctl00_ContentBody_lbHeading').innerHTML;
-    if(document.getElementById('ctl00_ContentBody_BugDetails_BugTBNum') && document.getElementById('ctl00_ContentBody_BugDetails_BugTBNum').getElementsByTagName('strong')){
-      var tbnr = document.getElementById('ctl00_ContentBody_BugDetails_BugTBNum').getElementsByTagName('strong')[0]; 
-      if(tbnr != "")name = name + " (" + tbnr.innerHTML + ")";
-    }
-  }else if(document.getElementById('ctl00_ContentBody_LogBookPanel1_lbLogText')){
-    var name = "";
-    try {
-      name = document.getElementById('ctl00_ContentBody_LogBookPanel1_lbLogText').childNodes[4].innerHTML;
-    } catch(e) {}
-  }else if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?.*/)){
+  if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?.*/)){
     var name = "";
     var image = true;
     for(var i=0; i<links.length; i++){
@@ -1162,6 +1149,20 @@ if(settings_show_mail && document.location.href.match(/^http:\/\/www\.geocaching
         }
       }
     }
+  }else if(document.getElementById('ctl00_ContentBody_CacheName')){
+    var name = document.getElementById('ctl00_ContentBody_CacheName').innerHTML;
+    if(document.getElementById('ctl00_ContentBody_uxWaypointName')) name += " ("+document.getElementById('ctl00_ContentBody_uxWaypointName').innerHTML+")";
+  }else if(document.getElementById('ctl00_ContentBody_lbHeading') && !document.location.href.match(/^http:\/\/www\.geocaching\.com\/(seek|track)\/log\.aspx\?.*/)){
+    var name = document.getElementById('ctl00_ContentBody_lbHeading').innerHTML;
+    if(document.getElementById('ctl00_ContentBody_BugDetails_BugTBNum') && document.getElementById('ctl00_ContentBody_BugDetails_BugTBNum').getElementsByTagName('strong')){
+      var tbnr = document.getElementById('ctl00_ContentBody_BugDetails_BugTBNum').getElementsByTagName('strong')[0]; 
+      if(tbnr != "")name = name + " (" + tbnr.innerHTML + ")";
+    }
+  }else if(document.getElementById('ctl00_ContentBody_LogBookPanel1_lbLogText')){
+    var name = "";
+    try {
+      name = document.getElementById('ctl00_ContentBody_LogBookPanel1_lbLogText').childNodes[4].innerHTML;
+    } catch(e) {}
   }else var name = ""; 
 
   for(var i=0; i<links.length; i++){
@@ -2610,17 +2611,6 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_det
             curIdx++;
             pagesLoad--;
             
-
-  
-//        if(in_array(user,vips)){
-//          img.setAttribute("src",img_vip_on);
-//          img.setAttribute("title","Remove User "+user+" from VIP-List");
-//          link.addEventListener("click",gclh_del_vip,false);
-//        }else{
-//          img.setAttribute("src",img_vip_off);
-//          img.setAttribute("title","Add User "+user+" to VIP-List");
-//          link.addEventListener("click",gclh_add_vip,false);
-//        } 
             
             for(var i = 0; i < json.data.length; i++){
               var user = json.data[i].UserName;
@@ -2650,8 +2640,9 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_det
                   // Icon
                   var link = document.getElementById("cache_logs_table").getElementsByTagName("a")[i];
                   var img = link.childNodes[0];
+                  var user = link.name;
 
-                  if(in_array(link.name,vips)){
+                  if(in_array(user,vips)){
                     img.src = img_vip_on;
                     img.title = "Remove User "+user+" from VIP-List";
                     link.addEventListener("click",gclh_del_vip,false);
