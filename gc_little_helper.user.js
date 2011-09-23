@@ -2556,6 +2556,26 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_det
               unsafeWindow.$("#cache_logs_table").append(newBody.children());
             }
          	}
+         	
+         	// Icon
+          for(var i = 0; i < document.getElementById("cache_logs_table").getElementsByTagName("a").length; i++){
+            if(document.getElementById("cache_logs_table").getElementsByTagName("a")[i].className == "gclh_vip"){
+              var link = document.getElementById("cache_logs_table").getElementsByTagName("a")[i];
+              var img = link.childNodes[0];
+              var user = link.name;
+  
+              if(in_array(user,vips)){
+                img.src = img_vip_on;
+                img.title = "Remove User "+user+" from VIP-List";
+                link.addEventListener("click",gclh_del_vip,false);
+              }else{
+                img.src = img_vip_off;
+                img.title = "Add User "+user+" to VIP-List";
+                link.addEventListener("click",gclh_add_vip,false);
+              } 
+            }
+          }
+                
           unsafeWindow.$tfoot.hide();
           isBusy = false;
         }
@@ -2667,9 +2687,9 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_det
               if(settings_show_vip_list){
                 gclh_build_vip_list();
                 
+                // Icon
                 for(var i = 0; i < document.getElementById("cache_logs_table").getElementsByTagName("a").length; i++){
                   if(document.getElementById("cache_logs_table").getElementsByTagName("a")[i].className == "gclh_vip"){
-                    // Icon
                     var link = document.getElementById("cache_logs_table").getElementsByTagName("a")[i];
                     var img = link.childNodes[0];
                     var user = link.name;
