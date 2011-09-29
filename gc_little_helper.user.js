@@ -2444,15 +2444,9 @@ if(false && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/
   document.getElementById('ctl00_ContentBody_lblFindCounts').replaceChild(new_legend,document.getElementById('ctl00_ContentBody_lblFindCounts').childNodes[0]);
 }
 
-// Overwrite Log-Template and Log-Load-Function
+// Log-Template definieren
+//if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx?/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_logbook\.aspx/)){
 if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx?/)){
-  // to Top Link
-  var a = document.createElement("a");
-  a.setAttribute("href","#");
-  a.setAttribute("name","gclh_top");
-  document.getElementsByTagName("body")[0].insertBefore(a,document.getElementsByTagName("body")[0].childNodes[0]);
-
-  // Overwrite Log-Template
   var new_tmpl = '<tr class="log-row" data-encoded="${IsEncoded}" >' +
     '        <td>' +
     '            <div class="FloatLeft LogDisplayLeft" >' +
@@ -2465,7 +2459,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_det
   new_tmpl += '&nbsp;&nbsp;<a title="Top" href="#gclh_top" style="color: #000000; text-decoration: none;">↑</a>';
   
   new_tmpl += '          </strong></p>' +
-    '                <p class="logOwnerBadge">' + // If wegen Fehlervermeidung
+    '                <p class="logOwnerBadge">' + 
     '                    {{if creator}}<img title="${creator.GroupTitle}" src="${creator.GroupImageUrl}" align="absmiddle" style="vertical-align:middle">${creator.GroupTitle}{{/if}}' +
     '                </p>' +
     '                <p class="logOwnerAvatar">' +
@@ -2477,7 +2471,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_det
     '                        {{/if}}' +
     '                    </a></p>' +
     '                <p class="logOwnerStats">' +
-    '                    {{if GeocacheFindCount}}' + // Fehler-Vermeidung
+    '                    {{if GeocacheFindCount}}' + 
     '                      {{if GeocacheFindCount > 0 }}' +
     '                      <img title="Caches Found" src="/images/icons/icon_smile.png"> ${GeocacheFindCount}' +
     '                      {{/if}}' +
@@ -2485,7 +2479,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_det
     '                      &nbsp;·&nbsp;' +
     '                      {{/if}}' +
     '                    {{/if}}' +
-    '                    {{if ChallengesCompleted}}' + // Fehler-Vermeidung
+    '                    {{if ChallengesCompleted}}' + 
     '                      {{if ChallengesCompleted > 0 }}' +
     '                      <img title="Challenges Completed" src="/images/challenges/types/sm/challenge.png"> ${ChallengesCompleted}' +
     '            {{else}} blablabla          {{/if}}' +
@@ -2499,22 +2493,22 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_det
     '                <div class="HalfRight AlignRight">' +
     '                    <span class="minorDetails LogDate">${Visited}</span></div>' +
     '                <div class="Clear LogContent">' +
-//    '                    {{if LatLonString.length > 0}}' +
-//    '                    <strong>${LatLonString}</strong>' +
-//    '                    {{/if}}' +
+    '                    {{if LatLonString.length > 0}}' +
+    '                    <strong>${LatLonString}</strong>' +
+    '                    {{/if}}' +
     '                    <p class="LogText">{{html LogText}}</p>' +
-//    '                    {{if Images.length > 0}}' +
-//    '                        <table cellspacing="0" cellpadding="3" class="LogImagesTable">' +
-//    '                        {{tmpl(Images) "tmplCacheLogImages"}}' +
-//    '                        </table>' +
-//    '                    {{/if}}' +
+    '                    {{if Images.length > 0}}' +
+    '                        <table cellspacing="0" cellpadding="3" class="LogImagesTable">' +
+    '                        {{tmpl(Images) "tmplCacheLogImages"}}' +
+    '                        </table>' +
+    '                    {{/if}}' +
     '                    <div class="AlignRight">' +
     '                        <small><a title="View Log" href="log.aspx?LUID=${LogGuid}" target="_blank">' +
- //   '                            {{if (userInfo.ID==AccountID)}}' +
- //   '                               View / Edit Log / Images' +
- //   '                            {{else}}' +
- //   '                               View Log' +
- //   '                            {{/if}}' +
+    '                            {{if (userInfo.ID==AccountID)}}' +
+    '                               View / Edit Log / Images' +
+    '                            {{else}}' +
+    '                               View Log blabla' +
+    '                            {{/if}}' +
     '                        </a></small>&nbsp;' +
     '                        {{if (userInfo.ID==AccountID)}}' +
     '                        <small><a title="Upload Image" href="upload.aspx?LID=${LogID}" target="_blank">Upload Image</a></small>' +
@@ -2524,6 +2518,16 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_det
     '            </div>' +
     '        </td>' +
     '    </tr>';
+}
+
+// Overwrite Log-Template and Log-Load-Function
+if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx?/)){
+  // to Top Link
+  var a = document.createElement("a");
+  a.setAttribute("href","#");
+  a.setAttribute("name","gclh_top");
+  document.getElementsByTagName("body")[0].insertBefore(a,document.getElementsByTagName("body")[0].childNodes[0]);
+
   var new_tmpl_block = document.createElement("script");
   new_tmpl_block.innerHTML = new_tmpl;
   new_tmpl_block.setAttribute("id","tmpl_CacheLogRow_gclh");
@@ -2585,49 +2589,6 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_det
         }
       }
     });
-//    var isBusy = false;
-//    var gclh_currentPageIdx = 1, gclh_totalPages = 1;
-//    var logInitialLoaded = false;
-//    unsafeWindow.$(window).endlessScroll({
-//      fireOnce: true,
-//      fireDelay: 500,
-//      bottomPixels: ($(document).height() - $("#cache_logs_container").offset().top) + 50,
-//      ceaseFire: function(){
-//        // stop the scrolling if the last page is reached.
-//        return (gclh_totalPages < gclh_currentPageIdx);
-//      },
-//      callback: function() {
-//        if (!isBusy) {                          
-//          isBusy = true;
-//          unsafeWindow.$tfoot.show();
-//          unsafeWindow.$.getJSON("/seek/geocache.logbook", { tkn: unsafeWindow.userToken, idx: gclh_currentPageIdx, num: 10, decrypt: unsafeWindow.decryptLogs },
-//          function (response) {
-//            if (response.status == "success") {
-//              if (!logInitialLoaded) {
-//                logInitialLoaded = true;
-//                gclh_totalPages = response.pageInfo.totalPages;
-//                unsafeWindow.$tfoot.hide();
-//              } else {
-//                unsafeWindow.$tfoot.hide();
-//              }
-//              var $newBody = unsafeWindow.$(document.createElement("TBODY"));
-//                 
-//              unsafeWindow.$("#tmpl_CacheLogRow_gclh").tmpl(response.data).appendTo($newBody);
-//  
-//              $newBody.find("a.tb_images").fancybox({'type': 'image', 'titlePosition': 'inside', 'padding': 10 });
-//  
-//              unsafeWindow.$("#cache_logs_table").append($newBody.children());
-//              // set the current page index
-//              gclh_currentPageIdx = response.pageInfo.idx + 1;
-//            } else if (response.status == "error" && response.value == "1") {
-//              // reload the page since the data had expired.
-//              window.location.reload();
-//            }
-//            isBusy = false;
-//          });
-//        }
-//      }
-//    });
   }
   
   // Load "num" Logs
@@ -2724,6 +2685,21 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_det
   if(settings_show_all_logs) gclh_load_logs(settings_show_all_logs_count);
   else gclh_load_logs(5);
 }
+
+// Show Icons at Logbook
+//if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_logbook\.aspx/)){
+//  var new_tmpl_block = document.createElement("script");
+//  new_tmpl_block.innerHTML = "function gclh_change_tmpl() {"+
+//  "delete $.template(\"tmplCacheLogRow\");"+
+//  "$(\"#tmpl_CacheLogRow\").template(\"tmplCacheLogRow\");"+
+//  "}";
+//  new_tmpl_block.setAttribute("id","tmpl_CacheLogRow_gclh");
+//  document.getElementsByTagName("body")[0].appendChild(new_tmpl_block);
+//
+//  document.getElementById('tmpl_CacheLogRow').innerHTML = new_tmpl;
+//  delete unsafeWindow.$.template("tmplCacheLogRow");
+//  unsafeWindow.$("#tmpl_CacheLogRow").template("tmplCacheLogRow");
+//}
 
 ////////////////////////////////////////////////////////////////////////////
 
