@@ -13,7 +13,7 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
-// Version:        6.2             - 18.09.2011
+// Version:        6.3             - 01.10.2011
 // Changelog:      6.3             - New: Issue #77 - Hide Avatars
 //                                 - New: Issue #76 - Add a "Load all logs"-Link
 //                                 - Fix: Bug #59 - [gc.com update] load all logs no longer working 
@@ -345,7 +345,7 @@ profileBookmark("My Trackables", "lnk_my_trackables");
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "6.2";
+var scriptVersion = "6.3";
 
 var anzCustom = 10;
 var anzTemplates = 10;
