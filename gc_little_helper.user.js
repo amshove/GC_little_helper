@@ -14,7 +14,8 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        6.3             - 01.10.2011
-// Changelog:      6.3             - New: Issue #77 - Hide Avatars
+// Changelog:      6.4             - Small Bugfix of v6.3 - Script breaks, if there is no Gallery in Listing
+//                 6.3             - New: Issue #77 - Hide Avatars
 //                                 - New: Issue #76 - Add a "Load all logs"-Link
 //                                 - Fix: Bug #59 - [gc.com update] load all logs no longer working 
 //                                 - Fix: Bug #72 - html in cachename on mail icon at disabled caches 
@@ -2639,8 +2640,8 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_det
     var load_all = document.createElement("a");
     load_all.appendChild(document.createTextNode("Show all logs"));
     load_all.setAttribute("href","javascript:void(0);");
-    document.getElementById("ctl00_ContentBody_uxGalleryImagesLink").parentNode.appendChild(document.createTextNode(" | "));
-    document.getElementById("ctl00_ContentBody_uxGalleryImagesLink").parentNode.appendChild(load_all);
+    document.getElementById("ctl00_ContentBody_uxLogbookLink").parentNode.appendChild(document.createTextNode(" | "));
+    document.getElementById("ctl00_ContentBody_uxLogbookLink").parentNode.appendChild(load_all);
   
     load_all.addEventListener("click",gclh_load_all_logs,false);
   }
