@@ -15,6 +15,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        6.2             - 18.09.2011
 // Changelog:      
+//                                 - New: Issue #76 - Add a "Load all logs"-Link
 //                                 - Fix: Bug #59 - [gc.com update] load all logs no longer working 
 //                                 - Fix: Bug #72 - html in cachename on mail icon at disabled caches 
 //                                 - Fix: Bug #74 - [gc.com update] Difference-counter at friendlist doesn't work
@@ -384,8 +385,8 @@ settings_hide_cache_notes = GM_getValue("settings_hide_cache_notes",false);
 // Settings: Hide Cache Notes if empty
 settings_hide_empty_cache_notes = GM_getValue("settings_hide_empty_cache_notes",true);
 // Settings: Show all Logs
-settings_show_all_logs = GM_getValue("settings_show_all_logs",false);
-settings_show_all_logs_count = GM_getValue("settings_show_all_logs_count","0");
+settings_show_all_logs = GM_getValue("settings_show_all_logs",true);
+settings_show_all_logs_count = GM_getValue("settings_show_all_logs_count","5");
 // Settings: Decrypt Hint
 settings_decrypt_hint = GM_getValue("settings_decrypt_hint",false);
 // Settings: Show Smilies & BBCode
@@ -2551,7 +2552,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_det
         return (gclh_totalPages < gclh_currentPageIdx);
       },
       callback: function() {
-        if (!isBusy) {                          
+        if (!isBusy && !document.getElementById("gclh_all_logs_marker")) {
           isBusy = true;
           unsafeWindow.$tfoot.show();
           
@@ -2589,6 +2590,58 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_det
         }
       }
     });
+  }
+
+  function gclh_load_all_link(logs){
+    function gclh_load_all_logs(){
+      if(logs){
+        var tbodys = document.getElementById("cache_logs_table").getElementsByTagName("tbody");
+        for(var i=0; i<tbodys.length; i++){
+          document.getElementById("cache_logs_table").removeChild(tbodys[i]);
+        }
+
+        for(var i=0; i<logs.length; i++){
+          if(logs[i]){
+            var newBody = unsafeWindow.$(document.createElement("TBODY"));
+            unsafeWindow.$("#tmpl_CacheLogRow_gclh").tmpl(logs[i]).appendTo(newBody);
+            newBody.find("a.tb_images").fancybox({'type': 'image', 'titlePosition': 'inside'});
+            unsafeWindow.$("#cache_logs_table").append(newBody.children());
+          }
+        }
+
+        // VIP-Icon
+        for(var i = 0; i < document.getElementById("cache_logs_table").getElementsByTagName("a").length; i++){
+          if(document.getElementById("cache_logs_table").getElementsByTagName("a")[i].className == "gclh_vip"){
+            var link = document.getElementById("cache_logs_table").getElementsByTagName("a")[i];
+            var img = link.childNodes[0];
+            var user = link.name;
+
+            if(in_array(user,vips)){
+              img.src = img_vip_on;
+              img.title = "Remove User "+user+" from VIP-List";
+              link.addEventListener("click",gclh_del_vip,false);
+            }else{
+              img.src = img_vip_off;
+              img.title = "Add User "+user+" to VIP-List";
+              link.addEventListener("click",gclh_add_vip,false);
+            }
+          }
+        }
+
+        // Marker to disable dynamic log-load
+        var marker = document.createElement("a");
+        marker.setAttribute("id","gclh_all_logs_marker");
+        document.getElementsByTagName("body")[0].appendChild(marker);
+      }
+    }
+  
+    var load_all = document.createElement("a");
+    load_all.appendChild(document.createTextNode("Show all logs"));
+    load_all.setAttribute("href","javascript:void(0);");
+    document.getElementById("ctl00_ContentBody_uxGalleryImagesLink").parentNode.appendChild(document.createTextNode(" | "));
+    document.getElementById("ctl00_ContentBody_uxGalleryImagesLink").parentNode.appendChild(load_all);
+  
+    load_all.addEventListener("click",gclh_load_all_logs,false);
   }
   
   // Load "num" Logs
@@ -2634,6 +2687,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_det
             if(json.pageInfo.totalRows > logs.length){
               gclh_load_helper();
             }else{
+gclh_load_all_link(logs);
               if(num == 0){
                 var newBody = unsafeWindow.$(document.createElement("TBODY"));
                 unsafeWindow.$("#tmpl_CacheLogRow_gclh").tmpl(logs).appendTo(newBody);
