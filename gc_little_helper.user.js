@@ -14,7 +14,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        6.2             - 18.09.2011
-// Changelog:      
+// Changelog:      6.3             - New: Issue #77 - Hide Avatars
 //                                 - New: Issue #76 - Add a "Load all logs"-Link
 //                                 - Fix: Bug #59 - [gc.com update] load all logs no longer working 
 //                                 - Fix: Bug #72 - html in cachename on mail icon at disabled caches 
@@ -428,6 +428,7 @@ settings_show_fav_percentage = GM_getValue('settings_show_fav_percentage', false
 settings_show_vip_list = GM_getValue('settings_show_vip_list', true);
 settings_autovisit = GM_getValue("settings_autovisit","true");
 settings_show_thumbnails = GM_getValue("settings_show_thumbnails",true);
+settings_hide_avatar = GM_getValue("settings_hide_avatar",false);
 
 
 // Settings: Custom Bookmarks
@@ -2464,26 +2465,26 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_det
     '                    {{if creator}}<img title="${creator.GroupTitle}" src="${creator.GroupImageUrl}" align="absmiddle" style="vertical-align:middle">${creator.GroupTitle}{{/if}}' +
     '                </p>' +
     '                <p class="logOwnerAvatar">' +
-    '                    <a href="/profile/?guid=${AccountGuid}">' +
-    '                        {{if AvatarImage}}' +
+    '                    <a href="/profile/?guid=${AccountGuid}">';
+
+  if(!settings_hide_avatar){
+    new_tmpl += '            {{if AvatarImage}}' +
     '                        <img width="48" height="48" src="http://img.geocaching.com/user/avatar/${AvatarImage}">' +
     '                        {{else}}' +
     '                        <img width="48" height="48" src="/images/default_avatar.jpg">' +
-    '                        {{/if}}' +
-    '                    </a></p>' +
+    '                        {{/if}}';
+  }
+
+  new_tmpl += '          </a></p>' +
     '                <p class="logOwnerStats">' +
-    '                    {{if GeocacheFindCount}}' + 
-    '                      {{if GeocacheFindCount > 0 }}' +
+    '                    {{if GeocacheFindCount > 0 }}' +
     '                      <img title="Caches Found" src="/images/icons/icon_smile.png"> ${GeocacheFindCount}' +
-    '                      {{/if}}' +
-    '                      {{if GeocacheFindCount > 0 && ChallengesCompleted > 0 }}' +
-    '                      &nbsp;·&nbsp;' +
-    '                      {{/if}}' +
     '                    {{/if}}' +
-    '                    {{if ChallengesCompleted}}' + 
-    '                      {{if ChallengesCompleted > 0 }}' +
+    '                    {{if GeocacheFindCount > 0 && ChallengesCompleted > 0 }}' +
+    '                      &nbsp;·&nbsp;' +
+    '                    {{/if}}' +
+    '                    {{if ChallengesCompleted > 0 }}' +
     '                      <img title="Challenges Completed" src="/images/challenges/types/sm/challenge.png"> ${ChallengesCompleted}' +
-    '            {{else}} blablabla          {{/if}}' +
     '                    {{/if}}' +
     '                </p>' +
     '            </div>' +
@@ -2508,7 +2509,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_det
     '                            {{if (userInfo.ID==AccountID)}}' +
     '                               View / Edit Log / Images' +
     '                            {{else}}' +
-    '                               View Log blabla' +
+    '                               View Log' +
     '                            {{/if}}' +
     '                        </a></small>&nbsp;' +
     '                        {{if (userInfo.ID==AccountID)}}' +
@@ -3365,6 +3366,7 @@ function gclh_showConfig(){
     html += checkbox('settings_show_fav_percentage', 'Show percentage of favourite points') + "<br/>";
     html += checkbox('settings_show_vip_list', 'Show VIP-List') + "<br/>";
     html += checkbox('settings_show_thumbnails', 'Show Thumbnails of Images') + "<br/>";
+    html += checkbox('settings_hide_avatar', 'Hide Avatars in Listing') + "<br/>";
     html += "<br>";
     html += "";
     html += "<h4 class='gclh_headline2'>Logging</h4>";
@@ -3562,7 +3564,8 @@ function gclh_showConfig(){
       'settings_show_fav_percentage',
       'settings_show_vip_list',
       'settings_autovisit',
-      'settings_show_thumbnails'
+      'settings_show_thumbnails',
+      'settings_hide_avatar'
     );
     for (var i = 0; i < checkboxes.length; i++) {
       GM_setValue(checkboxes[i], document.getElementById(checkboxes[i]).checked);
