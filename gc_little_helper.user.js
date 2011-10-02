@@ -14,7 +14,9 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        6.4             - 01.10.2011
-// Changelog:      6.4             - Small Bugfix of v6.3 - Script breaks, if there is no Gallery in Listing
+// Changelog:
+//                                 - Small Bugfix: An error at thumbnail-function was not caught
+//                 6.4             - Small Bugfix of v6.3 - Script breaks, if there is no Gallery in Listing
 //                 6.3             - New: Issue #77 - Hide Avatars
 //                                 - New: Issue #76 - Add a "Load all logs"-Link
 //                                 - Fix: Bug #59 - [gc.com update] load all logs no longer working 
@@ -2376,6 +2378,7 @@ if(settings_show_thumbnails && document.location.href.match(/^http:\/\/www\.geoc
     if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx?/) && links[i].href.match(/^http:\/\/img\.geocaching\.com\/cache/) && !links[i].innerHTML.match(/(spoiler|hinweis)/i)){
       var thumb = links[i].childNodes[0];
       var span = links[i].childNodes[1];
+      if(!thumb || !span) continue;
       if(links[i].href.match(/cache\/log/)){
         thumb.src = links[i].href.replace(/cache\/log/,"cache/log/thumb");
       }else{
