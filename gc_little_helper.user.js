@@ -2977,7 +2977,9 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_det
   var coords = toDec(document.getElementById("ctl00_ContentBody_LatLon").innerHTML);
   var link = document.getElementById("ctl00_ContentBody_LatLon").nextSibling.nextSibling;
   var a = document.createElement("a");
-  a.setAttribute("href","http://maps.google.com/?saddr="+(GM_getValue("home_lat")/10000000)+","+(GM_getValue("home_lng")/10000000)+"&daddr="+coords[0]+","+coords[1]);
+  var name = ""
+  if(document.getElementById("ctl00_ContentBody_CacheName")) name = "+("+trim(document.getElementById("ctl00_ContentBody_CacheName").innerHTML)+")";
+  a.setAttribute("href","http://maps.google.com/?saddr="+(GM_getValue("home_lat")/10000000)+","+(GM_getValue("home_lng")/10000000)+"+(HomeCoords)&daddr="+coords[0]+","+coords[1]+name);
   a.setAttribute("target","_blank");
   a.appendChild(document.createTextNode("Route to this Location"));
   link.appendChild(document.createTextNode(" - "));
