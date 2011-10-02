@@ -15,6 +15,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        6.4             - 01.10.2011
 // Changelog:
+//                                 - New: Issue #57 - Bigger images at gallery 
 //                                 - Small Bugfix: Image-Hover in Gallery doesn't work
 //                                 - New: Issue #55 - Change title-color of archived caches red 
 //                                 - Small Bugfix: An error at thumbnail-function was not caught
@@ -434,6 +435,7 @@ settings_show_vip_list = GM_getValue('settings_show_vip_list', true);
 settings_autovisit = GM_getValue("settings_autovisit","true");
 settings_show_thumbnails = GM_getValue("settings_show_thumbnails",true);
 settings_hide_avatar = GM_getValue("settings_hide_avatar",false);
+settings_show_big_gallery = GM_getValue("settings_show_big_gallery",false);
 
 
 // Settings: Custom Bookmarks
@@ -2387,7 +2389,7 @@ if(settings_show_thumbnails && document.location.href.match(/^http:\/\/www\.geoc
     unsafeWindow.gclh_updateTmpl();
   }
 
-
+  var tds = new Array();
   for(var i=0; i<links.length; i++){
     if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx?/) && links[i].href.match(/^http:\/\/img\.geocaching\.com\/cache/) && !links[i].innerHTML.match(/(spoiler|hinweis)/i)){
       var thumb = links[i].childNodes[0];
@@ -2416,6 +2418,14 @@ if(settings_show_thumbnails && document.location.href.match(/^http:\/\/www\.geoc
       var span = document.createElement('span');
       var img = document.createElement('img');
 
+      // Bigger Images in Gallery
+      if(settings_show_big_gallery){
+        thumb.style.width = "300px";
+        thumb.style.height = "auto";
+        thumb.src = thumb.src.replace(/thumb\//,"");
+        tds.push(thumb.parentNode.parentNode);
+      }
+
       img.src = thumb.src.replace(/thumb\//,"");
       span.appendChild(img);
       span.appendChild(document.createTextNode(thumb.parentNode.parentNode.childNodes[7].childNodes[0].innerHTML));
@@ -2424,6 +2434,26 @@ if(settings_show_thumbnails && document.location.href.match(/^http:\/\/www\.geoc
 
       links[i].appendChild(span);
     }
+  }
+
+  // Show gallery-Images in 2 instead of 4 cols
+  if(settings_show_big_gallery && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/gallery\.aspx?/) && tds.length > 0 && document.getElementById("ctl00_ContentBody_GalleryItems_DataListGallery")){
+    var tbody = document.createElement("tbody");
+    var tr = document.createElement("tr");
+    var x = 0;
+    for(var i=0; i<tds.length; i++){
+      if(x == 0){
+        tr.appendChild(tds[i]);
+        x++;
+      }else{
+        tr.appendChild(tds[i]);
+        tbody.appendChild(tr);
+        tr = document.createElement("tr");
+        x = 0;
+      }
+    }
+    document.getElementById("ctl00_ContentBody_GalleryItems_DataListGallery").removeChild(document.getElementById("ctl00_ContentBody_GalleryItems_DataListGallery").firstChild);
+    document.getElementById("ctl00_ContentBody_GalleryItems_DataListGallery").appendChild(tbody);
   }
 }
 
@@ -3384,6 +3414,7 @@ function gclh_showConfig(){
     html += checkbox('settings_show_fav_percentage', 'Show percentage of favourite points') + "<br/>";
     html += checkbox('settings_show_vip_list', 'Show VIP-List') + "<br/>";
     html += checkbox('settings_show_thumbnails', 'Show Thumbnails of Images') + "<br/>";
+    html += checkbox('settings_show_big_gallery', 'Show bigger Images in Gallery') + "<br/>";
     html += checkbox('settings_hide_avatar', 'Hide Avatars in Listing') + "<br/>";
     html += "<br>";
     html += "";
@@ -3583,7 +3614,8 @@ function gclh_showConfig(){
       'settings_show_vip_list',
       'settings_autovisit',
       'settings_show_thumbnails',
-      'settings_hide_avatar'
+      'settings_hide_avatar',
+      'settings_show_big_gallery'
     );
     for (var i = 0; i < checkboxes.length; i++) {
       GM_setValue(checkboxes[i], document.getElementById(checkboxes[i]).checked);
