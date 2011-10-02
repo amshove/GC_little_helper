@@ -15,6 +15,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        6.4             - 01.10.2011
 // Changelog:
+//                                 - New: Issue #73 - option to disable automatic reset for difference-counter at friendlist 
 //                                 - New: Issue #54 - Divide coin & tb sum at public profile
 //                                 - New: Issue #57 - Bigger images at gallery 
 //                                 - Small Bugfix: Image-Hover in Gallery doesn't work
@@ -437,6 +438,7 @@ settings_autovisit = GM_getValue("settings_autovisit","true");
 settings_show_thumbnails = GM_getValue("settings_show_thumbnails",true);
 settings_hide_avatar = GM_getValue("settings_hide_avatar",false);
 settings_show_big_gallery = GM_getValue("settings_show_big_gallery",false);
+settings_automatic_friend_reset = GM_getValue("settings_automatic_friend_reset",true);
 
 
 // Settings: Custom Bookmarks
@@ -1347,7 +1349,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/myfriends\.
   var day = new Date().getDate();
   var last_check = parseInt(GM_getValue("friends_founds_last","0"),10);
 
-  if(last_check != day){
+  if(settings_automatic_friend_reset && last_check != day){
     for(var i=0; i<friends.length; i++){
       var friend = friends[i];
       var name = friend.getElementsByTagName("a")[0];
@@ -1897,10 +1899,10 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/profile\//) && 
     for(var i=1; i<(rows.length-1); i++){
       if(rows[i].innerHTML.match(/geocoin/i)){
         coins++;
-        coins2 = coins2 + parseInt(rows[i].childNodes[5].innerHTML);
+        coins2 = coins2 + parseInt(rows[i].childNodes[5].innerHTML,10);
       }else{
         tbs++;
-        tbs2 = tbs2 + parseInt(rows[i].childNodes[5].innerHTML)
+        tbs2 = tbs2 + parseInt(rows[i].childNodes[5].innerHTML,10)
       }
     }
     var last = rows[rows.length-1];
@@ -1918,10 +1920,10 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/profile\//) && 
     for(var i=1; i<(rows.length-1); i++){
       if(rows[i].innerHTML.match(/geocoin/i)){
         coins++;
-        coins2 = coins2 + parseInt(rows[i].childNodes[5].innerHTML);
+        coins2 = coins2 + parseInt(rows[i].childNodes[5].innerHTML,10);
       }else{
         tbs++;
-        tbs2 = tbs2 + parseInt(rows[i].childNodes[5].innerHTML)
+        tbs2 = tbs2 + parseInt(rows[i].childNodes[5].innerHTML,10)
       }
     }
     var last = rows[rows.length-1];
@@ -3392,6 +3394,7 @@ function gclh_showConfig(){
     html += checkbox('settings_hide_advert_link', 'Hide link to advertisement instructions') + "<br/>";
     html += checkbox('settings_hide_line_breaks', 'Hide superfluous line breaks') + "<br/>";
     html += "Page-Width: <input class='gclh_form' type='text' size='3' id='settings_new_width' value='"+GM_getValue("settings_new_width",950)+"'> px<br>";
+    html += checkbox('settings_automatic_friend_reset', 'Reset Defference-Counter on Friendlist automatically') + "<br/>";
     html += "";
     html += "<br>";
     html += "";
@@ -3627,7 +3630,8 @@ function gclh_showConfig(){
       'settings_autovisit',
       'settings_show_thumbnails',
       'settings_hide_avatar',
-      'settings_show_big_gallery'
+      'settings_show_big_gallery',
+      'settings_automatic_friend_reset'
     );
     for (var i = 0; i < checkboxes.length; i++) {
       GM_setValue(checkboxes[i], document.getElementById(checkboxes[i]).checked);
