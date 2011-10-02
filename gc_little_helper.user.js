@@ -6,6 +6,10 @@
 // @include        http://maps.google.com/*
 // @include        http://www.google.de/maps*
 // @include        http://www.google.com/maps*
+// @include        https://maps.google.de/*
+// @include        https://maps.google.com/*
+// @include        https://www.google.de/maps*
+// @include        https://www.google.com/maps*
 // @exclude        http://www.geocaching.com/seek/sendtogps.aspx*
 // @resource jscolor http://www.amshove.net/greasemonkey/js/jscolor/jscolor.js
 // @require http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js
@@ -15,6 +19,8 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        6.4             - 01.10.2011
 // Changelog:
+//                                 - New: Issue #58 - Add a "Show routing information"-Link to Listing
+//                                 - Small Fix: enable Link on google maps also for https
 //                                 - New: Issue #73 - option to disable automatic reset for difference-counter at friendlist 
 //                                 - New: Issue #54 - Divide coin & tb sum at public profile
 //                                 - New: Issue #57 - Bigger images at gallery 
@@ -488,7 +494,7 @@ var global_mail_icon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAKCA
 ////////////////////////////////////////////////////////////////////////////
 
 // Link on Google Maps
-if(document.location.href.match(/^http:\/\/maps\.google\.(de|com)/) || document.location.href.match(/^http:\/\/www\.google\.(de|com)\/maps/)){
+if(document.location.href.match(/^(http|https):\/\/maps\.google\.(de|com)/) || document.location.href.match(/^(http|https):\/\/www\.google\.(de|com)\/maps/)){
   if(settings_show_google_maps){
     var ref_link = document.getElementById("link");
     if(ref_link){
@@ -2938,6 +2944,18 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_det
   var a = document.createElement("a");
   a.setAttribute("href",map_url+"?ll="+coords[0]+","+coords[1]);
   a.appendChild(document.createTextNode("Map this Location"));
+  link.appendChild(document.createTextNode(" - "));
+  link.appendChild(a);
+}
+
+// Show Route-It button at Listing
+if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/) && document.getElementById('ctl00_ContentBody_LatLon') && GM_getValue("home_lat")){
+  var coords = toDec(document.getElementById("ctl00_ContentBody_LatLon").innerHTML);
+  var link = document.getElementById("ctl00_ContentBody_LatLon").nextSibling.nextSibling;
+  var a = document.createElement("a");
+  a.setAttribute("href","http://maps.google.com/?saddr="+(GM_getValue("home_lat")/10000000)+","+(GM_getValue("home_lng")/10000000)+"&daddr="+coords[0]+","+coords[1]);
+  a.setAttribute("target","_blank");
+  a.appendChild(document.createTextNode("Route to this Location"));
   link.appendChild(document.createTextNode(" - "));
   link.appendChild(a);
 }
