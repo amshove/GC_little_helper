@@ -15,6 +15,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        6.4             - 01.10.2011
 // Changelog:
+//                                 - New: Issue #55 - Change title-color of archived caches red 
 //                                 - Small Bugfix: An error at thumbnail-function was not caught
 //                 6.4             - Small Bugfix of v6.3 - Script breaks, if there is no Gallery in Listing
 //                 6.3             - New: Issue #77 - Hide Avatars
@@ -1192,6 +1193,18 @@ if(settings_show_mail && document.location.href.match(/^http:\/\/www\.geocaching
   }
   
   global_cache_name = name;
+}
+
+// Switch title-color to red, if cache is archived
+if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/)){
+
+  var warnings = getElementsByClass("OldWarning");
+  for(var i=0; i<warnings.length; i++){
+    if(warnings[i].innerHTML.match(/(archived|archiviert)/)){
+      if(document.getElementById("ctl00_ContentBody_CacheName")) document.getElementById("ctl00_ContentBody_CacheName").parentNode.style.color = '#8C0B0B';
+      break;
+    }
+  }
 }
 
 // Improve EMail-Site
