@@ -15,6 +15,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        6.4             - 01.10.2011
 // Changelog:
+//                                 - New: Issue #54 - Divide coin & tb sum at public profile
 //                                 - New: Issue #57 - Bigger images at gallery 
 //                                 - Small Bugfix: Image-Hover in Gallery doesn't work
 //                                 - New: Issue #55 - Change title-color of archived caches red 
@@ -1889,34 +1890,45 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/profile\//) && 
     var table = tables[0];
     var rows = table.getElementsByTagName("tr");
     var tbs = 0;
+    var tbs2 = 0;
     var coins = 0;
+    var coins2 = 0;
 
     for(var i=1; i<(rows.length-1); i++){
       if(rows[i].innerHTML.match(/geocoin/i)){
         coins++;
+        coins2 = coins2 + parseInt(rows[i].childNodes[5].innerHTML);
       }else{
         tbs++;
+        tbs2 = tbs2 + parseInt(rows[i].childNodes[5].innerHTML)
       }
     }
     var last = rows[rows.length-1];
 //    last.childNodes[1].innerHTML = "<strong>"+(rows.length-2)+"</strong>";
-    last.childNodes[1].innerHTML = "<strong>"+coins+"<br>"+tbs+"</strong>";
+    last.childNodes[5].childNodes[1].innerHTML = "<center>"+last.childNodes[5].childNodes[1].innerHTML+"<br>("+tbs2+"+"+coins2+")</center>";
+    last.childNodes[1].innerHTML = "<strong><center>"+(rows.length-2)+"<br>("+tbs+"+"+coins+")</center></strong>";
 
     var table = tables[1];
     var rows = table.getElementsByTagName("tr");
     var tbs = 0;
+    var tbs2 = 0;
     var coins = 0;
+    var coins2 = 0;
 
     for(var i=1; i<(rows.length-1); i++){
       if(rows[i].innerHTML.match(/geocoin/i)){
         coins++;
+        coins2 = coins2 + parseInt(rows[i].childNodes[5].innerHTML);
       }else{
         tbs++;
+        tbs2 = tbs2 + parseInt(rows[i].childNodes[5].innerHTML)
       }
     }
     var last = rows[rows.length-1];
 //    last.childNodes[1].innerHTML = "<strong>"+(rows.length-2)+"</strong>";
-    last.childNodes[1].innerHTML = "<strong>"+coins+"<br>"+tbs+"</strong>";
+//    last.childNodes[1].innerHTML = "<strong>"+coins+"<br>"+tbs+"</strong>";
+    last.childNodes[5].childNodes[1].innerHTML = "<center>"+last.childNodes[5].childNodes[1].innerHTML+"<br>("+tbs2+"+"+coins2+")</center>";
+    last.childNodes[1].innerHTML = "<strong><center>"+(rows.length-2)+"<br>("+tbs+"+"+coins+")</center></strong>";
   }
 }
 
