@@ -19,6 +19,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        6.4             - 01.10.2011
 // Changelog:
+//                                 - New: Issue #81 - Show Log-Text on mouse over in VIP-List
 //                                 - New: Issue #14 - Show one entry per log at VIP-List 
 //                                 - New: Issue #80 - Show "loading"-Image in VIP-List 
 //                                 - New: Issue #78 - VIP-Icon at public profile 
@@ -2093,31 +2094,31 @@ if(settings_show_vip_list && getElementsByClass("SignedInProfileLink")[0] && (do
           var owner_name = user;
         }
   
-        // Infos for List
-        all_users.push(user);
-        if(!log_infos[user]) log_infos[user] = new Array();
-        log_infos[user][index] = new Object();
-        log_infos_long[index] = new Object();
-        log_infos_long[index]["user"] = user;
-        try {
-          var src = links[i].parentNode.parentNode.parentNode.parentNode.childNodes[1].childNodes[0].childNodes[0].childNodes[0].src;
-          if(src){
-            log_infos[user][index]["icon"] = src;
-            log_infos_long[index]["icon"] = src;
-            if(links[i].id){
-              log_infos[user][index]["id"] = links[i].id;
-              log_infos_long[index]["id"] = links[i].id;
-            }
-
-            try {
-              var date = links[i].parentNode.parentNode.parentNode.parentNode.childNodes[1].childNodes[1].childNodes[0].textContent;
-              if(date){
-                log_infos[user][index]["date"] = date;
-                log_infos_long[index]["date"] = date;
-              }
-            } catch (e) { }
-          }
-        } catch(e) { }
+//        // Infos for List
+//        all_users.push(user);
+//        if(!log_infos[user]) log_infos[user] = new Array();
+//        log_infos[user][index] = new Object();
+//        log_infos_long[index] = new Object();
+//        log_infos_long[index]["user"] = user;
+//        try {
+//          var src = links[i].parentNode.parentNode.parentNode.parentNode.childNodes[1].childNodes[0].childNodes[0].childNodes[0].src;
+//          if(src){
+//            log_infos[user][index]["icon"] = src;
+//            log_infos_long[index]["icon"] = src;
+//            if(links[i].id){
+//              log_infos[user][index]["id"] = links[i].id;
+//              log_infos_long[index]["id"] = links[i].id;
+//            }
+//
+//            try {
+//              var date = links[i].parentNode.parentNode.parentNode.parentNode.childNodes[1].childNodes[1].childNodes[0].textContent;
+//              if(date){
+//                log_infos[user][index]["date"] = date;
+//                log_infos_long[index]["date"] = date;
+//              }
+//            } catch (e) { }
+//          }
+//        } catch(e) { }
   
         // Icon
         var link = document.createElement("a");
@@ -2140,7 +2141,7 @@ if(settings_show_vip_list && getElementsByClass("SignedInProfileLink")[0] && (do
         links[i].parentNode.appendChild(document.createTextNode("   "));
         links[i].parentNode.appendChild(link);
   
-        index++;
+//        index++;
       }
     }
   
@@ -2158,6 +2159,31 @@ if(settings_show_vip_list && getElementsByClass("SignedInProfileLink")[0] && (do
     box.appendChild(body);
     box.innerHTML = "<br>"+box.innerHTML;
     map.parentNode.insertBefore(box,map);
+
+    var css = "a.gclh_log:hover { " +
+      "  text-decoration:underline;" +
+      "  position: relative;" +
+      "}" +
+      "a.gclh_log span {" +
+      "  visibility: hidden;" +
+      "  position: absolute;" +
+      "  top:-310px;" +
+      "  left:-705px;" +
+      "  width: 700px;" +
+      "  padding: 2px;" +
+      "  text-decoration:none;" +
+      "  text-align:left;" +
+      "  vertical-align:top;" +
+//      "  white-space: nowrap;" +
+      "  color: #000000;" +
+      "}" +
+      "a.gclh_log:hover span { " +
+      "  visibility: visible;" +
+      "  top: 10px;" +
+      "  border: 1px solid #8c9e65;" +
+      "  background-color:#dfe1d2;" +
+      "}";
+    GM_addStyle(css);
   
     function gclh_build_vip_list(){
       var show_owner = true;
@@ -2199,12 +2225,17 @@ if(settings_show_vip_list && getElementsByClass("SignedInProfileLink")[0] && (do
               link.addEventListener("click",gclh_del_vip,false);
             }
   
+            // Log-Date and Link
+            var log_text = document.createElement("span");
+            log_text.innerHTML = log_infos_long[i]["log"];
             var log_img = document.createElement("img");
             var log_link = document.createElement("a");
             log_link.setAttribute("href","#"+log_infos_long[i]["id"]);
+            log_link.className = "gclh_log";
             log_img.setAttribute("src",log_infos_long[i]["icon"]);
             log_img.setAttribute("border","0");
             log_link.appendChild(document.createTextNode(log_infos_long[i]["date"]));
+            log_link.appendChild(log_text);
 
             list.appendChild(log_img);
             list.appendChild(document.createTextNode("   "));
@@ -2260,6 +2291,8 @@ if(settings_show_vip_list && getElementsByClass("SignedInProfileLink")[0] && (do
           for(var x=0; x<log_infos[user].length; x++){
             if(log_infos[user][x] && log_infos[user][x]["icon"] && log_infos[user][x]["id"]){
               var image = document.createElement("img");
+              var log_text = document.createElement("span");
+              log_text.innerHTML = log_infos[user][x]["log"];
               image.setAttribute("src",log_infos[user][x]["icon"]);
               image.setAttribute("border","0");
   
@@ -2270,7 +2303,9 @@ if(settings_show_vip_list && getElementsByClass("SignedInProfileLink")[0] && (do
   
               var a = document.createElement("a");
               a.setAttribute("href","#"+log_infos[user][x]["id"]);
+              a.className = "gclh_log";
               a.appendChild(image); 
+              a.appendChild(log_text);
              
               list.appendChild(document.createTextNode(" "));
               list.appendChild(a);
@@ -2863,11 +2898,13 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_det
                 log_infos[user][index]["icon"] = "/images/icons/"+json.data[i].LogTypeImage;
                 log_infos[user][index]["id"] = json.data[i].LogID;
                 log_infos[user][index]["date"] = json.data[i].Visited;
+                log_infos[user][index]["log"] = json.data[i].LogText;
                 log_infos_long[index] = new Object();
                 log_infos_long[index]["user"] = user;
                 log_infos_long[index]["icon"] = "/images/icons/"+json.data[i].LogTypeImage;
                 log_infos_long[index]["id"] = json.data[i].LogID;
                 log_infos_long[index]["date"] = json.data[i].Visited;
+                log_infos_long[index]["log"] = json.data[i].LogText;
                 index++;
               }
             }
