@@ -19,6 +19,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        6.4             - 01.10.2011
 // Changelog:
+//                                 - Fix: Bug #68 - [gc.com update] Log-Filter doesn't work
 //                                 - New: Issue #82 - Show thumbnails in logs side by side
 //                                 - New: Issue #81 - Show Log-Text on mouse over in VIP-List
 //                                 - New: Issue #14 - Show one entry per log at VIP-List 
@@ -2624,42 +2625,42 @@ if(settings_show_thumbnails && document.location.href.match(/^http:\/\/www\.geoc
   }
 }
 
-// Log-Filter
-if(false && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/)){
-  var legend = document.getElementById('ctl00_ContentBody_lblFindCounts').childNodes[0];
-
-  function gclh_filter_logs(){
-    var logs = getElementsByClass('LogsTable')[0].getElementsByTagName('img');
-    for(var i=0; i<logs.length; i++){
-      if(logs[i].alt){
-        if(logs[i].title != this.childNodes[0].title){
-          logs[i].parentNode.parentNode.parentNode.parentNode.parentNode.style.display = "none";
-        }else{
-          logs[i].parentNode.parentNode.parentNode.parentNode.parentNode.style.display = "";
-        }
-      }
-    }
-  }
-
-  var new_legend = document.createElement("p");
-  new_legend.className = "LogTotals";
-
-  for(var i=0; i<legend.childNodes.length; i++){
-    if(legend.childNodes[i].tagName == "IMG"){
-      var link = document.createElement("a");
-      link.setAttribute("href","javascript:void(0);");
-      link.style.textDecoration = 'none';
-//      link.style.color = '#000000';
-      link.addEventListener("click",gclh_filter_logs,false);
-      
-      link.appendChild(legend.childNodes[i].cloneNode(true));
-      i++;
-      link.appendChild(legend.childNodes[i].cloneNode(true));
-      new_legend.appendChild(link);
-    }
-  } 
-  document.getElementById('ctl00_ContentBody_lblFindCounts').replaceChild(new_legend,document.getElementById('ctl00_ContentBody_lblFindCounts').childNodes[0]);
-}
+//// Log-Filter
+//if(false && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/)){
+//  var legend = document.getElementById('ctl00_ContentBody_lblFindCounts').childNodes[0];
+//
+//  function gclh_filter_logs(){
+//    var logs = getElementsByClass('LogsTable')[0].getElementsByTagName('img');
+//    for(var i=0; i<logs.length; i++){
+//      if(logs[i].alt){
+//        if(logs[i].title != this.childNodes[0].title){
+//          logs[i].parentNode.parentNode.parentNode.parentNode.parentNode.style.display = "none";
+//        }else{
+//          logs[i].parentNode.parentNode.parentNode.parentNode.parentNode.style.display = "";
+//        }
+//      }
+//    }
+//  }
+//
+//  var new_legend = document.createElement("p");
+//  new_legend.className = "LogTotals";
+//
+//  for(var i=0; i<legend.childNodes.length; i++){
+//    if(legend.childNodes[i].tagName == "IMG"){
+//      var link = document.createElement("a");
+//      link.setAttribute("href","javascript:void(0);");
+//      link.style.textDecoration = 'none';
+////      link.style.color = '#000000';
+//      link.addEventListener("click",gclh_filter_logs,false);
+//      
+//      link.appendChild(legend.childNodes[i].cloneNode(true));
+//      i++;
+//      link.appendChild(legend.childNodes[i].cloneNode(true));
+//      new_legend.appendChild(link);
+//    }
+//  } 
+//  document.getElementById('ctl00_ContentBody_lblFindCounts').replaceChild(new_legend,document.getElementById('ctl00_ContentBody_lblFindCounts').childNodes[0]);
+//}
 
 // Log-Template definieren
 //if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx?/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_logbook\.aspx/)){
@@ -2849,6 +2850,57 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_det
   
     load_all.addEventListener("click",gclh_load_all_logs,false);
   }
+
+  // Filter Log-Types
+  function gclh_filter_logs(logs){
+    function gclh_filter_logs(){
+      if(!this.childNodes[0]) return false;
+      var log_type = this.childNodes[0].title;
+      if(!log_type) return false;
+      if(!logs) return false;
+
+      var tbodys = document.getElementById("cache_logs_table").getElementsByTagName("tbody");
+      for(var i=0; i<tbodys.length; i++){
+        document.getElementById("cache_logs_table").removeChild(tbodys[i]);
+      }
+ 
+      for(var i=0; i<logs.length; i++){
+        if(logs[i] && logs[i].LogType == log_type){
+          var newBody = unsafeWindow.$(document.createElement("TBODY"));
+          unsafeWindow.$("#tmpl_CacheLogRow_gclh").tmpl(logs[i]).appendTo(newBody);
+          newBody.find("a.tb_images").fancybox({'type': 'image', 'titlePosition': 'inside'});
+          unsafeWindow.$("#cache_logs_table").append(newBody.children());
+        }
+      }
+ 
+      gclh_add_vip_icon();
+ 
+      // Marker to disable dynamic log-load
+      var marker = document.createElement("a");
+      marker.setAttribute("id","gclh_all_logs_marker");
+      document.getElementsByTagName("body")[0].appendChild(marker);
+    }
+ 
+    if(!document.getElementById("ctl00_ContentBody_lblFindCounts").childNodes[0]) return false;
+    var legend = document.getElementById("ctl00_ContentBody_lblFindCounts").childNodes[0];
+    var new_legend = document.createElement("p");
+    new_legend.className = "LogTotals";
+
+    for(var i=0; i<legend.childNodes.length; i++){
+      if(legend.childNodes[i].tagName == "IMG"){
+        var link = document.createElement("a");
+        link.setAttribute("href","javascript:void(0);");
+        link.style.textDecoration = 'none';
+        link.addEventListener("click",gclh_filter_logs,false);
+      
+        link.appendChild(legend.childNodes[i].cloneNode(true));
+        i++;
+        link.appendChild(legend.childNodes[i].cloneNode(true));
+        new_legend.appendChild(link);
+      }
+    } 
+    document.getElementById('ctl00_ContentBody_lblFindCounts').replaceChild(new_legend,legend);
+  }
   
   // Load "num" Logs
   function gclh_load_logs(num){
@@ -2905,7 +2957,10 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_det
             if(json.pageInfo.totalRows > logs.length){
               gclh_load_helper();
             }else{
-gclh_load_all_link(logs);
+              // Add Links
+              gclh_load_all_link(logs); // Load all Logs
+              gclh_filter_logs(logs); // Filter Logs
+
               if(num == 0){
                 var newBody = unsafeWindow.$(document.createElement("TBODY"));
                 unsafeWindow.$("#tmpl_CacheLogRow_gclh").tmpl(logs).appendTo(newBody);
