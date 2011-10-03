@@ -19,6 +19,8 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        6.4             - 01.10.2011
 // Changelog:
+//                                 - New: Issue #14 - Show one entry per log at VIP-List 
+//                                 - New: Issue #80 - Show "loading"-Image in VIP-List 
 //                                 - New: Issue #78 - VIP-Icon at public profile 
 //                                 - New: Issue #58 - Add a "Show routing information"-Link to Listing
 //                                 - Small Fix: enable Link on google maps also for https
@@ -446,6 +448,7 @@ settings_show_thumbnails = GM_getValue("settings_show_thumbnails",true);
 settings_hide_avatar = GM_getValue("settings_hide_avatar",false);
 settings_show_big_gallery = GM_getValue("settings_show_big_gallery",false);
 settings_automatic_friend_reset = GM_getValue("settings_automatic_friend_reset",true);
+settings_show_long_vip = GM_getValue("settings_show_long_vip",false);
 
 
 // Settings: Custom Bookmarks
@@ -2073,6 +2076,7 @@ if(settings_show_vip_list && getElementsByClass("SignedInProfileLink")[0] && (do
   if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/)){
     var all_users = new Array();
     var log_infos = new Object();
+    var log_infos_long = new Array();
     var index = 0;
     var links = document.getElementsByTagName('a');
     for(var i=0; i<links.length; i++){
@@ -2093,18 +2097,23 @@ if(settings_show_vip_list && getElementsByClass("SignedInProfileLink")[0] && (do
         all_users.push(user);
         if(!log_infos[user]) log_infos[user] = new Array();
         log_infos[user][index] = new Object();
+        log_infos_long[index] = new Object();
+        log_infos_long[index]["user"] = user;
         try {
           var src = links[i].parentNode.parentNode.parentNode.parentNode.childNodes[1].childNodes[0].childNodes[0].childNodes[0].src;
           if(src){
             log_infos[user][index]["icon"] = src;
+            log_infos_long[index]["icon"] = src;
             if(links[i].id){
               log_infos[user][index]["id"] = links[i].id;
+              log_infos_long[index]["id"] = links[i].id;
             }
 
             try {
               var date = links[i].parentNode.parentNode.parentNode.parentNode.childNodes[1].childNodes[1].childNodes[0].textContent;
               if(date){
                 log_infos[user][index]["date"] = date;
+                log_infos_long[index]["date"] = date;
               }
             } catch (e) { }
           }
@@ -2154,6 +2163,61 @@ if(settings_show_vip_list && getElementsByClass("SignedInProfileLink")[0] && (do
       var show_owner = true;
       var list = document.getElementById("gclh_vip_list");
       list.innerHTML = "";
+
+      function gclh_build_long_list(){
+        for(var i=0; i<log_infos_long.length; i++){
+          var user = log_infos_long[i]["user"];
+          if(in_array(user,vips) || user == owner_name){
+            if(!log_infos_long[i]["date"]) continue;
+
+            var span = document.createElement("span");
+            var profile = document.createElement("a");
+            profile.setAttribute("href","http://www.geocaching.com/profile/?u="+user);
+            profile.innerHTML = user;
+            if(owner_name && owner_name == user){
+              profile.style.color = '#8C0B0B';
+            }else if(user == myself){
+              profile.style.color = '#778555';
+            }
+            span.appendChild(profile);
+
+            // VIP-Link
+            var link = document.createElement("a");
+            var img = document.createElement("img");
+            img.setAttribute("border","0");
+            link.appendChild(img);
+            link.setAttribute("href","javascript:void(0);");
+            link.setAttribute("name",user);
+  
+            if(owner_name && owner_name == user && !in_array(user,vips)){
+              img.setAttribute("src",img_vip_off);
+              img.setAttribute("title","Add User "+user+" to VIP-List");
+              link.addEventListener("click",gclh_add_vip,false);
+            }else{
+              img.setAttribute("src",img_vip_on);
+              img.setAttribute("title","Remove User "+user+" from VIP-List");
+              link.addEventListener("click",gclh_del_vip,false);
+            }
+  
+            var log_img = document.createElement("img");
+            var log_link = document.createElement("a");
+            log_link.setAttribute("href","#"+log_infos_long[i]["id"]);
+            log_img.setAttribute("src",log_infos_long[i]["icon"]);
+            log_img.setAttribute("border","0");
+            log_link.appendChild(document.createTextNode(log_infos_long[i]["date"]));
+
+            list.appendChild(log_img);
+            list.appendChild(document.createTextNode("   "));
+            list.appendChild(log_link);
+            list.appendChild(document.createTextNode("   "));
+            list.appendChild(span);
+            list.appendChild(document.createTextNode("   "));
+            list.appendChild(link);
+
+            list.appendChild(document.createElement("br"));
+          }
+        }
+      }
   
       function gclh_build_list(user){
         if(!show_owner && owner_name && owner_name == user) return true;
@@ -2217,9 +2281,13 @@ if(settings_show_vip_list && getElementsByClass("SignedInProfileLink")[0] && (do
         }
       }
   
-      if(owner_name) gclh_build_list(owner_name);
-      for(var i=0; i<vips.length; i++){
-        gclh_build_list(vips[i]);
+      if(settings_show_long_vip){
+        gclh_build_long_list();
+      }else{
+        if(owner_name) gclh_build_list(owner_name);
+        for(var i=0; i<vips.length; i++){
+          gclh_build_list(vips[i]);
+        }
       }
 
  
@@ -2759,6 +2827,12 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_det
     var logs = new Array();
     var numPages = 1;
     var curIdx = 1;
+
+    if(document.getElementById("gclh_vip_list")){
+      var span_loading = document.createElement("span");
+      span_loading.innerHTML = '<img src="/images/loading2.gif" class="StatusIcon" alt="Loading" />Loading Cache Logs...';
+      document.getElementById("gclh_vip_list").appendChild(span_loading);
+    }
     
     function gclh_load_helper(){
       if(numPages >= curIdx){
@@ -2785,11 +2859,15 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_det
                 all_users.push(user);
               
                 if(!log_infos[user]) log_infos[user] = new Array();
-
                 log_infos[user][index] = new Object();
                 log_infos[user][index]["icon"] = "/images/icons/"+json.data[i].LogTypeImage;
                 log_infos[user][index]["id"] = json.data[i].LogID;
                 log_infos[user][index]["date"] = json.data[i].Visited;
+                log_infos_long[index] = new Object();
+                log_infos_long[index]["user"] = user;
+                log_infos_long[index]["icon"] = "/images/icons/"+json.data[i].LogTypeImage;
+                log_infos_long[index]["id"] = json.data[i].LogID;
+                log_infos_long[index]["date"] = json.data[i].Visited;
                 index++;
               }
             }
@@ -3490,6 +3568,7 @@ function gclh_showConfig(){
     html += checkbox('settings_strike_archived', 'Strike through title of archived/disabled caches') + "<br/>";
     html += checkbox('settings_show_fav_percentage', 'Show percentage of favourite points') + "<br/>";
     html += checkbox('settings_show_vip_list', 'Show VIP-List') + "<br/>";
+    html += checkbox('settings_show_long_vip', 'Show long VIP-List (one row per log)') + "<br/>";
     html += checkbox('settings_show_thumbnails', 'Show Thumbnails of Images') + "<br/>";
     html += checkbox('settings_hide_avatar', 'Hide Avatars in Listing') + "<br/>";
     html += "<br>";
@@ -3692,7 +3771,8 @@ function gclh_showConfig(){
       'settings_show_thumbnails',
       'settings_hide_avatar',
       'settings_show_big_gallery',
-      'settings_automatic_friend_reset'
+      'settings_automatic_friend_reset',
+      'settings_show_long_vip'
     );
     for (var i = 0; i < checkboxes.length; i++) {
       GM_setValue(checkboxes[i], document.getElementById(checkboxes[i]).checked);
