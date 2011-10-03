@@ -19,6 +19,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        6.4             - 01.10.2011
 // Changelog:
+//                                 - New: Issue #82 - Show thumbnails in logs side by side
 //                                 - New: Issue #81 - Show Log-Text on mouse over in VIP-List
 //                                 - New: Issue #14 - Show one entry per log at VIP-List 
 //                                 - New: Issue #80 - Show "loading"-Image in VIP-List 
@@ -2515,14 +2516,16 @@ if(settings_show_thumbnails && document.location.href.match(/^http:\/\/www\.geoc
   GM_addStyle(css);
 
   if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx?/)){
-    var newImageTmpl = "<tr>" +
-    "      <td>" +
+    var newImageTmpl = "" +
+//    "<tr>" +
+//    "      <td>" +
     "          <a class='tb_images lnk gclh_thumb' rel='tb_images[grp${LogID}]' href='http://img.geocaching.com/cache/log/${FileName}' title='${Descr}'>" +
     "              <img title='${Name}' alt='${Name}' src='http://img.geocaching.com/cache/log/thumb/${FileName}'>" +
     "              <span><img src='http://img.geocaching.com/cache/log/${FileName}'> ${Name}</span>" +
-    "          </a>" +
-    "      </td>" +
-    "  </tr>";
+    "          </a>&nbsp;&nbsp;" +
+//    "      </td>" +
+//    "  </tr>";
+    "";
 
     var code = "function gclh_updateTmpl() { " +
     "  delete $.template['tmplCacheLogImages'];" +
@@ -2712,9 +2715,11 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_det
     '                    {{/if}}' +
     '                    <p class="LogText">{{html LogText}}</p>' +
     '                    {{if Images.length > 0}}' +
-    '                        <table cellspacing="0" cellpadding="3" class="LogImagesTable">' +
-    '                        {{tmpl(Images) "tmplCacheLogImages"}}' +
-    '                        </table>' +
+    '                        <table cellspacing="0" cellpadding="3" class="LogImagesTable">';
+  if(settings_show_thumbnails) new_tmpl += '<tr><td>';
+  new_tmpl += '              {{tmpl(Images) "tmplCacheLogImages"}}';
+  if(settings_show_thumbnails) new_tmpl += '</td></tr>';
+  new_tmpl +=  '             </table>' +
     '                    {{/if}}' +
     '                    <div class="AlignRight">' +
     '                        <small><a title="View Log" href="log.aspx?LUID=${LogGuid}" target="_blank">' +
