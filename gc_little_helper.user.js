@@ -17,9 +17,8 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
-// Version:        6.4             - 01.10.2011
-// Changelog:
-//                                 - New: Issue #86 - Search in LogText 
+// Version:        6.5             - 03.10.2011
+// Changelog:      6.5             - New: Issue #86 - Search in LogText 
 //                                 - Fix: Bug #68 - [gc.com update] Log-Filter doesn't work
 //                                 - New: Issue #82 - Show thumbnails in logs side by side
 //                                 - New: Issue #81 - Show Log-Text on mouse over in VIP-List
@@ -366,7 +365,7 @@ profileBookmark("My Trackables", "lnk_my_trackables");
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "6.4";
+var scriptVersion = "6.5";
 
 var anzCustom = 10;
 var anzTemplates = 10;
