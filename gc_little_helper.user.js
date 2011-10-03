@@ -2385,7 +2385,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_det
 }
 
 // Show thumbnails
-if(settings_show_thumbnails && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/(cache_details|gallery)\.aspx?/)){
+if(settings_show_thumbnails && document.location.href.match(/^http:\/\/www\.geocaching\.com\/(seek\/cache_details\.aspx?|seek\/gallery\.aspx?|profile\/)/)){
   var links = document.getElementsByTagName("a");
   
   var css = "a.gclh_thumb:hover { " + 
@@ -2457,7 +2457,7 @@ if(settings_show_thumbnails && document.location.href.match(/^http:\/\/www\.geoc
 
       links[i].parentNode.removeChild(links[i].nextSibling);
 //    }else if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/gallery\.aspx?/) && links[i].href.match(/^http:\/\/www\.geocaching\.com\/seek\//) && links[i].childNodes[0] && links[i].childNodes[0].tagName == 'IMG'){
-    }else if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/gallery\.aspx?/) && links[i].href.match(/^http:\/\/img\.geocaching\.com\/cache\//) && links[i].childNodes[1] && links[i].childNodes[1].tagName == 'IMG'){
+    }else if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/(seek\/gallery\.aspx?|profile\/)/) && links[i].href.match(/^http:\/\/img\.geocaching\.com\/(cache|track)\//) && links[i].childNodes[1] && links[i].childNodes[1].tagName == 'IMG'){
       var thumb = links[i].childNodes[1];
       var span = document.createElement('span');
       var img = document.createElement('img');
@@ -2498,6 +2498,23 @@ if(settings_show_thumbnails && document.location.href.match(/^http:\/\/www\.geoc
     }
     document.getElementById("ctl00_ContentBody_GalleryItems_DataListGallery").removeChild(document.getElementById("ctl00_ContentBody_GalleryItems_DataListGallery").firstChild);
     document.getElementById("ctl00_ContentBody_GalleryItems_DataListGallery").appendChild(tbody);
+  }else if(settings_show_big_gallery && document.location.href.match(/^http:\/\/www\.geocaching\.com\/profile\//) && tds.length > 0 && document.getElementById("ctl00_ContentBody_ProfilePanel1_UserGallery_DataListGallery")){
+    var tbody = document.createElement("tbody");
+    var tr = document.createElement("tr");
+    var x = 0;
+    for(var i=0; i<tds.length; i++){
+      if(x == 0){
+        tr.appendChild(tds[i]);
+        x++;
+      }else{
+        tr.appendChild(tds[i]);
+        tbody.appendChild(tr);
+        tr = document.createElement("tr");
+        x = 0;
+      }
+    }
+    document.getElementById("ctl00_ContentBody_ProfilePanel1_UserGallery_DataListGallery").removeChild(document.getElementById("ctl00_ContentBody_ProfilePanel1_UserGallery_DataListGallery").firstChild);
+    document.getElementById("ctl00_ContentBody_ProfilePanel1_UserGallery_DataListGallery").appendChild(tbody);
   }
 }
 
@@ -3439,6 +3456,7 @@ function gclh_showConfig(){
     html += checkbox('settings_hide_line_breaks', 'Hide superfluous line breaks') + "<br/>";
     html += "Page-Width: <input class='gclh_form' type='text' size='3' id='settings_new_width' value='"+GM_getValue("settings_new_width",950)+"'> px<br>";
     html += checkbox('settings_automatic_friend_reset', 'Reset Defference-Counter on Friendlist automatically') + "<br/>";
+    html += checkbox('settings_show_big_gallery', 'Show bigger Images in Gallery') + "<br/>";
     html += "";
     html += "<br>";
     html += "";
@@ -3473,7 +3491,6 @@ function gclh_showConfig(){
     html += checkbox('settings_show_fav_percentage', 'Show percentage of favourite points') + "<br/>";
     html += checkbox('settings_show_vip_list', 'Show VIP-List') + "<br/>";
     html += checkbox('settings_show_thumbnails', 'Show Thumbnails of Images') + "<br/>";
-    html += checkbox('settings_show_big_gallery', 'Show bigger Images in Gallery') + "<br/>";
     html += checkbox('settings_hide_avatar', 'Hide Avatars in Listing') + "<br/>";
     html += "<br>";
     html += "";
