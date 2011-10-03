@@ -374,6 +374,7 @@ var anzTemplates = 10;
 var bookmarks_def = new Array(16,18,13,14,17,12);
 
 // Compatibility to Google Chrome - http://devign.me/greasemonkey-gm_getvaluegm_setvalue-functions-for-google-chrome/
+var browser = "firefox";
 if (!this.GM_getValue || (this.GM_getValue.toString && this.GM_getValue.toString().indexOf("not supported")>-1)) {
   this.GM_getValue=function (key,def) {
     return localStorage[key] || def;
@@ -382,6 +383,11 @@ if (!this.GM_getValue || (this.GM_getValue.toString && this.GM_getValue.toString
     return localStorage[key]=value;
   };
 }
+if(!this.uneval){
+  this.uneval = function (value) {  };
+  browser = "chrome";
+}
+
 
 // Settings: Submit Log on F2
 settings_submit_log_button = GM_getValue("settings_submit_log_button",true);
@@ -436,6 +442,10 @@ settings_default_tb_logtype = GM_getValue("settings_default_tb_logtype","-1");
 // Settings: Bookmarklist
 settings_bookmarks_list = eval(GM_getValue("settings_bookmarks_list",uneval(bookmarks_def)));
 settings_bookmarks_list_beta = eval(GM_getValue("settings_bookmarks_list_beta",uneval(bookmarks_def)));
+if(browser == "chrome"){
+  settings_bookmarks_list = new Array();
+  settings_bookmarks_list_beta = new Array();
+}
 // Settinks: Dynamic Map
 settings_dynamic_map = GM_getValue("settings_dynamic_map",true);
 settings_hide_advert_link = GM_getValue('settings_hide_advert_link',true);
@@ -3476,15 +3486,15 @@ function checkbox(setting_id, label) {
   return "<input type='checkbox' "+(eval(setting_id) ? "checked='checked'" : "" )+" id='" + setting_id + "'> " + label;
 }
 
-// Sync settings
-function get_settings(){
-  var vals = [];
-  for each (var val in GM_listValues()) {
-    vals.push(GM_getValue(val));
-  }
-  alert(uneval(vals));
-}
-//get_settings();
+//// Sync settings
+//function get_settings(){
+//  var vals = [];
+//  for each (var val in GM_listValues()) {
+//    vals.push(GM_getValue(val));
+//  }
+//  alert(uneval(vals));
+//}
+////get_settings();
 
 // Configuration Menu
 function gclh_showConfig(){
