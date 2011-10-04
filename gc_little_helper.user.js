@@ -20,7 +20,8 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        6.6             - 04.10.2011
-// Changelog:      6.6             - New: Issue #22 - Icon für "log inline" 
+// Changelog:      6.6             - Fix: Bug #92 - Owner disappeared in short VIP-List
+//                                 - New: Issue #22 - Icon für "log inline" 
 //                                 - Fix: Bug #91 - Inline-Log doesn't work - the links disappeared 
 //                                 - Fix: Bug #89 - Prevent newlines if there is no cache-titel in mail
 //                                 - Fix: Bug #88 - gclh config: Homezone radius labelled km instead of miles 
@@ -2277,7 +2278,7 @@ if(settings_show_vip_list && getElementsByClass("SignedInProfileLink")[0] && (do
   
       function gclh_build_list(user){
         if(!show_owner && owner_name && owner_name == user) return true;
-        if(in_array(user,all_users)){
+        if(in_array(user,all_users) || (owner_name == user)){
           var span = document.createElement("span");
           var profile = document.createElement("a");
           profile.setAttribute("href","http://www.geocaching.com/profile/?u="+user);
@@ -2344,7 +2345,10 @@ if(settings_show_vip_list && getElementsByClass("SignedInProfileLink")[0] && (do
       if(settings_show_long_vip){
         gclh_build_long_list();
       }else{
-        if(owner_name) gclh_build_list(owner_name);
+        if(owner_name){
+          log_infos[owner_name] = new Array();
+          gclh_build_list(owner_name);
+        }
         for(var i=0; i<vips.length; i++){
           gclh_build_list(vips[i]);
         }
