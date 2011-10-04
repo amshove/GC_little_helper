@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           GC little helper
 // @namespace      http://www.amshove.net
-// @version        6.5
+// @version        6.6
 // @include        http://www.geocaching.com/*
 // @include        http://maps.google.de/*
 // @include        http://maps.google.com/*
@@ -19,9 +19,8 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
-// Version:        6.5             - 03.10.2011
-// Changelog:
-//                                 - New: Issue #22 - Icon für "log inline" 
+// Version:        6.6             - 04.10.2011
+// Changelog:      6.6             - New: Issue #22 - Icon für "log inline" 
 //                                 - Fix: Bug #91 - Inline-Log doesn't work - the links disappeared 
 //                                 - Fix: Bug #89 - Prevent newlines if there is no cache-titel in mail
 //                                 - Fix: Bug #88 - gclh config: Homezone radius labelled km instead of miles 
@@ -374,7 +373,7 @@ profileBookmark("My Trackables", "lnk_my_trackables");
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "6.5";
+var scriptVersion = "6.6";
 
 var anzCustom = 10;
 var anzTemplates = 10;
