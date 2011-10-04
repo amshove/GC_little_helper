@@ -21,6 +21,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        6.5             - 03.10.2011
 // Changelog:
+//                                 - Fix: Bug #89 - Prevent newlines if there is no cache-titel in mail
 //                                 - Fix: Bug #88 - gclh config: Homezone radius labelled km instead of miles 
 //                                 - New: Issue #90 - Search also in Usernames and not only in LogText 
 //                                 - Small Fix for Chrome/Opera?! (See http://www.geoclub.de/viewtopic.php?f=117&t=58855)
@@ -1267,7 +1268,7 @@ if(settings_show_mail && document.location.href.match(/^http:\/\/www\.geocaching
   if(matches) document.getElementById("ctl00_ContentBody_SendMessagePanel1_tbMessage").innerHTML = decodeURIComponent(matches[1]);
   
   // Add Mail-Signature
-  if(typeof(GM_getValue("settings_mail_signature")) != "undefined") document.getElementById("ctl00_ContentBody_SendMessagePanel1_tbMessage").innerHTML += "\n\n"+GM_getValue("settings_mail_signature");
+  if(typeof(GM_getValue("settings_mail_signature")) != "undefined" && GM_getValue("settings_mail_signature") != "") document.getElementById("ctl00_ContentBody_SendMessagePanel1_tbMessage").innerHTML += "\n\n"+GM_getValue("settings_mail_signature");
 }
 
 // Default Log Type && Log Signature
