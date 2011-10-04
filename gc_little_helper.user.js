@@ -21,8 +21,9 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        6.5             - 03.10.2011
 // Changelog:
+//                                 - Fix: Bug #88 - gclh config: Homezone radius labelled km instead of miles 
 //                                 - New: Issue #90 - Search also in Usernames and not only in LogText 
-//                                 - Small Fix for Chrome/Opera?!
+//                                 - Small Fix for Chrome/Opera?! (See http://www.geoclub.de/viewtopic.php?f=117&t=58855)
 //                 6.5             - New: Issue #86 - Search in LogText 
 //                                 - Fix: Bug #68 - [gc.com update] Log-Filter doesn't work
 //                                 - New: Issue #82 - Show thumbnails in logs side by side
@@ -3643,7 +3644,7 @@ function gclh_showConfig(){
     html += "<br>";
     html += "";
     html += "<h4 class='gclh_headline2'>Maps</h4>";
-    html += checkbox('settings_show_homezone', 'Show Homezone') + " - Radius: <input class='gclh_form' type='text' size='2' id='settings_homezone_radius' value='"+settings_homezone_radius+"'> km<br>";
+    html += checkbox('settings_show_homezone', 'Show Homezone') + " - Radius: <input class='gclh_form' type='text' size='2' id='settings_homezone_radius' value='"+settings_homezone_radius+"'> miles<br>";
     html += "Homezone-Color: <input class='gclh_form' type='text' size='5' id='settings_homezone_color' value='"+settings_homezone_color+"'><br>";
     html += checkbox('settings_old_map', 'Set old map as default') + "<br/>";
     html += checkbox('settings_map_hide_found', 'Hide found caches by default') + "<br/>";
