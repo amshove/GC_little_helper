@@ -1,6 +1,7 @@
 // ==UserScript==
 // @name           GC little helper
 // @namespace      http://www.amshove.net
+// @version        6.5
 // @include        http://www.geocaching.com/*
 // @include        http://maps.google.de/*
 // @include        http://maps.google.com/*
@@ -14,11 +15,15 @@
 // @resource jscolor http://www.amshove.net/greasemonkey/js/jscolor/jscolor.js
 // @require http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js
 // @description    Some little things to make life easy (on www.geocaching.com).
+// @copyright      Torsten Amshove <torsten@amshove.net>
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        6.5             - 03.10.2011
-// Changelog:      6.5             - New: Issue #86 - Search in LogText 
+// Changelog:
+//                                 - New: Issue #90 - Search also in Usernames and not only in LogText 
+//                                 - Small Fix for Chrome/Opera?!
+//                 6.5             - New: Issue #86 - Search in LogText 
 //                                 - Fix: Bug #68 - [gc.com update] Log-Filter doesn't work
 //                                 - New: Issue #82 - Show thumbnails in logs side by side
 //                                 - New: Issue #81 - Show Log-Text on mouse over in VIP-List
@@ -2896,7 +2901,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_det
       }
 
       for(var i=0; i<logs.length; i++){
-        if(logs[i] && logs[i].LogText.match(regexp)){
+        if(logs[i] && (logs[i].UserName.match(regexp) || logs[i].LogText.match(regexp))){
           var newBody = unsafeWindow.$(document.createElement("TBODY"));
           unsafeWindow.$("#tmpl_CacheLogRow_gclh").tmpl(logs[i]).appendTo(newBody);
           newBody.find("a.tb_images").fancybox({'type': 'image', 'titlePosition': 'inside'});
@@ -3485,15 +3490,17 @@ function checkbox(setting_id, label) {
   return "<input type='checkbox' "+(eval(setting_id) ? "checked='checked'" : "" )+" id='" + setting_id + "'> " + label;
 }
 
-//// Sync settings
-//function get_settings(){
-//  var vals = [];
-//  for each (var val in GM_listValues()) {
-//    vals.push(GM_getValue(val));
-//  }
-//  alert(uneval(vals));
-//}
-////get_settings();
+/*
+// Sync settings
+function get_settings(){
+  var vals = [];
+  for each (var val in GM_listValues()) {
+    vals.push(GM_getValue(val));
+  }
+  alert(uneval(vals));
+}
+//get_settings();
+*/
 
 // Configuration Menu
 function gclh_showConfig(){
