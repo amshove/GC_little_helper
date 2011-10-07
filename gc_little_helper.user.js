@@ -20,7 +20,9 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        6.6             - 04.10.2011
-// Changelog:      6.6             - Fix: Bug #92 - Owner disappeared in short VIP-List
+// Changelog:
+//                                 - Fix: Bug #95 - [gc.com update] Logs are shown twice
+//                 6.6             - Fix: Bug #92 - Owner disappeared in short VIP-List
 //                                 - New: Issue #22 - Icon für "log inline" 
 //                                 - Fix: Bug #91 - Inline-Log doesn't work - the links disappeared 
 //                                 - Fix: Bug #89 - Prevent newlines if there is no cache-titel in mail
@@ -2746,6 +2748,13 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_det
   // disable Function on Page
   unsafeWindow.currentPageIdx = 2;
   unsafeWindow.totalPages = 1;
+  unsafeWindow.isBusy = true;
+  unsafeWindow.initalLogs = "";
+  // Hide initial Logs
+  var tbodys = document.getElementById("cache_logs_table").getElementsByTagName("tbody");
+  for(var i=0; i<tbodys.length; i++){
+    document.getElementById("cache_logs_table").removeChild(tbodys[i]);
+  }
 
   // Helper: Add VIP-Icon
   function gclh_add_vip_icon(){
