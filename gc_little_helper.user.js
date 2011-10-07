@@ -21,6 +21,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        6.6             - 04.10.2011
 // Changelog:
+//                                 - Fix: Bug #96 - [gc.com update] Hide Avatar function of gc.com does not work (Added an advice to youse GClh option) 
 //                                 - Fix: Bug #95 - [gc.com update] Logs are shown twice
 //                 6.6             - Fix: Bug #92 - Owner disappeared in short VIP-List
 //                                 - New: Issue #22 - Icon für "log inline" 
@@ -3976,6 +3977,22 @@ if((document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/[#a-zA-Z-_
   var lnk = " | <a href='#' id='gclh_config_lnk'>GClh Config</a>";
   document.getElementById('ctl00_ContentBody_WidgetMiniProfile1_logOutLink').parentNode.innerHTML += lnk;
   document.getElementById('gclh_config_lnk').addEventListener("click", gclh_showConfig, false);
+}
+// Hide Avatars option
+if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/account\/ManagePreferences\.aspx/) && document.getElementById("ctl00_ContentBody_uxShowCacheLogAvatars")){
+  var avatar_checkbox = document.getElementById("ctl00_ContentBody_uxShowCacheLogAvatars");
+  var hinweis = document.createElement("font");
+  var link = document.createElement("a");
+  link.setAttribute("href","javascript:void(0);");
+  link.appendChild(document.createTextNode("here"));
+  link.addEventListener("click", gclh_showConfig, false);
+  hinweis.setAttribute("color","#FF0000");
+  hinweis.appendChild(document.createTextNode("You are using \"GC little helper\" - you have to change this option "));
+  hinweis.appendChild(link);
+  avatar_checkbox.checked = !settings_hide_avatar;
+  avatar_checkbox.disabled = "disabled";
+  avatar_checkbox.parentNode.appendChild(document.createElement("br"));
+  avatar_checkbox.parentNode.appendChild(hinweis);
 }
 
 // Check for Updates
