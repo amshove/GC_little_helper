@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           GC little helper
 // @namespace      http://www.amshove.net
-// @version        6.6
+// @version        6.7
 // @include        http://www.geocaching.com/*
 // @include        http://maps.google.de/*
 // @include        http://maps.google.com/*
@@ -19,9 +19,8 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
-// Version:        6.6             - 04.10.2011
-// Changelog:
-//                                 - Fix: Bug #96 - [gc.com update] Hide Avatar function of gc.com does not work (Added an advice to youse GClh option) 
+// Version:        6.7             - 07.10.2011
+// Changelog:      6.7             - Fix: Bug #96 - [gc.com update] Hide Avatar function of gc.com does not work (Added an advice to youse GClh option) 
 //                                 - Fix: Bug #95 - [gc.com update] Logs are shown twice
 //                 6.6             - Fix: Bug #92 - Owner disappeared in short VIP-List
 //                                 - New: Issue #22 - Icon für "log inline" 
@@ -377,7 +376,7 @@ profileBookmark("My Trackables", "lnk_my_trackables");
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "6.6";
+var scriptVersion = "6.7";
 
 var anzCustom = 10;
 var anzTemplates = 10;
