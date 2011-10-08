@@ -20,7 +20,9 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        6.7             - 07.10.2011
-// Changelog:      6.7             - Fix: Bug #96 - [gc.com update] Hide Avatar function of gc.com does not work (Added an advice to youse GClh option) 
+// Changelog:
+//                                 - Fix: Bug #97 - Dynamic Map doesn't work anymore 
+//                 6.7             - Fix: Bug #96 - [gc.com update] Hide Avatar function of gc.com does not work (Added an advice to youse GClh option) 
 //                                 - Fix: Bug #95 - [gc.com update] Logs are shown twice
 //                 6.6             - Fix: Bug #92 - Owner disappeared in short VIP-List
 //                                 - New: Issue #22 - Icon für "log inline" 
@@ -2749,7 +2751,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_det
   unsafeWindow.currentPageIdx = 2;
   unsafeWindow.totalPages = 1;
   unsafeWindow.isBusy = true;
-  unsafeWindow.initalLogs = "";
+  unsafeWindow.initalLogs = initalLogs = {"status":"success", "data": [], "pageInfo": { "idx":2, "size": 0, "totalRows": 1, "totalPages": 1, "rows": 1 } };
   // Hide initial Logs
   var tbodys = document.getElementById("cache_logs_table").getElementsByTagName("tbody");
   for(var i=0; i<tbodys.length; i++){
