@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           GC little helper
 // @namespace      http://www.amshove.net
-// @version        6.7
+// @version        6.8
 // @include        http://www.geocaching.com/*
 // @include        http://maps.google.de/*
 // @include        http://maps.google.com/*
@@ -19,9 +19,8 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
-// Version:        6.7             - 07.10.2011
-// Changelog:
-//                                 - Fix: Bug #99 - [gc.com update] Mail-Link does not transfer GC-ID 
+// Version:        6.8             - 08.10.2011
+// Changelog:      6.8             - Fix: Bug #99 - [gc.com update] Mail-Link does not transfer GC-ID 
 //                                 - Fix: Bug #98 - [gc.com update] "Show area in google maps"-link disappeared
 //                                 - Fix: Bug #97 - Dynamic Map doesn't work anymore 
 //                 6.7             - Fix: Bug #96 - [gc.com update] Hide Avatar function of gc.com does not work (Added an advice to youse GClh option) 
@@ -380,7 +379,7 @@ profileBookmark("My Trackables", "lnk_my_trackables");
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "6.7";
+var scriptVersion = "6.8";
 
 var anzCustom = 10;
 var anzTemplates = 10;
