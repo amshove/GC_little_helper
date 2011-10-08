@@ -21,6 +21,8 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        6.7             - 07.10.2011
 // Changelog:
+//                                 - Fix: Bug #99 - [gc.com update] Mail-Link does not transfer GC-ID 
+//                                 - Fix: Bug #98 - [gc.com update] "Show area in google maps"-link disappeared
 //                                 - Fix: Bug #97 - Dynamic Map doesn't work anymore 
 //                 6.7             - Fix: Bug #96 - [gc.com update] Hide Avatar function of gc.com does not work (Added an advice to youse GClh option) 
 //                                 - Fix: Bug #95 - [gc.com update] Logs are shown twice
@@ -1201,7 +1203,7 @@ if(settings_show_mail && document.location.href.match(/^http:\/\/www\.geocaching
     }
   }else if(document.getElementById('ctl00_ContentBody_CacheName')){
     var name = document.getElementById('ctl00_ContentBody_CacheName').innerHTML;
-    if(document.getElementById('ctl00_ContentBody_uxWaypointName')) name += " ("+document.getElementById('ctl00_ContentBody_uxWaypointName').innerHTML+")";
+    if(document.getElementById('ctl00_ContentBody_CoordInfoLinkControl1_uxCoordInfoCode')) name += " ("+document.getElementById('ctl00_ContentBody_CoordInfoLinkControl1_uxCoordInfoCode').innerHTML+")";
   }else if(document.getElementById('ctl00_ContentBody_lbHeading') && !document.location.href.match(/^http:\/\/www\.geocaching\.com\/(seek|track)\/log\.aspx\?.*/)){
     var name = document.getElementById('ctl00_ContentBody_lbHeading').innerHTML;
     if(document.getElementById('ctl00_ContentBody_BugDetails_BugTBNum') && document.getElementById('ctl00_ContentBody_BugDetails_BugTBNum').getElementsByTagName('strong')){
@@ -1438,7 +1440,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/myfriends\.
 }
 
 // Show Google-Maps Link on Cache Page
-if(settings_show_google_maps && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx\?/) && document.getElementById("ctl00_ContentBody_uxViewLargerMap") && document.getElementById("ctl00_ContentBody_LatLon") && document.getElementById("ctl00_ContentBody_uxWaypointName")){
+if(settings_show_google_maps && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx\?/) && document.getElementById("ctl00_ContentBody_uxViewLargerMap") && document.getElementById("ctl00_ContentBody_LatLon") && document.getElementById("ctl00_ContentBody_CoordInfoLinkControl1_uxCoordInfoCode")){
   var ref_link = document.getElementById("ctl00_ContentBody_uxViewLargerMap");
   var box = ref_link.parentNode;
 //  var matches = ref_link.href.match(/lat=([-0-9]*\.[0-9]*)\&lng=([-0-9]*\.[0-9]*)/);
@@ -1450,7 +1452,7 @@ if(settings_show_google_maps && document.location.href.match(/^http:\/\/www\.geo
   link.setAttribute("target","_blank");
   link.setAttribute("title","Show area at Google Maps");
 //  link.setAttribute("href","http://maps.google.de/?ll="+matches[1]+","+matches[2]);
-  link.setAttribute("href","http://maps.google.com/maps?q="+document.getElementById("ctl00_ContentBody_LatLon").innerHTML+" ("+document.getElementById("ctl00_ContentBody_uxWaypointName").innerHTML+")");
+  link.setAttribute("href","http://maps.google.com/maps?q="+document.getElementById("ctl00_ContentBody_LatLon").innerHTML+" ("+document.getElementById("ctl00_ContentBody_CoordInfoLinkControl1_uxCoordInfoCode").innerHTML+")");
   
   var img = document.createElement("img");
   img.setAttribute("src","/images/silk/map_go.png");
