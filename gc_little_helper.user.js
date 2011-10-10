@@ -3523,13 +3523,38 @@ function show_help(text){
 /*
 // Sync settings
 function get_settings(){
-  var vals = [];
+  var vals = new Array;
   for each (var val in GM_listValues()) {
-    vals.push(GM_getValue(val));
+    var value = GM_getValue(val);
+
+    if(!value.substr || value.substr(0,1) != "[") value = "\""+escape(value)+"\"";
+    else{
+      var arr = eval(value);
+      var new_arr = new Array();
+      for(var i=0; i<arr.length; i++){
+        if(arr[i]) new_arr.push(arr[i]);
+      }
+      value = escape(uneval(new_arr));
+    }
+
+    vals.push("\""+val+"\" : "+value);
   }
-  alert(uneval(vals));
+
+  GM_xmlhttpRequest({
+    method: "POST",
+    url: "http://localhost/GClh_web/test.php",
+    data: "json={"+vals.join(",")+"}",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded"
+    },
+    onload: function(response) {
+      alert("uploaded");
+    }
+  });
+
+//  alert(uneval(vals));
 }
-//get_settings();
+get_settings();
 */
 
 // Configuration Menu
