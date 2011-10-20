@@ -21,6 +21,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        6.8             - 08.10.2011
 // Changelog:
+//                                 - Fix: Bug #104 - TB-AutoVisit beim Editieren 
 //                                 - Added help to configuration page (thanks to Robert alias pl1lkm)
 //                 6.8             - Fix: Bug #99 - [gc.com update] Mail-Link does not transfer GC-ID 
 //                                 - Fix: Bug #98 - [gc.com update] "Show area in google maps"-link disappeared
@@ -1979,7 +1980,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/profile\//) && 
 }
 
 // Auto-Visit
-if(settings_autovisit && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx/) && !document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?LUID=/)){
+if(settings_autovisit && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx/) && !document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?LUID=/) && !document.getElementById('ctl00_ContentBody_LogBookPanel1_CoordInfoLinkControl1_uxCoordInfoCode')){
   function gclh_autovisit_save(){
     var match = this.value.match(/([0-9]*)/);
     if(!this.checked){
