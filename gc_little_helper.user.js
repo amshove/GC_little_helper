@@ -21,6 +21,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        6.8             - 08.10.2011
 // Changelog:
+//                                 - New: Issue #101 - Show day of week on Event-Dates 
 //                                 - Fix: Bug #104 - TB-AutoVisit beim Editieren 
 //                                 - Added help to configuration page (thanks to Robert alias pl1lkm)
 //                 6.8             - Fix: Bug #99 - [gc.com update] Mail-Link does not transfer GC-ID 
@@ -436,6 +437,8 @@ settings_decrypt_hint = GM_getValue("settings_decrypt_hint",false);
 settings_show_bbcode = GM_getValue("settings_show_bbcode",true);
 // Settings: Show mail-Link
 settings_show_mail = GM_getValue("settings_show_mail",true);
+// Settings: Show EventDay
+settings_show_eventday = GM_getValue("settings_show_eventday",true);
 // Settings: Show google-maps Link
 settings_show_google_maps = GM_getValue("settings_show_google_maps",true);
 // Settings: Show Log It Icon
@@ -1182,6 +1185,36 @@ if((document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.asp
   counterelement.innerHTML = "0/4000";
   counterspan.appendChild(counterelement);
   counterpos.appendChild(counterspan);
+}
+
+
+// Show Eventday beside Date
+if(settings_show_eventday && document.location.href.match(/^http:\/\/www\.geocaching\.com\/(seek\/cache_details)\.aspx.*/) && document.getElementById('cacheDetails').getElementsByTagName("img")[0].src.match(/.*\/images\/WptTypes\/(6|453|13).gif/)){ //Event, MegaEvent, Cito
+  if(document.getElementById('cacheDetails').getElementsByTagName("span")){
+    var cont = document.getElementById('cacheDetails').getElementsByTagName("span");
+    var counter = 0;
+    var spanelem = null;
+    for each(var elem in cont){
+      if(elem.className == "minorCacheDetails"){
+        counter++
+        if(counter == 2){
+          spanelem = elem;
+          break;
+        }
+      }
+    }
+    var datetxt = spanelem.innerHTML.substr(spanelem.innerHTML.indexOf(":") + 2).replace( /^\s+|\s+$/g, '' );
+    var d=new Date(datetxt);
+    var weekday=new Array(7);
+    weekday[0]="Sunday";
+    weekday[1]="Monday";
+    weekday[2]="Tuesday";
+    weekday[3]="Wednesday";
+    weekday[4]="Thursday";
+    weekday[5]="Friday";
+    weekday[6]="Saturday";
+    spanelem.innerHTML = spanelem.innerHTML + " (" + weekday[d.getDay()] + ")";
+  }
 }
 
 // Show eMail-Link beside Username
@@ -3720,6 +3753,7 @@ function gclh_showConfig(){
     html += checkbox('settings_show_all_logs', 'Show ') + " <input class='gclh_form' type='text' size='2' id='settings_show_all_logs_count' value='"+settings_show_all_logs_count+"'> logs (0 = all)"+show_help("With this option you can choose how many logs should be shown if you load the listing - if you type 0, all logs are shown by default.")+"<br>";
     html += checkbox('settings_hide_hint', 'Hide hint behind a link') + show_help("This option hides the hint behind a link - you have to click it to display the hints (already decrypted).")+ "<br/>";
     html += checkbox('settings_decrypt_hint', 'Decrypt Hint') + "<br/>";
+    html += checkbox('settings_show_eventday', 'Show weekday of an event') + show_help("With this option the day of the week will be displayed next to the date.") + "<br/>";
     html += checkbox('settings_show_mail', 'Show Mail Link beside Usernames') + show_help("With this option there will be an small mail-Icon beside every username. With this Icon you get directly to the mail-page to mail to this user. If you click it when you are in a Listing, the cachename and GCID will be inserted into the mail-form - you don't have to remember it :) ") + "<br/>";
     html += checkbox('settings_show_google_maps', 'Show Link to and from google maps') + show_help("This option makes two thing. First it shows a Link at the top of the second map in the listing. With this Link you get directly to google maps in the area, where the cache is. Second it adds an gc.com-Icon to google-maps to jump from google-maps to gc.com-maps to the same location.") + "<br/>";
     html += checkbox('settings_dynamic_map', 'Show dynamic map') + show_help("gc.com shows a static map at the bottom of a listing. You have to click a link, if you want to have it dynamic to interact with it. This option makes the click for you automatically.") +"<br/>";
@@ -3903,6 +3937,7 @@ function gclh_showConfig(){
       'settings_show_all_logs',
       'settings_decrypt_hint',
       'settings_show_bbcode',
+      'settings_show_eventday',
       'settings_show_mail',
       'settings_show_google_maps',
       'settings_show_log_it',
