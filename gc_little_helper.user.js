@@ -21,6 +21,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        6.8             - 08.10.2011
 // Changelog:
+//                                 - Fix: Bug #106 - One log disappeared (the log on the threshold) 
 //                                 - New: Issue #101 - Show day of week on Event-Dates 
 //                                 - Fix: Bug #104 - TB-AutoVisit beim Editieren 
 //                                 - Added help to configuration page (thanks to Robert alias pl1lkm)
@@ -1811,7 +1812,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/owned\.aspx
 }
 
 // Post log from Listing (inline)
-if(settings_log_inline && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/)){
+if(settings_log_inline && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/) && document.getElementById("ctl00_ContentBody_MapLinks_MapLinks")){
   var links = document.getElementsByTagName('a');
 
   var menu = false;
@@ -2835,13 +2836,13 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_det
           unsafeWindow.$tfoot.show();
           
           for(var i=0; i<10; i++){
-            num++; // num kommt vom vorherigen laden "aller" logs
             if(logs[num]){
               var newBody = unsafeWindow.$(document.createElement("TBODY"));
               unsafeWindow.$("#tmpl_CacheLogRow_gclh").tmpl(logs[num]).appendTo(newBody);
               newBody.find("a.tb_images").fancybox({'type': 'image', 'titlePosition': 'inside'});
               unsafeWindow.$("#cache_logs_table").append(newBody.children());
             }
+            num++; // num kommt vom vorherigen laden "aller" logs
           }
 
           gclh_add_vip_icon();
