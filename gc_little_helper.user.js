@@ -20,7 +20,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        6.8             - 08.10.2011
-// Changelog:
+// Changelog:      6.9             - Added option to disable loading Logs with GClh (Workaround for Greasemonkey-Bug #1448 - https://github.com/greasemonkey/greasemonkey/issues/1448)
 //                                 - Fix: Bug #103 - Usernames in URL not encoded 
 //                                 - Fix: Bug #102 - Feedback button malformed on old map
 //                                 - Fix: Bug #106 - One log disappeared (the log on the threshold) 
@@ -485,6 +485,7 @@ settings_hide_avatar = GM_getValue("settings_hide_avatar",false);
 settings_show_big_gallery = GM_getValue("settings_show_big_gallery",false);
 settings_automatic_friend_reset = GM_getValue("settings_automatic_friend_reset",true);
 settings_show_long_vip = GM_getValue("settings_show_long_vip",false);
+settings_load_logs_with_gclh = GM_getValue("settings_load_logs_with_gclh",true);
 
 
 // Settings: Custom Bookmarks
@@ -2794,7 +2795,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_det
 }
 
 // Overwrite Log-Template and Log-Load-Function
-if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx?/)){
+if(settings_load_logs_with_gclh && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx?/)){
   // to Top Link
   var a = document.createElement("a");
   a.setAttribute("href","#");
@@ -3785,6 +3786,7 @@ function gclh_showConfig(){
     html += checkbox('settings_show_long_vip', 'Show long VIP-List (one row per log)') + show_help("This is another type of displaying the VIP-List. If you disable this option you get the short list - one row per VIP and the Logs as Icons beside the VIP. If you enable this option, there is a row for every log.")+ "<br/>";
     html += checkbox('settings_show_thumbnails', 'Show Thumbnails of Images') + show_help("With this option the images in logs are displayed as thumbnails to have a preview. If you hover over a Thumbnail, you can see the big one. This also works in gallerys.") + "<br/>";
     html += checkbox('settings_hide_avatar', 'Hide Avatars in Listing') + show_help("This option hides the avatars in logs. This prevents loading the hundreds of images. You have to change the option here, because GClh overrides the log-load-logic of gc.com, so the avatar-option of gc.com doesn't work with GClh.") + "<br/>";
+    html += checkbox('settings_load_logs_with_gclh', 'Load Logs with GClh') + show_help("This option should be enabled. You just should disable it, if you have problems with loading the logs. If it is disabled, there are no VIP-, Mail-, Top-Icons at Logs, also the VIP-List, Hide Avatars, Log-filter, Log-Search, .. won't work.") + "<br/>";
     html += "<br>";
     html += "";
     html += "<h4 class='gclh_headline2'>Logging</h4>";
@@ -3989,7 +3991,8 @@ function gclh_showConfig(){
       'settings_hide_avatar',
       'settings_show_big_gallery',
       'settings_automatic_friend_reset',
-      'settings_show_long_vip'
+      'settings_show_long_vip',
+      'settings_load_logs_with_gclh'
     );
     for (var i = 0; i < checkboxes.length; i++) {
       GM_setValue(checkboxes[i], document.getElementById(checkboxes[i]).checked);
@@ -4075,7 +4078,7 @@ if((document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/[#a-zA-Z-_
   document.getElementById('gclh_config_lnk').addEventListener("click", gclh_showConfig, false);
 }
 // Hide Avatars option
-if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/account\/ManagePreferences\.aspx/) && document.getElementById("ctl00_ContentBody_uxShowCacheLogAvatars")){
+if(settings_load_logs_with_gclh && document.location.href.match(/^http:\/\/www\.geocaching\.com\/account\/ManagePreferences\.aspx/) && document.getElementById("ctl00_ContentBody_uxShowCacheLogAvatars")){
   var avatar_checkbox = document.getElementById("ctl00_ContentBody_uxShowCacheLogAvatars");
   var hinweis = document.createElement("font");
   var link = document.createElement("a");
