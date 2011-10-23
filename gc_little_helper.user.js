@@ -21,6 +21,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        6.8             - 08.10.2011
 // Changelog:
+//                                 - Fix: Bug #102 - Feedback button malformed on old map
 //                                 - Fix: Bug #106 - One log disappeared (the log on the threshold) 
 //                                 - New: Issue #101 - Show day of week on Event-Dates 
 //                                 - Fix: Bug #104 - TB-AutoVisit beim Editieren 
@@ -1720,7 +1721,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\/beta/)) {
 // Change Map width
 if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\/default.aspx/) && document.getElementById("Content")){
   var map_width = GM_getValue("map_width","1200");
-  if(document.getElementById("Content").childNodes[1]) document.getElementById("Content").childNodes[1].style.width = map_width+"px";
+  if(document.getElementById("Content").childNodes[3]) document.getElementById("Content").childNodes[3].style.width = map_width+"px";
   if(document.getElementById("ctl00_divBreadcrumbs")) document.getElementById("ctl00_divBreadcrumbs").style.width = map_width+"px";
   if(document.getElementById("ctl00_divContentMain")) document.getElementById("ctl00_divContentMain").style.width = map_width+"px";
 }
