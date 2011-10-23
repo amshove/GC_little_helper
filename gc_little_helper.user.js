@@ -21,6 +21,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        6.8             - 08.10.2011
 // Changelog:
+//                                 - Fix: Bug #103 - Usernames in URL not encoded 
 //                                 - Fix: Bug #102 - Feedback button malformed on old map
 //                                 - Fix: Bug #106 - One log disappeared (the log on the threshold) 
 //                                 - New: Issue #101 - Show day of week on Event-Dates 
@@ -923,6 +924,24 @@ if(settings_hide_empty_cache_notes && !settings_hide_cache_notes && document.loc
   }
 }
 
+function urlencode(s) {
+  s = s.replace(/ /g,"%20");
+  s = s.replace(/\!/g,"%21");
+  s = s.replace(/\"/g,"%22");
+  s = s.replace(/\#/g,"%23");
+  s = s.replace(/\$/g,"%24");
+  s = s.replace(/\%/g,"%25");
+  s = s.replace(/\&/g,"%26");
+  s = s.replace(/\+/g,"%2B");
+  return s;
+}
+
+function html_to_str(s) {
+  s = s.replace(/\&amp;/g,"&");
+  s = s.replace(/\&nbsp;/g," ");
+  return s;
+}
+
 function trim(s) {
   var whitespace = ' \n ';
   for (var i = 0; i < whitespace.length; i++) {
@@ -1450,7 +1469,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/myfriends\.
     
     friend.getElementsByTagName("dd")[4].innerHTML = "<a href='/seek/nearest.aspx?ul="+name.innerHTML+"&disable_redirect'>"+founds+"</a>"+add;
     
-    friend.getElementsByTagName("p")[0].innerHTML = "<a name='lnk_profilegallery2' href='"+name.href+"'>Gallery</a> | <a href='/seek/nearest.aspx?u="+name.innerHTML+"&disable_redirect'>Hidden Caches</a> | "+friend.getElementsByTagName("p")[0].innerHTML;
+    friend.getElementsByTagName("p")[0].innerHTML = "<a name='lnk_profilegallery2' href='"+name.href+"'>Gallery</a> | <a href='/seek/nearest.aspx?u="+urlencode(name.innerHTML)+"&disable_redirect'>Hidden Caches</a> | "+friend.getElementsByTagName("p")[0].innerHTML;
   }
 
   function gclh_reset_counter(){
@@ -2267,7 +2286,7 @@ if(settings_show_vip_list && getElementsByClass("SignedInProfileLink")[0] && (do
 
             var span = document.createElement("span");
             var profile = document.createElement("a");
-            profile.setAttribute("href","http://www.geocaching.com/profile/?u="+user);
+            profile.setAttribute("href","http://www.geocaching.com/profile/?u="+urlencode(user));
             profile.innerHTML = user;
             if(owner_name && owner_name == user){
               profile.style.color = '#8C0B0B';
@@ -2324,7 +2343,7 @@ if(settings_show_vip_list && getElementsByClass("SignedInProfileLink")[0] && (do
         if(in_array(user,all_users) || (owner_name == user)){
           var span = document.createElement("span");
           var profile = document.createElement("a");
-          profile.setAttribute("href","http://www.geocaching.com/profile/?u="+user);
+          profile.setAttribute("href","http://www.geocaching.com/profile/?u="+urlencode(user));
           profile.innerHTML = user;
           if(show_owner && owner_name && owner_name == user){
             span.appendChild(document.createTextNode("Owner: "));
@@ -2385,13 +2404,14 @@ if(settings_show_vip_list && getElementsByClass("SignedInProfileLink")[0] && (do
         }
       }
   
+      owner_name = html_to_str(owner_name);
       if(settings_show_long_vip){
         gclh_build_long_list();
       }else{
-        if(owner_name){
+        if(!log_infos[owner_name]){
           log_infos[owner_name] = new Array();
-          gclh_build_list(owner_name);
         }
+        gclh_build_list(owner_name);
         for(var i=0; i<vips.length; i++){
           gclh_build_list(vips[i]);
         }
@@ -2432,7 +2452,7 @@ if(settings_show_vip_list && getElementsByClass("SignedInProfileLink")[0] && (do
         var user = vips[i];
         var span = document.createElement("span");
         var profile = document.createElement("a");
-        profile.setAttribute("href","http://www.geocaching.com/profile/?u="+user);
+        profile.setAttribute("href","http://www.geocaching.com/profile/?u="+urlencode(user));
         profile.innerHTML = user;
         span.appendChild(profile);
   
@@ -2834,7 +2854,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_det
       callback: function() {
         if (!isBusy && !document.getElementById("gclh_all_logs_marker")) {
           isBusy = true;
-          unsafeWindow.$tfoot.show();
+          if(unsafeWindow.$tfoot) unsafeWindow.$tfoot.show();
           
           for(var i=0; i<10; i++){
             if(logs[num]){
@@ -2848,7 +2868,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_det
 
           gclh_add_vip_icon();
                 
-          unsafeWindow.$tfoot.hide();
+          if(unsafeWindow.$tfoot) unsafeWindow.$tfoot.hide();
           isBusy = false;
         }
       }
@@ -3006,7 +3026,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_det
     
     function gclh_load_helper(){
       if(numPages >= curIdx){
-      unsafeWindow.$tfoot.show();
+      if(unsafeWindow.$tfoot) unsafeWindow.$tfoot.show();
         GM_xmlhttpRequest({
           method: "GET",
           url: "/seek/geocache.logbook?tkn="+unsafeWindow.userToken+"&idx="+curIdx+"&num=100&decrypt=false",
@@ -3016,7 +3036,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_det
               numPages = json.pageInfo.totalPages;
             }
 
-            unsafeWindow.$tfoot.hide();
+            if(unsafeWindow.$tfoot) unsafeWindow.$tfoot.hide();
             
             logs = logs.concat(json.data);
             
