@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           GC little helper
 // @namespace      http://www.amshove.net
-// @version        6.8
+// @version        6.9
 // @include        http://www.geocaching.com/*
 // @include        http://maps.google.de/*
 // @include        http://maps.google.com/*
@@ -19,7 +19,7 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
-// Version:        6.8             - 08.10.2011
+// Version:        6.9             - 08.10.2011
 // Changelog:      6.9             - Added option to disable loading Logs with GClh (Workaround for Greasemonkey-Bug #1448 - https://github.com/greasemonkey/greasemonkey/issues/1448)
 //                                 - Fix: Bug #103 - Usernames in URL not encoded 
 //                                 - Fix: Bug #102 - Feedback button malformed on old map
@@ -386,7 +386,7 @@ profileBookmark("My Trackables", "lnk_my_trackables");
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "6.8";
+var scriptVersion = "6.9";
 
 var anzCustom = 10;
 var anzTemplates = 10;
