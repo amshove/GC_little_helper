@@ -20,7 +20,9 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        6.9             - 08.10.2011
-// Changelog:      6.9             - Added option to disable loading Logs with GClh (Workaround for Greasemonkey-Bug #1448 - https://github.com/greasemonkey/greasemonkey/issues/1448)
+// Changelog:
+//                                 - New: Issue #46 - Date picker im Log dialog 
+//                 6.9             - Added option to disable loading Logs with GClh (Workaround for Greasemonkey-Bug #1448 - https://github.com/greasemonkey/greasemonkey/issues/1448)
 //                                 - Fix: Bug #103 - Usernames in URL not encoded 
 //                                 - Fix: Bug #102 - Feedback button malformed on old map
 //                                 - Fix: Bug #106 - One log disappeared (the log on the threshold) 
@@ -438,6 +440,8 @@ settings_show_all_logs_count = GM_getValue("settings_show_all_logs_count","5");
 settings_decrypt_hint = GM_getValue("settings_decrypt_hint",false);
 // Settings: Show Smilies & BBCode
 settings_show_bbcode = GM_getValue("settings_show_bbcode",true);
+// Settings: Show datepicker
+settings_show_datepicker = GM_getValue("settings_show_datepicker",true);
 // Settings: Show mail-Link
 settings_show_mail = GM_getValue("settings_show_mail",true);
 // Settings: Show EventDay
@@ -1236,6 +1240,45 @@ if(settings_show_eventday && document.location.href.match(/^http:\/\/www\.geocac
     weekday[5]="Friday";
     weekday[6]="Saturday";
     spanelem.innerHTML = spanelem.innerHTML + " (" + weekday[d.getDay()] + ")";
+  }
+}
+
+// Show Datepicker beside Date on Log-Page
+if(settings_show_datepicker && document.location.href.match(/^http:\/\/www\.geocaching\.com\/(seek\/log|track\/log)\.aspx(\?)(id|ID|LUID|wid|WID)\=[a-zA-Z0-9-]*.*/)){  
+  var dpinput = document.createElement("input");
+  dpinput.id="selectedPicker";
+  dpinput.type="hidden";
+  if(document.getElementById("ctl00_ContentBody_LogBookPanel1_DateTimeLogged")){
+    document.getElementById("ctl00_ContentBody_LogBookPanel1_DateTimeLogged").parentNode.appendChild(dpinput);
+
+    // Update three select controls to match a datepicker selection    
+    var code = 'function updateSelected(date) {';
+    code += '  var dateform = $.datepicker.parseDate("m/d/yy", date);';
+    code += '  $("#ctl00_ContentBody_LogBookPanel1_DateTimeLogged_Month option[value=\'" + (dateform.getMonth() + 1) + "\']").attr("selected",true);';
+    code += '  $("#ctl00_ContentBody_LogBookPanel1_DateTimeLogged_Day option[value=\'" + dateform.getDate() + "\']").attr("selected",true);';
+    code += '  $("#ctl00_ContentBody_LogBookPanel1_DateTimeLogged_Year option[value=\'" + dateform.getFullYear() + "\']").attr("selected",true);';
+    //Function of GC.com, do not know what it really does, but let us just trigger it
+    code += '  ChangeOptionDays("ctl00_ContentBody_LogBookPanel1_DateTimeLogged","yyyy-MM-dd");';
+    code += '}';
+    // Update datepicker from three select controls
+    code += '$("#ctl00_ContentBody_LogBookPanel1_DateTimeLogged_Month,#ctl00_ContentBody_LogBookPanel1_DateTimeLogged_Day,#ctl00_ContentBody_LogBookPanel1_DateTimeLogged_Year").change(function() {';
+    code += '  $( "#selectedPicker" ).val($("#ctl00_ContentBody_LogBookPanel1_DateTimeLogged_Month").val() + "/" + $("#ctl00_ContentBody_LogBookPanel1_DateTimeLogged_Day").val() + "/" + $("#ctl00_ContentBody_LogBookPanel1_DateTimeLogged_Year").val());';
+    code += '});';
+    //initialize datepicker
+    code += 'function initDatPick(){';
+    code += '  $( "#selectedPicker" ).val($("#ctl00_ContentBody_LogBookPanel1_DateTimeLogged_Month").val() + "/" + $("#ctl00_ContentBody_LogBookPanel1_DateTimeLogged_Day").val() + "/" + $("#ctl00_ContentBody_LogBookPanel1_DateTimeLogged_Year").val());';
+    code += '  $( "#selectedPicker" ).datepicker({';
+    code += '    onSelect: updateSelected,';
+    code += '    showOn: "button",';
+    code += '    buttonImage: "data:image/png;base64,R0lGODlhEAAPAPQAAIyq7zlx3lqK5zFpznOe7/729fvh3/3y8e1lXt1jXO5tZe9zbLxeWfB6c6lbV/GDffKIgvKNh/OYkvSblvSinfWrp3dTUfawq/e1sf3r6v/8/P/9/f///////wAAAAAAACH5BAEAAB0ALAAAAAAQAA8AAAWK4GWJpDWN6KU8nNK+bsIxs3FdVUVRUhQ9wMUCgbhkjshbbkkpKnWSqC84rHA4kmsWu9lICgWHlQO5lsldSMEgrkAaknccQBAE4mKtfkPQaAIZFw4TZmZdAhoHAxkYg25wchABAQMDeIRYHF5gEkcSBo2YEGlgEEcQoI4SDRWrrayrFxCDDrW2t7ghADs=",';
+    code += '    buttonImageOnly: true';
+    code += '   });';
+    code += '};';
+    
+    var script = document.createElement("script");
+    script.innerHTML = code;
+    document.getElementsByTagName("body")[0].appendChild(script);
+    unsafeWindow.initDatPick();
   }
 }
 
@@ -3777,6 +3820,7 @@ function gclh_showConfig(){
     html += checkbox('settings_hide_hint', 'Hide hint behind a link') + show_help("This option hides the hint behind a link - you have to click it to display the hints (already decrypted).")+ "<br/>";
     html += checkbox('settings_decrypt_hint', 'Decrypt Hint') + "<br/>";
     html += checkbox('settings_show_eventday', 'Show weekday of an event') + show_help("With this option the day of the week will be displayed next to the date.") + "<br/>";
+    html += checkbox('settings_show_datepicker', 'Show datepicker') + show_help("With this option a calender icon is shown next to the Date on the logpage. After a click on this icon a calender is shown to select the logdate.") + "<br/>";
     html += checkbox('settings_show_mail', 'Show Mail Link beside Usernames') + show_help("With this option there will be an small mail-Icon beside every username. With this Icon you get directly to the mail-page to mail to this user. If you click it when you are in a Listing, the cachename and GCID will be inserted into the mail-form - you don't have to remember it :) ") + "<br/>";
     html += checkbox('settings_show_google_maps', 'Show Link to and from google maps') + show_help("This option makes two thing. First it shows a Link at the top of the second map in the listing. With this Link you get directly to google maps in the area, where the cache is. Second it adds an gc.com-Icon to google-maps to jump from google-maps to gc.com-maps to the same location.") + "<br/>";
     html += checkbox('settings_dynamic_map', 'Show dynamic map') + show_help("gc.com shows a static map at the bottom of a listing. You have to click a link, if you want to have it dynamic to interact with it. This option makes the click for you automatically.") +"<br/>";
@@ -3962,6 +4006,7 @@ function gclh_showConfig(){
       'settings_decrypt_hint',
       'settings_show_bbcode',
       'settings_show_eventday',
+      'settings_show_datepicker',
       'settings_show_mail',
       'settings_show_google_maps',
       'settings_show_log_it',
