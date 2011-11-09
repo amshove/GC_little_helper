@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           GC little helper
 // @namespace      http://www.amshove.net
-// @version        6.9
+// @version        7.0 
 // @include        http://www.geocaching.com/*
 // @include        http://maps.google.de/*
 // @include        http://maps.google.com/*
@@ -19,9 +19,8 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
-// Version:        6.9             - 08.10.2011
-// Changelog:
-//                                 - Fix: Bug #107 - TB-Series displayed incorrect, if there is a "-" in the name 
+// Version:        7.0             - 09.11.2011
+// Changelog:      7.0             - Fix: Bug #107 - TB-Series displayed incorrect, if there is a "-" in the name 
 //                                 - Fix: Bug #109 - No Logs, when not logged-in 
 //                                 - Fix: Bug #110 - Inline-Log doesn't work 
 //                                 - Fix: Bug #111 - [gc.com update] google maps link vanished 
@@ -394,7 +393,7 @@ profileBookmark("My Trackables", "lnk_my_trackables");
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "6.9";
+var scriptVersion = "7.0";
 
 var anzCustom = 10;
 var anzTemplates = 10;
