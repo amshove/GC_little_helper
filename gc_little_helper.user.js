@@ -21,6 +21,8 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        6.9             - 08.10.2011
 // Changelog:
+//                                 - Fix: Bug #111 - [gc.com update] google maps link vanished 
+//                                 - Fix: Bug #112 - [gc.com update] Some features, displayed next to the coords, vanished 
 //                                 - Fix: Bug #113 - [gc.com update] "Hide Feedback" can be removed 
 //                                 - New: Issue #46 - Date picker im Log dialog 
 //                 6.9             - Added option to disable loading Logs with GClh (Workaround for Greasemonkey-Bug #1448 - https://github.com/greasemonkey/greasemonkey/issues/1448)
@@ -1541,7 +1543,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/myfriends\.
 }
 
 // Show Google-Maps Link on Cache Page
-if(settings_show_google_maps && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx\?/) && document.getElementById("ctl00_ContentBody_uxViewLargerMap") && document.getElementById("ctl00_ContentBody_LatLon") && document.getElementById("ctl00_ContentBody_CoordInfoLinkControl1_uxCoordInfoCode")){
+if(settings_show_google_maps && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx\?/) && document.getElementById("ctl00_ContentBody_uxViewLargerMap") && document.getElementById("uxLatLon") && document.getElementById("ctl00_ContentBody_CoordInfoLinkControl1_uxCoordInfoCode")){
   var ref_link = document.getElementById("ctl00_ContentBody_uxViewLargerMap");
   var box = ref_link.parentNode;
 //  var matches = ref_link.href.match(/lat=([-0-9]*\.[0-9]*)\&lng=([-0-9]*\.[0-9]*)/);
@@ -1553,7 +1555,7 @@ if(settings_show_google_maps && document.location.href.match(/^http:\/\/www\.geo
   link.setAttribute("target","_blank");
   link.setAttribute("title","Show area at Google Maps");
 //  link.setAttribute("href","http://maps.google.de/?ll="+matches[1]+","+matches[2]);
-  link.setAttribute("href","http://maps.google.com/maps?q="+document.getElementById("ctl00_ContentBody_LatLon").innerHTML+" ("+document.getElementById("ctl00_ContentBody_CoordInfoLinkControl1_uxCoordInfoCode").innerHTML+")");
+  link.setAttribute("href","http://maps.google.com/maps?q="+document.getElementById("uxLatLon").innerHTML+" ("+document.getElementById("ctl00_ContentBody_CoordInfoLinkControl1_uxCoordInfoCode").innerHTML+")");
   
   var img = document.createElement("img");
   img.setAttribute("src","/images/silk/map_go.png");
@@ -3240,22 +3242,20 @@ function DectoDeg(lat,lng){
 }
 
 // Show other Coord-Formats in Listing
-if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/) && document.getElementById('ctl00_ContentBody_LatLon')){
-  var box = document.getElementById('ctl00_ContentBody_LocationSubPanel').firstChild;
-  var coords = document.getElementById('ctl00_ContentBody_LatLon').innerHTML;
-  if(coords.match(/^(N|S) [0-9][0-9]. [0-9][0-9]\.[0-9][0-9][0-9] (E|W) [0-9][0-9][0-9]. [0-9][0-9]\.[0-9][0-9][0-9]$/)){
-    var dec = toDec(coords);
-    var lat = dec[0];
-    var lng = dec[1];
-    if(lat < 0) lat = "S "+(lat*-1);
-    else lat = "N "+lat;
-    if(lng < 0) lng = "W "+(lng*-1);
-    else lng = "E "+lng;
-    box.innerHTML += " - Dec: "+lat+" "+lng;
+if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/) && document.getElementById('uxLatLon')){
+  var box = document.getElementById('UTMFormat');
+  var coords = document.getElementById('uxLatLon').innerHTML;
+  var dec = toDec(coords);
+  var lat = dec[0];
+  var lng = dec[1];
+  if(lat < 0) lat = "S "+(lat*-1);
+  else lat = "N "+lat;
+  if(lng < 0) lng = "W "+(lng*-1);
+  else lng = "E "+lng;
+  box.innerHTML += " - Dec: "+lat+" "+lng;
 
-    var dms = DegtoDMS(coords);
-    box.innerHTML += " - DMS: "+dms;
-  }
+  var dms = DegtoDMS(coords);
+  box.innerHTML += " - DMS: "+dms;
 }
 // ... and on print-page
 if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cdpf\.aspx/)){
@@ -3281,28 +3281,32 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cdpf\.asp
 }
 
 // Show Map-It button at Listing
-if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/) && document.getElementById('ctl00_ContentBody_LatLon')){
-  var coords = toDec(document.getElementById("ctl00_ContentBody_LatLon").innerHTML);
-  var link = document.getElementById("ctl00_ContentBody_LatLon").nextSibling.nextSibling;
+if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/) && document.getElementById('uxLatLon')){
+  var coords = toDec(document.getElementById("uxLatLon").innerHTML);
+  var link = document.getElementById("uxLatLonLink").parentNode;
   var a = document.createElement("a");
+  var small = document.createElement("small");
   a.setAttribute("href",map_url+"?ll="+coords[0]+","+coords[1]);
   a.appendChild(document.createTextNode("Map this Location"));
-  link.appendChild(document.createTextNode(" - "));
-  link.appendChild(a);
+  small.appendChild(document.createTextNode(" - "));
+  small.appendChild(a);
+  link.appendChild(small);
 }
 
 // Show Route-It button at Listing
-if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/) && document.getElementById('ctl00_ContentBody_LatLon') && GM_getValue("home_lat")){
-  var coords = toDec(document.getElementById("ctl00_ContentBody_LatLon").innerHTML);
-  var link = document.getElementById("ctl00_ContentBody_LatLon").nextSibling.nextSibling;
+if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/) && document.getElementById('uxLatLon') && GM_getValue("home_lat")){
+  var coords = toDec(document.getElementById("uxLatLon").innerHTML);
+  var link = document.getElementById("uxLatLonLink").parentNode;
   var a = document.createElement("a");
+  var small = document.createElement("small");
   var name = ""
   if(document.getElementById("ctl00_ContentBody_CacheName")) name = "+("+trim(document.getElementById("ctl00_ContentBody_CacheName").innerHTML)+")";
   a.setAttribute("href","http://maps.google.com/?saddr="+(GM_getValue("home_lat")/10000000)+","+(GM_getValue("home_lng")/10000000)+"+(HomeCoords)&daddr="+coords[0]+","+coords[1]+name);
   a.setAttribute("target","_blank");
   a.appendChild(document.createTextNode("Route to this Location"));
-  link.appendChild(document.createTextNode(" - "));
-  link.appendChild(a);
+  small.appendChild(document.createTextNode(" - "));
+  small.appendChild(a);
+  link.appendChild(small);
 }
 
 // Save HomeCoords for special bookmarks - From Index
