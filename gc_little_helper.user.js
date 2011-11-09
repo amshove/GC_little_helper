@@ -21,6 +21,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        6.9             - 08.10.2011
 // Changelog:
+//                                 - Fix: Bug #110 - Inline-Log doesn't work 
 //                                 - Fix: Bug #111 - [gc.com update] google maps link vanished 
 //                                 - Fix: Bug #112 - [gc.com update] Some features, displayed next to the coords, vanished 
 //                                 - Fix: Bug #113 - [gc.com update] "Hide Feedback" can be removed 
@@ -1886,7 +1887,7 @@ if(settings_log_inline && document.location.href.match(/^http:\/\/www\.geocachin
   var watch = false;
   var gallery = false;
   for(var i = 0; i < links.length; i++){
-    if(links[i].href.match(/log\.aspx/) && !menu){
+    if(links[i].href.match(/log\.aspx\?ID/) && !menu){
       menu = links[i];
     }else if(links[i].href.match(/gallery\.aspx/) && !gallery){
       gallery = links[i];
