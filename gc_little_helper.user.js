@@ -3801,7 +3801,7 @@ function gclh_showConfig(){
     html += checkbox('settings_hide_advert_link', 'Hide link to advertisement instructions') + "<br/>";
     html += checkbox('settings_hide_line_breaks', 'Hide superfluous line breaks') + "<br/>";
     html += "Page-Width: <input class='gclh_form' type='text' size='3' id='settings_new_width' value='"+GM_getValue("settings_new_width",950)+"'> px" + show_help("With this option you can expand the small layout. The default-value of gc.com is 950 px.") + "<br>";
-    html += checkbox('settings_automatic_friend_reset', 'Reset Defference-Counter on Friendlist automatically') + show_help("If you enable this option, the difference-counter at Friendlist will automatically reset if you have seen the difference and if the day changed.") + "<br/>";
+    html += checkbox('settings_automatic_friend_reset', 'Reset Difference-Counter on Friendlist automatically') + show_help("If you enable this option, the difference-counter at Friendlist will automatically reset if you have seen the difference and if the day changed.") + "<br/>";
     html += checkbox('settings_show_big_gallery', 'Show bigger Images in Gallery') + "<br/>";
     html += "";
     html += "<br>";
