@@ -21,6 +21,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        6.9             - 08.10.2011
 // Changelog:
+//                                 - Fix: Bug #113 - [gc.com update] "Hide Feedback" can be removed 
 //                                 - New: Issue #46 - Date picker im Log dialog 
 //                 6.9             - Added option to disable loading Logs with GClh (Workaround for Greasemonkey-Bug #1448 - https://github.com/greasemonkey/greasemonkey/issues/1448)
 //                                 - Fix: Bug #103 - Usernames in URL not encoded 
@@ -426,7 +427,7 @@ settings_bookmarks_search_default = GM_getValue("settings_bookmarks_search_defau
 // Settings: Redirect to Map
 settings_redirect_to_map = GM_getValue("settings_redirect_to_map",false);
 // Settings: Hide Feedback Button
-settings_hide_feedback = GM_getValue("settings_hide_feedback",false);
+//settings_hide_feedback = GM_getValue("settings_hide_feedback",false);
 // Settings: Hide Disclaimer
 settings_hide_disclaimer = GM_getValue("settings_hide_disclaimer",true);
 // Settings: Hide Cache Notes
@@ -807,17 +808,17 @@ if(settings_redirect_to_map && document.location.href.match(/^http:\/\/www\.geoc
   }
 }
 
-// Hide Feedback-Button
-if(settings_hide_feedback) {
-  function hide_feedback() {
-    var button = document.getElementById('feedback-tab');
-    if(button){
-      button.parentNode.removeChild(button);
-    }
-  }
-  
-  window.addEventListener("load", hide_feedback, false);
-}
+//// Hide Feedback-Button
+//if(settings_hide_feedback) {
+//  function hide_feedback() {
+//    var button = document.getElementById('feedback-tab');
+//    if(button){
+//      button.parentNode.removeChild(button);
+//    }
+//  }
+//  
+//  window.addEventListener("load", hide_feedback, false);
+//}
 
 // Hide Disclaimer
 if(settings_hide_disclaimer && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx(\?|\?pf\=\&)(guid|wp)\=[a-zA-Z0-9-]*/)){
@@ -1973,13 +1974,13 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx
 
   if(document.getElementsByTagName("footer")[0]) document.getElementsByTagName("footer")[0].style.display = "none";
 
-  function hide_feedback(){
-    var button = document.getElementById('uservoice-feedback');
-    if(button){
-      button.parentNode.removeChild(button);
-    }
-  }
-  window.addEventListener("load", hide_feedback, false);
+//  function hide_feedback(){
+//    var button = document.getElementById('uservoice-feedback');
+//    if(button){
+//      button.parentNode.removeChild(button);
+//    }
+//  }
+//  window.addEventListener("load", hide_feedback, false);
 
   if(getElementsByClass('container')[1]) getElementsByClass('container')[1].style.display = "inline";
 
@@ -3786,7 +3787,7 @@ function gclh_showConfig(){
     html += "Home-Coords: <input class='gclh_form' type='text' id='settings_home_lat_lng' value='"+DectoDeg(GM_getValue("home_lat"),GM_getValue("home_lng"))+"'>"+show_help("The Home-Coords are filled automatically if you update your Home-Coords on gc.com. If it doesn\'t work you can insert them here. These Coords are used for some special Links (Nearest List, Nearest Map, ..) and for the homezone-circle on the map.")+"<br>";
     html += checkbox('settings_bookmarks_on_top', "Show <a class='gclh_ref' href='#gclh_linklist' id='gclh_linklist_link_1'>Linklist</a> on top") + show_help("Show the Linklist on the top of the page - beside the other Links of gc.com. You can configure the Links at the end of this configuration-page.") + "<br/>";
     html += checkbox('settings_bookmarks_show', "Show <a class='gclh_ref' href='#gclh_linklist' id='gclh_linklist_link_2'>Linklist</a> in profile") + show_help("Show the Linklist at the side in your profile. You can configure the Links at the end of this configuration-page.") + "<br/>";
-    html += checkbox('settings_hide_feedback', 'Hide Feedback-Button') + "<br/>";
+//    html += checkbox('settings_hide_feedback', 'Hide Feedback-Button') + "<br/>";
     html += checkbox('settings_hide_advert_link', 'Hide link to advertisement instructions') + "<br/>";
     html += checkbox('settings_hide_line_breaks', 'Hide superfluous line breaks') + "<br/>";
     html += "Page-Width: <input class='gclh_form' type='text' size='3' id='settings_new_width' value='"+GM_getValue("settings_new_width",950)+"'> px" + show_help("With this option you can expand the small layout. The default-value of gc.com is 950 px.") + "<br>";
@@ -3998,7 +3999,7 @@ function gclh_showConfig(){
       'settings_bookmarks_on_top',
       'settings_bookmarks_search',
       'settings_redirect_to_map',
-      'settings_hide_feedback',
+//      'settings_hide_feedback',
       'settings_hide_disclaimer',
       'settings_hide_cache_notes',
       'settings_hide_empty_cache_notes',
