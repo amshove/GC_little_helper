@@ -21,6 +21,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        6.9             - 08.10.2011
 // Changelog:
+//                                 - Fix: Bug #107 - TB-Series displayed incorrect, if there is a "-" in the name 
 //                                 - Fix: Bug #109 - No Logs, when not logged-in 
 //                                 - Fix: Bug #110 - Inline-Log doesn't work 
 //                                 - Fix: Bug #111 - [gc.com update] google maps link vanished 
@@ -1479,10 +1480,13 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/track\/details\
   var dl = getElementsByClass('BugDetailsList')[0];
 
   if(dl){
-    var title = document.getElementsByTagName('title')[0].innerHTML;
-    if(title){
-      var matches = title.match(/\([A-Za-z0-9]*\) ([A-Za-z0-9-!–_.,\s]*) - /);
-      if(matches) dl.innerHTML += "<dt>Series:</dt><dd>"+matches[1]+"</dd>";
+//    var title = document.getElementsByTagName('title')[0].innerHTML;
+//    if(title){
+//      var matches = title.match(/\([A-Za-z0-9]*\) ([A-Za-z0-9-!–_.,\s]*) - /);
+//      if(matches) dl.innerHTML += "<dt>Series:</dt><dd>"+matches[1]+"</dd>";
+//    }
+    if(document.getElementById("ctl00_ContentBody_BugTypeImage") && document.getElementById("ctl00_ContentBody_BugTypeImage").alt){
+      dl.innerHTML += "<dt>Series:</dt><dd>"+document.getElementById("ctl00_ContentBody_BugTypeImage").alt+"</dd>";
     }
   }
 }
