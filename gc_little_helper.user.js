@@ -21,6 +21,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        6.9             - 08.10.2011
 // Changelog:
+//                                 - Fix: Bug #109 - No Logs, when not logged-in 
 //                                 - Fix: Bug #110 - Inline-Log doesn't work 
 //                                 - Fix: Bug #111 - [gc.com update] google maps link vanished 
 //                                 - Fix: Bug #112 - [gc.com update] Some features, displayed next to the coords, vanished 
@@ -2842,7 +2843,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_det
 }
 
 // Overwrite Log-Template and Log-Load-Function
-if(settings_load_logs_with_gclh && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx?/)){
+if(settings_load_logs_with_gclh && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx?/) && !document.getElementById("ctl00_divNotSignedIn")){
   // to Top Link
   var a = document.createElement("a");
   a.setAttribute("href","#");
@@ -3192,6 +3193,7 @@ function toDec(coords){
 // Helper: from Deg to DMS
 function DegtoDMS(coords){
   var match = coords.match(/^(N|S) ([0-9][0-9]). ([0-9][0-9])\.([0-9][0-9][0-9]) (E|W) ([0-9][0-9][0-9]). ([0-9][0-9])\.([0-9][0-9][0-9])$/);
+  if(!match) return "";
 
   var lat1 = parseInt(match[2],10);
   var lat2 = parseInt(match[3],10);
