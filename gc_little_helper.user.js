@@ -21,6 +21,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        7.0             - 09.11.2011
 // Changelog:      7.0
+//                                 - New: Issue #114 - Highlight coords if modified 
 //                                 - New: Issue #116 - Add coord.info-Link in Mails 
 //                 7.0             - Fix: Bug #107 - TB-Series displayed incorrect, if there is a "-" in the name 
 //                                 - Fix: Bug #109 - No Logs, when not logged-in 
@@ -488,6 +489,7 @@ settings_hide_line_breaks = GM_getValue('settings_hide_line_breaks',true);
 settings_hide_spoilerwarning = GM_getValue('settings_hide_spoilerwarning',true);
 settings_hide_hint = GM_getValue('settings_hide_hint',true);
 settings_strike_archived = GM_getValue('settings_strike_archived',true);
+settings_highlight_usercoords = GM_getValue('settings_highlight_usercoords',true);
 settings_map_hide_found = GM_getValue('settings_map_hide_found', false);
 settings_map_hide_hidden = GM_getValue('settings_map_hide_hidden', false);
 settings_show_fav_percentage = GM_getValue('settings_show_fav_percentage', false);
@@ -1031,6 +1033,15 @@ if(settings_strike_archived && document.location.href.match(/^http:\/\/www\.geoc
       }
     }
   }
+}
+
+//Highlight Usercoords
+if(settings_highlight_usercoords && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx(\?|\?pf\=\&)(guid|wp)\=[a-zA-Z0-9-]*/)){
+  var head = document.getElementsByTagName('head')[0];
+  var style = document.createElement('style');
+  style.type = 'text/css';
+  style.innerHTML = ".myLatLon{ color: #FF0000; }";
+  head.appendChild(style);
 }
 
 // Show all Logs
@@ -3849,6 +3860,7 @@ function gclh_showConfig(){
     html += checkbox('settings_show_google_maps', 'Show Link to and from google maps') + show_help("This option makes two thing. First it shows a Link at the top of the second map in the listing. With this Link you get directly to google maps in the area, where the cache is. Second it adds an gc.com-Icon to google-maps to jump from google-maps to gc.com-maps to the same location.") + "<br/>";
     html += checkbox('settings_dynamic_map', 'Show dynamic map') + show_help("gc.com shows a static map at the bottom of a listing. You have to click a link, if you want to have it dynamic to interact with it. This option makes the click for you automatically.") +"<br/>";
     html += checkbox('settings_strike_archived', 'Strike through title of archived/disabled caches') + "<br/>";
+    html += checkbox('settings_highlight_usercoords', 'Highlight coordinates which are changed by the user with red textcolor') + "<br/>";
     html += checkbox('settings_show_fav_percentage', 'Show percentage of favourite points') + show_help("This option loads the favourite-stats of a cache in the backround and display the percentage under the amount of favs a cache got.") + "<br/>";
     html += checkbox('settings_show_vip_list', 'Show VIP-List') + show_help("The VIP-List is a list, displayed at the side on a cache-listing. You can add any user to your VIP-List by clicking the little VIP-Icon beside the username. If it is green, this person is a VIP. The VIP-List only shows VIPs and the logs of VIPs, wich already posted a log to this cache. With this option you are able to see wich of your VIPs already found this cache. The Owner is automatically a VIP for the cache, so you can see, what happened with the cache (disable, maint, enable, ..). On your profile-page there is an overview of all your VIPs.") + "<br/>";
     html += checkbox('settings_show_long_vip', 'Show long VIP-List (one row per log)') + show_help("This is another type of displaying the VIP-List. If you disable this option you get the short list - one row per VIP and the Logs as Icons beside the VIP. If you enable this option, there is a row for every log.")+ "<br/>";
@@ -4052,6 +4064,7 @@ function gclh_showConfig(){
       'settings_hide_spoilerwarning',
       'settings_hide_hint',
       'settings_strike_archived',
+      'settings_highlight_usercoords',
       'settings_map_hide_found',
       'settings_map_hide_hidden',
       'settings_show_fav_percentage',
