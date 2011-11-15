@@ -20,7 +20,9 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        7.0             - 09.11.2011
-// Changelog:      7.0             - Fix: Bug #107 - TB-Series displayed incorrect, if there is a "-" in the name 
+// Changelog:      7.0
+//                                 - New: Issue #116 - Add coord.info-Link in Mails 
+//                 7.0             - Fix: Bug #107 - TB-Series displayed incorrect, if there is a "-" in the name 
 //                                 - Fix: Bug #109 - No Logs, when not logged-in 
 //                                 - Fix: Bug #110 - Inline-Log doesn't work 
 //                                 - Fix: Bug #111 - [gc.com update] google maps link vanished 
@@ -449,6 +451,8 @@ settings_show_bbcode = GM_getValue("settings_show_bbcode",true);
 settings_show_datepicker = GM_getValue("settings_show_datepicker",true);
 // Settings: Show mail-Link
 settings_show_mail = GM_getValue("settings_show_mail",true);
+// Settings: Show Coord-Link in Mail
+settings_show_mail_coordslink = GM_getValue("settings_show_mail_coordslink",false);
 // Settings: Show EventDay
 settings_show_eventday = GM_getValue("settings_show_eventday",true);
 // Settings: Show google-maps Link
@@ -1308,12 +1312,20 @@ if(settings_show_mail && document.location.href.match(/^http:\/\/www\.geocaching
     }
   }else if(document.getElementById('ctl00_ContentBody_CacheName')){
     var name = document.getElementById('ctl00_ContentBody_CacheName').innerHTML;
-    if(document.getElementById('ctl00_ContentBody_CoordInfoLinkControl1_uxCoordInfoCode')) name += " ("+document.getElementById('ctl00_ContentBody_CoordInfoLinkControl1_uxCoordInfoCode').innerHTML+")";
+    if(document.getElementById('ctl00_ContentBody_CoordInfoLinkControl1_uxCoordInfoCode')){
+      name += " ( ";
+      if(settings_show_mail_coordslink)name += "http://coord.info/";
+      name += document.getElementById('ctl00_ContentBody_CoordInfoLinkControl1_uxCoordInfoCode').innerHTML+" )";
+    }
   }else if(document.getElementById('ctl00_ContentBody_lbHeading') && !document.location.href.match(/^http:\/\/www\.geocaching\.com\/(seek|track)\/log\.aspx\?.*/)){
     var name = document.getElementById('ctl00_ContentBody_lbHeading').innerHTML;
     if(document.getElementById('ctl00_ContentBody_BugDetails_BugTBNum') && document.getElementById('ctl00_ContentBody_BugDetails_BugTBNum').getElementsByTagName('strong')){
       var tbnr = document.getElementById('ctl00_ContentBody_BugDetails_BugTBNum').getElementsByTagName('strong')[0]; 
-      if(tbnr != "")name = name + " (" + tbnr.innerHTML + ")";
+      if(tbnr != ""){
+        name += " ( ";
+        if(settings_show_mail_coordslink)name += "http://coord.info/";
+        name += tbnr.innerHTML + " )";
+      }
     }
   }else if(document.getElementById('ctl00_ContentBody_LogBookPanel1_lbLogText')){
     var name = "";
@@ -3833,6 +3845,7 @@ function gclh_showConfig(){
     html += checkbox('settings_show_eventday', 'Show weekday of an event') + show_help("With this option the day of the week will be displayed next to the date.") + "<br/>";
     html += checkbox('settings_show_datepicker', 'Show datepicker') + show_help("With this option a calender icon is shown next to the Date on the logpage. After a click on this icon a calender is shown to select the logdate.") + "<br/>";
     html += checkbox('settings_show_mail', 'Show Mail Link beside Usernames') + show_help("With this option there will be an small mail-Icon beside every username. With this Icon you get directly to the mail-page to mail to this user. If you click it when you are in a Listing, the cachename and GCID will be inserted into the mail-form - you don't have to remember it :) ") + "<br/>";
+    html += checkbox('settings_show_mail_coordslink', 'Show Coord-Link in Mail') + show_help("This option requires \"Show Mail Link beside Usernames\". With this option the GC/TB-Code in the Mail is displayed as coord.info-link") + "<br/>";
     html += checkbox('settings_show_google_maps', 'Show Link to and from google maps') + show_help("This option makes two thing. First it shows a Link at the top of the second map in the listing. With this Link you get directly to google maps in the area, where the cache is. Second it adds an gc.com-Icon to google-maps to jump from google-maps to gc.com-maps to the same location.") + "<br/>";
     html += checkbox('settings_dynamic_map', 'Show dynamic map') + show_help("gc.com shows a static map at the bottom of a listing. You have to click a link, if you want to have it dynamic to interact with it. This option makes the click for you automatically.") +"<br/>";
     html += checkbox('settings_strike_archived', 'Strike through title of archived/disabled caches') + "<br/>";
@@ -4019,6 +4032,7 @@ function gclh_showConfig(){
       'settings_show_eventday',
       'settings_show_datepicker',
       'settings_show_mail',
+      'settings_show_mail_coordslink',
       'settings_show_google_maps',
       'settings_show_log_it',
       'settings_dynamic_map',
