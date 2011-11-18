@@ -21,7 +21,8 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        7.0             - 09.11.2011
 // Changelog:      7.0
-//                                 - New: Issue #105 - Disable the display of owner logs in VIP list 
+//                                 - New: Issue #105 - Disable the display of owner logs in VIP list
+//                                 - New: Issue #114 - Highlight coords if modified
 //                                 - New: Issue #116 - Add coord.info-Link in Mails 
 //                 7.0             - Fix: Bug #107 - TB-Series displayed incorrect, if there is a "-" in the name 
 //                                 - Fix: Bug #109 - No Logs, when not logged-in 
