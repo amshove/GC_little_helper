@@ -21,7 +21,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        7.0             - 09.11.2011
 // Changelog:      7.0
-//                                 - New: Issue #114 - Highlight coords if modified 
+//                                 - New: Issue #105 - Disable the display of owner logs in VIP list 
 //                                 - New: Issue #116 - Add coord.info-Link in Mails 
 //                 7.0             - Fix: Bug #107 - TB-Series displayed incorrect, if there is a "-" in the name 
 //                                 - Fix: Bug #109 - No Logs, when not logged-in 
@@ -494,6 +494,7 @@ settings_map_hide_found = GM_getValue('settings_map_hide_found', false);
 settings_map_hide_hidden = GM_getValue('settings_map_hide_hidden', false);
 settings_show_fav_percentage = GM_getValue('settings_show_fav_percentage', false);
 settings_show_vip_list = GM_getValue('settings_show_vip_list', true);
+settings_show_owner_vip_list = GM_getValue('settings_show_owner_vip_list', true);
 settings_autovisit = GM_getValue("settings_autovisit","true");
 settings_show_thumbnails = GM_getValue("settings_show_thumbnails",true);
 settings_hide_avatar = GM_getValue("settings_hide_avatar",false);
@@ -2349,7 +2350,7 @@ if(settings_show_vip_list && getElementsByClass("SignedInProfileLink")[0] && (do
     GM_addStyle(css);
   
     function gclh_build_vip_list(){
-      var show_owner = true;
+      var show_owner = settings_show_owner_vip_list;
       var list = document.getElementById("gclh_vip_list");
       list.innerHTML = "";
 
@@ -3863,6 +3864,7 @@ function gclh_showConfig(){
     html += checkbox('settings_highlight_usercoords', 'Highlight coordinates which are changed by the user with red textcolor') + "<br/>";
     html += checkbox('settings_show_fav_percentage', 'Show percentage of favourite points') + show_help("This option loads the favourite-stats of a cache in the backround and display the percentage under the amount of favs a cache got.") + "<br/>";
     html += checkbox('settings_show_vip_list', 'Show VIP-List') + show_help("The VIP-List is a list, displayed at the side on a cache-listing. You can add any user to your VIP-List by clicking the little VIP-Icon beside the username. If it is green, this person is a VIP. The VIP-List only shows VIPs and the logs of VIPs, wich already posted a log to this cache. With this option you are able to see wich of your VIPs already found this cache. The Owner is automatically a VIP for the cache, so you can see, what happened with the cache (disable, maint, enable, ..). On your profile-page there is an overview of all your VIPs.") + "<br/>";
+    html += checkbox('settings_show_owner_vip_list', 'Show Owner in VIP-List') + "<br/>";
     html += checkbox('settings_show_long_vip', 'Show long VIP-List (one row per log)') + show_help("This is another type of displaying the VIP-List. If you disable this option you get the short list - one row per VIP and the Logs as Icons beside the VIP. If you enable this option, there is a row for every log.")+ "<br/>";
     html += checkbox('settings_show_thumbnails', 'Show Thumbnails of Images') + show_help("With this option the images in logs are displayed as thumbnails to have a preview. If you hover over a Thumbnail, you can see the big one. This also works in gallerys.") + "<br/>";
     html += checkbox('settings_hide_avatar', 'Hide Avatars in Listing') + show_help("This option hides the avatars in logs. This prevents loading the hundreds of images. You have to change the option here, because GClh overrides the log-load-logic of gc.com, so the avatar-option of gc.com doesn't work with GClh.") + "<br/>";
@@ -4069,6 +4071,7 @@ function gclh_showConfig(){
       'settings_map_hide_hidden',
       'settings_show_fav_percentage',
       'settings_show_vip_list',
+      'settings_show_owner_vip_list',
       'settings_autovisit',
       'settings_show_thumbnails',
       'settings_hide_avatar',
