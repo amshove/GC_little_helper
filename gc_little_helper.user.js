@@ -21,6 +21,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        7.0             - 09.11.2011
 // Changelog:      7.0
+//                                 - Fix: Bug #115 - Homezone radius says miles when English is specified but is actually kilometers.
 //                                 - New: Issue #120 - [gc.com update] Hide new links "Learn" and "Partnering" from menu
 //                                 - New: Issue #105 - Disable the display of owner logs in VIP list
 //                                 - New: Issue #114 - Highlight coords if modified
@@ -3840,7 +3841,7 @@ function gclh_showConfig(){
     html += "<br>";
     html += "";
     html += "<h4 class='gclh_headline2'>Maps</h4>";
-    html += checkbox('settings_show_homezone', 'Show Homezone') + " - Radius: <input class='gclh_form' type='text' size='2' id='settings_homezone_radius' value='"+settings_homezone_radius+"'> miles"+show_help("This option draws a circle of X miles around your home-coordinates on the map.")+"<br>";
+    html += checkbox('settings_show_homezone', 'Show Homezone') + " - Radius: <input class='gclh_form' type='text' size='2' id='settings_homezone_radius' value='"+settings_homezone_radius+"'> km"+show_help("This option draws a circle of X kilometers around your home-coordinates on the map.")+"<br>";
     html += "Homezone-Color: <input class='gclh_form' type='text' size='5' id='settings_homezone_color' value='"+settings_homezone_color+"'>"+show_help("Here you can change the color of your homezone-circle.")+"<br>";
     html += checkbox('settings_old_map', 'Set old map as default') + show_help("With this option you can set the old map as default if you don't want to use the new beta-Map.")+"<br/>";
     html += checkbox('settings_map_hide_found', 'Hide found caches by default') + show_help("This is a Premium-Feature - it enables automatically the option to hide your found caches on map.") + "<br/>";
