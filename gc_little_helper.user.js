@@ -21,6 +21,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        7.0             - 09.11.2011
 // Changelog:      7.0
+//                                 - New: Issue #120 - [gc.com update] Hide new links "Learn" and "Partnering" from menu
 //                                 - New: Issue #105 - Disable the display of owner logs in VIP list
 //                                 - New: Issue #114 - Highlight coords if modified
 //                                 - New: Issue #116 - Add coord.info-Link in Mails 
@@ -795,6 +796,8 @@ if(settings_bookmarks_on_top && document.location.href.match(/^http:\/\/www\.geo
 // Remove gc.com Links in Navigation
 if(document.getElementById('Navigation')){
   var liste = document.getElementById('Navigation').childNodes[1];
+  if(GM_getValue('remove_navi_learn') && document.getElementById('ctl00_hlNavLearn')) liste.removeChild(document.getElementById('ctl00_hlNavLearn').parentNode);
+  if(GM_getValue('remove_navi_partnering') && document.getElementById('ctl00_hlNavPartnering')) liste.removeChild(document.getElementById('ctl00_hlNavPartnering').parentNode);
   if(GM_getValue('remove_navi_play') && document.getElementById('ctl00_hlNavPlay')) liste.removeChild(document.getElementById('ctl00_hlNavPlay').parentNode);
   if(GM_getValue('remove_navi_profile') && document.getElementById('ctl00_hlNavProfile')) liste.removeChild(document.getElementById('ctl00_hlNavProfile').parentNode);
   if(GM_getValue('remove_navi_join') && document.getElementById('ctl00_hlNavJoin')) liste.removeChild(document.getElementById('ctl00_hlNavJoin').parentNode);
@@ -3911,6 +3914,8 @@ function gclh_showConfig(){
     html += "<h4 class='gclh_headline2'><a name='gclh_linklist'></a>Linklist / Navigation"+show_help("In this section you can configure your personal linklist which is shown on the top of the page and/or in your profile - you can activate it on top of this configuration-page.")+" <a class='gclh_small' href='#gclh_linklist' id='gclh_show_linklist_btn'>show</a></h4>";
     html += "<div id='gclh_settings_linklist' style='display: none;'>";
     html += "Remove from Navigation:"+show_help("Here you can select, which of the original gc.com links should be removed to make room for your linklist.")+"<br>";
+    html += "<input type='checkbox' "+(GM_getValue('remove_navi_learn') ? "checked='checked'" : "" )+" id='remove_navi_learn'> Learn<br>";
+    html += "<input type='checkbox' "+(GM_getValue('remove_navi_partnering') ? "checked='checked'" : "" )+" id='remove_navi_partnering'> Partnering<br>";
     html += "<input type='checkbox' "+(GM_getValue('remove_navi_play') ? "checked='checked'" : "" )+" id='remove_navi_play'> Play<br>";
     html += "<input type='checkbox' "+(GM_getValue('remove_navi_profile') ? "checked='checked'" : "" )+" id='remove_navi_profile'> Your Profile<br>";
     html += "<input type='checkbox' "+(GM_getValue('remove_navi_join') ? "checked='checked'" : "" )+" id='remove_navi_join'> Join<br>";
@@ -4053,6 +4058,8 @@ function gclh_showConfig(){
       'settings_dynamic_map',
       'settings_show_homezone',
       'settings_old_map',
+      'remove_navi_learn',
+      'remove_navi_partnering',
       'remove_navi_play',
       'remove_navi_profile',
       'remove_navi_join',
