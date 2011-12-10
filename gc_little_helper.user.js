@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           GC little helper
 // @namespace      http://www.amshove.net
-// @version        7.0 
+// @version        7.1 
 // @include        http://www.geocaching.com/*
 // @include        http://maps.google.de/*
 // @include        http://maps.google.com/*
@@ -19,9 +19,8 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
-// Version:        7.0             - 09.11.2011
-// Changelog:      7.0
-//                                 - Fix: Bug #121 - [gc.com update] other coordinate formats vanished
+// Version:        7.1             - 10.12.2011
+// Changelog:      7.1             - Fix: Bug #121 - [gc.com update] other coordinate formats vanished
 //                                 - Fix: Bug #115 - Homezone radius says miles when English is specified but is actually kilometers.
 //                                 - New: Issue #120 - [gc.com update] Hide new links "Learn" and "Partnering" from menu
 //                                 - New: Issue #105 - Disable the display of owner logs in VIP list
@@ -400,7 +399,7 @@ profileBookmark("My Trackables", "lnk_my_trackables");
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "7.0";
+var scriptVersion = "7.1";
 
 var anzCustom = 10;
 var anzTemplates = 10;
