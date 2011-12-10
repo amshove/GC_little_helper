@@ -21,6 +21,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        7.0             - 09.11.2011
 // Changelog:      7.0
+//                                 - Fix: Bug #121 - [gc.com update] other coordinate formats vanished
 //                                 - Fix: Bug #115 - Homezone radius says miles when English is specified but is actually kilometers.
 //                                 - New: Issue #120 - [gc.com update] Hide new links "Learn" and "Partnering" from menu
 //                                 - New: Issue #105 - Disable the display of owner logs in VIP list
@@ -3278,7 +3279,7 @@ function DectoDeg(lat,lng){
 
 // Show other Coord-Formats in Listing
 if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/) && document.getElementById('uxLatLon')){
-  var box = document.getElementById('UTMFormat');
+  var box = document.getElementById('ctl00_ContentBody_LocationSubPanel').childNodes[1];
   var coords = document.getElementById('uxLatLon').innerHTML;
   var dec = toDec(coords);
   var lat = dec[0];
