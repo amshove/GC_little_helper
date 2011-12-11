@@ -20,7 +20,9 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        7.1             - 10.12.2011
-// Changelog:      7.1             - Fix: Bug #121 - [gc.com update] other coordinate formats vanished
+// Changelog:      
+//                                 - New: Issue #122 - [gc.com update] Images in listing got dosplayed with the small source
+//                 7.1             - Fix: Bug #121 - [gc.com update] other coordinate formats vanished
 //                                 - Fix: Bug #115 - Homezone radius says miles when English is specified but is actually kilometers.
 //                                 - New: Issue #120 - [gc.com update] Hide new links "Learn" and "Partnering" from menu
 //                                 - New: Issue #105 - Disable the display of owner logs in VIP list
@@ -2727,6 +2729,7 @@ if(settings_show_thumbnails && document.location.href.match(/^http:\/\/www\.geoc
       thumb.alt = span.innerHTML;
       
       links[i].className = links[i].className+" gclh_thumb";
+      links[i].href = links[i].href.replace(/cache\/display/,"cache");
 
       var big_img = document.createElement("img");
       big_img.src = links[i].href;
