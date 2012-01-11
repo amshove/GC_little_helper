@@ -19,9 +19,10 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
-// Version:        7.1             - 10.12.2011
-// Changelog:      
-//                                 - New: Issue #122 - [gc.com update] Images in listing got dosplayed with the small source
+// Version:        7.2             
+// Changelog:
+//                                 - New: Feature request #132  -  Profile-Link on created by / found by page 
+//                                 - New: Issue #122 - [gc.com update] Images in listing got displayed with the small source
 //                 7.1             - Fix: Bug #121 - [gc.com update] other coordinate formats vanished
 //                                 - Fix: Bug #115 - Homezone radius says miles when English is specified but is actually kilometers.
 //                                 - New: Issue #120 - [gc.com update] Hide new links "Learn" and "Partnering" from menu
@@ -465,6 +466,8 @@ settings_show_eventday = GM_getValue("settings_show_eventday",true);
 settings_show_google_maps = GM_getValue("settings_show_google_maps",true);
 // Settings: Show Log It Icon
 settings_show_log_it = GM_getValue("settings_show_log_it",true);
+// Settings: Show Profile-Link on display of Caches found or created by user
+settings_show_nearestuser_profil_link = GM_getValue("settings_show_nearestuser_profil_link",true);
 // Settings: Show Homezone
 settings_show_homezone = GM_getValue("settings_show_homezone",true);
 settings_homezone_radius = GM_getValue("settings_homezone_radius","10");
@@ -1652,6 +1655,22 @@ if(settings_show_log_it && document.location.href.match(/^http:\/\/www\.geocachi
     }
   }
 }
+
+
+//Show Profile-Link on display of Caches found or created by user
+if(settings_show_nearestuser_profil_link && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/nearest\.aspx\?(ul|u)=/)){
+  if(document.getElementById("ctl00_ContentBody_LocationPanel1_OriginLabel")){
+	  var textelement = document.getElementById("ctl00_ContentBody_LocationPanel1_OriginLabel");
+	  textelement.innerHTML += " (";
+	  var linkelement = document.createElement("a");
+	  linkelement.href = document.location.href.replace("seek/nearest.aspx?ul", "profile/?u");
+	  linkelement.href = linkelement.href.replace("seek/nearest.aspx?u", "profile/?u");
+	  linkelement.innerHTML = "Profil";
+	  textelement.appendChild(linkelement);
+	  textelement.innerHTML += ")";
+  }
+}
+
 
 // Improve Bookmark-List
 if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/bookmarks\/view\.aspx\?guid=/)){
@@ -3841,6 +3860,7 @@ function gclh_showConfig(){
     html += "<h4 class='gclh_headline2'>Nearest List</h4>";
     html += checkbox('settings_redirect_to_map', 'Redirect to Map') + show_help("If you enable this option, you will be automatically redirected from nearest list to map.") + "<br/>";
     html += checkbox('settings_show_log_it', 'Show Log-It Icon') + show_help("The Log-It Icon is displayed beside cachetitels in nearest lists. If you click it, you will be redirected directly to the log-form.") + "<br/>";
+    html += checkbox('settings_show_nearestuser_profil_link', 'Show Profil-Link on search for created / found by caches') + show_help("This option adds an Link to the User-Profile when searching for caches created or found by a certain user") + "<br/>";
     html += "<br>";
     html += "";
     html += "<h4 class='gclh_headline2'>Maps</h4>";
@@ -4059,6 +4079,7 @@ function gclh_showConfig(){
       'settings_show_mail_coordslink',
       'settings_show_google_maps',
       'settings_show_log_it',
+      'settings_show_nearestuser_profil_link',
       'settings_dynamic_map',
       'settings_show_homezone',
       'settings_old_map',
