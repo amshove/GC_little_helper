@@ -21,6 +21,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        7.2             
 // Changelog:
+//                                 - FIX: Bug report #135  -  VIP-List not displayed after GC-Update 
 //                                 - New: Feature request #132  -  Profile-Link on created by / found by page 
 //                                 - New: Issue #122 - [gc.com update] Images in listing got displayed with the small source
 //                 7.1             - Fix: Bug #121 - [gc.com update] other coordinate formats vanished
@@ -2336,7 +2337,7 @@ if(settings_show_vip_list && getElementsByClass("SignedInProfileLink")[0] && (do
     }
   
     // Show VIP List
-    var map = document.getElementById("lnkSmallMap").parentNode;
+    var map = document.getElementById("map_preview_canvas");
     var box = document.createElement("div");
     var headline = document.createElement("h3");
     var body = document.createElement("div");
@@ -2349,6 +2350,7 @@ if(settings_show_vip_list && getElementsByClass("SignedInProfileLink")[0] && (do
     box.appendChild(body);
     box.innerHTML = "<br>"+box.innerHTML;
     map.parentNode.insertBefore(box,map);
+    map.parentNode.insertBefore(document.createElement("p"),map)
 
     var css = "a.gclh_log:hover { " +
       "  text-decoration:underline;" +
