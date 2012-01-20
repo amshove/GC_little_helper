@@ -2374,6 +2374,7 @@ if(settings_show_vip_list && getElementsByClass("SignedInProfileLink")[0] && (do
       "  top: 10px;" +
       "  border: 1px solid #8c9e65;" +
       "  background-color:#dfe1d2;" +
+      "  z-index:100;" +
       "}";
     GM_addStyle(css);
   
