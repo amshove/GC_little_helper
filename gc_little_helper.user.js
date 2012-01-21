@@ -21,6 +21,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        7.2             
 // Changelog:
+//                                 - Fix: Bug #131 - Day of week is wrong, if datetformat is changed (Added GClh Option for format)
 //                                 - Fix: Bug #123 - Script has error at specific cache
 //                                 - FIX: Bug report #135  -  VIP-List not displayed after GC-Update 
 //                                 - New: Feature request #132  -  Profile-Link on created by / found by page 
@@ -464,6 +465,7 @@ settings_show_mail = GM_getValue("settings_show_mail",true);
 settings_show_mail_coordslink = GM_getValue("settings_show_mail_coordslink",false);
 // Settings: Show EventDay
 settings_show_eventday = GM_getValue("settings_show_eventday",true);
+settings_date_format = GM_getValue("settings_date_format","MM/dd/yyyy");
 // Settings: Show google-maps Link
 settings_show_google_maps = GM_getValue("settings_show_google_maps",true);
 // Settings: Show Log It Icon
@@ -1263,16 +1265,103 @@ if(settings_show_eventday && document.location.href.match(/^http:\/\/www\.geocac
       }
     }
     var datetxt = spanelem.innerHTML.substr(spanelem.innerHTML.indexOf(":") + 2).replace( /^\s+|\s+$/g, '' );
-    var d=new Date(datetxt);
-    var weekday=new Array(7);
-    weekday[0]="Sunday";
-    weekday[1]="Monday";
-    weekday[2]="Tuesday";
-    weekday[3]="Wednesday";
-    weekday[4]="Thursday";
-    weekday[5]="Friday";
-    weekday[6]="Saturday";
-    spanelem.innerHTML = spanelem.innerHTML + " (" + weekday[d.getDay()] + ")";
+    var month_names = new Object();
+    month_names["Jan"] = 1; 
+    month_names["Feb"] = 2; 
+    month_names["Mrz"] = 3; 
+    month_names["Apr"] = 4; 
+    month_names["May"] = 5; 
+    month_names["Jun"] = 6; 
+    month_names["Jul"] = 7; 
+    month_names["Aug"] = 8; 
+    month_names["Sep"] = 9; 
+    month_names["Oct"] = 10; 
+    month_names["Nov"] = 11; 
+    month_names["Dec"] = 12;
+    // settings_date_format:
+    //   yyyy-MM-dd
+    //   yyyy/MM/dd
+    //   MM/dd/yyyy
+    //   dd/MM/yyyy
+    //   dd/MMM/yyyy
+    //   MMM/dd/yyyy
+    //   dd MMM yy
+    var day = 0;
+    var month = 0;
+    var year = 0;
+    switch(settings_date_format){
+      case "yyyy-MM-dd":
+        var match = datetxt.match(/([0-9]{4})-([0-9]{2})-([0-9]{2})/);
+        if(match){
+          day = match[3];
+          month = match[2];
+          year = match[1];
+        }
+      break;
+      case "yyyy/MM/dd":
+        var match = datetxt.match(/([0-9]{4})\/([0-9]{2})\/([0-9]{2})/);
+        if(match){
+          day = match[3];
+          month = match[2];
+          year = match[1];
+        }
+      break;
+      case "MM/dd/yyyy":
+        var match = datetxt.match(/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/);
+        if(match){
+          day = match[2];
+          month = match[1];
+          year = match[3];
+        }
+      break;
+      case "dd/MM/yyyy":
+        var match = datetxt.match(/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/);
+        if(match){
+          day = match[1];
+          month = match[2];
+          year = match[3];
+        }
+      break;
+      case "dd/MMM/yyyy":
+        var match = datetxt.match(/([0-9]{2})\/([A-Za-z]{3})\/([0-9]{4})/);
+        if(match){
+          day = match[1];
+          month = month_names[match[2]];
+          year = match[3];
+        }
+      break;
+      case "MMM/dd/yyyy":
+        var match = datetxt.match(/([A-Za-z]{3})\/([0-9]{2})\/([0-9]{4})/);
+        if(match){
+          day = match[2];
+          month = month_names[match[1]];
+          year = match[3];
+        }
+      break;
+      case "dd MMM yy":
+        var match = datetxt.match(/([0-9]{2}) ([A-Za-z]{3}) ([0-9]{2})/);
+        if(match){
+          day = match[1];
+          month = month_names[match[2]];
+          year = parseInt(match[3])+2000;
+        }
+      break;
+    }
+    
+    if(month != 0) month--;
+    var d=new Date(year,month,day);
+//alert(uneval(match)+"-"+day+"."+month+"."+year+"-"+d+"-"+d.getDay());
+    if(d != "Invalid Date" && !(day == 0 && month == 0 && year == 0)){
+      var weekday=new Array(7);
+      weekday[0]="Sunday";
+      weekday[1]="Monday";
+      weekday[2]="Tuesday";
+      weekday[3]="Wednesday";
+      weekday[4]="Thursday";
+      weekday[5]="Friday";
+      weekday[6]="Saturday";
+      spanelem.innerHTML = spanelem.innerHTML + " (" + weekday[d.getDay()] + ")";
+    }else spanelem.innerHTML = spanelem.innerHTML + " (date format mismatch - see settings)";
   }
 }
 
@@ -3886,7 +3975,15 @@ function gclh_showConfig(){
     html += checkbox('settings_show_all_logs', 'Show ') + " <input class='gclh_form' type='text' size='2' id='settings_show_all_logs_count' value='"+settings_show_all_logs_count+"'> logs (0 = all)"+show_help("With this option you can choose how many logs should be shown if you load the listing - if you type 0, all logs are shown by default.")+"<br>";
     html += checkbox('settings_hide_hint', 'Hide hint behind a link') + show_help("This option hides the hint behind a link - you have to click it to display the hints (already decrypted).")+ "<br/>";
     html += checkbox('settings_decrypt_hint', 'Decrypt Hint') + "<br/>";
-    html += checkbox('settings_show_eventday', 'Show weekday of an event') + show_help("With this option the day of the week will be displayed next to the date.") + "<br/>";
+    html += checkbox('settings_show_eventday', 'Show weekday of an event') + show_help("With this option the day of the week will be displayed next to the date.") + " Date Format: <select class='gclh_form' id='settings_date_format'>";
+    html += "  <option "+(settings_date_format == "yyyy-MM-dd" ? "selected='selected'" : "")+" value='yyyy-MM-dd'> 2012-01-21</option>";
+    html += "  <option "+(settings_date_format == "yyyy/MM/dd" ? "selected='selected'" : "")+" value='yyyy/MM/dd'> 2012/01/21</option>";
+    html += "  <option "+(settings_date_format == "MM/dd/yyyy" ? "selected='selected'" : "")+" value='MM/dd/yyyy'> 01/21/2012</option>";
+    html += "  <option "+(settings_date_format == "dd/MM/yyyy" ? "selected='selected'" : "")+" value='dd/MM/yyyy'> 21/01/2012</option>";
+    html += "  <option "+(settings_date_format == "dd/MMM/yyyy" ? "selected='selected'" : "")+" value='dd/MMM/yyyy'> 21/Jan/2012</option>";
+    html += "  <option "+(settings_date_format == "MMM/dd/yyyy" ? "selected='selected'" : "")+" value='MMM/dd/yyyy'> Jan/21/2012</option>";
+    html += "  <option "+(settings_date_format == "dd MMM yy" ? "selected='selected'" : "")+" value='dd MMM yy'> 21 Jan 12</option>";
+    html += "</select>"+show_help("If you have changed the date format on gc.com, you have to change it here to. Instead the Day of Week may be wrong.")+"<br/>";
     html += checkbox('settings_show_datepicker', 'Show datepicker') + show_help("With this option a calender icon is shown next to the Date on the logpage. After a click on this icon a calender is shown to select the logdate.") + "<br/>";
     html += checkbox('settings_show_mail', 'Show Mail Link beside Usernames') + show_help("With this option there will be an small mail-Icon beside every username. With this Icon you get directly to the mail-page to mail to this user. If you click it when you are in a Listing, the cachename and GCID will be inserted into the mail-form - you don't have to remember it :) ") + "<br/>";
     html += checkbox('settings_show_mail_coordslink', 'Show Coord-Link in Mail') + show_help("This option requires \"Show Mail Link beside Usernames\". With this option the GC/TB-Code in the Mail is displayed as coord.info-link") + "<br/>";
@@ -4056,6 +4153,7 @@ function gclh_showConfig(){
     GM_setValue("settings_homezone_color",document.getElementById('settings_homezone_color').value);
     GM_setValue("map_width",document.getElementById('map_width').value);
     GM_setValue("settings_new_width",document.getElementById('settings_new_width').value);
+    GM_setValue("settings_date_format",document.getElementById('settings_date_format').value);
     GM_setValue("settings_default_logtype",document.getElementById('settings_default_logtype').value);
     GM_setValue("settings_default_tb_logtype",document.getElementById('settings_default_tb_logtype').value);
     GM_setValue("settings_mail_signature",document.getElementById('settings_mail_signature').value.replace(/‌/g,"")); // Fix: Entfernt das Steuerzeichen
