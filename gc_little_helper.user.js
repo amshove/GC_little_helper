@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           GC little helper
 // @namespace      http://www.amshove.net
-// @version        7.1 
+// @version        7.2 
 // @include        http://www.geocaching.com/*
 // @include        http://maps.google.de/*
 // @include        http://maps.google.com/*
@@ -20,7 +20,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        7.2             
-// Changelog:
+// Changelog:      7.2             - Some lines for better support with opera (not complete now)
 //                                 - Fix: Bug #131 - Day of week is wrong, if datetformat is changed (Added GClh Option for format)
 //                                 - Fix: Bug #123 - Script has error at specific cache
 //                                 - FIX: Bug report #135  -  VIP-List not displayed after GC-Update 
@@ -405,7 +405,7 @@ profileBookmark("My Trackables", "lnk_my_trackables");
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "7.1";
+var scriptVersion = "7.2";
 
 var anzCustom = 10;
 var anzTemplates = 10;
