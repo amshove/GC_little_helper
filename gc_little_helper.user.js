@@ -426,6 +426,11 @@ if(!this.uneval){
   this.uneval = function (value) {  };
   browser = "chrome";
 }
+if(!this.eval){
+  this.eval = function (value) { return JSON.parse(value); };
+  this.uneval = function (value) { return JSON.stringify(value); };
+  browser = "opera";
+}
 
 
 // Settings: Submit Log on F2
@@ -562,7 +567,13 @@ var global_log_it_icon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAAA8
 var global_mail_icon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAKCAYAAAC9vt6cAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9oHHg0gKjtwF3IAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAABdElEQVQoz4WRMaviUBSEv5s8H8RO0Eq00SiCRMQigoiCYC2I/hhbwd8g1lpZWFioECwl2IqIwT5iGdDCK94tlhf27cK+gWmGYZg5R9i2rUzTpFAooOs6AEIINE1DCPEPv/T3+81yuURMJhNlmiYAtVqNSCTCT7her6zXa6SUaFJKms0m8XicxWLB5XIJjUqpkAD3+53tdovruvT7faSUfHyZi8UiyWQSx3HwfZ96vY4QIgy73W5sNhssy6LRaIRztT+rxWIxer0eUkpms1moe57HfD6n0+lQKpXQdT1s9fH3PqUUmUwG13UZjUaUy2V2ux2WZRGNRlFKfWv2LSAIAlzXJQgCBoMBz+eTw+HAcDjE8zym0ynVapVsNhtOCAOOxyOn04l8Pk+73Qbg8/OTSqWCUopcLkcikWC/33M+n2m1Wr9fPh6PVTqdxjAMbNvGMIwf3+j7Po7j8Hg8EJZlqW63SyqVQtO08Dj/gxCC1+vFarXiF7aOl1qte6kYAAAAAElFTkSuQmCC";
 
 ////////////////////////////////////////////////////////////////////////////
+if(typeof opera == "object"){
+  window.addEventListener('DOMContentLoaded',main, true);
+}else{
+  main();
+}
 
+function main(){
 // Link on Google Maps
 if(document.location.href.match(/^(http|https):\/\/maps\.google\.(de|com)/) || document.location.href.match(/^(http|https):\/\/www\.google\.(de|com)\/maps/)){
   if(settings_show_google_maps){
@@ -4352,3 +4363,4 @@ function checkVersion(){
 
 checkVersion();
 } // Google Maps site
+} // Function "main" 
