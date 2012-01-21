@@ -21,6 +21,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        7.2             
 // Changelog:
+//                                 - Fix: Bug #123 - Script has error at specific cache
 //                                 - FIX: Bug report #135  -  VIP-List not displayed after GC-Update 
 //                                 - New: Feature request #132  -  Profile-Link on created by / found by page 
 //                                 - New: Issue #122 - [gc.com update] Images in listing got displayed with the small source
@@ -2740,7 +2741,7 @@ if(settings_show_thumbnails && document.location.href.match(/^http:\/\/www\.geoc
     if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx?/) && links[i].href.match(/^http:\/\/img\.geocaching\.com\/cache/) && !links[i].innerHTML.match(/(spoiler|hinweis)/i)){
       var thumb = links[i].childNodes[0];
       var span = links[i].childNodes[1];
-      if(!thumb || !span) continue;
+      if(!thumb || !span || !thumb.style) continue;
       if(links[i].href.match(/cache\/log/)){
         thumb.src = links[i].href.replace(/cache\/log/,"cache/log/thumb");
       }else{
