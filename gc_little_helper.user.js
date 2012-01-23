@@ -20,7 +20,9 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        7.2             
-// Changelog:      7.2             - Some lines for better support with opera (not complete now)
+// Changelog:
+//                                 - Fix: Bug report #137  -  Usernames with & are not encoded correct
+//                 7.2             - Some lines for better support with opera (not complete now)
 //                                 - Fix: Bug #131 - Day of week is wrong, if datetformat is changed (Added GClh Option for format)
 //                                 - Fix: Bug #123 - Script has error at specific cache
 //                                 - FIX: Bug report #135  -  VIP-List not displayed after GC-Update 
@@ -1655,7 +1657,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/myfriends\.
     if((founds - last_founds) > 0) add = " <font color='#00AA00'><b>(+"+(founds - last_founds)+")</b></font>";
     GM_setValue("friends_founds_new_"+name.innerHTML,trim(founds));
     
-    friend.getElementsByTagName("dd")[4].innerHTML = "<a href='/seek/nearest.aspx?ul="+name.innerHTML+"&disable_redirect'>"+founds+"</a>"+add;
+    friend.getElementsByTagName("dd")[4].innerHTML = "<a href='/seek/nearest.aspx?ul="+urlencode(name.innerHTML)+"&disable_redirect'>"+founds+"</a>"+add;
     
     friend.getElementsByTagName("p")[0].innerHTML = "<a name='lnk_profilegallery2' href='"+name.href+"'>Gallery</a> | <a href='/seek/nearest.aspx?u="+urlencode(name.innerHTML)+"&disable_redirect'>Hidden Caches</a> | "+friend.getElementsByTagName("p")[0].innerHTML;
   }
@@ -1670,7 +1672,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/myfriends\.
       if(founds[1]){
         GM_setValue("friends_founds_"+name.innerHTML,trim(founds[1]));
   
-        friend.getElementsByTagName("dd")[4].innerHTML = "<a href='/seek/nearest.aspx?ul="+name.innerHTML+"&disable_redirect'>"+founds[1]+"</a>";
+        friend.getElementsByTagName("dd")[4].innerHTML = "<a href='/seek/nearest.aspx?ul="+urlencode(name.innerHTML)+"&disable_redirect'>"+founds[1]+"</a>";
       }
     }
   }
