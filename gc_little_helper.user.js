@@ -21,6 +21,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        7.2             
 // Changelog:
+//                                 - New: Enhancement #139  -  Improove Friendslist
 //                                 - Fix: Bug report #137  -  Usernames with & are not encoded correct
 //                 7.2             - Some lines for better support with opera (not complete now)
 //                                 - Fix: Bug #131 - Day of week is wrong, if datetformat is changed (Added GClh Option for format)
@@ -1639,8 +1640,19 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/myfriends\.
       var friend = friends[i];
       var name = friend.getElementsByTagName("a")[0];
 
+     //Founds
       if(GM_getValue("friends_founds_new_"+name.innerHTML)){
         GM_setValue("friends_founds_"+name.innerHTML,GM_getValue("friends_founds_new_"+name.innerHTML));
+      }
+      
+      //Hides
+      if(GM_getValue("friends_hides_new_"+name.innerHTML)){
+        GM_setValue("friends_hides_"+name.innerHTML,GM_getValue("friends_hides_new_"+name.innerHTML));
+      }
+      
+      //Challenges
+      if(GM_getValue("friends_challenges_new_"+name.innerHTML)){
+        GM_setValue("friends_challenges_"+name.innerHTML,GM_getValue("friends_challenges_new_"+name.innerHTML));
       }
     }  
     GM_setValue("friends_founds_last",day);
@@ -1650,16 +1662,63 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/myfriends\.
     var friend = friends[i];
     var name = friend.getElementsByTagName("a")[0];
     var add = "";
-    var founds = trim(friend.getElementsByTagName("dd")[4].innerHTML).replace(/[,.]*/g,"");
+    
+    //founds
+    var founds = parseInt(trim(friend.getElementsByTagName("dd")[4].innerHTML).replace(/[,.]*/g,""));
+    if(isNaN(founds))founds = 0;
     var last_founds = GM_getValue("friends_founds_"+name.innerHTML);
 
     if(typeof(last_founds) == "undefined") last_founds = founds;
     if((founds - last_founds) > 0) add = " <font color='#00AA00'><b>(+"+(founds - last_founds)+")</b></font>";
-    GM_setValue("friends_founds_new_"+name.innerHTML,trim(founds));
+    GM_setValue("friends_founds_new_"+name.innerHTML,""+founds);
+    if(founds == 0){
+      friend.getElementsByTagName("dd")[4].innerHTML = founds+"&nbsp;";
+    }else{
+      friend.getElementsByTagName("dd")[4].innerHTML = "<a href='/seek/nearest.aspx?ul="+urlencode(name.innerHTML)+"&disable_redirect'>"+founds+"</a>&nbsp;"+add;
+    }
     
-    friend.getElementsByTagName("dd")[4].innerHTML = "<a href='/seek/nearest.aspx?ul="+urlencode(name.innerHTML)+"&disable_redirect'>"+founds+"</a>"+add;
     
-    friend.getElementsByTagName("p")[0].innerHTML = "<a name='lnk_profilegallery2' href='"+name.href+"'>Gallery</a> | <a href='/seek/nearest.aspx?u="+urlencode(name.innerHTML)+"&disable_redirect'>Hidden Caches</a> | "+friend.getElementsByTagName("p")[0].innerHTML;
+    //hides
+    add = "";
+    var hides = parseInt(trim(friend.getElementsByTagName("dd")[5].innerHTML).replace(/[,.]*/g,""));
+    if(isNaN(hides))hides = 0;
+    var last_hides = GM_getValue("friends_hides_"+name.innerHTML);
+    
+    if(typeof(last_hides) == "undefined") last_hides = hides;
+    if((hides - last_hides) > 0) add = " <font color='#00AA00'><b>(+"+(hides - last_hides)+")</b></font>";
+    GM_setValue("friends_hides_new_"+name.innerHTML,""+hides);
+    if(hides == 0){
+      friend.getElementsByTagName("dd")[5].innerHTML = hides+"&nbsp;";
+    }else{
+      friend.getElementsByTagName("dd")[5].innerHTML = "<a href='/seek/nearest.aspx?u="+urlencode(name.innerHTML)+"&disable_redirect'>"+hides+"</a>&nbsp;"+add;
+    }
+    
+    
+    //challenges
+    add = "";
+    var challenges = parseInt(trim(friend.getElementsByTagName("dd")[6].innerHTML).replace(/[,.]*/g,""));
+    if(isNaN(challenges))challenges = 0;
+    var last_challenges = GM_getValue("friends_challenges_"+name.innerHTML);
+    
+    if(typeof(last_challenges) == "undefined") last_challenges = challenges;
+    if((challenges - last_challenges) > 0) add = " <font color='#00AA00'><b>(+"+(challenges - last_challenges)+")</b></font>";
+    GM_setValue("friends_challenges_new_"+name.innerHTML,""+challenges);
+    if(challenges == 0){
+      friend.getElementsByTagName("dd")[6].innerHTML = challenges+"&nbsp;";
+    }else{
+      friend.getElementsByTagName("dd")[6].innerHTML = "<a href='/challenges/search.aspx?st=user&cst=completed&user="+urlencode(name.innerHTML)+"'>"+challenges+"</a>&nbsp;"+add;
+    }
+    
+    
+    //Location
+    var friendlocation = trim(friend.getElementsByTagName("dd")[3].getElementsByTagName("span")[0].innerHTML);
+    if(friendlocation != "" && friendlocation.length > 3){
+       friend.getElementsByTagName("dd")[3].getElementsByTagName("span")[0].innerHTML = "<a href='http://maps.google.de/?q="+(friendlocation.replace(/&/g,""))+"' target='_blank'>"+friendlocation+"</a>";
+    }
+    
+
+    //bottom line
+    friend.getElementsByTagName("p")[0].innerHTML = "<a name='lnk_profilegallery2' href='"+name.href+"'>Gallery</a> | "+friend.getElementsByTagName("p")[0].innerHTML;
   }
 
   function gclh_reset_counter(){
