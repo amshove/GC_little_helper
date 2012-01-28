@@ -21,7 +21,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        7.2             
 // Changelog:
-//                                 - New: Enhancement #139  -  Improove Friendslist
+//                                 - Fix: Bug report #141  -  VIP-List: & not encoded
 //                                 - Fix: Bug report #137  -  Usernames with & are not encoded correct
 //                 7.2             - Some lines for better support with opera (not complete now)
 //                                 - Fix: Bug #131 - Day of week is wrong, if datetformat is changed (Added GClh Option for format)
@@ -1674,7 +1674,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/myfriends\.
     if(founds == 0){
       friend.getElementsByTagName("dd")[4].innerHTML = founds+"&nbsp;";
     }else{
-      friend.getElementsByTagName("dd")[4].innerHTML = "<a href='/seek/nearest.aspx?ul="+urlencode(name.innerHTML)+"&disable_redirect'>"+founds+"</a>&nbsp;"+add;
+      friend.getElementsByTagName("dd")[4].innerHTML = "<a href='/seek/nearest.aspx?ul="+((name.innerHTML).replace(/\s/g, "+").replace(/&amp;/g, "%26").replace(/&/g, "%26"))+"&disable_redirect'>"+founds+"</a>&nbsp;"+add;
     }
     
     
@@ -1690,7 +1690,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/myfriends\.
     if(hides == 0){
       friend.getElementsByTagName("dd")[5].innerHTML = hides+"&nbsp;";
     }else{
-      friend.getElementsByTagName("dd")[5].innerHTML = "<a href='/seek/nearest.aspx?u="+urlencode(name.innerHTML)+"&disable_redirect'>"+hides+"</a>&nbsp;"+add;
+      friend.getElementsByTagName("dd")[5].innerHTML = "<a href='/seek/nearest.aspx?u="+((name.innerHTML).replace(/\s/g, "+").replace(/&amp;/g, "%26").replace(/&/g, "%26"))+"&disable_redirect'>"+hides+"</a>&nbsp;"+add;
     }
     
     
@@ -1706,7 +1706,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/myfriends\.
     if(challenges == 0){
       friend.getElementsByTagName("dd")[6].innerHTML = challenges+"&nbsp;";
     }else{
-      friend.getElementsByTagName("dd")[6].innerHTML = "<a href='/challenges/search.aspx?st=user&cst=completed&user="+urlencode(name.innerHTML)+"'>"+challenges+"</a>&nbsp;"+add;
+      friend.getElementsByTagName("dd")[6].innerHTML = "<a href='/challenges/search.aspx?st=user&cst=completed&user="+((name.innerHTML).replace(/\s/g, "+").replace(/&amp;/g, "%26").replace(/&/g, "%26"))+"'>"+challenges+"</a>&nbsp;"+add;
     }
     
     
@@ -1731,7 +1731,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/myfriends\.
       if(founds[1]){
         GM_setValue("friends_founds_"+name.innerHTML,trim(founds[1]));
   
-        friend.getElementsByTagName("dd")[4].innerHTML = "<a href='/seek/nearest.aspx?ul="+urlencode(name.innerHTML)+"&disable_redirect'>"+founds[1]+"</a>";
+        friend.getElementsByTagName("dd")[4].innerHTML = "<a href='/seek/nearest.aspx?ul="+((name.innerHTML).replace(/\s/g, "+").replace(/&amp;/g, "%26").replace(/&/g, "%26"))+"&disable_redirect'>"+founds[1]+"</a>";
       }
     }
   }
@@ -2553,7 +2553,7 @@ if(settings_show_vip_list && getElementsByClass("SignedInProfileLink")[0] && (do
 
             var span = document.createElement("span");
             var profile = document.createElement("a");
-            profile.setAttribute("href","http://www.geocaching.com/profile/?u="+urlencode(user));
+            profile.setAttribute("href","http://www.geocaching.com/profile/?u="+(user.replace(/\s/g, "+").replace(/&amp;/g, "%26").replace(/&/g, "%26")));
             profile.innerHTML = user;
             if(owner_name && owner_name == user){
               profile.style.color = '#8C0B0B';
@@ -2610,7 +2610,7 @@ if(settings_show_vip_list && getElementsByClass("SignedInProfileLink")[0] && (do
         if(in_array(user,all_users) || (owner_name == user)){
           var span = document.createElement("span");
           var profile = document.createElement("a");
-          profile.setAttribute("href","http://www.geocaching.com/profile/?u="+urlencode(user));
+          profile.setAttribute("href","http://www.geocaching.com/profile/?u="+(user.replace(/\s/g, "+").replace(/&amp;/g, "%26").replace(/&/g, "%26")));
           profile.innerHTML = user;
           if(show_owner && owner_name && owner_name == user){
             span.appendChild(document.createTextNode("Owner: "));
@@ -2719,7 +2719,7 @@ if(settings_show_vip_list && getElementsByClass("SignedInProfileLink")[0] && (do
         var user = vips[i];
         var span = document.createElement("span");
         var profile = document.createElement("a");
-        profile.setAttribute("href","http://www.geocaching.com/profile/?u="+urlencode(user));
+        profile.setAttribute("href","http://www.geocaching.com/profile/?u="+(user.replace(/\s/g, "+").replace(/&amp;/g, "%26").replace(/&/g, "%26")));
         profile.innerHTML = user;
         span.appendChild(profile);
   
