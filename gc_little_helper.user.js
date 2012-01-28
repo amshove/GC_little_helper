@@ -22,6 +22,7 @@
 // Version:        7.2             
 // Changelog:
 //                                 - Fix: Bug report #141  -  VIP-List: & not encoded
+//                                 - New: Enhancement #139 - Improove Friendslist
 //                                 - Fix: Bug report #137  -  Usernames with & are not encoded correct
 //                 7.2             - Some lines for better support with opera (not complete now)
 //                                 - Fix: Bug #131 - Day of week is wrong, if datetformat is changed (Added GClh Option for format)
