@@ -21,6 +21,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        7.2             
 // Changelog:
+//                                 - Fix: Bug #142 - VIP-List: Display Owner has error 
 //                                 - Fix: Bug report #141  -  VIP-List: & not encoded
 //                                 - New: Enhancement #139 - Improove Friendslist
 //                                 - Fix: Bug report #137  -  Usernames with & are not encoded correct
@@ -2434,6 +2435,17 @@ if(settings_show_vip_list && getElementsByClass("SignedInProfileLink")[0] && (do
     var log_infos_long = new Array();
     var index = 0;
     var links = document.getElementsByTagName('a');
+    var owner;
+    var owner_name;
+    if(document.getElementById('ctl00_ContentBody_uxFindLinksHiddenByThisUser')){
+      var matches = document.getElementById('ctl00_ContentBody_uxFindLinksHiddenByThisUser').href.match(/\?u=(.*)/);
+      if(matches){
+        // ka, warum zwei Variablen - vllt. hab ich schonmal versucht das Freitext-Owner-Problem mit der GUID zu umgehen?!
+        owner = matches[1];
+        owner_name = owner;
+      }
+    }
+
     for(var i=0; i<links.length; i++){
       if(links[i].href.match(/http:\/\/www\.geocaching\.com\/profile\/\?guid=/) && links[i].parentNode.className != "logOwnerStats" && !links[i].childNodes[0].src){
         if(links[i].id) links[i].name = links[i].id; // To be able to jump to this location
@@ -2442,10 +2454,14 @@ if(settings_show_vip_list && getElementsByClass("SignedInProfileLink")[0] && (do
         var user = trim(links[i].innerHTML);
   
         if(links[i].parentNode.className == "minorCacheDetails" && matches && !owner){
-          var owner = matches[1];
+          owner = matches[1];
         }
         if(!owner_name && owner && matches && matches[1] == owner){
-          var owner_name = user;
+          owner_name = user;
+        }
+
+        if(links[i].parentNode.className == "minorCacheDetails"){
+          user = owner;
         }
   
 //        // Infos for List
