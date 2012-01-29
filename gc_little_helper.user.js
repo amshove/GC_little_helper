@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           GC little helper
 // @namespace      http://www.amshove.net
-// @version        7.2 
+// @version        7.3 
 // @include        http://www.geocaching.com/*
 // @include        http://maps.google.de/*
 // @include        http://maps.google.com/*
@@ -19,9 +19,8 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
-// Version:        7.2             
-// Changelog:
-//                                 - New: Issue #56 - BBCode: Select different fonts
+// Version:        7.3             
+// Changelog:      7.3             - New: Issue #56 - BBCode: Select different fonts
 //                                 - New: Issue #38 - Better BBCode layout 
 //                                 - New: Issue #127 - BBCode: Add quote-Tags
 //                                 - New: Issue #128 - BBCode: Add more colors 
@@ -416,7 +415,7 @@ profileBookmark("My Trackables", "lnk_my_trackables");
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "7.2";
+var scriptVersion = "7.3";
 
 var anzCustom = 10;
 var anzTemplates = 10;
