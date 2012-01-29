@@ -21,6 +21,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        7.2             
 // Changelog:
+//                                 - Fix: Bug #143 - Link to user-profile on found/hidden-list does not work on list with specific 
 //                                 - Fix: Bug #142 - VIP-List: Display Owner has error 
 //                                 - Fix: Bug report #141  -  VIP-List: & not encoded
 //                                 - New: Enhancement #139 - Improove Friendslist
@@ -1823,7 +1824,7 @@ if(settings_show_log_it && document.location.href.match(/^http:\/\/www\.geocachi
 
 
 //Show Profile-Link on display of Caches found or created by user
-if(settings_show_nearestuser_profil_link && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/nearest\.aspx\?(ul|u)=/)){
+if(settings_show_nearestuser_profil_link && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/nearest\.aspx/) && document.location.href.match(/(ul|u)=/)){
   if(document.getElementById("ctl00_ContentBody_LocationPanel1_OriginLabel")){
 	  var textelement = document.getElementById("ctl00_ContentBody_LocationPanel1_OriginLabel");
 	  textelement.innerHTML += " (";
