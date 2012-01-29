@@ -21,6 +21,10 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        7.2             
 // Changelog:
+//                                 - New: Issue #56 - BBCode: Select different fonts
+//                                 - New: Issue #38 - Better BBCode layout 
+//                                 - New: Issue #127 - BBCode: Add quote-Tags
+//                                 - New: Issue #128 - BBCode: Add more colors 
 //                                 - New: Issue #140 - Add ability to hide Last Visited List 
 //                                 - Fix: Bug #143 - Link to user-profile on found/hidden-list does not work on list with specific 
 //                                 - Fix: Bug #142 - VIP-List: Display Owner has error 
@@ -1174,60 +1178,46 @@ if(settings_show_bbcode && (document.location.href.match(/^http:\/\/www\.geocach
   document.getElementsByTagName("body")[0].appendChild(script);
 
   var box = document.getElementById('litDescrCharCount');
-  var liste = "";
-  liste += "<a href='#' onClick='gclh_insert(\"[:)]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile.gif' border='0'></a>";
-  liste += "<a href='#' onClick='gclh_insert(\"[:D]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_big.gif' border='0'></a>";
-  liste += "<a href='#' onClick='gclh_insert(\"[8D]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_cool.gif' border='0'></a>";
-  liste += "<a href='#' onClick='gclh_insert(\"[:I]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_blush.gif' border='0'></a>";
+  var liste = "<br>";
+  liste += "<a href='#' onClick='gclh_insert(\"[:)]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile.gif' border='0'></a>&nbsp;";
+  liste += "<a href='#' onClick='gclh_insert(\"[:D]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_big.gif' border='0'></a>&nbsp;";
+  liste += "<a href='#' onClick='gclh_insert(\"[8D]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_cool.gif' border='0'></a>&nbsp;"
+  liste += "<a href='#' onClick='gclh_insert(\"[:I]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_blush.gif' border='0'></a>&nbsp;";
   liste += "<a href='#' onClick='gclh_insert(\"[:P]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_tongue.gif' border='0'></a>";
-  liste += "<a href='#' onClick='gclh_insert(\"[}:)]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_evil.gif' border='0'></a>";
-  liste += "<a href='#' onClick='gclh_insert(\"[;)]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_wink.gif' border='0'></a>";
   liste += "<br>";
-  liste += "<a href='#' onClick='gclh_insert(\"[:o)]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_clown.gif' border='0'></a>";
-  liste += "<a href='#' onClick='gclh_insert(\"[B)]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_blackeye.gif' border='0'></a>";
+  liste += "<a href='#' onClick='gclh_insert(\"[}:)]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_evil.gif' border='0'></a>&nbsp;";
+  liste += "<a href='#' onClick='gclh_insert(\"[;)]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_wink.gif' border='0'></a>&nbsp;";
+  liste += "<a href='#' onClick='gclh_insert(\"[:o)]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_clown.gif' border='0'></a>&nbsp;";
+  liste += "<a href='#' onClick='gclh_insert(\"[B)]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_blackeye.gif' border='0'></a>&nbsp;";
   liste += "<a href='#' onClick='gclh_insert(\"[8]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_8ball.gif' border='0'></a>";
-  liste += "<a href='#' onClick='gclh_insert(\"[:(]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_sad.gif' border='0'></a>";
-  liste += "<a href='#' onClick='gclh_insert(\"[8)]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_shy.gif' border='0'></a>";
-  liste += "<a href='#' onClick='gclh_insert(\"[:O]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_shock.gif' border='0'></a>";
-  liste += "<a href='#' onClick='gclh_insert(\"[:(!]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_angry.gif' border='0'></a>";
   liste += "<br>";
+  liste += "<a href='#' onClick='gclh_insert(\"[:(]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_sad.gif' border='0'></a>&nbsp;";
+  liste += "<a href='#' onClick='gclh_insert(\"[8)]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_shy.gif' border='0'></a>&nbsp;";
+  liste += "<a href='#' onClick='gclh_insert(\"[:O]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_shock.gif' border='0'></a>&nbsp;";
+  liste += "<a href='#' onClick='gclh_insert(\"[:(!]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_angry.gif' border='0'></a>&nbsp;";
   liste += "<a href='#' onClick='gclh_insert(\"[xx(]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_dead.gif' border='0'></a>";
-  liste += "<a href='#' onClick='gclh_insert(\"[|)]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_sleepy.gif' border='0'></a>";
-  liste += "<a href='#' onClick='gclh_insert(\"[:X]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_kisses.gif' border='0'></a>";
-  liste += "<a href='#' onClick='gclh_insert(\"[^]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_approve.gif' border='0'></a>";
-  liste += "<a href='#' onClick='gclh_insert(\"[V]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_dissapprove.gif' border='0'></a>";
+  liste += "<br>";
+  liste += "<a href='#' onClick='gclh_insert(\"[|)]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_sleepy.gif' border='0'></a>&nbsp;";
+  liste += "<a href='#' onClick='gclh_insert(\"[:X]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_kisses.gif' border='0'></a>&nbsp;";
+  liste += "<a href='#' onClick='gclh_insert(\"[^]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_approve.gif' border='0'></a>&nbsp;";
+  liste += "<a href='#' onClick='gclh_insert(\"[V]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_dissapprove.gif' border='0'></a>&nbsp;";
   liste += "<a href='#' onClick='gclh_insert(\"[?]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_question.gif' border='0'></a>";
   liste += "<br>";
-  liste += "<a href='#' onClick='gclh_insert(\":angry:\",\"\"); return false;'><img src='http://img.groundspeak.com/forums/emoticons/signal/mad.gif' border='0'></a>";
-  liste += "<a href='#' onClick='gclh_insert(\":grin:\",\"\"); return false;'><img src='http://img.groundspeak.com/forums/emoticons/signal/big_smile.gif' border='0'></a>";
-  liste += "<a href='#' onClick='gclh_insert(\":sad:\",\"\"); return false;'><img src='http://img.groundspeak.com/forums/emoticons/signal/sad.gif' border='0'></a>";
+  liste += "<a href='#' onClick='gclh_insert(\":angry:\",\"\"); return false;'><img src='http://img.groundspeak.com/forums/emoticons/signal/mad.gif' border='0'></a>&nbsp;";
+  liste += "<a href='#' onClick='gclh_insert(\":grin:\",\"\"); return false;'><img src='http://img.groundspeak.com/forums/emoticons/signal/big_smile.gif' border='0'></a>&nbsp;";
+  liste += "<a href='#' onClick='gclh_insert(\":sad:\",\"\"); return false;'><img src='http://img.groundspeak.com/forums/emoticons/signal/sad.gif' border='0'></a>&nbsp;";
   liste += "<a href='#' onClick='gclh_insert(\":shocked:\",\"\"); return false;'><img src='http://img.groundspeak.com/forums/emoticons/signal/shock.gif' border='0'></a>";
-  liste += "<a href='#' onClick='gclh_insert(\":smile:\",\"\"); return false;'><img src='http://img.groundspeak.com/forums/emoticons/signal/smile.gif' border='0'></a>";
-  liste += "<a href='#' onClick='gclh_insert(\":surprise:\",\"\"); return false;'><img src='http://img.groundspeak.com/forums/emoticons/signal/surprise.gif' border='0'></a>";
   liste += "<br>";
-  liste += "<a href='#' onClick='gclh_insert(\":tired:\",\"\"); return false;'><img src='http://img.groundspeak.com/forums/emoticons/signal/tired.gif' border='0'></a>";
+  liste += "<a href='#' onClick='gclh_insert(\":smile:\",\"\"); return false;'><img src='http://img.groundspeak.com/forums/emoticons/signal/smile.gif' border='0'></a>&nbsp;";
+  liste += "<a href='#' onClick='gclh_insert(\":surprise:\",\"\"); return false;'><img src='http://img.groundspeak.com/forums/emoticons/signal/surprise.gif' border='0'></a>&nbsp;";
+  liste += "<a href='#' onClick='gclh_insert(\":tired:\",\"\"); return false;'><img src='http://img.groundspeak.com/forums/emoticons/signal/tired.gif' border='0'></a>&nbsp;";
   liste += "<a href='#' onClick='gclh_insert(\":yikes:\",\"\"); return false;'><img src='http://img.groundspeak.com/forums/emoticons/signal/ohh.gif' border='0'></a>";
-  liste += "<a href='#' onClick='gclh_insert(\":tongue:\",\"\"); return false;'><img src='http://img.groundspeak.com/forums/emoticons/signal/tongue.gif' border='0'></a>";
-  liste += "<a href='#' onClick='gclh_insert(\":bad:\",\"\"); return false;'><img src='http://img.groundspeak.com/forums/emoticons/signal/bad_boy_a.gif' border='0'></a>";
-  liste += "<a href='#' onClick='gclh_insert(\":back:\",\"\"); return false;'><img src='http://img.groundspeak.com/forums/emoticons/signal/back.gif' border='0'></a>";
+  liste += "<br>";
+  liste += "<a href='#' onClick='gclh_insert(\":tongue:\",\"\"); return false;'><img src='http://img.groundspeak.com/forums/emoticons/signal/tongue.gif' border='0'></a>&nbsp;";
+  liste += "<a href='#' onClick='gclh_insert(\":bad:\",\"\"); return false;'><img src='http://img.groundspeak.com/forums/emoticons/signal/bad_boy.gif' border='0'></a>&nbsp;";
+  liste += "<a href='#' onClick='gclh_insert(\":back:\",\"\"); return false;'><img src='http://img.groundspeak.com/forums/emoticons/signal/back.gif' border='0'></a>&nbsp;";
   liste += "<a href='#' onClick='gclh_insert(\":cute:\",\"\"); return false;'><img src='http://img.groundspeak.com/forums/emoticons/signal/cute.gif' border='0'></a>";
-  liste += "<br>";
-  liste += "BBCode:<br>";
-  liste += "<a href='#' onClick='gclh_insert(\"[black]\",\"[/black]\"); return false;'><span style='font-size: 8px; background-color: black;'>&nbsp;&nbsp;&nbsp;&nbsp;</span></a>";
-  liste += "<a href='#' onClick='gclh_insert(\"[blue]\",\"[/blue]\"); return false;'><span style='font-size: 8px; background-color: blue;'>&nbsp;&nbsp;&nbsp;&nbsp;</span></a>";
-  liste += "<a href='#' onClick='gclh_insert(\"[red]\",\"[/red]\"); return false;'><span style='font-size: 8px; background-color: red;'>&nbsp;&nbsp;&nbsp;&nbsp;</span></a>";
-  liste += "<a href='#' onClick='gclh_insert(\"[purple]\",\"[/purple]\"); return false;'><span style='font-size: 8px; background-color: purple;'>&nbsp;&nbsp;&nbsp;&nbsp;</span></a>";
-  liste += "<a href='#' onClick='gclh_insert(\"[orange]\",\"[/orange]\"); return false;'><span style='font-size: 8px; background-color: orange;'>&nbsp;&nbsp;&nbsp;&nbsp;</span></a>";
-  liste += "<a href='#' onClick='gclh_insert(\"[yellow]\",\"[/yellow]\"); return false;'><span style='font-size: 8px; background-color: yellow;'>&nbsp;&nbsp;&nbsp;&nbsp;</span></a>";
-  liste += "<a href='#' onClick='gclh_insert(\"[green]\",\"[/green]\"); return false;'><span style='font-size: 8px; background-color: green;'>&nbsp;&nbsp;&nbsp;&nbsp;</span></a>";
-  liste += "<a href='#' onClick='gclh_insert(\"[white]\",\"[/white]\"); return false;'><span style='font-size: 8px; background-color: white;'>&nbsp;&nbsp;&nbsp;&nbsp;</span></a>";
-  liste += "<br>";
-  liste += "<a href='#' onClick='gclh_insert(\"[b]\",\"[/b]\"); return false;' style='color: #000000; text-decoration: none;'><b>B</b></a>&nbsp;";
-  liste += "<a href='#' onClick='gclh_insert(\"[i]\",\"[/i]\"); return false;' style='color: #000000; text-decoration: none;'><i>I</i></a>&nbsp;";
-  liste += "<a href='#' onClick='gclh_insert(\"[s]\",\"[/s]\"); return false;' style='color: #000000; text-decoration: none;'><s>S</s></a>&nbsp;";
-  liste += "<a href='#' onClick='gclh_insert(\"[u]\",\"[/u]\"); return false;' style='color: #000000; text-decoration: none;'><u>U</u></a>&nbsp;";
-  liste += "<a href='#' onClick='gclh_insert(\"[url=\"+prompt(\"URL\",\"http://\")+\"]\",\"[/url]\"); return false;'><img border='0' height='14px' src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9sHGBAABIjrgkUAAAAIdEVYdENvbW1lbnQA9syWvwAAAP5JREFUOMulk21vwjAMhM99idTy/38oqlqqpvGzDywerDDYZimKEtuXs88xAP3DulcBZvbU5+5qXgFUgoDcXYD2ff964N0SzEyAAJlZnJtKZdu2Az1A67rKzDRNk9xd7q6cc8Tok8HTlVICwN1ZloVrNcRuAGamZVkEqO979X0ftN1dZqacs1JK18Y1zZGBu8dLpRQkUUqJO0nknAFY1zVydEsHiOR5ngHIOUc5jywAtm27d0hcLpdDzd8t5uBW23oehkHAQaE7eed55nQ66dU4VN0P91WFUkp09zcAzTtT+BO7+Ext2/79N9Ym1REdx1Hn81kpJQHquk4ppYcAH5ciQg1K86RjAAAAAElFTkSuQmCC'></a>";
-  liste += "<br>";
+  liste += "<br><br>";
   liste += "Templates:<br>";
   for(var i = 0; i < anzTemplates; i++){
     if(GM_getValue("settings_log_template_name["+i+"]","") != ""){
@@ -1236,6 +1226,53 @@ if(settings_show_bbcode && (document.location.href.match(/^http:\/\/www\.geocach
     }
   }
   box.innerHTML = liste;
+
+  // BBCode
+  var bbcode = "";
+  bbcode += "<a title='Bold' href='#' onClick='gclh_insert(\"[b]\",\"[/b]\"); return false;' style='color: #000000; text-decoration: none;'><img border='0' src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wBHQ4FAq/caGUAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAhElEQVQ4y2NgoBAwovH/k6kPrpkYA7Cq+0+C7VjV/8ciCcN/GRgY5jIwMEjj8+5/PDYEQtnfyDWAA8p+SY4BQgwMDFUMDAzfGRgYMskxAIZbGBgY2Mh1QT6UPZ3cMGCDst9jM4CFQHwLMzAw2EHZ7MQmDGzpYB5aOqAoNaKoo2pmIgsAAN5ORE2YEQqxAAAAAElFTkSuQmCC'></a>&nbsp;";
+  bbcode += "<a title='Italic' href='#' onClick='gclh_insert(\"[i]\",\"[/i]\"); return false;' style='color: #000000; text-decoration: none;'><img border='0' src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wBHQ4DM6hYz9kAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAjklEQVQ4y63TMQoCMRCF4c8UYiHYL3sHS3uP4GG8ktcQBNnWynNoZRc7WSWJMe7rEv73MjNM+FOzj3Ns9L3MNQFJLv7wepLPmbcj+FhqNxZ63eOCVSogVJTa4YBbCggV/W5wqhlKSnPcsch5vlWwxhWPHBAqyh9KQClgiR3OLYvRje4i+im38Y2b9DM16QnhiChNblkTiwAAAABJRU5ErkJggg=='></a>&nbsp;";
+  bbcode += "<a title='Strike' href='#' onClick='gclh_insert(\"[s]\",\"[/s]\"); return false;' style='color: #000000; text-decoration: none;'><img border='0' src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wBHQ4KOO5IrRgAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAk0lEQVQ4y63TsQ3CMBCF4Q/EEnQswAZ0FIgKUbEAW2Qd5mAXJKYIhWlCZFlxsA1XnaX7n+V7z/xYi+QcGrkRLhGYnAsVt0/Op/AZPW64ZsRnBfpBBE4tAgHboV9iUyvQ4YH9lz2MdoSkL7EwZmahI561T1AQsPBZUA44RJa+csqrBIojusYdO1xKIt8U5b9+pqZ6A5N5LfEfmfycAAAAAElFTkSuQmCC'></a>&nbsp;";
+  bbcode += "<a title='Underline' href='#' onClick='gclh_insert(\"[u]\",\"[/u]\"); return false;' style='color: #000000; text-decoration: none;'><img border='0' src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wBHQ4JG2cCj6kAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAhUlEQVQ4y7XTsQ3CMBQE0GcUCWokqjRswxyMiBiCbEIDE1CYJkLhKwjHhqt89t19+9umESnwXOl7mUsC3nQpVE4hZI5H/ezWc8HRMqxam/i3gMdkbTPyRQF3bMfxDtelAQMOWOOIS8ndTrHHGTec0H/z5Ir+ZejCRCoI+6hpeso/+UxVeALyVyHFexMygwAAAABJRU5ErkJggg=='></a>&nbsp;";
+  bbcode += "<a title='Link' href='#' onClick='gclh_insert(\"[url=\"+prompt(\"URL\",\"http://\")+\"]\",\"[/url]\"); return false;'><img border='0' src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wBHQ4RNTnPGj8AAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAABaUlEQVQ4y62ToY7CYBCEv0KTlkCCw0DAVNTyAiQoEH2KGgRPgEDhweEqkASD4AWwCEJISBuCwpCARNDwp90zd6S9Oy4X7sZt8s/O7Oz+8Edon2p5kfcg/6ZB6p2WVI7jOC2jafi+TyaTIZvNEoYhlmWRy+W+OBEA+QbtdltqtZp0u10xTVO2260kOXpSMQxDVqsVSimUUlSrVfr9PkEQ4LouAKZpplxmksXpdGIwGHA4HCgWi7RaLc7nM81mE8/zWCwWX8ZMNVBKUSqV6HQ6zGYzxuMxjuOw2WywbRvbtomi6Gmy7Pd7cV1X1uu1jEYjuV6vMp/PpVKpyG63e+SS5KQcxHGMUop6vY5lWXiex3K5ZDqdcjweeQ/6+QgiQj6fB8BxHBqNBsPhkCAI0HX9sdokUluIoojJZALA7XZD13Xu9zuXy4Ver/fjScoHyfd9DMN4hCUiFAoFyuUyhmF8dqH92yn/y2d6CW/HoL9WBk1zCwAAAABJRU5ErkJggg=='></a>&nbsp;";
+  bbcode += "<a title='Quote' href='#' onClick='gclh_insert(\"[quote]\",\"[/quote]\"); return false;'><img border='0' src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wBHQ4XCtnzkIQAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAUElEQVQ4y2NgoBAwovH/k6kPrpkYA7Cq+0+C7VjV/yfD+/8ZGBgYmLBIXEOjCYljuOA/Dlf9x0YzMVAJUDUMSAKDy4D/lIYZWUmZqpmJLAAApg4dT968E/YAAAAASUVORK5CYII='></a>&nbsp;";
+  bbcode += "&nbsp;";
+  bbcode += "&nbsp;";
+  bbcode += "<a title='Left' href='#' onClick='gclh_insert(\"[left]\",\"[/left]\"); return false;'><img border='0' src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wBHQ8BN5zBA3UAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAARUlEQVQ4y2NgoBAwovH/k6kPrpkYA7Cq+0+C7VjV/yfD+/8ZGBgYWEgIA6z+ZiFGET4w6gIqu+A/CS74T7WkTNXMRBYAALLFFhcRejp3AAAAAElFTkSuQmCC'></a>&nbsp;";
+  bbcode += "<a title='Center' href='#' onClick='gclh_insert(\"[center]\",\"[/center]\"); return false;'><img border='0' src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wBHQ8CM7CBlK8AAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAQ0lEQVQ4y2NgoBAwovH/k6kPrpkYA7Cq+0+C7VjV/yfD+/8ZGBgYWHBJEOt3FmIDCBcYdQEVXEC1hER2UqZqZiILAABgDxgQXmuGowAAAABJRU5ErkJggg=='></a>&nbsp;";
+  bbcode += "<a title='Right' href='#' onClick='gclh_insert(\"[right]\",\"[/right]\"); return false;'><img border='0' src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wBHQ8CFWKMEVIAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAQ0lEQVQ4y2NgoBAwovH/k6kPrpkYA7Cq+0+C7VjV/yfD+/8ZGBgYWAgpIBQGLKQGFDoYdQEVXEC1hER2UqZqZiILAAA/9xgQ32Bd5gAAAABJRU5ErkJggg=='></a>&nbsp;";
+  bbcode += "&nbsp;";
+  bbcode += "&nbsp;";
+  bbcode += "<select style='font-size: 10px;'>";
+  bbcode += "  <option onClick='gclh_insert(\"[font=Arial]\",\"\"); return false;' style='font-family: Arial;'>Arial</option>";
+  bbcode += "  <option onClick='gclh_insert(\"[font=Arial Black]\",\"\"); return false;' style='font-family: Arial Black;'>Arial Black</option>";
+  bbcode += "  <option onClick='gclh_insert(\"[font=Comic Sans MS]\",\"\"); return false;' style='font-family: Comic Sans MS;'>Comic Sans MS</option>";
+  bbcode += "  <option onClick='gclh_insert(\"[font=Impact]\",\"\"); return false;' style='font-family: Impact;'>Impact</option>";
+  bbcode += "  <option onClick='gclh_insert(\"[font=Lucida Console]\",\"\"); return false;' style='font-family: Lucida Console;'>Lucida Console</option>";
+  bbcode += "  <option onClick='gclh_insert(\"[font=Tahoma]\",\"\"); return false;' style='font-family: Tahoma;'>Tahoma</option>";
+  bbcode += "  <option onClick='gclh_insert(\"[font=Verdana]\",\"\"); return false;' style='font-family: Verdana;'>Verdana</option>";
+  bbcode += "</select>&nbsp;";
+  bbcode += "<select style='font-size: 10px;'>";
+  bbcode += "  <option onClick='gclh_insert(\"[black]\",\"[/black]\"); return false;' style='background-color: black; color: white;'>black</option>";
+  bbcode += "  <option onClick='gclh_insert(\"[blue]\",\"[/blue]\"); return false;' style='background-color: blue; color: white;'>blue</option>";
+  bbcode += "  <option onClick='gclh_insert(\"[gold]\",\"[/gold]\"); return false;' style='background-color: gold;'>gold</option>";
+  bbcode += "  <option onClick='gclh_insert(\"[green]\",\"[/green]\"); return false;' style='background-color: green; color: white;'>green</option>";
+  bbcode += "  <option onClick='gclh_insert(\"[maroon]\",\"[/maroon]\"); return false;' style='background-color: maroon; color: white;'>maroon</option>";
+  bbcode += "  <option onClick='gclh_insert(\"[navy]\",\"[/navy]\"); return false;' style='background-color: navy; color: white;'>navy</option>";
+  bbcode += "  <option onClick='gclh_insert(\"[orange]\",\"[/orange]\"); return false;' style='background-color: orange;'>orange</option>";
+  bbcode += "  <option onClick='gclh_insert(\"[pink]\",\"[/pink]\"); return false;' style='background-color: pink;'>pink</option>";
+  bbcode += "  <option onClick='gclh_insert(\"[purple]\",\"[/purple]\"); return false;' style='background-color: purple; color: white;'>purple</option>";
+  bbcode += "  <option onClick='gclh_insert(\"[red]\",\"[/red]\"); return false;' style='background-color: red;'>red</option>";
+  bbcode += "  <option onClick='gclh_insert(\"[teal]\",\"[/teal]\"); return false;' style='background-color: teal; color: white;'>teal</option>";
+  bbcode += "  <option onClick='gclh_insert(\"[white]\",\"[/white]\"); return false;' style='background-color: white;'>white</option>";
+  bbcode += "  <option onClick='gclh_insert(\"[yellow]\",\"[/yellow]\"); return false;' style='background-color: yellow;'>yellow</option>";
+  bbcode += "</select>";
+
+  var bbc_dt = document.createElement("dt");
+  var bbc_dd = document.createElement("dd");
+  bbc_dt.innerHTML = "BBCode:";
+  bbc_dd.innerHTML = bbcode;
+  box.parentNode.parentNode.insertBefore(bbc_dt,box.parentNode);
+  box.parentNode.parentNode.insertBefore(bbc_dd,box.parentNode);
 }
 
 //Maxlength of Logtext
