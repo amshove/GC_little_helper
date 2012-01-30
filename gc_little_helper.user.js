@@ -984,6 +984,7 @@ function urlencode(s) {
   s = s.replace(/\"/g,"%22");
   s = s.replace(/\#/g,"%23");
   s = s.replace(/\$/g,"%24");
+  s = s.replace(/\&amp;/g,"%26");  
   s = s.replace(/\&/g,"%26");
   s = s.replace(/\+/g,"%2B");
   return s;
@@ -1879,8 +1880,8 @@ if(settings_show_nearestuser_profil_link && document.location.href.match(/^http:
 	  var textelement = document.getElementById("ctl00_ContentBody_LocationPanel1_OriginLabel");
 	  textelement.innerHTML += " (";
 	  var linkelement = document.createElement("a");
-	  linkelement.href = document.location.href.replace("seek/nearest.aspx?ul", "profile/?u");
-	  linkelement.href = linkelement.href.replace("seek/nearest.aspx?u", "profile/?u");
+	  var urluser = document.location.href.match(/(ul|u)=(.*)/)
+	  linkelement.href = "/profile/?u=" + urluser[2].replace("&sc=n", "");
 	  linkelement.innerHTML = "Profil";
 	  textelement.appendChild(linkelement);
 	  textelement.innerHTML += ")";
