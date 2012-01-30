@@ -1780,12 +1780,12 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/myfriends\.
       hides = GM_getValue("friends_hides_new_"+name.innerHTML,0);
       GM_setValue("friends_hides_"+name.innerHTML,hides);
       if(hides == 0) friend.getElementsByTagName("dd")[5].innerHTML = "0&nbsp;";
-      else friend.getElementsByTagName("dd")[5].innerHTML = "<a href='/seek/nearest.aspx?u="+urlencode(name.innerHTML)+"&disable_redirect'>"+hides+"</a>&nbsp;"+add;
+      else friend.getElementsByTagName("dd")[5].innerHTML = "<a href='/seek/nearest.aspx?u="+urlencode(name.innerHTML)+"&disable_redirect'>"+hides+"</a>&nbsp;";
 
       challanges = GM_getValue("friends_challenges_new_"+name.innerHTML,0);
       GM_setValue("friends_challenges_"+name.innerHTML,challanges);
       if(challanges == 0) friend.getElementsByTagName("dd")[6].innerHTML = "0&nbsp;";
-      else friend.getElementsByTagName("dd")[6].innerHTML = "<a href='/challenges/search.aspx?st=user&cst=completed&user="+urlencode(name.innerHTML)+"'>"+challenges+"</a>&nbsp;"+add;
+      else friend.getElementsByTagName("dd")[6].innerHTML = "<a href='/challenges/search.aspx?st=user&cst=completed&user="+urlencode(name.innerHTML)+"'>"+challenges+"</a>&nbsp;";
     }
   }
 
