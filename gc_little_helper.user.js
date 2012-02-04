@@ -20,7 +20,10 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        7.3             
-// Changelog:      7.3             - New: Issue #56 - BBCode: Select different fonts
+// Changelog:
+//                                 - Fix: Bug #146 - Eventday is wrong after 29.02. with specific date-format
+//                                 - Fix: Bug #137 - Usernames with & are not encoded correct
+//                 7.3             - New: Issue #56 - BBCode: Select different fonts
 //                                 - New: Issue #38 - Better BBCode layout 
 //                                 - New: Issue #127 - BBCode: Add quote-Tags
 //                                 - New: Issue #128 - BBCode: Add more colors 
@@ -1325,6 +1328,7 @@ if(settings_show_eventday && document.location.href.match(/^http:\/\/www\.geocac
     month_names["Jan"] = 1; 
     month_names["Feb"] = 2; 
     month_names["Mrz"] = 3; 
+    month_names["Mar"] = 3; 
     month_names["Apr"] = 4; 
     month_names["May"] = 5; 
     month_names["Jun"] = 6; 
