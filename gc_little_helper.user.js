@@ -21,6 +21,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        7.3             
 // Changelog:
+//                                 - Fix: Bug #144 - VIP-List Owner needs urldecode 
 //                                 - Fix: Bug #148 - "Hide recently viewed caches"-Settings is ignored
 //                                 - Fix: Bug #146 - Eventday is wrong after 29.02. with specific date-format
 //                                 - Fix: Bug #137 - Usernames with & are not encoded correct
@@ -982,8 +983,15 @@ if(settings_hide_empty_cache_notes && !settings_hide_cache_notes && document.loc
 }
 
 function urlencode(s) {
-  s = s.replace(/\%/g,"%25");
+  s = encodeURIComponent(s);  //Kodiert alle außer den folgenden Zeichen: A bis Z und a bis z und - _ . ! ~ * ' ( )
+  s = s.replace(/~/g,"%7e");
+  s = s.replace(/'/g,"%27");
+  s = s.replace(/\%26amp%3b/g,"%26");
   s = s.replace(/ /g,"%20");
+  //GC.com codiert - _ . ! * ( ) selbst nicht, daher wird dies hier auch nicht extra behandel
+
+  return s;
+ /* s = s.replace(/\%/g,"%25");
   s = s.replace(/\!/g,"%21");
   s = s.replace(/\"/g,"%22");
   s = s.replace(/\#/g,"%23");
@@ -991,6 +999,60 @@ function urlencode(s) {
   s = s.replace(/\&amp;/g,"%26");  
   s = s.replace(/\&/g,"%26");
   s = s.replace(/\+/g,"%2B");
+  s = s.replace(/Ä/g,"%c3%84");
+  s = s.replace(/ä/g,"%c3%a4");
+  s = s.replace(/Ö/g,"%c3%96");
+  s = s.replace(/ö/g,"%c3%b6");
+  s = s.replace(/Ü/g,"%c3%9c");
+  s = s.replace(/ü/g,"%c3%bc");
+  s = s.replace(/§/g,"%c2%a7");
+  s = s.replace(/\//g,"%2f");
+  s = s.replace(/?/g,"%3f");
+  s = s.replace(/,/g,"%2c");  
+  s = s.replace(/;/g,"%3b");  
+  s = s.replace(/:/g,"%3a");  
+  s = s.replace(/</g,"%3c");
+  s = s.replace(/>/g,"%3e"); 
+  s = s.replace(/{/g,"%7b"); 
+  s = s.replace(/}/g,"%7d"); 
+  s = s.replace(/°/g,"%c2%b0"); 
+  s = s.replace(/@/g,"%40");*/
+
+  return s;
+}
+
+function urldecode(s) {
+  s = decodeURIComponent(s);
+  s = s.replace(/%7e/g,"~"); 
+  s = s.replace(/%27/g,"'");
+  s = s.replace(/%20/g," ");
+/*  s = s.replace(/\+/g," ");
+  s = s.replace(/%25/g,"%");
+  s = s.replace(/%21/g,"!");
+  s = s.replace(/%22/g,"\"");
+  s = s.replace(/%23/g,"#");
+  s = s.replace(/%24/g,"$");
+  s = s.replace(/%26/g,"&amp;");  
+  s = s.replace(/%2B/g,"+");
+  s = s.replace(/%c3%84/g,"Ä");
+  s = s.replace(/%c3%a4/g,"ä");
+  s = s.replace(/%c3%96/g,"Ö");
+  s = s.replace(/%c3%b6/g,"ö");
+  s = s.replace(/%c3%9c/g,"Ü");
+  s = s.replace(/%c3%bc/g,"ü");
+  s = s.replace(/%c2%a7/g,"§");
+  s = s.replace(/%2f/g,"/");
+  s = s.replace(/%2c/g,",");
+  s = s.replace(/%3b/g,";");  
+  s = s.replace(/%3a/g,":");  
+  s = s.replace(/%3c/g,"<");  
+  s = s.replace(/%3e/g,">");
+  s = s.replace(/%7b/g,"{");
+  s = s.replace(/%7d/g,"}");
+  s = s.replace(/%c2%b0/g,"°");
+  s = s.replace(/%40/g,"@");*/
+
+
   return s;
 }
 
@@ -2503,7 +2565,7 @@ if(settings_show_vip_list && getElementsByClass("SignedInProfileLink")[0] && (do
       var matches = document.getElementById('ctl00_ContentBody_uxFindLinksHiddenByThisUser').href.match(/\?u=(.*)/);
       if(matches){
         // ka, warum zwei Variablen - vllt. hab ich schonmal versucht das Freitext-Owner-Problem mit der GUID zu umgehen?!
-        owner = matches[1];
+        owner = urldecode(matches[1]);
         owner_name = owner;
       }
     }
