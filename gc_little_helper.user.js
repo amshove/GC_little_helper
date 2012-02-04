@@ -987,10 +987,9 @@ function urlencode(s) {
   s = s.replace(/~/g,"%7e");
   s = s.replace(/'/g,"%27");
   s = s.replace(/\%26amp%3b/g,"%26");
-  s = s.replace(/ /g,"%20");
+  s = s.replace(/ /g,"+");
   //GC.com codiert - _ . ! * ( ) selbst nicht, daher wird dies hier auch nicht extra behandel
 
-  return s;
  /* s = s.replace(/\%/g,"%25");
   s = s.replace(/\!/g,"%21");
   s = s.replace(/\"/g,"%22");
@@ -1022,10 +1021,10 @@ function urlencode(s) {
 }
 
 function urldecode(s) {
-  s = decodeURIComponent(s);
+  s = s.replace(/\+/g," ");
   s = s.replace(/%7e/g,"~"); 
   s = s.replace(/%27/g,"'");
-  s = s.replace(/%20/g," ");
+  s = decodeURIComponent(s);
 /*  s = s.replace(/\+/g," ");
   s = s.replace(/%25/g,"%");
   s = s.replace(/%21/g,"!");
