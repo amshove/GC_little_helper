@@ -4548,6 +4548,20 @@ if(settings_configsync_enabled){
     if(document.getElementById('btn_uploadConfig')) document.getElementById('btn_uploadConfig').disabled = '';
     if(document.getElementById('btn_downloadConfig')) document.getElementById('btn_downloadConfig').disabled = '';
   }
+  function encode64(inp){ // http://mrfoo.de/archiv/434-Base64-in-Javascript.html
+    var key="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+    var chr1,chr2,chr3,enc3,enc4,i=0,out="";
+    while(i<inp.length){
+      chr1=inp.charCodeAt(i++);if(chr1>127) chr1=88;
+      chr2=inp.charCodeAt(i++);if(chr2>127) chr2=88;
+      chr3=inp.charCodeAt(i++);if(chr3>127) chr3=88;
+      if(isNaN(chr3)) {enc4=64;chr3=0;} else enc4=chr3&63
+      if(isNaN(chr2)) {enc3=64;chr2=0;} else enc3=((chr2<<2)|(chr3>>6))&63
+      out+=key.charAt((chr1>>2)&63)+key.charAt(((chr1<<4)|(chr2>>4))&63)+key.charAt(enc3)+key.charAt(enc4);
+    }
+//    return encodeURIComponent(out);
+    return out;
+  }
 
   // Sync: Create new Config
   function sync_createConfig(){
@@ -4567,24 +4581,32 @@ if(settings_configsync_enabled){
     for each (var val in GM_listValues()) {
       var value = GM_getValue(val);
 
-      if(!value.substr || value.substr(0,1) != "[") value = "\""+escape(value)+"\"";
-      else{
-        var arr = eval(value);
-        var new_arr = new Array();
-        for(var i=0; i<arr.length; i++){
-          if(arr[i]) new_arr.push(arr[i]);
+      if(typeof(value) != "boolean"){
+        if(!value.substr || value.substr(0,1) != "[") value = "\""+encode64(value)+"\"";
+        else{
+          var arr = eval(value);
+          var new_arr = new Array();
+          for(var i=0; i<arr.length; i++){
+            if(arr[i]) new_arr.push(encode64(arr[i]));
+          }
+          value = uneval(new_arr);
         }
-        value = escape(uneval(new_arr));
+      }else{
+        if(value) value = "true";
+        else value = "false";
+        value = "\""+encode64(value)+"\"";
       }
 
-      vals.push("\""+val+"\" : "+value);
+      vals.push("\""+encode64(val)+"\" : "+value);
     }
 
+//alert(uneval(vals));
+//alert(encode64("{"+vals.join(",")+"}"));
     GM_xmlhttpRequest({
       method: "POST",
       headers: {'User-Agent' : 'GM ' + scriptName + ' v' + scriptVersion + ' ' + browserID},
       url: sync_url+"uploadConfig.php",
-      data: "configID="+configID+"&json={"+vals.join(",")+"}",
+      data: "configID="+configID+"&json="+encode64("{"+vals.join(",")+"}"),
       headers: {
         "Content-Type": "application/x-www-form-urlencoded"
       },
@@ -4592,8 +4614,6 @@ if(settings_configsync_enabled){
         alert("uploaded: "+uneval(response)); // TODO
       }
     });
-
-//    alert(uneval(vals));
   }
 
   // Sync: Download Config
