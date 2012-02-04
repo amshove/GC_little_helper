@@ -21,6 +21,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        7.3             
 // Changelog:
+//                                 - Fix: Bug #148 - "Hide recently viewed caches"-Settings is ignored
 //                                 - Fix: Bug #146 - Eventday is wrong after 29.02. with specific date-format
 //                                 - Fix: Bug #137 - Usernames with & are not encoded correct
 //                 7.3             - New: Issue #56 - BBCode: Select different fonts
@@ -2125,7 +2126,7 @@ if(settings_old_map){
 }
 
 // Hide "Recently Viewed Caches"
-if(settings_hide_recentlyviewed && document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/default\.aspx/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/$/) && document.getElementById('ctl00_ContentBody_RecentlyViewedCachesPanel')){
+if(settings_hide_recentlyviewed && (document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/default\.aspx/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/$/) && document.getElementById('ctl00_ContentBody_RecentlyViewedCachesPanel'))){
   document.getElementById('ctl00_ContentBody_RecentlyViewedCachesPanel').style.display = 'none';
 }
 
