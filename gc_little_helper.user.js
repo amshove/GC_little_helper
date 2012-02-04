@@ -984,10 +984,11 @@ if(settings_hide_empty_cache_notes && !settings_hide_cache_notes && document.loc
 }
 
 function urlencode(s) {
+  s = s.replace(/&amp;/g,"&");
   s = encodeURIComponent(s);  //Kodiert alle außer den folgenden Zeichen: A bis Z und a bis z und - _ . ! ~ * ' ( )
   s = s.replace(/~/g,"%7e");
   s = s.replace(/'/g,"%27");
-  s = s.replace(/\%26amp%3b/g,"%26");
+  s = s.replace(/%26amp%3b/g,"%26");
   s = s.replace(/ /g,"+");
   //GC.com codiert - _ . ! * ( ) selbst nicht, daher wird dies hier auch nicht extra behandel
 
