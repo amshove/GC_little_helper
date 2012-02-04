@@ -4535,10 +4535,11 @@ checkVersion();
 
 // ############################### CONFIG SYNC #################################
 if(settings_configsync_enabled){
+  var sync_url = "http://localhost/GClh_web/";
   var browserID = GM_getValue("token");
   var configID = GM_getValue("settings_configsync_configid",0);
 
-  // Helper
+  // Sync: Helper
   function sync_changeConfigID(new_ConfigID){
     configID = new_ConfigID;
 //    GM_setValue("settings_configsync_configid",ConfigID);
@@ -4557,21 +4558,15 @@ if(settings_configsync_enabled){
   function sync_assignConfig(){
     if(document.getElementById('assign_configID')) sync_changeConfigID(document.getElementById('assign_configID').value);
   }
+
   // Sync: Upload Config
   function sync_uploadConfig(){
+    if(!configID) return false;
 
-  }
-  // Sync: Download Config
-  function sync_downloadConfig(){
-
-  }
-
-  // Sync settings
-  function get_settings(){
     var vals = new Array;
     for each (var val in GM_listValues()) {
       var value = GM_getValue(val);
-  
+
       if(!value.substr || value.substr(0,1) != "[") value = "\""+escape(value)+"\"";
       else{
         var arr = eval(value);
@@ -4581,27 +4576,33 @@ if(settings_configsync_enabled){
         }
         value = escape(uneval(new_arr));
       }
-  
+
       vals.push("\""+val+"\" : "+value);
     }
-  
+
     GM_xmlhttpRequest({
       method: "POST",
-      url: "http://localhost/GClh_web/test.php",
-      data: "json={"+vals.join(",")+"}",
+      headers: {'User-Agent' : 'GM ' + scriptName + ' v' + scriptVersion + ' ' + browserID},
+      url: sync_url+"uploadConfig.php",
+      data: "configID="+configID+"&json={"+vals.join(",")+"}",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded"
       },
       onload: function(response) {
-        alert("uploaded");
+        alert("uploaded: "+uneval(response)); // TODO
       }
     });
-  
-  //  alert(uneval(vals));
-  }
-  //get_settings();
 
-  // Configuration Menu
+//    alert(uneval(vals));
+  }
+
+  // Sync: Download Config
+  function sync_downloadConfig(){
+    if(!configID) return false;
+
+  }
+
+  // Sync: Configuration Menu
   function gclh_sync_showConfig(){
     // the configuration is always displayed at the top, so scroll away from logs or other lower stuff
     scroll(0, 0);
