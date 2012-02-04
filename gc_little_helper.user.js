@@ -535,6 +535,7 @@ settings_automatic_friend_reset = GM_getValue("settings_automatic_friend_reset",
 settings_show_long_vip = GM_getValue("settings_show_long_vip",false);
 settings_load_logs_with_gclh = GM_getValue("settings_load_logs_with_gclh",true);
 settings_hide_recentlyviewed = GM_getValue("settings_hide_recentlyviewed",false);
+settings_configsync_enabled = GM_getValue("settings_configsync_enabled",false);
 
 
 // Settings: Custom Bookmarks
@@ -3909,6 +3910,7 @@ addLinkEvent('lnk_profilestatistics',linkToStatistics);
 function btnClose(){
   if(document.getElementById('bg_shadow')) document.getElementById('bg_shadow').style.display = "none";
   if(document.getElementById('settings_overlay')) document.getElementById('settings_overlay').style.display = "none";
+  if(document.getElementById('sync_settings_overlay')) document.getElementById('sync_settings_overlay').style.display = "none";
   if(document.getElementById('findplayer_overlay')) document.getElementById('findplayer_overlay').style.display = "none";
 }
 
@@ -3965,14 +3967,14 @@ function createFindPlayerForm(){
     html += "<form action=\"/find/default.aspx\" method=\"post\" name=\"aspnetForm\">";
     html += "<input class='gclh_form' type='hidden' name='__VIEWSTATE' value=''>";
     html += "<input class='gclh_form' id='findplayer_field' class=\"Text\" type=\"text\" maxlength=\"100\" name=\"ctl00$ContentBody$FindUserPanel1$txtUsername\"/>";
-    html += "<input class='gclh_form' type=\"submit\" value=\"Go\" name=\"ctl00$ContentBody$FindUserPanel1$GetUsers\"/><input class='gclh_form' id='btn_close' type='button' value='close'>";
+    html += "<input class='gclh_form' type=\"submit\" value=\"Go\" name=\"ctl00$ContentBody$FindUserPanel1$GetUsers\"/><input class='gclh_form' id='btn_close1' type='button' value='close'>";
     html += "</form>";
     html += "</div>";
     document.getElementsByTagName('body')[0].innerHTML += html;
 
     document.getElementById("findplayer_field").focus();
 
-    document.getElementById('btn_close').addEventListener("click", btnClose, false);
+    document.getElementById('btn_close1').addEventListener("click", btnClose, false);
   }
 }
 
@@ -3988,42 +3990,97 @@ function show_help(text){
   return " <a class='gclh_info' href='javascript:void(0);'><b>?</b><span class='gclh_span'>"+text+"</span></a>";
 }
 
-/*
-// Sync settings
-function get_settings(){
-  var vals = new Array;
-  for each (var val in GM_listValues()) {
-    var value = GM_getValue(val);
-
-    if(!value.substr || value.substr(0,1) != "[") value = "\""+escape(value)+"\"";
-    else{
-      var arr = eval(value);
-      var new_arr = new Array();
-      for(var i=0; i<arr.length; i++){
-        if(arr[i]) new_arr.push(arr[i]);
-      }
-      value = escape(uneval(new_arr));
-    }
-
-    vals.push("\""+val+"\" : "+value);
-  }
-
-  GM_xmlhttpRequest({
-    method: "POST",
-    url: "http://localhost/GClh_web/test.php",
-    data: "json={"+vals.join(",")+"}",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded"
-    },
-    onload: function(response) {
-      alert("uploaded");
-    }
-  });
-
-//  alert(uneval(vals));
+function create_config_css(){
+  var css = document.createElement("style");
+  var html = "";
+  html += ".settings_overlay {";
+  html += "  background-color: #d8cd9d; ";
+  html += "  width:600px;";
+  html += "  border: 2px solid #778555; ";
+  html += "  overflow: auto; ";
+  html += "  padding:10px; ";
+  html += "  position: absolute; ";
+  html += "  left:30%; ";
+  html += "  top:10px; ";
+  html += "  z-index:101; ";
+  html += "  -moz-border-radius:30px; ";
+  html += "  -khtml-border-radius:30px; ";
+  html += "  border-radius: 30px;";
+  html += "  overflow: auto;";
+  html += "}";
+  html += "";
+  html += ".gclh_headline {";
+  html += "  height: 21px; ";
+  html += "  margin:5px; ";
+  html += "  background-color: #778555; ";
+  html += "  color: #FFFFFF;";
+  html += "  -moz-border-radius:30px; ";
+  html += "  -khtml-border-radius:30px; ";
+  html += "  border-radius: 30px;";
+  html += "  text-align: center;";
+  html += "}";
+  html += "";
+  html += ".gclh_headline2 {";
+  html += "  margin: 5px;";
+  html += "}";
+  html += "";
+  html += ".gclh_content {";
+  html += "  padding: 10px;";
+  html += "  font-family: Verdana;";
+  html += "  font-size: 14px;";
+  html += "}";
+  html += "";
+  html += ".gclh_form {";
+  html += "  background-color: #d8cd9d;";
+  html += "  border: 2px solid #778555;";
+  html += "  -moz-border-radius: 7px;";
+  html += "  -khtml-border-radius: 7px;";
+  html += "  border-radius: 7px;";
+  html += "  padding-left: 5px;";
+  html += "  padding-right: 5px;";
+  html += "}";
+  html += ".gclh_ref {";
+  html += "  color: #000000;";
+  html += "  text-decoration: none;";
+  html += "  border-bottom: dotted 1px black;";
+  html += "}";
+  html += "";
+  html += ".gclh_small {";
+  html += "  font-size: 10px;";
+  html += "}";
+  html += "";
+  // Highlight
+  html += "a.gclh_info {";
+  html += "  color: #000000;";
+  html += "  text-decoration: none;";
+  html += "}";
+  html += "";
+  html += "a.gclh_info:hover {";
+  html += "  position: relative;";
+  html += "}";
+  html += "";
+  html += "a.gclh_info span {";
+  html += "  visibility: hidden;";
+  html += "  position: absolute; top:-310px; left:0px;";
+  html += "  padding: 2px;";
+  html += "  text-decoration: none;";
+  html += "  text-align: left;";
+  html += "  vertical-align: top;";
+  html += "  font-size: 12px;";
+  html += "}";
+  html += "";
+  html += "a.gclh_info:hover span {";
+  html += "  width: 250px;";
+  html += "  visibility: visible;";
+  html += "  top: 10px;";
+  html += "  left: -125px;";
+  html += "  font-weight: normal;";
+  html += "  border: 1px solid #000000;";
+  html += "  background-color: #d8cd9d;";
+  html += "}";
+  css.innerHTML = html;
+  document.getElementsByTagName('body')[0].appendChild(css);
 }
-get_settings();
-*/
 
 // Configuration Menu
 function gclh_showConfig(){
@@ -4041,8 +4098,6 @@ function gclh_showConfig(){
     shadow.setAttribute("id","bg_shadow");
     shadow.setAttribute("style","width: 100%; height: 100%; background-color: #000000; position:fixed; top: 0; left: 0; opacity: 0.5; filter: alpha(opacity=50);");
     document.getElementsByTagName('body')[0].appendChild(shadow);
-//    html += "<div id='bg_shadow' style='width: 100%; height: 100%; background-color: #000000; position:fixed; top: 0; left: 0; opacity: 0.5; filter: alpha(opacity=50);'></div>";
-//    document.getElementsByTagName('body')[0].innerHTML += html;
     document.getElementById('bg_shadow').addEventListener("click", btnClose, false);
   }
 
@@ -4050,100 +4105,11 @@ function gclh_showConfig(){
     // If menu already created, just show it
     document.getElementById('settings_overlay').style.display = "";
   }else{
-    var css = document.createElement("style");
-    var html = "";
-//    html += "<style>";
-    html += "#settings_overlay {";
-    html += "  background-color: #d8cd9d; ";
-    html += "  width:600px;";
-    html += "  border: 2px solid #778555; ";
-    html += "  overflow: auto; ";
-    html += "  padding:10px; ";
-    html += "  position: absolute; ";
-    html += "  left:30%; ";
-    html += "  top:10px; ";
-    html += "  z-index:101; ";
-    html += "  -moz-border-radius:30px; ";
-    html += "  -khtml-border-radius:30px; ";
-    html += "  border-radius: 30px;";
-    html += "  overflow: auto;";
-    html += "}";
-    html += "";
-    html += ".gclh_headline {";
-    html += "  height: 21px; ";
-    html += "  margin:5px; ";
-    html += "  background-color: #778555; ";
-    html += "  color: #FFFFFF;";
-    html += "  -moz-border-radius:30px; ";
-    html += "  -khtml-border-radius:30px; ";
-    html += "  border-radius: 30px;";
-    html += "  text-align: center;";
-    html += "}";
-    html += "";
-    html += ".gclh_headline2 {";
-    html += "  margin: 5px;";
-    html += "}";
-    html += "";
-    html += ".gclh_content {";
-    html += "  padding: 10px;";
-    html += "  font-family: Verdana;";
-    html += "  font-size: 14px;";
-    html += "}";
-    html += "";
-    html += ".gclh_form {";
-    html += "  background-color: #d8cd9d;";
-    html += "  border: 2px solid #778555;";
-    html += "  -moz-border-radius: 7px;";
-    html += "  -khtml-border-radius: 7px;";
-    html += "  border-radius: 7px;";
-    html += "  padding-left: 5px;";
-    html += "  padding-right: 5px;";
-    html += "}";
-    html += "";
-    html += ".gclh_ref {";
-    html += "  color: #000000;";
-    html += "  text-decoration: none;";
-    html += "  border-bottom: dotted 1px black;";
-    html += "}";
-    html += "";
-    html += ".gclh_small {";
-    html += "  font-size: 10px;";
-    html += "}";
-    html += "";
-    // Highlight
-    html += "a.gclh_info {";
-    html += "  color: #000000;";
-    html += "  text-decoration: none;";
-    html += "}";
-    html += "";
-    html += "a.gclh_info:hover {";
-    html += "  position: relative;";
-    html += "}";
-    html += "";
-    html += "a.gclh_info span {";
-    html += "  visibility: hidden;";
-    html += "  position: absolute; top:-310px; left:0px;";
-    html += "  padding: 2px;";
-    html += "  text-decoration: none;";
-    html += "  text-align: left;";
-    html += "  vertical-align: top;";
-    html += "  font-size: 12px;";
-    html += "}";
-    html += "";
-    html += "a.gclh_info:hover span {";
-    html += "  width: 250px;";
-    html += "  visibility: visible;";
-    html += "  top: 10px;";
-    html += "  left: -125px;";
-    html += "  font-weight: normal;";
-    html += "  border: 1px solid #000000;";
-    html += "  background-color: #d8cd9d;";
-    html += "}";
-//    html += "</style>";
-    css.innerHTML = html;
-  
+    create_config_css();
+
     var div = document.createElement("div");
     div.setAttribute("id","settings_overlay");
+    div.setAttribute("class","settings_overlay");
     var html = "";  
 //    html += "<div id='settings_overlay'>";
     html += "<h3 class='gclh_headline'>GC little helper <font class='gclh_small'>v"+scriptVersion+"</font></h3>";
@@ -4316,13 +4282,12 @@ function gclh_showConfig(){
     html += "<br>";
     html += "";
     html += "<br>";
-    html += "<input class='gclh_form' type='button' value='save' id='btn_save'> <input class='gclh_form' type='button' value='close' id='btn_close'> <div width='400px' align='right' class='gclh_small' style='float: right;'>GC little helper by <a href='http://www.amshove.net/' target='_blank'>Torsten Amshove</a></div>";
+    html += "<input class='gclh_form' type='button' value='save' id='btn_save'> <input class='gclh_form' type='button' value='close' id='btn_close2'> <div width='400px' align='right' class='gclh_small' style='float: right;'>GC little helper by <a href='http://www.amshove.net/' target='_blank'>Torsten Amshove</a></div>";
     html += "</div>";
 //    html += "</div>";
     div.innerHTML = html;
 
 //    document.getElementsByTagName('body')[0].innerHTML += html;
-    document.getElementsByTagName('body')[0].appendChild(css);
     document.getElementsByTagName('body')[0].appendChild(div);
     
     var code = GM_getResourceText("jscolor");
@@ -4349,7 +4314,7 @@ function gclh_showConfig(){
     document.getElementById('gclh_linklist_link_2').addEventListener("click",gclh_show_linklist,false);
 
     // Give the buttons an function
-    document.getElementById('btn_close').addEventListener("click", btnClose, false);
+    document.getElementById('btn_close2').addEventListener("click", btnClose, false);
     document.getElementById('btn_save').addEventListener("click", btnSave, false);
   }
 
@@ -4566,5 +4531,151 @@ function checkVersion(){
 }
 
 checkVersion();
+
+// ############################### CONFIG SYNC #################################
+if(settings_configsync_enabled){
+  var browserID = GM_getValue("token");
+  var configID = GM_getValue("settings_configsync_configid",0);
+
+  // Helper
+  function sync_changeConfigID(new_ConfigID){
+    configID = new_ConfigID;
+//    GM_setValue("settings_configsync_configid",ConfigID);
+    if(document.getElementById('configID_text')) document.getElementById('configID_text').innerHTML = configID;
+    if(document.getElementById('work_with_text')) document.getElementById('work_with_text').style.color = '';
+    if(document.getElementById('btn_uploadConfig')) document.getElementById('btn_uploadConfig').disabled = '';
+    if(document.getElementById('btn_downloadConfig')) document.getElementById('btn_downloadConfig').disabled = '';
+  }
+
+  // Sync: Create new Config
+  function sync_createConfig(){
+
+  }
+
+  // Sync: Assign existing Config
+  function sync_assignConfig(){
+    if(document.getElementById('assign_configID')) sync_changeConfigID(document.getElementById('assign_configID').value);
+  }
+  // Sync: Upload Config
+  function sync_uploadConfig(){
+
+  }
+  // Sync: Download Config
+  function sync_downloadConfig(){
+
+  }
+
+  // Sync settings
+  function get_settings(){
+    var vals = new Array;
+    for each (var val in GM_listValues()) {
+      var value = GM_getValue(val);
+  
+      if(!value.substr || value.substr(0,1) != "[") value = "\""+escape(value)+"\"";
+      else{
+        var arr = eval(value);
+        var new_arr = new Array();
+        for(var i=0; i<arr.length; i++){
+          if(arr[i]) new_arr.push(arr[i]);
+        }
+        value = escape(uneval(new_arr));
+      }
+  
+      vals.push("\""+val+"\" : "+value);
+    }
+  
+    GM_xmlhttpRequest({
+      method: "POST",
+      url: "http://localhost/GClh_web/test.php",
+      data: "json={"+vals.join(",")+"}",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      onload: function(response) {
+        alert("uploaded");
+      }
+    });
+  
+  //  alert(uneval(vals));
+  }
+  //get_settings();
+
+  // Configuration Menu
+  function gclh_sync_showConfig(){
+    // the configuration is always displayed at the top, so scroll away from logs or other lower stuff
+    scroll(0, 0);
+  
+    if(document.getElementById('bg_shadow')){
+      // If shadow-box already created, just show it
+      if(document.getElementById('bg_shadow').style.display == "none"){
+        document.getElementById('bg_shadow').style.display = "";
+      }
+    }else{
+      // Seite abdunkeln
+      var shadow = document.createElement("div");
+      shadow.setAttribute("id","bg_shadow");
+      shadow.setAttribute("style","width: 100%; height: 100%; background-color: #000000; position:fixed; top: 0; left: 0; opacity: 0.5; filter: alpha(opacity=50);");
+      document.getElementsByTagName('body')[0].appendChild(shadow);
+      document.getElementById('bg_shadow').addEventListener("click", btnClose, false);
+    }
+  
+    if(document.getElementById('sync_settings_overlay') && document.getElementById('sync_settings_overlay').style.display == "none"){
+      // If menu already created, just show it
+      document.getElementById('sync_settings_overlay').style.display = "";
+    }else{
+      create_config_css();
+  
+      var div = document.createElement("div");
+      div.setAttribute("id","sync_settings_overlay");
+      div.setAttribute("class","settings_overlay");
+      var html = "";
+      html += "<h3 class='gclh_headline'>GC little helper - Configuration Sync</h3>";
+      html += "<div class='gclh_content'>";
+//      html += "<font class='gclh_small'><a href='http://www.amshove.net/bugtracker/wiki/gclittlehelper%3AGermanHelp' target='_blank'>Hier</a> gibt es eine deutsche Anleitung zu den Einstellungen.</font>";
+      html += "<table border=0>";
+      html += "  <tr><td class='gclh_small'>";
+      html += "<b>BrowserID:</b> "+browserID;
+      html += "  </td><td class='gclh_small'>";
+      html += "<b>ConfigID:</b> <font id='configID_text'>"+(configID ? configID : "&lt;no config set&gt;")+"</font>";
+      html += "  </td></tr>";
+      html += "</table>";
+
+      html += "<h4 class='gclh_headline2'>Configure Config-Sync</h4>";
+      html += "<font class='gclh_small'>For syncing the configuration you have to know, there is a local copy of your configuration on every browser/PC you use. Also there is a configuration on the server. With this sync-Process you are able to upload your local config to the server and download it with another browser/pc to the local settings. With this function you are able to use the same configuration on multiple PCs.<br>";
+      html += "Every configuration on the Server has a <b>ConfigID</b>. If the ConfigID above is empty, there is no Server-Configuration assigned to this browser. Then you have to create one or use an existing one. If you create a new config, all your settings will be uploaded to the server and you get an ConfigID for this Server-Configuration. On the second (or third, or ..) browser/PC you have to use the <b>\"Use existing ConfigID\"</b>-Option. You just have to type the ConfigID of your first browser to the text-field and apply with the button <b>assign Config</b>.<br></font>";
+      html += "<br>";
+      html += "<input class='gclh_form' type='button' value='create new Config' id='btn_createConfig'>";
+      html += "<br><br>";
+      html += "Use existing ConfigID:<br>";
+      html += "<input class='gclh_form' type='text' value='' id='assign_configID' size='20'>";
+      html += "<input class='gclh_form' type='button' value='assign Config' id='btn_assignConfig'>";
+
+      html += "<br><br>";
+      html += "<h4 class='gclh_headline2'>Work with Config-Sync</h4>";
+      html += "<font id='work_with_text' class='gclh_small' "+(configID ? "" : "style='color: #999999'")+">After you have assigned a valid ConfigID to this browser, you are now able to <b>upload Config</b> to the server or to <b>download Config</b> from the server. If you upload it, all configuration-items on the server will be overwritten by your actual local config. If you download the config from the server, all your local configuration-items will be overwritten by the config, saved on the server.<br></font>"
+      html += "<br>";
+      html += "<input class='gclh_form' type='button' value='upload Config' id='btn_uploadConfig' "+(configID ? "" : "disabled")+"> ";
+      html += "<input class='gclh_form' type='button' value='download Config' id='btn_downloadConfig' "+(configID ? "" : "disabled")+">";
+
+      html += "<br>";
+      html += "";
+      html += "<br>";
+//      html += "<input class='gclh_form' type='button' value='save' id='btn_save'> ";
+      html += "<input class='gclh_form' type='button' value='close' id='btn_close3'>";
+//      html += " <div width='400px' align='right' class='gclh_small' style='float: right;'>GC little helper by <a href='http://www.amshove.net/' target='_blank'>Torsten Amshove</a></div>";
+      html += "</div>";
+      div.innerHTML = html;
+  
+      document.getElementsByTagName('body')[0].appendChild(div);
+      document.getElementById('btn_createConfig').addEventListener("click", sync_createConfig, false);
+      document.getElementById('btn_assignConfig').addEventListener("click", sync_assignConfig, false);
+      document.getElementById('btn_uploadConfig').addEventListener("click", sync_uploadConfig, false);
+      document.getElementById('btn_downloadConfig').addEventListener("click", sync_downloadConfig, false);
+      document.getElementById('btn_close3').addEventListener("click", btnClose, false);
+    }
+  }
+  if(this.GM_registerMenuCommand && !document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\/beta/)) GM_registerMenuCommand("little helper config sync", gclh_sync_showConfig); // Hide on Beta-Map
+} // Config Sync
+
 } // Google Maps site
 } // Function "main" 
