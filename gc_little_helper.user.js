@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           GC little helper
 // @namespace      http://www.amshove.net
-// @version        7.3 
+// @version        7.4 
 // @include        http://www.geocaching.com/*
 // @include        http://maps.google.de/*
 // @include        http://maps.google.com/*
@@ -19,9 +19,8 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
-// Version:        7.3             
-// Changelog:
-//                                 - Fix: Bug #144 - VIP-List Owner needs urldecode 
+// Version:        7.4             
+// Changelog:      7.4             - Fix: Bug #144 - VIP-List Owner needs urldecode 
 //                                 - Fix: Bug #148 - "Hide recently viewed caches"-Settings is ignored
 //                                 - Fix: Bug #146 - Eventday is wrong after 29.02. with specific date-format
 //                                 - Fix: Bug #137 - Usernames with & are not encoded correct
@@ -420,7 +419,7 @@ profileBookmark("My Trackables", "lnk_my_trackables");
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "7.3";
+var scriptVersion = "7.4";
 
 var anzCustom = 10;
 var anzTemplates = 10;
