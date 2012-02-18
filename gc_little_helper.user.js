@@ -21,6 +21,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        7.4             
 // Changelog:      7.5
+//                                 - Fix: Bug #147 - Configure default layer for map 
 //                                 - Fix: Bug #156 - [GC Update] GC-Map = Google Map, possible see desc. 
 //                                 - Fix: Bug #154 - [GC Update] GC-Map Show found / own Caches 
 //                                 - Fix: Bug #152 - [GC Update] GC-Map Linklist 
@@ -545,6 +546,7 @@ settings_show_long_vip = GM_getValue("settings_show_long_vip",false);
 settings_load_logs_with_gclh = GM_getValue("settings_load_logs_with_gclh",true);
 //settings_hide_recentlyviewed = GM_getValue("settings_hide_recentlyviewed",false);
 settings_configsync_enabled = GM_getValue("settings_configsync_enabled",false);
+settings_map_default_layer = GM_getValue("settings_map_default_layer",0);
 
 
 // Settings: Custom Bookmarks
@@ -2071,12 +2073,18 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my/)){
   }
 }
 
-// Add Google-Maps Layers to Map
+// Add Google-Maps Layers to Map & Select Default-Layer
 if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\//)){
   layers = unsafeWindow.Groundspeak.Map.MapLayers;
   layers.push({tileUrl:"http://mt.google.com/vt?x={x}&y={y}&z={z}",name:"googlemaps",alt:"Google Maps",attribution:"Google Maps",subdomains:"1234",tileSize:256,minZoom:0,maxZoom:20});
   layers.push({tileUrl:"http://mt0.google.com/vt/lyrs=s@110&hl=en&x={x}&y={y}&z={z}",name:"googlemaps",alt:"Google Maps (Satellite)",attribution:"Google Maps",subdomains:"1234",tileSize:256,minZoom:0,maxZoom:20});
   layers.push({tileUrl:"http://mt0.google.com/vt/lyrs=s,m@110&hl=en&x={x}&y={y}&z={z}",name:"googlemaps",alt:"Google Maps (Hybrid)",attribution:"Google Maps",subdomains:"1234",tileSize:256,minZoom:0,maxZoom:20});
+
+  function gclh_select_layer(){
+    var menu = getElementsByClass("leaflet-control-layers-base")[0];
+    menu.childNodes[settings_map_default_layer].click();
+  }
+  if(settings_map_default_layer != 0) window.addEventListener("load",gclh_select_layer,false);
 }
 
 // Show Homezone-Circle on Map
@@ -2208,13 +2216,13 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\//)) {
 //  }
 //}
 
-// Change Map width
-if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\/default.aspx/) && document.getElementById("Content")){
-  var map_width = GM_getValue("map_width","1200");
-  if(document.getElementById("Content").childNodes[3]) document.getElementById("Content").childNodes[3].style.width = map_width+"px";
-  if(document.getElementById("ctl00_divBreadcrumbs")) document.getElementById("ctl00_divBreadcrumbs").style.width = map_width+"px";
-  if(document.getElementById("ctl00_divContentMain")) document.getElementById("ctl00_divContentMain").style.width = map_width+"px";
-}
+//// Change Map width
+//if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\/default.aspx/) && document.getElementById("Content")){
+//  var map_width = GM_getValue("map_width","1200");
+//  if(document.getElementById("Content").childNodes[3]) document.getElementById("Content").childNodes[3].style.width = map_width+"px";
+//  if(document.getElementById("ctl00_divBreadcrumbs")) document.getElementById("ctl00_divBreadcrumbs").style.width = map_width+"px";
+//  if(document.getElementById("ctl00_divContentMain")) document.getElementById("ctl00_divContentMain").style.width = map_width+"px";
+//}
 
 // Aplly Search-field in Navigation
 if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/default\.aspx\?navi_search=/)){
@@ -4228,7 +4236,18 @@ function gclh_showConfig(){
 //    html += checkbox('settings_old_map', 'Set old map as default') + show_help("With this option you can set the old map as default if you don't want to use the new beta-Map.")+"<br/>";
     html += checkbox('settings_map_hide_found', 'Hide found caches by default') + show_help("This is a Premium-Feature - it enables automatically the option to hide your found caches on map.") + "<br/>";
     html += checkbox('settings_map_hide_hidden', 'Hide own caches by default') + show_help("This is a Premium-Feature - it enables automatically the option to hide your caches on map.") + "<br/>";
-    html += "Map-Width: <input class='gclh_form' type='text' size='3' id='map_width' value='"+GM_getValue("map_width",1200)+"'> px"+show_help("If you use the old map and you think it is to small, just choose a new width here.") +"<br>";
+//    html += "Map-Width: <input class='gclh_form' type='text' size='3' id='map_width' value='"+GM_getValue("map_width",1200)+"'> px"+show_help("If you use the old map and you think it is to small, just choose a new width here.") +"<br>";
+    html += "Default Layer: <select class='gclh_form' id='settings_map_default_layer'>";
+    html += "  <option value='0' "+(settings_map_default_layer == '0' ? "selected='selected'" : "")+">MapQuest</option>";
+    html += "  <option value='1' "+(settings_map_default_layer == '1' ? "selected='selected'" : "")+">CloudMade</option>";
+    html += "  <option value='2' "+(settings_map_default_layer == '2' ? "selected='selected'" : "")+">Aerial</option>";
+    html += "  <option value='3' "+(settings_map_default_layer == '3' ? "selected='selected'" : "")+">OpenStreetMap</option>";
+    html += "  <option value='4' "+(settings_map_default_layer == '4' ? "selected='selected'" : "")+">OpenCycleMap</option>";
+    html += "  <option value='5' "+(settings_map_default_layer == '5' ? "selected='selected'" : "")+">My Topo</option>";
+    html += "  <option value='6' "+(settings_map_default_layer == '6' ? "selected='selected'" : "")+">Google Maps</option>";
+    html += "  <option value='7' "+(settings_map_default_layer == '7' ? "selected='selected'" : "")+">Google Maps (Satellite)</option>";
+    html += "  <option value='8' "+(settings_map_default_layer == '8' ? "selected='selected'" : "")+">Google Maps (Hybrid)</option>";
+    html += "</select>"+show_help("If you use the old map and you think it is to small, just choose a new width here.") +"<br>";
     html += "";
     html += "<br>";
     html += "";
@@ -4416,7 +4435,7 @@ function gclh_showConfig(){
     GM_setValue("settings_show_all_logs_count",document.getElementById('settings_show_all_logs_count').value);
     GM_setValue("settings_homezone_radius",document.getElementById('settings_homezone_radius').value);
     GM_setValue("settings_homezone_color",document.getElementById('settings_homezone_color').value);
-    GM_setValue("map_width",document.getElementById('map_width').value);
+//    GM_setValue("map_width",document.getElementById('map_width').value);
     GM_setValue("settings_new_width",document.getElementById('settings_new_width').value);
     GM_setValue("settings_date_format",document.getElementById('settings_date_format').value);
     GM_setValue("settings_default_logtype",document.getElementById('settings_default_logtype').value);
@@ -4424,6 +4443,7 @@ function gclh_showConfig(){
     GM_setValue("settings_mail_signature",document.getElementById('settings_mail_signature').value.replace(/‌/g,"")); // Fix: Entfernt das Steuerzeichen
     GM_setValue("settings_log_signature",document.getElementById('settings_log_signature').value.replace(/‌/g,""));
     GM_setValue("settings_tb_signature",document.getElementById('settings_tb_signature').value.replace(/‌/g,""));
+    GM_setValue("settings_map_default_layer",document.getElementById('settings_map_default_layer').value);
 
     var checkboxes = new Array(
       'settings_submit_log_button',
