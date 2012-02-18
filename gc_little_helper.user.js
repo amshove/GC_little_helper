@@ -21,6 +21,8 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        7.4             
 // Changelog:      7.5
+//                                 - Fix: Bug #151 - [GC Update] GC-Map Homezone 
+//                                 - Fix: Bug #155 - [GC Update] GC-Map redirect 
 //                                 - Fix: Bug #158 - [GC Update] "Hide recently viewed caches" is now deprecated 
 //                                 - Fix: Bug #161 - "Find Player" does not work from linklist on profile page 
 //                                 - Fix: Bug #157 - [GC Update] Bookmark to Nearest-List doesn't work 
@@ -2037,65 +2039,80 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my/)){
 }
 
 // Show Homezone-Circle on Map
-if(settings_show_homezone && document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\/beta/)){ // BETA map
-  var code = "function drawCircle(){ ";
-  code += "if(google.maps){";
-  code += "  var home_coord = new google.maps.LatLng("+(GM_getValue("home_lat")/10000000)+", "+(GM_getValue("home_lng")/10000000)+");";
-  code += "  var circle = new google.maps.Circle({center:home_coord,map:map,radius:"+settings_homezone_radius+"000,strokeColor:'" + settings_homezone_color + "',fillColor:'"+ settings_homezone_color +"',fillOpacity:0.1,clickable:false});";
-  code += "}}";
-  
-  var script = document.createElement("script");
-  script.innerHTML = code;
-  document.getElementsByTagName("body")[0].appendChild(script);
-    
-  function drawCircle(){
-    unsafeWindow.drawCircle();
+if(settings_show_homezone && document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\//)){
+  function gclh_draw_circle(){
+    var latlng = new unsafeWindow.L.LatLng((GM_getValue("home_lat")/10000000), (GM_getValue("home_lng")/10000000));
+    var options = {
+          color:       settings_homezone_color,
+          wight:       1,
+          opacity:     0.2,
+          fillOpacity: 0.1,
+          clickable:   false
+        };
+    var circle = new unsafeWindow.L.Circle(latlng, settings_homezone_radius*1000,options);
+    unsafeWindow.MapSettings.Map.addLayer(circle);
   }
-  
-  window.addEventListener("load", drawCircle, false);
+  window.addEventListener("load",gclh_draw_circle,false);
 }
-if(settings_show_homezone && document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\/default.aspx/)){
-  var code = "function drawCircle() {"; // Code from http://www.geocodezip.com/GoogleEx_markerinfowindowCircle.asp
-  code += "var point = new GLatLng("+(GM_getValue("home_lat")/10000000)+", "+(GM_getValue("home_lng")/10000000)+");";
-  code += "var radius = "+settings_homezone_radius+";";
-  code += "  var cColor = '"+ settings_homezone_color +"';";
-  code += "  var cWidth = 5;";
-  code += "  var Cradius = radius;   ";
-  code += "  var d2r = Math.PI/180; ";
-  code += "  var r2d = 180/Math.PI; ";
-  code += "  var Clat = (Cradius/3963)*r2d; ";
-  code += "  var Clng = Clat/Math.cos(point.lat()*d2r); ";
-  code += "  var Cpoints = []; ";
-  code += "  for (var i=0; i < 33; i++) { ";
-  code += "    var theta = Math.PI * (i/16); ";
-  code += "    var CPlng = point.lng() + (Clng * Math.cos(theta)); ";
-  code += "    var CPlat = point.lat() + (Clat * Math.sin(theta)); ";
-  code += "    var P = new GLatLng(CPlat,CPlng);";
-  code += "    Cpoints.push(P); ";
-  code += "  }";
-  code += "  map.addOverlay(new GPolyline(Cpoints,cColor,cWidth)); ";
-  code += "}";
-  
-  var script = document.createElement("script");
-  script.innerHTML = code;
-  document.getElementsByTagName("body")[0].appendChild(script);
-    
-  function drawCircle(){
-    unsafeWindow.drawCircle();
-  }
-  
-  window.addEventListener("load", drawCircle, false);
-  
-  // Draw Homezone Link
-  var drawlink = document.createElement("a");
-  drawlink.setAttribute("onclick","drawCircle();");
-  drawlink.href = "#";
-  drawlink.id = "drawlink";
-  drawlink.innerHTML = "Draw Homezone";
-  document.getElementById('uxMapRefresh').parentNode.insertBefore(drawlink,document.getElementById('uxMapRefresh'));
-  var br = document.createElement("br");
-  document.getElementById('uxMapRefresh').parentNode.insertBefore(br,document.getElementById('uxMapRefresh'));
-}
+//if(settings_show_homezone && document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\/beta/)){ // BETA map
+//  var code = "function drawCircle(){ ";
+//  code += "if(google.maps){";
+//  code += "  var home_coord = new google.maps.LatLng("+(GM_getValue("home_lat")/10000000)+", "+(GM_getValue("home_lng")/10000000)+");";
+//  code += "  var circle = new google.maps.Circle({center:home_coord,map:map,radius:"+settings_homezone_radius+"000,strokeColor:'" + settings_homezone_color + "',fillColor:'"+ settings_homezone_color +"',fillOpacity:0.1,clickable:false});";
+//  code += "}}";
+//  
+//  var script = document.createElement("script");
+//  script.innerHTML = code;
+//  document.getElementsByTagName("body")[0].appendChild(script);
+//    
+//  function drawCircle(){
+//    unsafeWindow.drawCircle();
+//  }
+//  
+//  window.addEventListener("load", drawCircle, false);
+//}
+//if(settings_show_homezone && document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\/default.aspx/)){
+//  var code = "function drawCircle() {"; // Code from http://www.geocodezip.com/GoogleEx_markerinfowindowCircle.asp
+//  code += "var point = new GLatLng("+(GM_getValue("home_lat")/10000000)+", "+(GM_getValue("home_lng")/10000000)+");";
+//  code += "var radius = "+settings_homezone_radius+";";
+//  code += "  var cColor = '"+ settings_homezone_color +"';";
+//  code += "  var cWidth = 5;";
+//  code += "  var Cradius = radius;   ";
+//  code += "  var d2r = Math.PI/180; ";
+//  code += "  var r2d = 180/Math.PI; ";
+//  code += "  var Clat = (Cradius/3963)*r2d; ";
+//  code += "  var Clng = Clat/Math.cos(point.lat()*d2r); ";
+//  code += "  var Cpoints = []; ";
+//  code += "  for (var i=0; i < 33; i++) { ";
+//  code += "    var theta = Math.PI * (i/16); ";
+//  code += "    var CPlng = point.lng() + (Clng * Math.cos(theta)); ";
+//  code += "    var CPlat = point.lat() + (Clat * Math.sin(theta)); ";
+//  code += "    var P = new GLatLng(CPlat,CPlng);";
+//  code += "    Cpoints.push(P); ";
+//  code += "  }";
+//  code += "  map.addOverlay(new GPolyline(Cpoints,cColor,cWidth)); ";
+//  code += "}";
+//  
+//  var script = document.createElement("script");
+//  script.innerHTML = code;
+//  document.getElementsByTagName("body")[0].appendChild(script);
+//    
+//  function drawCircle(){
+//    unsafeWindow.drawCircle();
+//  }
+//  
+//  window.addEventListener("load", drawCircle, false);
+//  
+//  // Draw Homezone Link
+//  var drawlink = document.createElement("a");
+//  drawlink.setAttribute("onclick","drawCircle();");
+//  drawlink.href = "#";
+//  drawlink.id = "drawlink";
+//  drawlink.innerHTML = "Draw Homezone";
+//  document.getElementById('uxMapRefresh').parentNode.insertBefore(drawlink,document.getElementById('uxMapRefresh'));
+//  var br = document.createElement("br");
+//  document.getElementById('uxMapRefresh').parentNode.insertBefore(br,document.getElementById('uxMapRefresh'));
+//}
 
 if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\/beta/)) {
   // hide my finds
