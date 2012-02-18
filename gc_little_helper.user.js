@@ -21,6 +21,8 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        7.4             
 // Changelog:      7.5
+//                                 - New: Issue #87 - Show sum of different LogTypes in Fieldnotes 
+//                                 - New: Issue #149 - CheckAll-Button at FieldNote-Page 
 //                                 - New: Issue #159 - Smaller size of hovered images 
 //                                 - New: Issue #162 - Option to hide sidebar on map by default
 //                                 - New: Issue #147 - Configure default layer for map 
@@ -2273,6 +2275,80 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/default\.aspx\?
 //    document.getElementById("tbSearch").value = txt;
 //  }
 //}
+
+// Improve Fieldnotes
+if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/fieldnotes\.aspx/)){
+  function gclh_select_all(){
+    var state = document.getElementById("gclh_all").checked;
+    var all = document.getElementsByTagName("input");
+    for(var i=0; i<all.length; i++){
+      if(all[i].id.match(/ctl00_ContentBody_LogList/)){
+        all[i].checked = state;
+      }
+    }
+  }
+
+  var table = getElementsByClass("Table")[0];
+  if(table){
+    var stats = new Object();
+    var types = new Object();
+    var count = 0;
+    var imgs = table.getElementsByTagName("img");
+    for(var i=0; i<imgs.length; i++){
+      if(imgs[i].src.match(/images\/icons/)){
+        count++;
+        if(!stats[imgs[i].src]) stats[imgs[i].src] = 0;
+        stats[imgs[i].src]++;
+      }else{
+        if(!types[imgs[i].src]) types[imgs[i].src] = 0;
+        types[imgs[i].src]++;
+      }
+    }
+
+    var tr = document.createElement("tr");
+
+    var td = document.createElement("td");
+    var checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.title = "Select All";
+    checkbox.id = "gclh_all";
+    checkbox.addEventListener("click", gclh_select_all, false);
+    td.appendChild(checkbox);
+    tr.appendChild(td);
+
+    var td = document.createElement("td");
+    for(src in types){
+      var img = document.createElement("img");
+      img.src = src;
+      td.appendChild(img);
+      td.appendChild(document.createTextNode(" "+types[src]+"  "));
+    }
+    tr.appendChild(td);
+
+    var td = document.createElement("td");
+    td.style.verticalAlign = "top";
+    var b = document.createElement("b");
+    b.appendChild(document.createTextNode("Statistic"));
+    td.appendChild(b);
+    tr.appendChild(td);
+
+    var td = document.createElement("td");
+    for(src in stats){
+      var img = document.createElement("img");
+      img.src = src;
+      td.appendChild(img);
+      td.appendChild(document.createTextNode(" "+stats[src]+"  "));
+    }
+    tr.appendChild(td);
+
+    var td = document.createElement("td");
+    td.appendChild(document.createTextNode("Sum: "+count));
+    tr.appendChild(td);
+
+    table.appendChild(tr);
+  }
+}
+
 
 // Dynamic Map
 if(settings_dynamic_map && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx\?/)){
