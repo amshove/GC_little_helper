@@ -21,6 +21,8 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        7.4             
 // Changelog:      7.5
+//                                 - Fix: Bug #161 - "Find Player" does not work from linklist on profile page 
+//                                 - Fix: Bug #157 - [GC Update] Bookmark to Nearest-List doesn't work 
 //                                 - [GC Update] Removed "Set old map as default"-Option
 //                 7.4             - Fix: Bug #144 - VIP-List Owner needs urldecode 
 //                                 - Fix: Bug #148 - "Hide recently viewed caches"-Settings is ignored
@@ -689,7 +691,7 @@ if(settings_submit_log_button && (document.location.href.match(/^http:\/\/www\.g
 }
 
 // Bookmark-Liste im Profil
-if(settings_bookmarks_show && (document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/$/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/default\.aspx/))){
+if(settings_bookmarks_show && document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\//) && document.getElementById("ctl00_ContentBody_WidgetMiniProfile1_LoggedInPanel")){
   var side = document.getElementById("ctl00_ContentBody_WidgetMiniProfile1_LoggedInPanel");
 
   var header = document.createElement("h3");
@@ -2502,7 +2504,7 @@ if(settings_autovisit && document.location.href.match(/^http:\/\/www\.geocaching
 }
 
 // VIP
-if(settings_show_vip_list && getElementsByClass("SignedInProfileLink")[0] && (document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/default\.aspx/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/myfriends\.aspx/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/profile\//))){
+if(settings_show_vip_list && getElementsByClass("SignedInProfileLink")[0] && (document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\//) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/myfriends\.aspx/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/profile\//))){
   var img_vip_off = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAKCAYAAAC9vt6cAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9sHDhEzBX83tZcAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAsElEQVQoz6WSsQ2DUAxEz4gdfkdBQQUlDAU9E0ALHQWLsMAfA8o/BNVLkYCS0ETkGstn6+kk2yShPxRLEtxjmJmio8nzXN57SZL3XkVRnEtHNTNlWaZ5nj9AAHRdR9M0ANR1Td/38Iz2UZdlIUmS0zsB67rinGPfd5xzbNt2AUgiTVOmaboCAMqypG1bqqo6ve8E77oAhmEgiiLGcbwHCCEQxzEhhJ8B9hrcPqP9+0gPbh/tf/c8szwAAAAASUVORK5CYII=";
   var img_vip_on = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAKCAYAAAC9vt6cAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9sHDhE0Aq4StvMAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAzklEQVQoz6WSwQvBcBTHP7/lanFT3DdzV9yw+RNc8E/s6A/YSa6KUrs4u4omB6KUKJoc5a+Q5rRlOCz7Xl7feu/zXu89AXjEUAKgszb/KrbKPSTfDJo2t8MdgNvhzrBlB0l+tMo9+o0R+8kxgASAgqFynrsAnGYumqF+deysTepmhZW9/QZouoLrXHk+nlwWVzRd+TnytOtQahfDOwBI51LImSTLwQo5I5POpn5O8Cnp3WiGyma8o1BXIi8yDKgpCEmQr0YHCMCLc0YR95Fe0bc6eQ97MqYAAAAASUVORK5CYII=";
   var vips = GM_getValue("vips",false);
@@ -2838,7 +2840,7 @@ if(settings_show_vip_list && getElementsByClass("SignedInProfileLink")[0] && (do
     }
     gclh_build_vip_list();
   // Listing (All-VIP-List)
-  }else if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/default\.aspx/) && document.getElementById("ctl00_ContentBody_uxBanManWidget")){
+  }else if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\//) && document.getElementById("ctl00_ContentBody_uxBanManWidget")){
     var widget = document.createElement("div");
     var headline = document.createElement("h3");
     var box = document.createElement("div");
@@ -3980,9 +3982,10 @@ function createFindPlayerForm(){
   }
 }
 
-if(document.getElementById('lnk_findplayer')){
-  document.getElementById('lnk_findplayer').addEventListener("click", createFindPlayerForm, false);
-}
+//if(document.getElementById('lnk_findplayer')){
+//  document.getElementById('lnk_findplayer').addEventListener("click", createFindPlayerForm, false);
+//}
+addLinkEvent('lnk_findplayer',createFindPlayerForm);
 
 function checkbox(setting_id, label) {
   return "<input type='checkbox' "+(eval(setting_id) ? "checked='checked'" : "" )+" id='" + setting_id + "'> " + label;
