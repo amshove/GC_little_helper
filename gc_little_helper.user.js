@@ -20,7 +20,9 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        7.4             
-// Changelog:      7.4             - Fix: Bug #144 - VIP-List Owner needs urldecode 
+// Changelog:      7.5
+//                                 - [GC Update] Removed "Set old map as default"-Option
+//                 7.4             - Fix: Bug #144 - VIP-List Owner needs urldecode 
 //                                 - Fix: Bug #148 - "Hide recently viewed caches"-Settings is ignored
 //                                 - Fix: Bug #146 - Eventday is wrong after 29.02. with specific date-format
 //                                 - Fix: Bug #137 - Usernames with & are not encoded correct
@@ -496,12 +498,12 @@ settings_show_homezone = GM_getValue("settings_show_homezone",true);
 settings_homezone_radius = GM_getValue("settings_homezone_radius","10");
 settings_homezone_color = GM_getValue("settings_homezone_color","#0000FF");
 // Settings: default Map
-settings_old_map = GM_getValue("settings_old_map",false);
-if (settings_old_map) {
+//settings_old_map = GM_getValue("settings_old_map",false);
+//if (settings_old_map) {
   map_url = "http://www.geocaching.com/map/default.aspx";
-} else {
-  map_url = "http://www.geocaching.com/map/beta/default.aspx";
-}
+//} else {
+//  map_url = "http://www.geocaching.com/map/beta/default.aspx";
+//}
 // Settings: default Log Type
 settings_default_logtype = GM_getValue("settings_default_logtype","-1");
 // Settings: default TB-Log Type
@@ -2173,19 +2175,19 @@ if(settings_dynamic_map && document.location.href.match(/^http:\/\/www\.geocachi
   window.addEventListener("load", load_dynamic, false);
 }
 
-// Set default map to old
-if(settings_old_map){
-  var links = document.getElementsByTagName("a");
-
-  for(var i = 0; i < links.length; i++){
-    if(links[i].href.match(/\/map\/beta\/default\.aspx/)){
-      var match = links[i].href.match(/\/map\/beta\/default\.aspx(.*)/);
-      if(match[1]){
-        links[i].href = "/map/default.aspx"+match[1];
-      }
-    }
-  }
-}
+//// Set default map to old
+//if(settings_old_map){
+//  var links = document.getElementsByTagName("a");
+//
+//  for(var i = 0; i < links.length; i++){
+//    if(links[i].href.match(/\/map\/beta\/default\.aspx/)){
+//      var match = links[i].href.match(/\/map\/beta\/default\.aspx(.*)/);
+//      if(match[1]){
+//        links[i].href = "/map/default.aspx"+match[1];
+//      }
+//    }
+//  }
+//}
 
 // Hide "Recently Viewed Caches"
 if(settings_hide_recentlyviewed && (document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/default\.aspx/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/$/) && document.getElementById('ctl00_ContentBody_RecentlyViewedCachesPanel'))){
@@ -4139,7 +4141,7 @@ function gclh_showConfig(){
     html += "<h4 class='gclh_headline2'>Maps</h4>";
     html += checkbox('settings_show_homezone', 'Show Homezone') + " - Radius: <input class='gclh_form' type='text' size='2' id='settings_homezone_radius' value='"+settings_homezone_radius+"'> km"+show_help("This option draws a circle of X kilometers around your home-coordinates on the map.")+"<br>";
     html += "Homezone-Color: <input class='gclh_form' type='text' size='5' id='settings_homezone_color' value='"+settings_homezone_color+"'>"+show_help("Here you can change the color of your homezone-circle.")+"<br>";
-    html += checkbox('settings_old_map', 'Set old map as default') + show_help("With this option you can set the old map as default if you don't want to use the new beta-Map.")+"<br/>";
+//    html += checkbox('settings_old_map', 'Set old map as default') + show_help("With this option you can set the old map as default if you don't want to use the new beta-Map.")+"<br/>";
     html += checkbox('settings_map_hide_found', 'Hide found caches by default') + show_help("This is a Premium-Feature - it enables automatically the option to hide your found caches on map.") + "<br/>";
     html += checkbox('settings_map_hide_hidden', 'Hide own caches by default') + show_help("This is a Premium-Feature - it enables automatically the option to hide your caches on map.") + "<br/>";
     html += "Map-Width: <input class='gclh_form' type='text' size='3' id='map_width' value='"+GM_getValue("map_width",1200)+"'> px"+show_help("If you use the old map and you think it is to small, just choose a new width here.") +"<br>";
@@ -4363,7 +4365,7 @@ function gclh_showConfig(){
       'settings_show_nearestuser_profil_link',
       'settings_dynamic_map',
       'settings_show_homezone',
-      'settings_old_map',
+//      'settings_old_map',
       'remove_navi_learn',
       'remove_navi_partnering',
       'remove_navi_play',
