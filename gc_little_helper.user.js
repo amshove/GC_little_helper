@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           GC little helper
 // @namespace      http://www.amshove.net
-// @version        7.4 
+// @version        7.5 
 // @include        http://www.geocaching.com/*
 // @include        http://maps.google.de/*
 // @include        http://maps.google.com/*
@@ -19,9 +19,8 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
-// Version:        7.4             
-// Changelog:      7.5
-//                                 - Fix: Bug #160 - Display of logs is shifted to the right, if more than 1000 images in image gallery
+// Version:        7.5             
+// Changelog:      7.5             - Fix: Bug #160 - Display of logs is shifted to the right, if more than 1000 images in image gallery
 //                                 - New: Issue #145 - Change BBCode-Icons 
 //                                 - New: Issue #87 - Show sum of different LogTypes in Fieldnotes 
 //                                 - New: Issue #149 - CheckAll-Button at FieldNote-Page 
@@ -436,7 +435,7 @@ profileBookmark("My Trackables", "lnk_my_trackables");
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "7.4";
+var scriptVersion = "7.5";
 
 var anzCustom = 10;
 var anzTemplates = 10;
