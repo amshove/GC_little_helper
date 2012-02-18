@@ -21,6 +21,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        7.4             
 // Changelog:      7.5
+//                                 - Fix: Bug #152 - [GC Update] GC-Map Linklist 
 //                                 - Fix: Bug #151 - [GC Update] GC-Map Homezone 
 //                                 - Fix: Bug #155 - [GC Update] GC-Map redirect 
 //                                 - Fix: Bug #158 - [GC Update] "Hide recently viewed caches" is now deprecated 
@@ -812,30 +813,60 @@ if(settings_bookmarks_on_top && document.getElementById('Navigation')){
 }
 
 // Bookmarks on top - Beta Map
-if(settings_bookmarks_on_top && document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\/beta/) && document.getElementById('maps-hd')){
-  var header = document.getElementById('maps-hd');
-  var navi = header.childNodes[3].childNodes[1];
-  var strong = navi.childNodes[1];
-  //navi.removeChild(navi.childNodes[1]);
+if(settings_bookmarks_on_top && document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\//)){
+  var header = getElementsByClass("ui-block-b")[0];
+  if(header){
+    var div = document.createElement("div");
+    div.style.float = 'left';
+    div.appendChild(document.createElement("br"));
 
-  for(var i=0; i < settings_bookmarks_list_beta.length; i++){
-    var x = settings_bookmarks_list_beta[i];
-    if(typeof(x) == "undefined") continue;
-
-    var hyperlink = document.createElement("a");
-
-    for(attr in bookmarks[x]){
-      if(attr != "custom") hyperlink.setAttribute(attr,bookmarks[x][attr]);
+    for(var i=0; i < settings_bookmarks_list_beta.length; i++){
+      var x = settings_bookmarks_list_beta[i];
+      if(typeof(x) == "undefined") continue;
+  
+      var hyperlink = document.createElement("a");
+      hyperlink.style.color = '#000000';
+      hyperlink.style.fontWeight = 'normal';
+  
+      for(attr in bookmarks[x]){
+        if(attr != "custom") hyperlink.setAttribute(attr,bookmarks[x][attr]);
+      }
+      hyperlink.target = '_blank';
+      hyperlink.appendChild(document.createTextNode(bookmarks[x]['title']));
+  
+      div.appendChild(hyperlink);
+      if (i != (settings_bookmarks_list_beta.length-1)) {
+        div.appendChild(document.createTextNode(' | '));
+      }
     }
-    hyperlink.appendChild(document.createTextNode(bookmarks[x]['title']));
 
-    navi.insertBefore(hyperlink, strong);
-    if (i != (settings_bookmarks_list_beta.length-1)) {
-      navi.insertBefore(document.createTextNode(' | '), strong);
-    }
+    header.appendChild(div);
   }
-  navi.removeChild(strong);
 }
+//if(settings_bookmarks_on_top && document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\/beta/) && document.getElementById('maps-hd')){
+//  var header = document.getElementById('maps-hd');
+//  var navi = header.childNodes[3].childNodes[1];
+//  var strong = navi.childNodes[1];
+//  //navi.removeChild(navi.childNodes[1]);
+//
+//  for(var i=0; i < settings_bookmarks_list_beta.length; i++){
+//    var x = settings_bookmarks_list_beta[i];
+//    if(typeof(x) == "undefined") continue;
+//
+//    var hyperlink = document.createElement("a");
+//
+//    for(attr in bookmarks[x]){
+//      if(attr != "custom") hyperlink.setAttribute(attr,bookmarks[x][attr]);
+//    }
+//    hyperlink.appendChild(document.createTextNode(bookmarks[x]['title']));
+//
+//    navi.insertBefore(hyperlink, strong);
+//    if (i != (settings_bookmarks_list_beta.length-1)) {
+//      navi.insertBefore(document.createTextNode(' | '), strong);
+//    }
+//  }
+//  navi.removeChild(strong);
+//}
 
 // Remove gc.com Links in Navigation
 if(document.getElementById('Navigation')){
@@ -3986,7 +4017,7 @@ function createFindPlayerForm(){
     // Overlay erstellen
     html += "<div id='findplayer_overlay' align='center'>";
     html += "<h3 style='margin:5px;'>Find Player</h3>";
-    html += "<form action=\"/find/default.aspx\" method=\"post\" name=\"aspnetForm\">";
+    html += "<form action=\"/find/default.aspx\" method=\"post\" name=\"aspnetForm\" "+(document.location.href.match(/http:\/\/www\.geocaching\.com\/map/) ? "target='_blank'" : "")+">";
     html += "<input class='gclh_form' type='hidden' name='__VIEWSTATE' value=''>";
     html += "<input class='gclh_form' id='findplayer_field' class=\"Text\" type=\"text\" maxlength=\"100\" name=\"ctl00$ContentBody$FindUserPanel1$txtUsername\"/>";
     html += "<input class='gclh_form' type=\"submit\" value=\"Go\" name=\"ctl00$ContentBody$FindUserPanel1$GetUsers\"/><input class='gclh_form' id='btn_close1' type='button' value='close'>";
