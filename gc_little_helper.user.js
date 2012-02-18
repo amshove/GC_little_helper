@@ -21,6 +21,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        7.4             
 // Changelog:      7.5
+//                                 - Fix: Bug #156 - [GC Update] GC-Map = Google Map, possible see desc. 
 //                                 - Fix: Bug #154 - [GC Update] GC-Map Show found / own Caches 
 //                                 - Fix: Bug #152 - [GC Update] GC-Map Linklist 
 //                                 - Fix: Bug #151 - [GC Update] GC-Map Homezone 
@@ -2068,6 +2069,14 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my/)){
       document.getElementById("lnk_"+i).addEventListener("click",saveStates,false);
     }
   }
+}
+
+// Add Google-Maps Layers to Map
+if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\//)){
+  layers = unsafeWindow.Groundspeak.Map.MapLayers;
+  layers.push({tileUrl:"http://mt.google.com/vt?x={x}&y={y}&z={z}",name:"googlemaps",alt:"Google Maps",attribution:"Google Maps",subdomains:"1234",tileSize:256,minZoom:0,maxZoom:20});
+  layers.push({tileUrl:"http://mt0.google.com/vt/lyrs=s@110&hl=en&x={x}&y={y}&z={z}",name:"googlemaps",alt:"Google Maps (Satellite)",attribution:"Google Maps",subdomains:"1234",tileSize:256,minZoom:0,maxZoom:20});
+  layers.push({tileUrl:"http://mt0.google.com/vt/lyrs=s,m@110&hl=en&x={x}&y={y}&z={z}",name:"googlemaps",alt:"Google Maps (Hybrid)",attribution:"Google Maps",subdomains:"1234",tileSize:256,minZoom:0,maxZoom:20});
 }
 
 // Show Homezone-Circle on Map
