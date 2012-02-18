@@ -21,6 +21,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        7.4             
 // Changelog:      7.5
+//                                 - Fix: Bug #158 - [GC Update] "Hide recently viewed caches" is now deprecated 
 //                                 - Fix: Bug #161 - "Find Player" does not work from linklist on profile page 
 //                                 - Fix: Bug #157 - [GC Update] Bookmark to Nearest-List doesn't work 
 //                                 - [GC Update] Removed "Set old map as default"-Option
@@ -537,7 +538,7 @@ settings_show_big_gallery = GM_getValue("settings_show_big_gallery",false);
 settings_automatic_friend_reset = GM_getValue("settings_automatic_friend_reset",true);
 settings_show_long_vip = GM_getValue("settings_show_long_vip",false);
 settings_load_logs_with_gclh = GM_getValue("settings_load_logs_with_gclh",true);
-settings_hide_recentlyviewed = GM_getValue("settings_hide_recentlyviewed",false);
+//settings_hide_recentlyviewed = GM_getValue("settings_hide_recentlyviewed",false);
 settings_configsync_enabled = GM_getValue("settings_configsync_enabled",false);
 
 
@@ -2191,10 +2192,10 @@ if(settings_dynamic_map && document.location.href.match(/^http:\/\/www\.geocachi
 //  }
 //}
 
-// Hide "Recently Viewed Caches"
-if(settings_hide_recentlyviewed && (document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/default\.aspx/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/$/) && document.getElementById('ctl00_ContentBody_RecentlyViewedCachesPanel'))){
-  document.getElementById('ctl00_ContentBody_RecentlyViewedCachesPanel').style.display = 'none';
-}
+//// Hide "Recently Viewed Caches"
+//if(settings_hide_recentlyviewed && (document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/default\.aspx/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/$/) && document.getElementById('ctl00_ContentBody_RecentlyViewedCachesPanel'))){
+//  document.getElementById('ctl00_ContentBody_RecentlyViewedCachesPanel').style.display = 'none';
+//}
 
 // Edit-Link to own Caches in Profile
 if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/(default\.aspx|owned\.aspx)$/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/$/)){
@@ -4131,7 +4132,7 @@ function gclh_showConfig(){
     html += "Page-Width: <input class='gclh_form' type='text' size='3' id='settings_new_width' value='"+GM_getValue("settings_new_width",950)+"'> px" + show_help("With this option you can expand the small layout. The default-value of gc.com is 950 px.") + "<br>";
     html += checkbox('settings_automatic_friend_reset', 'Reset Difference-Counter on Friendlist automatically') + show_help("If you enable this option, the difference-counter at Friendlist will automatically reset if you have seen the difference and if the day changed.") + "<br/>";
     html += checkbox('settings_show_big_gallery', 'Show bigger Images in Gallery') + "<br/>";
-    html += checkbox('settings_hide_recentlyviewed', 'Hide \"Recently Viewed Caches\"') + show_help("If you enable this option, the \"Recently Viewed Caches\"-List at your profile-page is hidden.") + "<br/>";
+//    html += checkbox('settings_hide_recentlyviewed', 'Hide \"Recently Viewed Caches\"') + show_help("If you enable this option, the \"Recently Viewed Caches\"-List at your profile-page is hidden.") + "<br/>";
     html += "";
     html += "<br>";
     html += "";
@@ -4397,8 +4398,8 @@ function gclh_showConfig(){
       'settings_show_big_gallery',
       'settings_automatic_friend_reset',
       'settings_show_long_vip',
-      'settings_load_logs_with_gclh',
-      'settings_hide_recentlyviewed'
+      'settings_load_logs_with_gclh'
+//      'settings_hide_recentlyviewed'
     );
     for (var i = 0; i < checkboxes.length; i++) {
       GM_setValue(checkboxes[i], document.getElementById(checkboxes[i]).checked);
