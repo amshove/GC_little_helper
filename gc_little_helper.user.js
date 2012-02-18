@@ -21,6 +21,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        7.4             
 // Changelog:      7.5
+//                                 - Fix: Bug #154 - [GC Update] GC-Map Show found / own Caches 
 //                                 - Fix: Bug #152 - [GC Update] GC-Map Linklist 
 //                                 - Fix: Bug #151 - [GC Update] GC-Map Homezone 
 //                                 - Fix: Bug #155 - [GC Update] GC-Map redirect 
@@ -2145,36 +2146,58 @@ if(settings_show_homezone && document.location.href.match(/^http:\/\/www\.geocac
 //  document.getElementById('uxMapRefresh').parentNode.insertBefore(br,document.getElementById('uxMapRefresh'));
 //}
 
-if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\/beta/)) {
-  // hide my finds
-  var code = 
-    "function hideCaches(id) {" +
-    "  if (google.maps) {" +
-    "    var button = document.getElementById(id);" +
-    "    if (button) {" +
-    "      button.click();" +
-    "    }" +
-    "  }" +
-    "}";
-  
-  var script = document.createElement("script");
-  script.innerHTML = code;
-  document.getElementsByTagName("body")[0].appendChild(script);
-    
-  function hideFound(){
-    unsafeWindow.hideCaches('chkMyFinds');
+// Hide found/hidden Caches on Map
+if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\//)) {
+  function hideFoundCaches(){
+    var button = unsafeWindow.document.getElementById("m_myCaches").childNodes[1];
+    if(button){
+      button.click();
+    }
   }
-  function hideHidden(){
-    unsafeWindow.hideCaches('chkMyHides');
-  }
-  
   if (settings_map_hide_found) {
-    window.addEventListener("load", hideFound, false);
+    window.addEventListener("load", hideFoundCaches, false);
+  }
+
+  function hideHiddenCaches(){
+    var button = unsafeWindow.document.getElementById("m_myCaches").childNodes[3];
+    if(button){
+      button.click();
+    }
   }
   if (settings_map_hide_hidden) {
-    window.addEventListener("load", hideHidden, false);
+    window.addEventListener("load", hideHiddenCaches, false);
   }
 }
+//if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\/beta/)) {
+//  // hide my finds
+//  var code = 
+//    "function hideCaches(id) {" +
+//    "  if (google.maps) {" +
+//    "    var button = document.getElementById(id);" +
+//    "    if (button) {" +
+//    "      button.click();" +
+//    "    }" +
+//    "  }" +
+//    "}";
+//  
+//  var script = document.createElement("script");
+//  script.innerHTML = code;
+//  document.getElementsByTagName("body")[0].appendChild(script);
+//    
+//  function hideFound(){
+//    unsafeWindow.hideCaches('chkMyFinds');
+//  }
+//  function hideHidden(){
+//    unsafeWindow.hideCaches('chkMyHides');
+//  }
+//  
+//  if (settings_map_hide_found) {
+//    window.addEventListener("load", hideFound, false);
+//  }
+//  if (settings_map_hide_hidden) {
+//    window.addEventListener("load", hideHidden, false);
+//  }
+//}
 
 // Change Map width
 if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\/default.aspx/) && document.getElementById("Content")){
@@ -4289,7 +4312,7 @@ function gclh_showConfig(){
     html += "<br>";
     html += "<table>";
     html += "  <tr>";
-    html += "    <td colspan='2'><font class='gclh_small'>(Second check to enable on Beta Map)</font>"+show_help("Here you can choose the links you want in your linklist. The first checkbox is for the linklist on the page, the second for the linklist on the beta map. If you enable it, the link will be shown. With the sort-option you can select in wich order the links should be shown. Also you are able to select a custome name for the link (like PQ for PockerQuery).<br>If there is a text-field after the two checkboxes, then it is a custom-link. In this text-field you can type any URL you want to be added to the linklis. The extra checkbox behind defines, if the Link should be opened in a new window.")+"</td>";
+    html += "    <td colspan='2'><font class='gclh_small'>(Second check to enable on Beta Map)</font>"+show_help("Here you can choose the links you want in your linklist. The first checkbox is for the linklist on the page, the second for the linklist on the map. If you enable it, the link will be shown. With the sort-option you can select in wich order the links should be shown. Also you are able to select a custome name for the link (like PQ for PockerQuery).<br>If there is a text-field after the two checkboxes, then it is a custom-link. In this text-field you can type any URL you want to be added to the linklis. The extra checkbox behind defines, if the Link should be opened in a new window.")+"</td>";
     html += "    <th>Sort</th>";
     html += "    <th>Custom Name</th>";
     html += "  </tr>";
@@ -4526,7 +4549,7 @@ function gclh_showConfig(){
     document.location.reload(true);
   }
 }
-if(this.GM_registerMenuCommand && !document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\/beta/)) GM_registerMenuCommand("little helper config", gclh_showConfig); // Hide on Beta-Map
+if(this.GM_registerMenuCommand && !document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\//)) GM_registerMenuCommand("little helper config", gclh_showConfig); // Hide on Beta-Map
 if((document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/[#a-zA-Z-_]*$/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/default\.aspx/)) && document.getElementById('ctl00_ContentBody_WidgetMiniProfile1_logOutLink')){
   var lnk = " | <a href='#' id='gclh_config_lnk'>GClh Config</a>";
   document.getElementById('ctl00_ContentBody_WidgetMiniProfile1_logOutLink').parentNode.innerHTML += lnk;
@@ -4749,7 +4772,7 @@ if(settings_configsync_enabled){
       document.getElementById('btn_close3').addEventListener("click", btnClose, false);
     }
   }
-  if(this.GM_registerMenuCommand && !document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\/beta/)) GM_registerMenuCommand("little helper config sync", gclh_sync_showConfig); // Hide on Beta-Map
+  if(this.GM_registerMenuCommand && !document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\//)) GM_registerMenuCommand("little helper config sync", gclh_sync_showConfig); // Hide on Beta-Map
 } // Config Sync
 
 } // Google Maps site
