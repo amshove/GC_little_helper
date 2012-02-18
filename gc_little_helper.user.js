@@ -21,8 +21,9 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        7.4             
 // Changelog:      7.5
-//                                 - Fix: Bug #147 - Configure default layer for map 
-//                                 - Fix: Bug #156 - [GC Update] GC-Map = Google Map, possible see desc. 
+//                                 - New: Issue #162 - Option to hide sidebar on map by default
+//                                 - New: Issue #147 - Configure default layer for map 
+//                                 - New: Issue #156 - [GC Update] GC-Map = Google Map, possible see desc. 
 //                                 - Fix: Bug #154 - [GC Update] GC-Map Show found / own Caches 
 //                                 - Fix: Bug #152 - [GC Update] GC-Map Linklist 
 //                                 - Fix: Bug #151 - [GC Update] GC-Map Homezone 
@@ -547,6 +548,7 @@ settings_load_logs_with_gclh = GM_getValue("settings_load_logs_with_gclh",true);
 //settings_hide_recentlyviewed = GM_getValue("settings_hide_recentlyviewed",false);
 settings_configsync_enabled = GM_getValue("settings_configsync_enabled",false);
 settings_map_default_layer = GM_getValue("settings_map_default_layer",0);
+settings_map_hide_sidebar = GM_getValue("settings_map_hide_sidebar",false);
 
 
 // Settings: Custom Bookmarks
@@ -2080,11 +2082,24 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\//)){
   layers.push({tileUrl:"http://mt0.google.com/vt/lyrs=s@110&hl=en&x={x}&y={y}&z={z}",name:"googlemaps",alt:"Google Maps (Satellite)",attribution:"Google Maps",subdomains:"1234",tileSize:256,minZoom:0,maxZoom:20});
   layers.push({tileUrl:"http://mt0.google.com/vt/lyrs=s,m@110&hl=en&x={x}&y={y}&z={z}",name:"googlemaps",alt:"Google Maps (Hybrid)",attribution:"Google Maps",subdomains:"1234",tileSize:256,minZoom:0,maxZoom:20});
 
+  // Select Default-Layer
   function gclh_select_layer(){
-    var menu = getElementsByClass("leaflet-control-layers-base")[0];
-    menu.childNodes[settings_map_default_layer].click();
+    if(settings_map_default_layer != 0) {
+      var menu = getElementsByClass("leaflet-control-layers-base")[0];
+      menu.childNodes[settings_map_default_layer].click();
+    }
+
+    if(settings_map_hide_sidebar){
+      var links = document.getElementsByTagName("a");
+      for(var i=0; i<links.length; i++){
+        if(links[i].className.match(/ToggleSidebar/)){
+          links[i].click();
+          break;
+        }
+      }
+    }
   }
-  if(settings_map_default_layer != 0) window.addEventListener("load",gclh_select_layer,false);
+  window.addEventListener("load",gclh_select_layer,false);
 }
 
 // Show Homezone-Circle on Map
@@ -4238,7 +4253,7 @@ function gclh_showConfig(){
     html += checkbox('settings_map_hide_hidden', 'Hide own caches by default') + show_help("This is a Premium-Feature - it enables automatically the option to hide your caches on map.") + "<br/>";
 //    html += "Map-Width: <input class='gclh_form' type='text' size='3' id='map_width' value='"+GM_getValue("map_width",1200)+"'> px"+show_help("If you use the old map and you think it is to small, just choose a new width here.") +"<br>";
     html += "Default Layer: <select class='gclh_form' id='settings_map_default_layer'>";
-    html += "  <option value='0' "+(settings_map_default_layer == '0' ? "selected='selected'" : "")+">MapQuest</option>";
+    html += "  <option value='0' "+(settings_map_default_layer == '0' ? "selected='selected'" : "")+">MapQuest (gc.com default)</option>";
     html += "  <option value='1' "+(settings_map_default_layer == '1' ? "selected='selected'" : "")+">CloudMade</option>";
     html += "  <option value='2' "+(settings_map_default_layer == '2' ? "selected='selected'" : "")+">Aerial</option>";
     html += "  <option value='3' "+(settings_map_default_layer == '3' ? "selected='selected'" : "")+">OpenStreetMap</option>";
@@ -4247,7 +4262,8 @@ function gclh_showConfig(){
     html += "  <option value='6' "+(settings_map_default_layer == '6' ? "selected='selected'" : "")+">Google Maps</option>";
     html += "  <option value='7' "+(settings_map_default_layer == '7' ? "selected='selected'" : "")+">Google Maps (Satellite)</option>";
     html += "  <option value='8' "+(settings_map_default_layer == '8' ? "selected='selected'" : "")+">Google Maps (Hybrid)</option>";
-    html += "</select>"+show_help("If you use the old map and you think it is to small, just choose a new width here.") +"<br>";
+    html += "</select>"+show_help("Here you can select the map source you want to use as default in the map.") +"<br>";
+    html += checkbox('settings_map_hide_sidebar', 'Hide sidebar by default') + show_help("If you want to hide the sidebar on the map, just select this option.") + "<br/>";
     html += "";
     html += "<br>";
     html += "";
@@ -4498,7 +4514,8 @@ function gclh_showConfig(){
       'settings_show_big_gallery',
       'settings_automatic_friend_reset',
       'settings_show_long_vip',
-      'settings_load_logs_with_gclh'
+      'settings_load_logs_with_gclh',
+      'settings_map_hide_sidebar'
 //      'settings_hide_recentlyviewed'
     );
     for (var i = 0; i < checkboxes.length; i++) {
