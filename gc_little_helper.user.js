@@ -21,6 +21,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        7.4             
 // Changelog:      7.5
+//                                 - New: Issue #159 - Smaller size of hovered images 
 //                                 - New: Issue #162 - Option to hide sidebar on map by default
 //                                 - New: Issue #147 - Configure default layer for map 
 //                                 - New: Issue #156 - [GC Update] GC-Map = Google Map, possible see desc. 
@@ -549,6 +550,7 @@ settings_load_logs_with_gclh = GM_getValue("settings_load_logs_with_gclh",true);
 settings_configsync_enabled = GM_getValue("settings_configsync_enabled",false);
 settings_map_default_layer = GM_getValue("settings_map_default_layer",0);
 settings_map_hide_sidebar = GM_getValue("settings_map_hide_sidebar",false);
+settings_hover_image_max_size = GM_getValue("settings_hover_image_max_size",600);
 
 
 // Settings: Custom Bookmarks
@@ -3119,6 +3121,10 @@ if(settings_show_thumbnails && document.location.href.match(/^http:\/\/www\.geoc
     "  top: 10px;" + 
     "  border: 1px solid #8c9e65;" +
     "  background-color:#dfe1d2;" +
+    "}" +
+    ".gclh_max {" +
+    "  max-height: "+settings_hover_image_max_size+"px;" +
+    "  max-width:  "+settings_hover_image_max_size+"px;" +
     "}";
 
   GM_addStyle(css);
@@ -3129,7 +3135,7 @@ if(settings_show_thumbnails && document.location.href.match(/^http:\/\/www\.geoc
 //    "      <td>" +
     "          <a class='tb_images lnk gclh_thumb' rel='tb_images[grp${LogID}]' href='http://img.geocaching.com/cache/log/${FileName}' title='${Descr}'>" +
     "              <img title='${Name}' alt='${Name}' src='http://img.geocaching.com/cache/log/thumb/${FileName}'>" +
-    "              <span><img src='http://img.geocaching.com/cache/log/${FileName}'> ${Name}</span>" +
+    "              <span><img class='gclh_max' src='http://img.geocaching.com/cache/log/${FileName}'> ${Name}</span>" +
     "          </a>&nbsp;&nbsp;" +
 //    "      </td>" +
 //    "  </tr>";
@@ -3167,6 +3173,7 @@ if(settings_show_thumbnails && document.location.href.match(/^http:\/\/www\.geoc
 
       var big_img = document.createElement("img");
       big_img.src = links[i].href;
+      big_img.className = "gclh_max";
 
       span.insertBefore(big_img,span.childNodes[0]);
 
@@ -3186,6 +3193,7 @@ if(settings_show_thumbnails && document.location.href.match(/^http:\/\/www\.geoc
       }
 
       img.src = thumb.src.replace(/thumb\//,"");
+      img.className = "gclh_max";
       span.appendChild(img);
       span.appendChild(document.createTextNode(thumb.parentNode.parentNode.childNodes[7].childNodes[0].innerHTML));
       
@@ -4296,7 +4304,7 @@ function gclh_showConfig(){
     html += checkbox('settings_show_vip_list', 'Show VIP-List') + show_help("The VIP-List is a list, displayed at the side on a cache-listing. You can add any user to your VIP-List by clicking the little VIP-Icon beside the username. If it is green, this person is a VIP. The VIP-List only shows VIPs and the logs of VIPs, wich already posted a log to this cache. With this option you are able to see wich of your VIPs already found this cache. The Owner is automatically a VIP for the cache, so you can see, what happened with the cache (disable, maint, enable, ..). On your profile-page there is an overview of all your VIPs.") + "<br/>";
     html += checkbox('settings_show_owner_vip_list', 'Show Owner in VIP-List') + "<br/>";
     html += checkbox('settings_show_long_vip', 'Show long VIP-List (one row per log)') + show_help("This is another type of displaying the VIP-List. If you disable this option you get the short list - one row per VIP and the Logs as Icons beside the VIP. If you enable this option, there is a row for every log.")+ "<br/>";
-    html += checkbox('settings_show_thumbnails', 'Show Thumbnails of Images') + show_help("With this option the images in logs are displayed as thumbnails to have a preview. If you hover over a Thumbnail, you can see the big one. This also works in gallerys.") + "<br/>";
+    html += checkbox('settings_show_thumbnails', 'Show Thumbnails of Images') + show_help("With this option the images in logs are displayed as thumbnails to have a preview. If you hover over a Thumbnail, you can see the big one. This also works in gallerys. The max size option prevents the hovered images from leaving the browser window.") + "&nbsp; Max size of big image: <input class='gclh_form' size=2 type='text' id='settings_hover_image_max_size' value='"+settings_hover_image_max_size+"'>px <br/>";
     html += checkbox('settings_hide_avatar', 'Hide Avatars in Listing') + show_help("This option hides the avatars in logs. This prevents loading the hundreds of images. You have to change the option here, because GClh overrides the log-load-logic of gc.com, so the avatar-option of gc.com doesn't work with GClh.") + "<br/>";
     html += checkbox('settings_load_logs_with_gclh', 'Load Logs with GClh') + show_help("This option should be enabled. You just should disable it, if you have problems with loading the logs. If it is disabled, there are no VIP-, Mail-, Top-Icons at Logs, also the VIP-List, Hide Avatars, Log-filter, Log-Search, .. won't work.") + "<br/>";
     html += "<br>";
@@ -4460,6 +4468,7 @@ function gclh_showConfig(){
     GM_setValue("settings_log_signature",document.getElementById('settings_log_signature').value.replace(/‌/g,""));
     GM_setValue("settings_tb_signature",document.getElementById('settings_tb_signature').value.replace(/‌/g,""));
     GM_setValue("settings_map_default_layer",document.getElementById('settings_map_default_layer').value);
+    GM_setValue("settings_hover_image_max_size",document.getElementById('settings_hover_image_max_size').value);
 
     var checkboxes = new Array(
       'settings_submit_log_button',
