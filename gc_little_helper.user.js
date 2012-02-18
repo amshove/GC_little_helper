@@ -21,6 +21,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        7.4             
 // Changelog:      7.5
+//                                 - Fix: Bug #160 - Display of logs is shifted to the right, if more than 1000 images in image gallery
 //                                 - New: Issue #145 - Change BBCode-Icons 
 //                                 - New: Issue #87 - Show sum of different LogTypes in Fieldnotes 
 //                                 - New: Issue #149 - CheckAll-Button at FieldNote-Page 
@@ -1642,8 +1643,10 @@ if(settings_show_mail && document.location.href.match(/^http:\/\/www\.geocaching
   global_cache_name = name;
 }
 
-// Switch title-color to red, if cache is archived
+// Switch title-color to red, if cache is archived & rename the gallery-link to prevent destroying the layout on to many images
 if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/)){
+
+  if(document.getElementById("ctl00_ContentBody_uxGalleryImagesLink")) document.getElementById("ctl00_ContentBody_uxGalleryImagesLink").innerHTML = document.getElementById("ctl00_ContentBody_uxGalleryImagesLink").innerHTML.replace("View the ","");
 
   var warnings = getElementsByClass("OldWarning");
   for(var i=0; i<warnings.length; i++){
