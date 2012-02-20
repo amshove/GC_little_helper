@@ -20,7 +20,9 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        7.5             
-// Changelog:      7.5             - Fix: Bug #160 - Display of logs is shifted to the right, if more than 1000 images in image gallery
+// Changelog:
+//                                 - New: Issue #163 - [Map] New layer: OSM ÖPNV-Karte 
+//                 7.5             - Fix: Bug #160 - Display of logs is shifted to the right, if more than 1000 images in image gallery
 //                                 - New: Issue #145 - Change BBCode-Icons 
 //                                 - New: Issue #87 - Show sum of different LogTypes in Fieldnotes 
 //                                 - New: Issue #149 - CheckAll-Button at FieldNote-Page 
@@ -2082,9 +2084,10 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my/)){
   }
 }
 
-// Add Google-Maps Layers to Map & Select Default-Layer
+// Add Google-Maps and OCM Transport Layers to Map & Select Default-Layer
 if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\//)){
   layers = unsafeWindow.Groundspeak.Map.MapLayers;
+  layers.splice(5,0,{tileUrl:"http://a.tile2.opencyclemap.org/transport/{z}/{x}/{y}.png",name:"ocmtransport",alt:"OpenCycleMap (Transport)",attribution:"OpenCycleMap (Transport)",subdomains:"1234",tileSize:256,minZoom:0,maxZoom:18});
   layers.push({tileUrl:"http://mt.google.com/vt?x={x}&y={y}&z={z}",name:"googlemaps",alt:"Google Maps",attribution:"Google Maps",subdomains:"1234",tileSize:256,minZoom:0,maxZoom:20});
   layers.push({tileUrl:"http://mt0.google.com/vt/lyrs=s@110&hl=en&x={x}&y={y}&z={z}",name:"googlemaps",alt:"Google Maps (Satellite)",attribution:"Google Maps",subdomains:"1234",tileSize:256,minZoom:0,maxZoom:20});
   layers.push({tileUrl:"http://mt0.google.com/vt/lyrs=s,m@110&hl=en&x={x}&y={y}&z={z}",name:"googlemaps",alt:"Google Maps (Hybrid)",attribution:"Google Maps",subdomains:"1234",tileSize:256,minZoom:0,maxZoom:20});
@@ -4345,10 +4348,11 @@ function gclh_showConfig(){
     html += "  <option value='2' "+(settings_map_default_layer == '2' ? "selected='selected'" : "")+">Aerial</option>";
     html += "  <option value='3' "+(settings_map_default_layer == '3' ? "selected='selected'" : "")+">OpenStreetMap</option>";
     html += "  <option value='4' "+(settings_map_default_layer == '4' ? "selected='selected'" : "")+">OpenCycleMap</option>";
-    html += "  <option value='5' "+(settings_map_default_layer == '5' ? "selected='selected'" : "")+">My Topo</option>";
-    html += "  <option value='6' "+(settings_map_default_layer == '6' ? "selected='selected'" : "")+">Google Maps</option>";
-    html += "  <option value='7' "+(settings_map_default_layer == '7' ? "selected='selected'" : "")+">Google Maps (Satellite)</option>";
-    html += "  <option value='8' "+(settings_map_default_layer == '8' ? "selected='selected'" : "")+">Google Maps (Hybrid)</option>";
+    html += "  <option value='5' "+(settings_map_default_layer == '5' ? "selected='selected'" : "")+">OpenCycleMap (Transport)</option>";
+    html += "  <option value='6' "+(settings_map_default_layer == '6' ? "selected='selected'" : "")+">My Topo</option>";
+    html += "  <option value='7' "+(settings_map_default_layer == '7' ? "selected='selected'" : "")+">Google Maps</option>";
+    html += "  <option value='8' "+(settings_map_default_layer == '8' ? "selected='selected'" : "")+">Google Maps (Satellite)</option>";
+    html += "  <option value='9' "+(settings_map_default_layer == '9' ? "selected='selected'" : "")+">Google Maps (Hybrid)</option>";
     html += "</select>"+show_help("Here you can select the map source you want to use as default in the map.") +"<br>";
     html += checkbox('settings_map_hide_sidebar', 'Hide sidebar by default') + show_help("If you want to hide the sidebar on the map, just select this option.") + "<br/>";
     html += "";
