@@ -2323,6 +2323,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/fieldnotes\
     checkbox.id = "gclh_all";
     checkbox.addEventListener("click", gclh_select_all, false);
     td.appendChild(checkbox);
+    td.style.backgroundColor = "#DFE1D2";
     tr.appendChild(td);
 
     var td = document.createElement("td");
@@ -2332,6 +2333,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/fieldnotes\
       td.appendChild(img);
       td.appendChild(document.createTextNode(" "+types[src]+"  "));
     }
+    td.style.backgroundColor = "#DFE1D2";
     tr.appendChild(td);
 
     var td = document.createElement("td");
@@ -2339,6 +2341,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/fieldnotes\
     var b = document.createElement("b");
     b.appendChild(document.createTextNode("Statistic"));
     td.appendChild(b);
+    td.style.backgroundColor = "#DFE1D2";
     tr.appendChild(td);
 
     var td = document.createElement("td");
@@ -2348,10 +2351,12 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/fieldnotes\
       td.appendChild(img);
       td.appendChild(document.createTextNode(" "+stats[src]+"  "));
     }
+    td.style.backgroundColor = "#DFE1D2";
     tr.appendChild(td);
 
     var td = document.createElement("td");
     td.appendChild(document.createTextNode("Sum: "+count));
+    td.style.backgroundColor = "#DFE1D2";
     tr.appendChild(td);
 
     table.appendChild(tr);
