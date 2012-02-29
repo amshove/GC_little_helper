@@ -21,6 +21,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        7.5             
 // Changelog:
+//                                 - Fix: Bug #169 - #found# Variable has a wrong value if there are completed challanges
 //                                 - Fix: Bug #166 - Gallery with one image gets displayed empty 
 //                                 - New: Issue #164 - [Map] Add GM Terrain
 //                                 - New: Issue #163 - [Map] New layer: OSM ÖPNV-Karte 
@@ -1245,7 +1246,7 @@ if(settings_show_bbcode && (document.location.href.match(/^http:\/\/www\.geocach
   // Get foinds to replace #found# variable
   if(getElementsByClass('SignedInText')[0]){
     var text = getElementsByClass('SignedInText')[0].childNodes[7].innerHTML;
-    var finds = parseInt(text.match(/([0-9,]{1,10})/)[1].replace(/,/g,""));
+    var finds = parseInt(text.match(/([0-9,]{1,10}){1}/)[1].replace(/,/g,""));
   }
 
   var code = "function gclh_insert(aTag,eTag){"; // http://aktuell.de.selfhtml.org/artikel/javascript/bbcode/
