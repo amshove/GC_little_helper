@@ -21,6 +21,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        7.5             
 // Changelog:
+//                                 - Fix: Bug #166 - Gallery with one image gets displayed empty 
 //                                 - New: Issue #164 - [Map] Add GM Terrain
 //                                 - New: Issue #163 - [Map] New layer: OSM ÖPNV-Karte 
 //                 7.5             - Fix: Bug #160 - Display of logs is shifted to the right, if more than 1000 images in image gallery
@@ -3294,7 +3295,7 @@ if(settings_show_thumbnails && document.location.href.match(/^http:\/\/www\.geoc
   }
 
   // Show gallery-Images in 2 instead of 4 cols
-  if(settings_show_big_gallery && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/gallery\.aspx?/) && tds.length > 0 && document.getElementById("ctl00_ContentBody_GalleryItems_DataListGallery")){
+  if(settings_show_big_gallery && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/gallery\.aspx?/) && tds.length > 1 && document.getElementById("ctl00_ContentBody_GalleryItems_DataListGallery")){
     var tbody = document.createElement("tbody");
     var tr = document.createElement("tr");
     var x = 0;
@@ -3311,7 +3312,7 @@ if(settings_show_thumbnails && document.location.href.match(/^http:\/\/www\.geoc
     }
     document.getElementById("ctl00_ContentBody_GalleryItems_DataListGallery").removeChild(document.getElementById("ctl00_ContentBody_GalleryItems_DataListGallery").firstChild);
     document.getElementById("ctl00_ContentBody_GalleryItems_DataListGallery").appendChild(tbody);
-  }else if(settings_show_big_gallery && document.location.href.match(/^http:\/\/www\.geocaching\.com\/profile\//) && tds.length > 0 && document.getElementById("ctl00_ContentBody_ProfilePanel1_UserGallery_DataListGallery")){
+  }else if(settings_show_big_gallery && document.location.href.match(/^http:\/\/www\.geocaching\.com\/profile\//) && tds.length > 1 && document.getElementById("ctl00_ContentBody_ProfilePanel1_UserGallery_DataListGallery")){
     var tbody = document.createElement("tbody");
     var tr = document.createElement("tr");
     var x = 0;
