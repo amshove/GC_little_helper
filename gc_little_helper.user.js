@@ -21,7 +21,8 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        7.5             
 // Changelog:
-//                                 - New: Feature request #173  -  Add Hike & Bike map 
+//                                 - New: Issue #172 - Fix to use on Android Smartphone  
+//                                 - New: Issue #173 - Add Hike & Bike map 
 //                                 - Fix: Bug #168 - [BB-Code] Link-Function on Log-Page 
 //                                 - Fix: Bug #169 - #found# Variable has a wrong value if there are completed challanges
 //                                 - Fix: Bug #166 - Gallery with one image gets displayed empty 
@@ -467,6 +468,17 @@ if(!this.eval){
   this.eval = function (value) { return JSON.parse(value); };
   this.uneval = function (value) { return JSON.stringify(value); };
   browser = "opera";
+}
+
+// Check for Scriptish bug in Fennec browser (http://www.geoclub.de/viewtopic.php?f=117&t=62130&p=983614#p983614)
+this.GM_setValue("browser", browser);
+var test_browser = this.GM_getValue("browser");
+if (!test_browser) {
+  //console.log("Scriptish GM_getValue bug detected");
+  var GM_getValue_Orig = this.GM_getValue;
+  this.GM_getValue=function (key,def) {
+    return GM_getValue_Orig("scriptvals.GClittlehelper@httpwww.amshove.net."+key,def);
+  }
 }
 
 
