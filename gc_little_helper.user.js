@@ -21,6 +21,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        7.5             
 // Changelog:
+//                                 - New: Feature request #173  -  Add Hike & Bike map 
 //                                 - Fix: Bug #168 - [BB-Code] Link-Function on Log-Page 
 //                                 - Fix: Bug #169 - #found# Variable has a wrong value if there are completed challanges
 //                                 - Fix: Bug #166 - Gallery with one image gets displayed empty 
@@ -2091,12 +2092,12 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my/)){
 // Add Google-Maps and OCM Transport Layers to Map & Select Default-Layer
 if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\//)){
   layers = unsafeWindow.Groundspeak.Map.MapLayers;
-  layers.splice(5,0,{tileUrl:"http://a.tile2.opencyclemap.org/transport/{z}/{x}/{y}.png",name:"ocmtransport",alt:"OpenCycleMap (Transport)",attribution:"OpenCycleMap",subdomains:"1234",tileSize:256,minZoom:0,maxZoom:18});
+  layers.splice(4,0,{tileUrl:"http://toolserver.org/tiles/hikebike/{z}/{x}/{y}.png",name:"hikebike",alt:"OpenStreetMap (Hike&Bike)",attribution:"OpenStreetMap",subdomains:"1234",tileSize:256,minZoom:0,maxZoom:20});
+  layers.splice(6,0,{tileUrl:"http://a.tile2.opencyclemap.org/transport/{z}/{x}/{y}.png",name:"ocmtransport",alt:"OpenCycleMap (Transport)",attribution:"OpenCycleMap",subdomains:"1234",tileSize:256,minZoom:0,maxZoom:18});
   layers.push({tileUrl:"http://mt.google.com/vt?x={x}&y={y}&z={z}",name:"googlemaps",alt:"Google Maps",attribution:"Google Maps",subdomains:"1234",tileSize:256,minZoom:0,maxZoom:20});
   layers.push({tileUrl:"http://mt0.google.com/vt/lyrs=s@110&hl=en&x={x}&y={y}&z={z}",name:"googlemaps",alt:"Google Maps (Satellite)",attribution:"Google Maps",subdomains:"1234",tileSize:256,minZoom:0,maxZoom:20});
   layers.push({tileUrl:"http://mt0.google.com/vt/lyrs=s,m@110&hl=en&x={x}&y={y}&z={z}",name:"googlemaps",alt:"Google Maps (Hybrid)",attribution:"Google Maps",subdomains:"1234",tileSize:256,minZoom:0,maxZoom:20});
    layers.push({tileUrl:"http://mt0.google.com/vt/v=w2p.110&hl=en&x={x}&y={y}&z={z}",name:"googlemaps",alt:"Google Maps (Terrain)",attribution:"Google Maps",subdomains:"1234",tileSize:256,minZoom:0,maxZoom:20});
-
 
   // Select Default-Layer
   function gclh_select_layer(){
