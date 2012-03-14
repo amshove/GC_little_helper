@@ -21,8 +21,9 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        7.5             
 // Changelog:
+//                                 - New: Issue #175 - Display Hill-Shadows 
 //                                 - New: Issue #172 - Fix to use on Android Smartphone  
-//                                 - New: Issue #173 - Add Hike & Bike map 
+//                                 - New: Issue #173 - Add Hike & Bike map
 //                                 - Fix: Bug #168 - [BB-Code] Link-Function on Log-Page 
 //                                 - Fix: Bug #169 - #found# Variable has a wrong value if there are completed challanges
 //                                 - Fix: Bug #166 - Gallery with one image gets displayed empty 
@@ -530,6 +531,8 @@ settings_show_nearestuser_profil_link = GM_getValue("settings_show_nearestuser_p
 settings_show_homezone = GM_getValue("settings_show_homezone",true);
 settings_homezone_radius = GM_getValue("settings_homezone_radius","10");
 settings_homezone_color = GM_getValue("settings_homezone_color","#0000FF");
+// Settings: Hill Shadow
+settings_show_hillshadow = GM_getValue("settings_show_hillshadow",false);
 // Settings: default Map
 //settings_old_map = GM_getValue("settings_old_map",false);
 //if (settings_old_map) {
@@ -2101,22 +2104,31 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my/)){
   }
 }
 
-// Add Google-Maps and OCM Transport Layers to Map & Select Default-Layer
+// Add Google-Maps and OCM Transport Layers to Map & Select Default-Layer, add Hill-Shadow, add Homezone
 if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\//)){
   layers = unsafeWindow.Groundspeak.Map.MapLayers;
 
   layers.splice(4,0,{tileUrl:"http://toolserver.org/tiles/hikebike/{z}/{x}/{y}.png",name:"hikebike",alt:"OpenStreetMap (Hike&Bike)",attribution:'Map and map data \u00a9 2012 <a href="http://www.openstreetmap.org" target=\'_blank\'>OpenStreetMap</a> and contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.',tileSize:256,minZoom:0,maxZoom:20});
   // new L.TileLayer("http://toolserver.org/~cmarqu/hill/{z}/{x}/{y}.png"); <-- needs to be loaded aditionaly to display shadow
+  
+    //unsafeWindow.MapSettings.Map.addLayer(new unsafeWindow.L.TileLayer("http://toolserver.org/~cmarqu/hill/{z}/{x}/{y}.png", {maxZoom: 20}));
+
 
   layers.splice(6,0,{tileUrl:"http://a.tile2.opencyclemap.org/transport/{z}/{x}/{y}.png",name:"ocmtransport",alt:"OpenCycleMap (Transport)",attribution:'Map and map data \u00a9 2012 <a href="http://www.opencyclemap.org" target=\'_blank\'>OpenCycleMap</a> and contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.',tileSize:256,minZoom:0,maxZoom:18});
   layers.push({tileUrl:"http://mt.google.com/vt?x={x}&y={y}&z={z}",name:"googlemaps",alt:"Google Maps",attribution:"Google Maps",tileSize:256,minZoom:0,maxZoom:20});
   layers.push({tileUrl:"http://mt0.google.com/vt/lyrs=s@110&hl=en&x={x}&y={y}&z={z}",name:"googlemaps",alt:"Google Maps (Satellite)",attribution:"Google Maps",tileSize:256,minZoom:0,maxZoom:20});
   layers.push({tileUrl:"http://mt0.google.com/vt/lyrs=s,m@110&hl=en&x={x}&y={y}&z={z}",name:"googlemaps",alt:"Google Maps (Hybrid)",attribution:"Google Maps",tileSize:256,minZoom:0,maxZoom:20});
   layers.push({tileUrl:"http://mt0.google.com/vt/v=w2p.110&hl=en&x={x}&y={y}&z={z}",name:"googlemaps",alt:"Google Maps (Terrain)",attribution:"Google Maps",tileSize:256,minZoom:0,maxZoom:20});
-   
+  
+  //Function called when map is loaded
+  function gclh_map_loaded(){
+  
+    //add Hill-Shadow LOKLOK
+    if(settings_show_hillshadow){
+      unsafeWindow.MapSettings.Map.addLayer(new unsafeWindow.L.TileLayer("http://toolserver.org/~cmarqu/hill/{z}/{x}/{y}.png", {maxZoom: 20}));
+    }
 
-  // Select Default-Layer
-  function gclh_select_layer(){
+    //Select Default-Layer
     if(settings_map_default_layer != 0) {
       var menu = getElementsByClass("leaflet-control-layers-base")[0];
       menu.childNodes[settings_map_default_layer].click();
@@ -2131,26 +2143,30 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\//)){
         }
       }
     }
+    
+    // Show Homezone-Circle on Map
+    if(settings_show_homezone){
+      var latlng = new unsafeWindow.L.LatLng((GM_getValue("home_lat")/10000000), (GM_getValue("home_lng")/10000000));
+      var options = {
+                     color:       settings_homezone_color,
+                     wight:       1,
+                     opacity:     0.2,
+                     fillOpacity: 0.1,
+                     clickable:   false
+                    };
+      var circle = new unsafeWindow.L.Circle(latlng, settings_homezone_radius*1000,options);
+      unsafeWindow.MapSettings.Map.addLayer(circle);
+    }
+  
+  
   }
-  window.addEventListener("load",gclh_select_layer,false);
+  window.addEventListener("load",gclh_map_loaded,false);
+
+  
 }
 
-// Show Homezone-Circle on Map
-if(settings_show_homezone && document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\//)){
-  function gclh_draw_circle(){
-    var latlng = new unsafeWindow.L.LatLng((GM_getValue("home_lat")/10000000), (GM_getValue("home_lng")/10000000));
-    var options = {
-          color:       settings_homezone_color,
-          wight:       1,
-          opacity:     0.2,
-          fillOpacity: 0.1,
-          clickable:   false
-        };
-    var circle = new unsafeWindow.L.Circle(latlng, settings_homezone_radius*1000,options);
-    unsafeWindow.MapSettings.Map.addLayer(circle);
-  }
-  window.addEventListener("load",gclh_draw_circle,false);
-}
+
+
 //if(settings_show_homezone && document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\/beta/)){ // BETA map
 //  var code = "function drawCircle(){ ";
 //  code += "if(google.maps){";
@@ -4384,6 +4400,7 @@ function gclh_showConfig(){
     html += "  <option value='9' "+(settings_map_default_layer == '10' ? "selected='selected'" : "")+">Google Maps (Hybrid)</option>";
     html += "</select>"+show_help("Here you can select the map source you want to use as default in the map.") +"<br>";
     html += checkbox('settings_map_hide_sidebar', 'Hide sidebar by default') + show_help("If you want to hide the sidebar on the map, just select this option.") + "<br/>";
+    html += checkbox('settings_show_hillshadow', 'Shows Hill-Shadows on Map') + show_help("If you want 3D-like-Shadows to be displayed, activate this function.") + "<br/>";
     html += "";
     html += "<br>";
     html += "";
@@ -4606,6 +4623,7 @@ function gclh_showConfig(){
       'settings_show_nearestuser_profil_link',
       'settings_dynamic_map',
       'settings_show_homezone',
+      'settings_show_hillshadow',
 //      'settings_old_map',
       'remove_navi_learn',
       'remove_navi_partnering',
