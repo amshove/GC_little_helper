@@ -2107,23 +2107,18 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my/)){
 // Add Google-Maps and OCM Transport Layers to Map & Select Default-Layer, add Hill-Shadow, add Homezone
 if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\//)){
   layers = unsafeWindow.Groundspeak.Map.MapLayers;
-
   layers.splice(4,0,{tileUrl:"http://toolserver.org/tiles/hikebike/{z}/{x}/{y}.png",name:"hikebike",alt:"OpenStreetMap (Hike&Bike)",attribution:'Map and map data \u00a9 2012 <a href="http://www.openstreetmap.org" target=\'_blank\'>OpenStreetMap</a> and contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.',tileSize:256,minZoom:0,maxZoom:20});
-  // new L.TileLayer("http://toolserver.org/~cmarqu/hill/{z}/{x}/{y}.png"); <-- needs to be loaded aditionaly to display shadow
-  
-    //unsafeWindow.MapSettings.Map.addLayer(new unsafeWindow.L.TileLayer("http://toolserver.org/~cmarqu/hill/{z}/{x}/{y}.png", {maxZoom: 20}));
-
-
   layers.splice(6,0,{tileUrl:"http://a.tile2.opencyclemap.org/transport/{z}/{x}/{y}.png",name:"ocmtransport",alt:"OpenCycleMap (Transport)",attribution:'Map and map data \u00a9 2012 <a href="http://www.opencyclemap.org" target=\'_blank\'>OpenCycleMap</a> and contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.',tileSize:256,minZoom:0,maxZoom:18});
   layers.push({tileUrl:"http://mt.google.com/vt?x={x}&y={y}&z={z}",name:"googlemaps",alt:"Google Maps",attribution:"Google Maps",tileSize:256,minZoom:0,maxZoom:20});
   layers.push({tileUrl:"http://mt0.google.com/vt/lyrs=s@110&hl=en&x={x}&y={y}&z={z}",name:"googlemaps",alt:"Google Maps (Satellite)",attribution:"Google Maps",tileSize:256,minZoom:0,maxZoom:20});
   layers.push({tileUrl:"http://mt0.google.com/vt/lyrs=s,m@110&hl=en&x={x}&y={y}&z={z}",name:"googlemaps",alt:"Google Maps (Hybrid)",attribution:"Google Maps",tileSize:256,minZoom:0,maxZoom:20});
   layers.push({tileUrl:"http://mt0.google.com/vt/v=w2p.110&hl=en&x={x}&y={y}&z={z}",name:"googlemaps",alt:"Google Maps (Terrain)",attribution:"Google Maps",tileSize:256,minZoom:0,maxZoom:20});
   
+  
   //Function called when map is loaded
   function gclh_map_loaded(){
   
-    //add Hill-Shadow LOKLOK
+    //add Hill-Shadow
     if(settings_show_hillshadow){
       unsafeWindow.MapSettings.Map.addLayer(new unsafeWindow.L.TileLayer("http://toolserver.org/~cmarqu/hill/{z}/{x}/{y}.png", {maxZoom: 20}));
     }
