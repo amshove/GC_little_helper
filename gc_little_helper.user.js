@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           GC little helper
 // @namespace      http://www.amshove.net
-// @version        7.5 
+// @version        7.6 
 // @include        http://www.geocaching.com/*
 // @include        http://maps.google.de/*
 // @include        http://maps.google.com/*
@@ -19,9 +19,8 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
-// Version:        7.5             
-// Changelog:
-//                                 - New: Issue #175 - Display Hill-Shadows 
+// Version:        7.6             
+// Changelog:      7.6             - New: Issue #175 - Display Hill-Shadows 
 //                                 - New: Issue #172 - Fix to use on Android Smartphone  
 //                                 - New: Issue #173 - Add Hike & Bike map
 //                                 - Fix: Bug #168 - [BB-Code] Link-Function on Log-Page 
@@ -444,7 +443,7 @@ profileBookmark("My Trackables", "lnk_my_trackables");
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "7.5";
+var scriptVersion = "7.6";
 
 var anzCustom = 10;
 var anzTemplates = 10;
