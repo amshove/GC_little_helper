@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           GC little helper
 // @namespace      http://www.amshove.net
-// @version        7.6 
+// @version        7.7 
 // @include        http://www.geocaching.com/*
 // @include        http://maps.google.de/*
 // @include        http://maps.google.com/*
@@ -19,8 +19,9 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
-// Version:        7.6             
-// Changelog:      7.6             - New: Issue #175 - Display Hill-Shadows 
+// Version:        7.7             
+// Changelog:      7.7             - Fix: Bug #178 - Default-Map Selection does not work properly 
+//                 7.6             - New: Issue #175 - Display Hill-Shadows 
 //                                 - New: Issue #172 - Fix to use on Android Smartphone  
 //                                 - New: Issue #173 - Add Hike & Bike map
 //                                 - Fix: Bug #168 - [BB-Code] Link-Function on Log-Page 
@@ -443,7 +444,7 @@ profileBookmark("My Trackables", "lnk_my_trackables");
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "7.6";
+var scriptVersion = "7.7";
 
 var anzCustom = 10;
 var anzTemplates = 10;
@@ -4403,13 +4404,13 @@ function gclh_showConfig(){
     html += "  <option value='1' "+(settings_map_default_layer == '1' ? "selected='selected'" : "")+">CloudMade</option>";
     html += "  <option value='2' "+(settings_map_default_layer == '2' ? "selected='selected'" : "")+">Aerial</option>";
     html += "  <option value='3' "+(settings_map_default_layer == '3' ? "selected='selected'" : "")+">OpenStreetMap</option>";
-    html += "  <option value='3' "+(settings_map_default_layer == '4' ? "selected='selected'" : "")+">OpenStreetMap (Hike&Bike)</option>";
-    html += "  <option value='4' "+(settings_map_default_layer == '5' ? "selected='selected'" : "")+">OpenCycleMap</option>";
-    html += "  <option value='5' "+(settings_map_default_layer == '6' ? "selected='selected'" : "")+">OpenCycleMap (Transport)</option>";
-    html += "  <option value='6' "+(settings_map_default_layer == '7' ? "selected='selected'" : "")+">My Topo</option>";
-    html += "  <option value='7' "+(settings_map_default_layer == '8' ? "selected='selected'" : "")+">Google Maps</option>";
-    html += "  <option value='8' "+(settings_map_default_layer == '9' ? "selected='selected'" : "")+">Google Maps (Satellite)</option>";
-    html += "  <option value='9' "+(settings_map_default_layer == '10' ? "selected='selected'" : "")+">Google Maps (Hybrid)</option>";
+    html += "  <option value='4' "+(settings_map_default_layer == '4' ? "selected='selected'" : "")+">OpenStreetMap (Hike&Bike)</option>";
+    html += "  <option value='5' "+(settings_map_default_layer == '5' ? "selected='selected'" : "")+">OpenCycleMap</option>";
+    html += "  <option value='6' "+(settings_map_default_layer == '6' ? "selected='selected'" : "")+">OpenCycleMap (Transport)</option>";
+    html += "  <option value='7' "+(settings_map_default_layer == '7' ? "selected='selected'" : "")+">My Topo</option>";
+    html += "  <option value='8' "+(settings_map_default_layer == '8' ? "selected='selected'" : "")+">Google Maps</option>";
+    html += "  <option value='9' "+(settings_map_default_layer == '9' ? "selected='selected'" : "")+">Google Maps (Satellite)</option>";
+    html += "  <option value='10' "+(settings_map_default_layer == '10' ? "selected='selected'" : "")+">Google Maps (Hybrid)</option>";
     html += "</select>"+show_help("Here you can select the map source you want to use as default in the map.") +"<br>";
     html += checkbox('settings_map_hide_sidebar', 'Hide sidebar by default') + show_help("If you want to hide the sidebar on the map, just select this option.") + "<br/>";
     html += checkbox('settings_show_hillshadow', 'Shows Hill-Shadows on Map') + show_help("If you want 3D-like-Shadows to be displayed, activate this function.") + "<br/>";
