@@ -20,7 +20,9 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        7.7             
-// Changelog:      7.7             - Fix: Bug #178 - Default-Map Selection does not work properly 
+// Changelog:
+//                                 - Fix: Bug #186  -  Hide Map-Sidebar malfunction 
+//                 7.7             - Fix: Bug #178 - Default-Map Selection does not work properly 
 //                 7.6             - New: Issue #175 - Display Hill-Shadows 
 //                                 - New: Issue #172 - Fix to use on Android Smartphone  
 //                                 - New: Issue #173 - Add Hike & Bike map
@@ -2149,12 +2151,13 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\//)){
 
     if(settings_map_hide_sidebar){
       var links = document.getElementsByTagName("a");
-      for(var i=0; i<links.length; i++){
-        if(links[i].className.match(/ToggleSidebar/)){
-          links[i].click();
-          break;
+      if(document.getElementById("searchtabs").parentNode.style.left != "-355px")
+        for(var i=0; i<links.length; i++){
+          if(links[i].className.match(/ToggleSidebar/)){
+            links[i].click();
+            break;
+          }
         }
-      }
     }
     
     // Show Homezone-Circle on Map
