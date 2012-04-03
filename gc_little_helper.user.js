@@ -1147,7 +1147,7 @@ function trim(s) {
   }
 
   if(s.substring(s.length-6,s.length) == "&nbsp;") s = s.substring(0,s.length-6);
-s
+
   return s;
 }
 
@@ -1320,7 +1320,7 @@ if(settings_show_bbcode && (document.location.href.match(/^http:\/\/www\.geocach
   var liste = "<br>";
   liste += "<a href='#' onClick='gclh_insert(\"[:)]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile.gif' border='0'></a>&nbsp;";
   liste += "<a href='#' onClick='gclh_insert(\"[:D]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_big.gif' border='0'></a>&nbsp;";
-  liste += "<a href='#' onClick='gclh_insert(\"[8D]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_cool.gif' border='0'></a>&nbsp;"
+  liste += "<a href='#' onClick='gclh_insert(\"[8D]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_cool.gif' border='0'></a>&nbsp;";
   liste += "<a href='#' onClick='gclh_insert(\"[:I]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_blush.gif' border='0'></a>&nbsp;";
   liste += "<a href='#' onClick='gclh_insert(\"[:P]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_tongue.gif' border='0'></a>";
   liste += "<br>";
@@ -1436,7 +1436,7 @@ if((document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.asp
   var counterpos = document.getElementById('litDescrCharCount').parentNode;
   var counterspan = document.createElement('p');
   counterspan.id = "logtextcounter";
-  counterspan.innerHTML = "<b>Loglength:</b><br />"
+  counterspan.innerHTML = "<b>Loglength:</b><br />";
   var counterelement = document.createElement('span');
   counterelement.innerHTML = "0/4000";
   counterspan.appendChild(counterelement);
@@ -1450,9 +1450,11 @@ if(settings_show_eventday && document.location.href.match(/^http:\/\/www\.geocac
     var cont = document.getElementById('cacheDetails').getElementsByTagName("span");
     var counter = 0;
     var spanelem = null;
-    for each(var elem in cont){
+    var elem;
+    for (var elemName in cont){
+      elem=cont[elemName];
       if(elem.className == "minorCacheDetails"){
-        counter++
+        counter++;
         if(counter == 2){
           spanelem = elem;
           break;
@@ -1663,7 +1665,7 @@ if(settings_show_mail && document.location.href.match(/^http:\/\/www\.geocaching
     }
   }
   
-  global_cache_name = name;
+  var global_cache_name = name;
 }
 
 // Switch title-color to red, if cache is archived & rename the gallery-link to prevent destroying the layout on to many images
@@ -2022,7 +2024,7 @@ if(settings_show_nearestuser_profil_link && document.location.href.match(/^http:
 	  var textelement = document.getElementById("ctl00_ContentBody_LocationPanel1_OriginLabel");
 	  textelement.innerHTML += " (";
 	  var linkelement = document.createElement("a");
-	  var urluser = document.location.href.match(/(ul|u)=(.*)/)
+	  var urluser = document.location.href.match(/(ul|u)=(.*)/);
 	  linkelement.href = "/profile/?u=" + urluser[2].replace("&sc=n", "");
 	  linkelement.innerHTML = "Profil";
 	  textelement.appendChild(linkelement);
@@ -2905,7 +2907,7 @@ if(settings_show_vip_list && getElementsByClass("SignedInProfileLink")[0] && (do
     box.appendChild(body);
     box.innerHTML = "<br>"+box.innerHTML;
     map.parentNode.insertBefore(box,map);
-    map.parentNode.insertBefore(document.createElement("p"),map)
+    map.parentNode.insertBefore(document.createElement("p"),map);
 
     var css = "a.gclh_log:hover { " +
       "  text-decoration:underline;" +
@@ -3921,7 +3923,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_det
   var link = document.getElementById("uxLatLonLink").parentNode;
   var a = document.createElement("a");
   var small = document.createElement("small");
-  var name = ""
+  var name = "";
   if(document.getElementById("ctl00_ContentBody_CacheName")) name = "+("+trim(document.getElementById("ctl00_ContentBody_CacheName").innerHTML)+")";
   a.setAttribute("href","http://maps.google.com/?saddr="+(GM_getValue("home_lat")/10000000)+","+(GM_getValue("home_lng")/10000000)+"+(HomeCoords)&daddr="+coords[0]+","+coords[1]+name);
   a.setAttribute("target","_blank");
@@ -4344,7 +4346,7 @@ function create_config_css(){
 // Configuration Menu
 function gclh_showConfig(){
   // the configuration is always displayed at the top, so scroll away from logs or other lower stuff
-  scroll(0, 0);
+  window.scroll(0, 0);
 
   if(document.getElementById('bg_shadow')){
     // If shadow-box already created, just show it
@@ -4564,11 +4566,18 @@ function gclh_showConfig(){
 //    document.getElementsByTagName('body')[0].innerHTML += html;
     document.getElementsByTagName('body')[0].appendChild(div);
     
-    var code = GM_getResourceText("jscolor");
-    code += 'var homezonepic = new jscolor.color(document.getElementById("settings_homezone_color"), {required:true, adjust:true, hash:true, caps:true, pickerMode:\'HSV\', pickerPosition:\'right\'});'
-    var script = document.createElement("script");
-    script.innerHTML = code;
-    document.getElementsByTagName("body")[0].appendChild(script);
+    if(typeof opera == "object")
+    {
+	    var homezonepic = new jscolor.color(document.getElementById("settings_homezone_color"), {required:true, adjust:true, hash:true, caps:true, pickerMode:'HSV', pickerPosition:'right'});
+    }
+    else
+    {
+	    var code = GM_getResourceText("jscolor");
+	    code += 'var homezonepic = new jscolor.color(document.getElementById("settings_homezone_color"), {required:true, adjust:true, hash:true, caps:true, pickerMode:\'HSV\', pickerPosition:\'right\'});'
+	    var script = document.createElement("script");
+	    script.innerHTML = code;
+	    document.getElementsByTagName("body")[0].appendChild(script);
+	}
 
 
     function gclh_show_linklist(){
@@ -4832,8 +4841,8 @@ if(settings_configsync_enabled){
       chr1=inp.charCodeAt(i++);if(chr1>127) chr1=88;
       chr2=inp.charCodeAt(i++);if(chr2>127) chr2=88;
       chr3=inp.charCodeAt(i++);if(chr3>127) chr3=88;
-      if(isNaN(chr3)) {enc4=64;chr3=0;} else enc4=chr3&63
-      if(isNaN(chr2)) {enc3=64;chr2=0;} else enc3=((chr2<<2)|(chr3>>6))&63
+      if(isNaN(chr3)) {enc4=64;chr3=0;} else enc4=chr3&63;
+      if(isNaN(chr2)) {enc3=64;chr2=0;} else enc3=((chr2<<2)|(chr3>>6))&63;
       out+=key.charAt((chr1>>2)&63)+key.charAt(((chr1<<4)|(chr2>>4))&63)+key.charAt(enc3)+key.charAt(enc4);
     }
 //    return encodeURIComponent(out);
@@ -4855,7 +4864,10 @@ if(settings_configsync_enabled){
     if(!configID) return false;
 
     var vals = new Array;
-    for each (var val in GM_listValues()) {
+    var allVals = GM_listValues();
+    var val;
+    for (var valName in allVals) {
+      val=allVals[valName];
       var value = GM_getValue(val);
 
       if(typeof(value) != "boolean"){
@@ -4951,7 +4963,7 @@ if(settings_configsync_enabled){
 
       html += "<br><br>";
       html += "<h4 class='gclh_headline2'>Work with Config-Sync</h4>";
-      html += "<font id='work_with_text' class='gclh_small' "+(configID ? "" : "style='color: #999999'")+">After you have assigned a valid ConfigID to this browser, you are now able to <b>upload Config</b> to the server or to <b>download Config</b> from the server. If you upload it, all configuration-items on the server will be overwritten by your actual local config. If you download the config from the server, all your local configuration-items will be overwritten by the config, saved on the server.<br></font>"
+      html += "<font id='work_with_text' class='gclh_small' "+(configID ? "" : "style='color: #999999'")+">After you have assigned a valid ConfigID to this browser, you are now able to <b>upload Config</b> to the server or to <b>download Config</b> from the server. If you upload it, all configuration-items on the server will be overwritten by your actual local config. If you download the config from the server, all your local configuration-items will be overwritten by the config, saved on the server.<br></font>";
       html += "<br>";
       html += "<input class='gclh_form' type='button' value='upload Config' id='btn_uploadConfig' "+(configID ? "" : "disabled")+"> ";
       html += "<input class='gclh_form' type='button' value='download Config' id='btn_downloadConfig' "+(configID ? "" : "disabled")+">";
