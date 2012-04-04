@@ -3472,6 +3472,7 @@ if(settings_load_logs_with_gclh && document.location.href.match(/^http:\/\/www\.
   document.getElementsByTagName("body")[0].insertBefore(a,document.getElementsByTagName("body")[0].childNodes[0]);
 
   var new_tmpl_block = document.createElement("script");
+  new_tmpl_block.type = "text/x-jquery-tmpl";
   new_tmpl_block.innerHTML = new_tmpl;
   new_tmpl_block.setAttribute("id","tmpl_CacheLogRow_gclh");
   document.getElementsByTagName("body")[0].appendChild(new_tmpl_block);
@@ -3699,7 +3700,7 @@ if(settings_load_logs_with_gclh && document.location.href.match(/^http:\/\/www\.
       if(unsafeWindow.$tfoot) unsafeWindow.$tfoot.show();
         GM_xmlhttpRequest({
           method: "GET",
-          url: "/seek/geocache.logbook?tkn="+unsafeWindow.userToken+"&idx="+curIdx+"&num=100&decrypt=false",
+          url: "http://www.geocaching.com/seek/geocache.logbook?tkn="+unsafeWindow.userToken+"&idx="+curIdx+"&num=100&decrypt=false",
           onload: function(response){
             var json = JSON.parse(response.responseText);
             if(numPages == 1){
