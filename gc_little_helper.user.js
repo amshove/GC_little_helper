@@ -21,6 +21,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        7.7             
 // Changelog:
+//                                 - New: Issue #150 - BBCode for creating a Listing 
 //                                 - Fix: Bug #188 - [gc.com update] Remove "Load Dynamic Map" - it is now obsolete 
 //                                 - New: Issue #51 - Hide decryption key, if hint is decrypted automatically
 //                                 - Fix: Bug #187 - Log-Character-Count failure
@@ -1269,16 +1270,50 @@ if(settings_decrypt_hint && document.location.href.match(/^http:\/\/www\.geocach
   if(document.getElementById('uxEncryptedHint')) document.getElementById('uxEncryptedHint').style.display = '';
 }
 
-// Show Smilies & BBCode --- http://www.cachewiki.de/wiki/Formatierung
-if(settings_show_bbcode && (document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?(id|guid|ID|wp|LUID|PLogGuid)\=/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/track\/log\.aspx\?(id|wid|guid|ID|LUID|PLogGuid)\=/)) && document.getElementById('litDescrCharCount')){
-  // Get foinds to replace #found# variable
-  if(getElementsByClass('SignedInText')[0]){
-    var text = getElementsByClass('SignedInText')[0].childNodes[7].innerHTML;
-    var finds = parseInt(text.match(/([0-9,]{1,10}){1}/)[1].replace(/,/g,""));
-  }
+// BBCode helper
+  // BBCode
+  var bbcode = "";
+  bbcode += "<a title='Bold' href='javascript:void();' onClick='gclh_insert(\"[b]\",\"[/b]\"); return false;' style='color: #000000; text-decoration: none;'><img border='0' src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAADCSURBVCjPY/jPgB8yUEtBeUL5+ZL/Be+z61PXJ7yPnB8sgGFCcX3m/6z9IFbE/JD/XucxFOTWp/5PBivwr/f77/gfQ0F6ffz/aKACXwG3+27/LeZjKEioj/wffN+n3vW8y3+z/Vh8EVEf/N8LLGEy3+K/2nl5ATQF/vW+/x3BCrQF1P7r/hcvQFPgVg+0GWq0zH/N/wL1aAps6x3+64M9J12g8p//PZcCigKbBJP1uvvV9sv3S/YL7+ft51SgelzghgBKWvx6E5D1XwAAAABJRU5ErkJggg=='></a>&nbsp;";
+  bbcode += "<a title='Italic' href='javascript:void();' onClick='gclh_insert(\"[i]\",\"[/i]\"); return false;' style='color: #000000; text-decoration: none;'><img border='0' src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAABxSURBVCjPY/jPgB8yUFtBdkPqh4T/kR+CD+A0Ie5B5P/ABJwmxBiE//f/gMeKkAlB/90W4FHg88Dzv20ATgVeBq7/bT7g8YXjBJf/RgvwKLB4YPFfKwCnAjMH0/8a/3EGlEmD7gG1A/IHJDfQOC4wIQALYP87Y6unEgAAAABJRU5ErkJggg=='></a>&nbsp;";
+  bbcode += "<a title='Strike' href='javascript:void();' onClick='gclh_insert(\"[s]\",\"[/s]\"); return false;' style='color: #000000; text-decoration: none;'><img border='0' src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAACfSURBVCjPY/jPgB8yUFNBiWDBzOy01PKEmZG7sSrIe5dVDqIjygP/Y1GQm5b2P7kDwvbAZkK6S8L/6P8hM32N/zPYu2C1InJ36P/A/x7/bc+YoSooLy3/D4Px/23+SyC5G8kEf0EIbZSmfdfov9wZDCvc0uzLYWyZ/2J3MRTYppn/14eaIvKOvxxDgUma7ju1M/LlkmnC5bwdNIoL7BAAWzr8P9A5d4gAAAAASUVORK5CYII='></a>&nbsp;";
+  bbcode += "<a title='Underline' href='javascript:void();' onClick='gclh_insert(\"[u]\",\"[/u]\"); return false;' style='color: #000000; text-decoration: none;'><img border='0' src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAACjSURBVCjPY/jPgB8yEKmgPKH8ffn/0n4IL3F99P+QAjQTyveX/IexIwWCz2NYUbw/7z/CYK/9GApy92cgKXDEVJC+PxFJgQWmgoT9kUgK9DEVROwPRFKghqnAv9/7v2MAhK3iINePocBNwf69xXlDhf8Myg4y58UUsISkmYL+fI39ivul+0UMSA/q/wza/1X+y/0X/y/0n+c/+3/m/6SbgAsCAM8i/W7eee6fAAAAAElFTkSuQmCC'></a>&nbsp;";
+  bbcode += "<a title='Link' href='javascript:void();' onClick='gclh_insert(\"[url=\"+prompt(\"URL\",\"http://\")+\"]\",\"[/url]\"); return false;'><img border='0' src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAADpSURBVCjPY/jPgB8y0EmBHXdWaeu7ef9rHuaY50jU3J33v/VdVqkdN1SBEZtP18T/L/7f/X/wf+O96kM3f9z9f+T/xP8+XUZsYAWGfsUfrr6L2Ob9J/X/pP+V/1P/e/+J2LbiYfEHQz+ICV1N3yen+3PZf977/9z/Q//X/rf/7M81Ob3pu1EXWIFuZvr7aSVBOx1/uf0PBEK3/46/gnZOK0l/r5sJVqCp6Xu99/2qt+v+T/9f+L8CSK77v+pt73vf65qaYAVqzPYGXvdTvmR/z/4ZHhfunP0p+3vKF6/79gZqzPQLSYoUAABKPQ+kpVV/igAAAABJRU5ErkJggg=='></a>&nbsp;";
+  bbcode += "<a title='Quote' href='javascript:void();' onClick='gclh_insert(\"[quote]\",\"[/quote]\"); return false;'><img border='0' src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAEXSURBVDjLY/j//z8DJZhhmBpg2POQn2wDDDof8HvOe3osYtXzDzCxuM2vP3gvfn4MJIfXAP22e0Ies58eK9r2+r//3Kf3YOIhq17eK9v95j9ITrv2jhBWA/Ra7kVEr375vXDrq/9+s57eUy+4IY0kJx2w6Nk9kFzE0uffgXIRKAboNtxlC1/+/GPljjdABc9+q+ZcM0Z3qmb5LWOQXOmml/8DZz7+qJB0hQ3FBerFNyNC5z/9nrXqxX+Pvgf35OMuSSPJSXtPfXQPJBc089F3oFwE1jBQTLkiZNtw51jq4qf/XVvuwsPAa9Kjexkrnv8HyclFXxTCGwsyERf4LctvHvPuvAePBf8pDz/Y1N45BpIbKUmZFAwAR3nW32nUrY0AAAAASUVORK5CYII='></a>&nbsp;";
+  bbcode += "&nbsp;";
+  bbcode += "&nbsp;";
+  bbcode += "<a title='Left' href='javascript:void();' onClick='gclh_insert(\"[left]\",\"[/left]\"); return false;'><img border='0' src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAABjSURBVCjPY/zPgB8wMVCqgAVElP//x/AHDH+D4S8w/sWwl5GBgfE/MSYU/Ifphej8xbCLEaaAOBNS/yPbjIC3iHZD5P9faHqvk+gGbzQTYD76TLQbbP//hOqE6f5AvBsIRhYAysRMHy5Vf6kAAAAASUVORK5CYII='></a>&nbsp;";
+  bbcode += "<a title='Center' href='javascript:void();' onClick='gclh_insert(\"[center]\",\"[/center]\"); return false;'><img border='0' src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAB8SURBVCjPY/zPgB8wMVCqgAVElP//x/AHDH+D4S8w/sWwl5GBgfE/MSYwMORk/54C0w2FOcemgmSIMyH1P7LNCHiLBDcEZ/+agqwXaFbOIxLc4P0f1e7fUPiZGDcw/AdD02z9/5r/Vf7L/Zf8L/Kf/z/3f/ZsiAwjxbEJAKUIVgAswNGVAAAAAElFTkSuQmCC'></a>&nbsp;";
+  bbcode += "<a title='Right' href='javascript:void();' onClick='gclh_insert(\"[right]\",\"[/right]\"); return false;'><img border='0' src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAABjSURBVCjPY/zPgB8wMVCqgAVElP//x/AHDH+D4S8w/sWwl5GBgfE/MSZAQNL/31CdMHiGaBNS/yPbjIC3SHSD+3+EXoh5z4k2wfs/qt2/ofAziW7Q+v8brhsSrn+IMYFgZAEAE0hMH/VkcbsAAAAASUVORK5CYII='></a>&nbsp;";
+  bbcode += "&nbsp;";
+  bbcode += "&nbsp;";
+  bbcode += "<select style='font-size: 10px;'>";
+  bbcode += "  <option onClick='gclh_insert(\"[font=Arial]\",\"\"); return false;' style='font-family: Arial;'>Arial</option>";
+  bbcode += "  <option onClick='gclh_insert(\"[font=Arial Black]\",\"\"); return false;' style='font-family: Arial Black;'>Arial Black</option>";
+  bbcode += "  <option onClick='gclh_insert(\"[font=Comic Sans MS]\",\"\"); return false;' style='font-family: Comic Sans MS;'>Comic Sans MS</option>";
+  bbcode += "  <option onClick='gclh_insert(\"[font=Impact]\",\"\"); return false;' style='font-family: Impact;'>Impact</option>";
+  bbcode += "  <option onClick='gclh_insert(\"[font=Lucida Console]\",\"\"); return false;' style='font-family: Lucida Console;'>Lucida Console</option>";
+  bbcode += "  <option onClick='gclh_insert(\"[font=Tahoma]\",\"\"); return false;' style='font-family: Tahoma;'>Tahoma</option>";
+  bbcode += "  <option onClick='gclh_insert(\"[font=Verdana]\",\"\"); return false;' style='font-family: Verdana;'>Verdana</option>";
+  bbcode += "</select>&nbsp;";
+  bbcode += "<select style='font-size: 10px;'>";
+  bbcode += "  <option onClick='gclh_insert(\"[black]\",\"[/black]\"); return false;' style='background-color: black; color: white;'>black</option>";
+  bbcode += "  <option onClick='gclh_insert(\"[blue]\",\"[/blue]\"); return false;' style='background-color: blue; color: white;'>blue</option>";
+  bbcode += "  <option onClick='gclh_insert(\"[gold]\",\"[/gold]\"); return false;' style='background-color: gold;'>gold</option>";
+  bbcode += "  <option onClick='gclh_insert(\"[green]\",\"[/green]\"); return false;' style='background-color: green; color: white;'>green</option>";
+  bbcode += "  <option onClick='gclh_insert(\"[maroon]\",\"[/maroon]\"); return false;' style='background-color: maroon; color: white;'>maroon</option>";
+  bbcode += "  <option onClick='gclh_insert(\"[navy]\",\"[/navy]\"); return false;' style='background-color: navy; color: white;'>navy</option>";
+  bbcode += "  <option onClick='gclh_insert(\"[orange]\",\"[/orange]\"); return false;' style='background-color: orange;'>orange</option>";
+  bbcode += "  <option onClick='gclh_insert(\"[pink]\",\"[/pink]\"); return false;' style='background-color: pink;'>pink</option>";
+  bbcode += "  <option onClick='gclh_insert(\"[purple]\",\"[/purple]\"); return false;' style='background-color: purple; color: white;'>purple</option>";
+  bbcode += "  <option onClick='gclh_insert(\"[red]\",\"[/red]\"); return false;' style='background-color: red;'>red</option>";
+  bbcode += "  <option onClick='gclh_insert(\"[teal]\",\"[/teal]\"); return false;' style='background-color: teal; color: white;'>teal</option>";
+  bbcode += "  <option onClick='gclh_insert(\"[white]\",\"[/white]\"); return false;' style='background-color: white;'>white</option>";
+  bbcode += "  <option onClick='gclh_insert(\"[yellow]\",\"[/yellow]\"); return false;' style='background-color: yellow;'>yellow</option>";
+  bbcode += "</select>";
 
+function gclh_add_insert_fkt(id){
   var code = "function gclh_insert(aTag,eTag){"; // http://aktuell.de.selfhtml.org/artikel/javascript/bbcode/
-  code += "  var input = document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo');";
+  code += "  var input = document.getElementById('"+id+"');";
   code += "  if(typeof input.selectionStart != 'undefined'){";
   code += "    var start = input.selectionStart;";
   code += "    var end = input.selectionEnd;";
@@ -1297,7 +1332,22 @@ if(settings_show_bbcode && (document.location.href.match(/^http:\/\/www\.geocach
   code += "  input.focus();";
   code += "}";
 
-  code += "function gclh_insert_from_div(id){";
+  var script = document.createElement("script");
+  script.innerHTML = code;
+  document.getElementsByTagName("body")[0].appendChild(script);
+}
+
+// Show Smilies & BBCode --- http://www.cachewiki.de/wiki/Formatierung
+if(settings_show_bbcode && (document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?(id|guid|ID|wp|LUID|PLogGuid)\=/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/track\/log\.aspx\?(id|wid|guid|ID|LUID|PLogGuid)\=/)) && document.getElementById('litDescrCharCount')){
+  // Get foinds to replace #found# variable
+  if(getElementsByClass('SignedInText')[0]){
+    var text = getElementsByClass('SignedInText')[0].childNodes[7].innerHTML;
+    var finds = parseInt(text.match(/([0-9,]{1,10}){1}/)[1].replace(/,/g,""));
+  }
+
+  gclh_add_insert_fkt("ctl00_ContentBody_LogBookPanel1_uxLogInfo");
+
+  var code = "function gclh_insert_from_div(id){";
   code += "  var finds = '"+finds+"';";
   code += "  var input = document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo');";
   code += "  var inhalt = document.getElementById(id).innerHTML;";
@@ -1376,51 +1426,22 @@ if(settings_show_bbcode && (document.location.href.match(/^http:\/\/www\.geocach
   box.innerHTML = liste;
 
   // BBCode
-  var bbcode = "";
-  bbcode += "<a title='Bold' href='#' onClick='gclh_insert(\"[b]\",\"[/b]\"); return false;' style='color: #000000; text-decoration: none;'><img border='0' src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAADCSURBVCjPY/jPgB8yUEtBeUL5+ZL/Be+z61PXJ7yPnB8sgGFCcX3m/6z9IFbE/JD/XucxFOTWp/5PBivwr/f77/gfQ0F6ffz/aKACXwG3+27/LeZjKEioj/wffN+n3vW8y3+z/Vh8EVEf/N8LLGEy3+K/2nl5ATQF/vW+/x3BCrQF1P7r/hcvQFPgVg+0GWq0zH/N/wL1aAps6x3+64M9J12g8p//PZcCigKbBJP1uvvV9sv3S/YL7+ft51SgelzghgBKWvx6E5D1XwAAAABJRU5ErkJggg=='></a>&nbsp;";
-  bbcode += "<a title='Italic' href='#' onClick='gclh_insert(\"[i]\",\"[/i]\"); return false;' style='color: #000000; text-decoration: none;'><img border='0' src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAABxSURBVCjPY/jPgB8yUFtBdkPqh4T/kR+CD+A0Ie5B5P/ABJwmxBiE//f/gMeKkAlB/90W4FHg88Dzv20ATgVeBq7/bT7g8YXjBJf/RgvwKLB4YPFfKwCnAjMH0/8a/3EGlEmD7gG1A/IHJDfQOC4wIQALYP87Y6unEgAAAABJRU5ErkJggg=='></a>&nbsp;";
-  bbcode += "<a title='Strike' href='#' onClick='gclh_insert(\"[s]\",\"[/s]\"); return false;' style='color: #000000; text-decoration: none;'><img border='0' src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAACfSURBVCjPY/jPgB8yUFNBiWDBzOy01PKEmZG7sSrIe5dVDqIjygP/Y1GQm5b2P7kDwvbAZkK6S8L/6P8hM32N/zPYu2C1InJ36P/A/x7/bc+YoSooLy3/D4Px/23+SyC5G8kEf0EIbZSmfdfov9wZDCvc0uzLYWyZ/2J3MRTYppn/14eaIvKOvxxDgUma7ju1M/LlkmnC5bwdNIoL7BAAWzr8P9A5d4gAAAAASUVORK5CYII='></a>&nbsp;";
-  bbcode += "<a title='Underline' href='#' onClick='gclh_insert(\"[u]\",\"[/u]\"); return false;' style='color: #000000; text-decoration: none;'><img border='0' src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAACjSURBVCjPY/jPgB8yEKmgPKH8ffn/0n4IL3F99P+QAjQTyveX/IexIwWCz2NYUbw/7z/CYK/9GApy92cgKXDEVJC+PxFJgQWmgoT9kUgK9DEVROwPRFKghqnAv9/7v2MAhK3iINePocBNwf69xXlDhf8Myg4y58UUsISkmYL+fI39ivul+0UMSA/q/wza/1X+y/0X/y/0n+c/+3/m/6SbgAsCAM8i/W7eee6fAAAAAElFTkSuQmCC'></a>&nbsp;";
-  bbcode += "<a title='Link' href='#' onClick='gclh_insert(\"[url=\"+prompt(\"URL\",\"http://\")+\"]\",\"[/url]\"); return false;'><img border='0' src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAADpSURBVCjPY/jPgB8y0EmBHXdWaeu7ef9rHuaY50jU3J33v/VdVqkdN1SBEZtP18T/L/7f/X/wf+O96kM3f9z9f+T/xP8+XUZsYAWGfsUfrr6L2Ob9J/X/pP+V/1P/e/+J2LbiYfEHQz+ICV1N3yen+3PZf977/9z/Q//X/rf/7M81Ob3pu1EXWIFuZvr7aSVBOx1/uf0PBEK3/46/gnZOK0l/r5sJVqCp6Xu99/2qt+v+T/9f+L8CSK77v+pt73vf65qaYAVqzPYGXvdTvmR/z/4ZHhfunP0p+3vKF6/79gZqzPQLSYoUAABKPQ+kpVV/igAAAABJRU5ErkJggg=='></a>&nbsp;";
-  bbcode += "<a title='Quote' href='#' onClick='gclh_insert(\"[quote]\",\"[/quote]\"); return false;'><img border='0' src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAEXSURBVDjLY/j//z8DJZhhmBpg2POQn2wDDDof8HvOe3osYtXzDzCxuM2vP3gvfn4MJIfXAP22e0Ies58eK9r2+r//3Kf3YOIhq17eK9v95j9ITrv2jhBWA/Ra7kVEr375vXDrq/9+s57eUy+4IY0kJx2w6Nk9kFzE0uffgXIRKAboNtxlC1/+/GPljjdABc9+q+ZcM0Z3qmb5LWOQXOmml/8DZz7+qJB0hQ3FBerFNyNC5z/9nrXqxX+Pvgf35OMuSSPJSXtPfXQPJBc089F3oFwE1jBQTLkiZNtw51jq4qf/XVvuwsPAa9Kjexkrnv8HyclFXxTCGwsyERf4LctvHvPuvAePBf8pDz/Y1N45BpIbKUmZFAwAR3nW32nUrY0AAAAASUVORK5CYII='></a>&nbsp;";
-  bbcode += "&nbsp;";
-  bbcode += "&nbsp;";
-  bbcode += "<a title='Left' href='#' onClick='gclh_insert(\"[left]\",\"[/left]\"); return false;'><img border='0' src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAABjSURBVCjPY/zPgB8wMVCqgAVElP//x/AHDH+D4S8w/sWwl5GBgfE/MSYU/Ifphej8xbCLEaaAOBNS/yPbjIC3iHZD5P9faHqvk+gGbzQTYD76TLQbbP//hOqE6f5AvBsIRhYAysRMHy5Vf6kAAAAASUVORK5CYII='></a>&nbsp;";
-  bbcode += "<a title='Center' href='#' onClick='gclh_insert(\"[center]\",\"[/center]\"); return false;'><img border='0' src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAB8SURBVCjPY/zPgB8wMVCqgAVElP//x/AHDH+D4S8w/sWwl5GBgfE/MSYwMORk/54C0w2FOcemgmSIMyH1P7LNCHiLBDcEZ/+agqwXaFbOIxLc4P0f1e7fUPiZGDcw/AdD02z9/5r/Vf7L/Zf8L/Kf/z/3f/ZsiAwjxbEJAKUIVgAswNGVAAAAAElFTkSuQmCC'></a>&nbsp;";
-  bbcode += "<a title='Right' href='#' onClick='gclh_insert(\"[right]\",\"[/right]\"); return false;'><img border='0' src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAABjSURBVCjPY/zPgB8wMVCqgAVElP//x/AHDH+D4S8w/sWwl5GBgfE/MSZAQNL/31CdMHiGaBNS/yPbjIC3SHSD+3+EXoh5z4k2wfs/qt2/ofAziW7Q+v8brhsSrn+IMYFgZAEAE0hMH/VkcbsAAAAASUVORK5CYII='></a>&nbsp;";
-  bbcode += "&nbsp;";
-  bbcode += "&nbsp;";
-  bbcode += "<select style='font-size: 10px;'>";
-  bbcode += "  <option onClick='gclh_insert(\"[font=Arial]\",\"\"); return false;' style='font-family: Arial;'>Arial</option>";
-  bbcode += "  <option onClick='gclh_insert(\"[font=Arial Black]\",\"\"); return false;' style='font-family: Arial Black;'>Arial Black</option>";
-  bbcode += "  <option onClick='gclh_insert(\"[font=Comic Sans MS]\",\"\"); return false;' style='font-family: Comic Sans MS;'>Comic Sans MS</option>";
-  bbcode += "  <option onClick='gclh_insert(\"[font=Impact]\",\"\"); return false;' style='font-family: Impact;'>Impact</option>";
-  bbcode += "  <option onClick='gclh_insert(\"[font=Lucida Console]\",\"\"); return false;' style='font-family: Lucida Console;'>Lucida Console</option>";
-  bbcode += "  <option onClick='gclh_insert(\"[font=Tahoma]\",\"\"); return false;' style='font-family: Tahoma;'>Tahoma</option>";
-  bbcode += "  <option onClick='gclh_insert(\"[font=Verdana]\",\"\"); return false;' style='font-family: Verdana;'>Verdana</option>";
-  bbcode += "</select>&nbsp;";
-  bbcode += "<select style='font-size: 10px;'>";
-  bbcode += "  <option onClick='gclh_insert(\"[black]\",\"[/black]\"); return false;' style='background-color: black; color: white;'>black</option>";
-  bbcode += "  <option onClick='gclh_insert(\"[blue]\",\"[/blue]\"); return false;' style='background-color: blue; color: white;'>blue</option>";
-  bbcode += "  <option onClick='gclh_insert(\"[gold]\",\"[/gold]\"); return false;' style='background-color: gold;'>gold</option>";
-  bbcode += "  <option onClick='gclh_insert(\"[green]\",\"[/green]\"); return false;' style='background-color: green; color: white;'>green</option>";
-  bbcode += "  <option onClick='gclh_insert(\"[maroon]\",\"[/maroon]\"); return false;' style='background-color: maroon; color: white;'>maroon</option>";
-  bbcode += "  <option onClick='gclh_insert(\"[navy]\",\"[/navy]\"); return false;' style='background-color: navy; color: white;'>navy</option>";
-  bbcode += "  <option onClick='gclh_insert(\"[orange]\",\"[/orange]\"); return false;' style='background-color: orange;'>orange</option>";
-  bbcode += "  <option onClick='gclh_insert(\"[pink]\",\"[/pink]\"); return false;' style='background-color: pink;'>pink</option>";
-  bbcode += "  <option onClick='gclh_insert(\"[purple]\",\"[/purple]\"); return false;' style='background-color: purple; color: white;'>purple</option>";
-  bbcode += "  <option onClick='gclh_insert(\"[red]\",\"[/red]\"); return false;' style='background-color: red;'>red</option>";
-  bbcode += "  <option onClick='gclh_insert(\"[teal]\",\"[/teal]\"); return false;' style='background-color: teal; color: white;'>teal</option>";
-  bbcode += "  <option onClick='gclh_insert(\"[white]\",\"[/white]\"); return false;' style='background-color: white;'>white</option>";
-  bbcode += "  <option onClick='gclh_insert(\"[yellow]\",\"[/yellow]\"); return false;' style='background-color: yellow;'>yellow</option>";
-  bbcode += "</select>";
-
   var bbc_dt = document.createElement("dt");
   var bbc_dd = document.createElement("dd");
   bbc_dt.innerHTML = "BBCode:";
   bbc_dd.innerHTML = bbcode;
   box.parentNode.parentNode.insertBefore(bbc_dt,box.parentNode);
   box.parentNode.parentNode.insertBefore(bbc_dd,box.parentNode);
+}
+
+// Show BBCode in Listing-Editor
+if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/hide\/report\.aspx/) && document.getElementById("chkIsHtml") && !document.getElementById("chkIsHtml").checked){
+  gclh_add_insert_fkt("tbLongDesc");
+
+  var textarea = document.getElementById("tbLongDesc");
+  var bbc_dd = document.createElement("dd");
+  bbc_dd.innerHTML = bbcode;
+  textarea.parentNode.insertBefore(bbc_dd,textarea);
 }
 
 //Maxlength of Logtext
