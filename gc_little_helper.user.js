@@ -21,6 +21,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        7.7             
 // Changelog:
+//                                 - Fix: Bug #187 - Log-Character-Count failure
 //                                 - Fix: Bug #186  -  Hide Map-Sidebar malfunction 
 //                 7.7             - Fix: Bug #178 - Default-Map Selection does not work properly 
 //                 7.6             - New: Issue #175 - Display Hill-Shadows 
@@ -1420,15 +1421,16 @@ if((document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.asp
     // aus gc.com Funktion "checkLogInfoLength"
     var editor = $('#ctl00_ContentBody_LogBookPanel1_uxLogInfo');
     var limitNum = parseInt($('#ctl00_ContentBody_LogBookPanel1_uxLogInfo').attr("CKEMaxLength"));
-    var length = editor.val().length;
+    var length = editor.val().replace(/\n/g, "\r\n").length;
+    var diff = length - editor.val().length;
     if (length > limitNum) {
-      limitField.value = limitField.value.substring(0, limitNum);
-      counterelement.innerHTML = '<font color="red">' + limitField.value.length + '/' + limitNum  + '</font>';
+      limitField.value = limitField.value.substring(0, (limitNum - diff));
+      counterelement.innerHTML = '<font color="red">' + length + '/' + limitNum  + '</font>';
       limitField.scrollTop = limitField.scrollHeight;
       limitField.selectionStart = 4000;
       limitField.selectionEnd = 4000;
     }else{
-      counterelement.innerHTML = limitField.value.length + '/' + limitNum;
+      counterelement.innerHTML = length + '/' + limitNum;
     }
   }
 
