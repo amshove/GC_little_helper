@@ -1417,8 +1417,11 @@ if(settings_show_bbcode && (document.location.href.match(/^http:\/\/www\.geocach
 //Maxlength of Logtext
 if((document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?(id|guid|ID|wp|LUID|PLogGuid)\=/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/track\/log\.aspx\?(id|wid|guid|ID|LUID|PLogGuid)\=/)) && document.getElementById('litDescrCharCount')){
   function limitLogText(limitField) {
-    var limitNum = 4000;
-    if (limitField.value.length > limitNum) {
+    // aus gc.com Funktion "checkLogInfoLength"
+    var editor = $('#ctl00_ContentBody_LogBookPanel1_uxLogInfo');
+    var limitNum = parseInt($('#ctl00_ContentBody_LogBookPanel1_uxLogInfo').attr("CKEMaxLength"));
+    var length = editor.val().length;
+    if (length > limitNum) {
       limitField.value = limitField.value.substring(0, limitNum);
       counterelement.innerHTML = '<font color="red">' + limitField.value.length + '/' + limitNum  + '</font>';
       limitField.scrollTop = limitField.scrollHeight;
