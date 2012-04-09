@@ -21,6 +21,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        7.7             
 // Changelog:
+//                                 - New: Issue #51 - Hide decryption key, if hint is decrypted automatically
 //                                 - Fix: Bug #187 - Log-Character-Count failure
 //                                 - Fix: Bug #186  -  Hide Map-Sidebar malfunction 
 //                 7.7             - Fix: Bug #178 - Default-Map Selection does not work properly 
@@ -1254,6 +1255,12 @@ if(settings_highlight_usercoords && document.location.href.match(/^http:\/\/www\
 if(settings_decrypt_hint && !settings_hide_hint && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx(\?|\?pf\=\&)(guid|wp)\=[a-zA-Z0-9-]*/)){
   if (document.getElementById('ctl00_ContentBody_EncryptionKey')) {
     unsafeWindow.dht(document.getElementById("ctl00_ContentBody_lnkDH"));
+
+    // remove hint description
+    var decryptKey = document.getElementById('dk');
+    if (decryptKey) {
+      decryptKey.parentNode.removeChild(decryptKey);
+    }
   }
 }
 if(settings_decrypt_hint && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cdpf\.aspx/)){
