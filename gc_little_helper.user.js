@@ -21,6 +21,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        7.7             
 // Changelog:
+//                                 - Fix: Bug #188 - [gc.com update] Remove "Load Dynamic Map" - it is now obsolete 
 //                                 - New: Issue #51 - Hide decryption key, if hint is decrypted automatically
 //                                 - Fix: Bug #187 - Log-Character-Count failure
 //                                 - Fix: Bug #186  -  Hide Map-Sidebar malfunction 
@@ -556,7 +557,7 @@ if(browser == "chrome"){
   settings_bookmarks_list_beta = new Array();
 }
 // Settinks: Dynamic Map
-settings_dynamic_map = GM_getValue("settings_dynamic_map",true);
+//settings_dynamic_map = GM_getValue("settings_dynamic_map",true);
 settings_hide_advert_link = GM_getValue('settings_hide_advert_link',true);
 settings_hide_line_breaks = GM_getValue('settings_hide_line_breaks',true);
 settings_hide_spoilerwarning = GM_getValue('settings_hide_spoilerwarning',true);
@@ -2430,14 +2431,14 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/fieldnotes\
 }
 
 
-// Dynamic Map
-if(settings_dynamic_map && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx\?/)){
-  function load_dynamic(){
-    unsafeWindow.loadDynamicMap();
-  }
-
-  window.addEventListener("load", load_dynamic, false);
-}
+//// Dynamic Map
+//if(settings_dynamic_map && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx\?/)){
+//  function load_dynamic(){
+//    unsafeWindow.loadDynamicMap();
+//  }
+//
+//  window.addEventListener("load", load_dynamic, false);
+//}
 
 //// Set default map to old
 //if(settings_old_map){
@@ -4457,7 +4458,7 @@ function gclh_showConfig(){
     html += checkbox('settings_show_mail', 'Show Mail Link beside Usernames') + show_help("With this option there will be an small mail-Icon beside every username. With this Icon you get directly to the mail-page to mail to this user. If you click it when you are in a Listing, the cachename and GCID will be inserted into the mail-form - you don't have to remember it :) ") + "<br/>";
     html += checkbox('settings_show_mail_coordslink', 'Show Coord-Link in Mail') + show_help("This option requires \"Show Mail Link beside Usernames\". With this option the GC/TB-Code in the Mail is displayed as coord.info-link") + "<br/>";
     html += checkbox('settings_show_google_maps', 'Show Link to and from google maps') + show_help("This option makes two thing. First it shows a Link at the top of the second map in the listing. With this Link you get directly to google maps in the area, where the cache is. Second it adds an gc.com-Icon to google-maps to jump from google-maps to gc.com-maps to the same location.") + "<br/>";
-    html += checkbox('settings_dynamic_map', 'Show dynamic map') + show_help("gc.com shows a static map at the bottom of a listing. You have to click a link, if you want to have it dynamic to interact with it. This option makes the click for you automatically.") +"<br/>";
+//    html += checkbox('settings_dynamic_map', 'Show dynamic map') + show_help("gc.com shows a static map at the bottom of a listing. You have to click a link, if you want to have it dynamic to interact with it. This option makes the click for you automatically.") +"<br/>";
     html += checkbox('settings_strike_archived', 'Strike through title of archived/disabled caches') + "<br/>";
     html += checkbox('settings_highlight_usercoords', 'Highlight coordinates which are changed by the user with red textcolor') + "<br/>";
     html += checkbox('settings_show_fav_percentage', 'Show percentage of favourite points') + show_help("This option loads the favourite-stats of a cache in the backround and display the percentage under the amount of favs a cache got.") + "<br/>";
@@ -4659,7 +4660,7 @@ function gclh_showConfig(){
       'settings_show_google_maps',
       'settings_show_log_it',
       'settings_show_nearestuser_profil_link',
-      'settings_dynamic_map',
+//      'settings_dynamic_map',
       'settings_show_homezone',
       'settings_show_hillshadow',
 //      'settings_old_map',
