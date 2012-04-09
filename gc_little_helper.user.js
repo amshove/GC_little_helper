@@ -2157,15 +2157,30 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my/)){
   }
 }
 
+// Map-Layers
+var map_layers = new Object();
+map_layers["osm_hikebike"] = {tileUrl:"http://toolserver.org/tiles/hikebike/{z}/{x}/{y}.png",name:"hikebike",alt:"OpenStreetMap (Hike&Bike)",attribution:'Map and map data \u00a9 2012 <a href="http://www.openstreetmap.org" target=\'_blank\'>OpenStreetMap</a> and contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.',tileSize:256,minZoom:0,maxZoom:20};
+map_layers["ocm_transport"] = {tileUrl:"http://a.tile2.opencyclemap.org/transport/{z}/{x}/{y}.png",name:"ocmtransport",alt:"OpenCycleMap (Transport)",attribution:'Map and map data \u00a9 2012 <a href="http://www.opencyclemap.org" target=\'_blank\'>OpenCycleMap</a> and contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.',tileSize:256,minZoom:0,maxZoom:18};
+map_layers["gm"] = {tileUrl:"http://mt.google.com/vt?x={x}&y={y}&z={z}",name:"gm",alt:"Google Maps",attribution:"Google Maps",tileSize:256,minZoom:0,maxZoom:20};
+map_layers["gm_satellite"] = {tileUrl:"http://mt0.google.com/vt/lyrs=s@110&hl=en&x={x}&y={y}&z={z}",name:"gms",alt:"Google Maps (Satellite)",attribution:"Google Maps",tileSize:256,minZoom:0,maxZoom:20};
+map_layers["gm_hybrid"] = {tileUrl:"http://mt0.google.com/vt/lyrs=s,m@110&hl=en&x={x}&y={y}&z={z}",name:"gmh",alt:"Google Maps (Hybrid)",attribution:"Google Maps",tileSize:256,minZoom:0,maxZoom:20};
+map_layers["gm_terrain"] = {tileUrl:"http://mt0.google.com/vt/v=w2p.110&hl=en&x={x}&y={y}&z={z}",name:"gmt",alt:"Google Maps (Terrain)",attribution:"Google Maps",tileSize:256,minZoom:0,maxZoom:20};
+
 // Add Google-Maps and OCM Transport Layers to Map & Select Default-Layer, add Hill-Shadow, add Homezone
 if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\//)){
   layers = unsafeWindow.Groundspeak.Map.MapLayers;
-  layers.splice(4,0,{tileUrl:"http://toolserver.org/tiles/hikebike/{z}/{x}/{y}.png",name:"hikebike",alt:"OpenStreetMap (Hike&Bike)",attribution:'Map and map data \u00a9 2012 <a href="http://www.openstreetmap.org" target=\'_blank\'>OpenStreetMap</a> and contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.',tileSize:256,minZoom:0,maxZoom:20});
-  layers.splice(6,0,{tileUrl:"http://a.tile2.opencyclemap.org/transport/{z}/{x}/{y}.png",name:"ocmtransport",alt:"OpenCycleMap (Transport)",attribution:'Map and map data \u00a9 2012 <a href="http://www.opencyclemap.org" target=\'_blank\'>OpenCycleMap</a> and contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.',tileSize:256,minZoom:0,maxZoom:18});
-  layers.push({tileUrl:"http://mt.google.com/vt?x={x}&y={y}&z={z}",name:"gm",alt:"Google Maps",attribution:"Google Maps",tileSize:256,minZoom:0,maxZoom:20});
-  layers.push({tileUrl:"http://mt0.google.com/vt/lyrs=s@110&hl=en&x={x}&y={y}&z={z}",name:"gms",alt:"Google Maps (Satellite)",attribution:"Google Maps",tileSize:256,minZoom:0,maxZoom:20});
-  layers.push({tileUrl:"http://mt0.google.com/vt/lyrs=s,m@110&hl=en&x={x}&y={y}&z={z}",name:"gmh",alt:"Google Maps (Hybrid)",attribution:"Google Maps",tileSize:256,minZoom:0,maxZoom:20});
-  layers.push({tileUrl:"http://mt0.google.com/vt/v=w2p.110&hl=en&x={x}&y={y}&z={z}",name:"gmt",alt:"Google Maps (Terrain)",attribution:"Google Maps",tileSize:256,minZoom:0,maxZoom:20});
+//  layers.splice(4,0,{tileUrl:"http://toolserver.org/tiles/hikebike/{z}/{x}/{y}.png",name:"hikebike",alt:"OpenStreetMap (Hike&Bike)",attribution:'Map and map data \u00a9 2012 <a href="http://www.openstreetmap.org" target=\'_blank\'>OpenStreetMap</a> and contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.',tileSize:256,minZoom:0,maxZoom:20});
+//  layers.splice(6,0,{tileUrl:"http://a.tile2.opencyclemap.org/transport/{z}/{x}/{y}.png",name:"ocmtransport",alt:"OpenCycleMap (Transport)",attribution:'Map and map data \u00a9 2012 <a href="http://www.opencyclemap.org" target=\'_blank\'>OpenCycleMap</a> and contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.',tileSize:256,minZoom:0,maxZoom:18});
+//  layers.push({tileUrl:"http://mt.google.com/vt?x={x}&y={y}&z={z}",name:"gm",alt:"Google Maps",attribution:"Google Maps",tileSize:256,minZoom:0,maxZoom:20});
+//  layers.push({tileUrl:"http://mt0.google.com/vt/lyrs=s@110&hl=en&x={x}&y={y}&z={z}",name:"gms",alt:"Google Maps (Satellite)",attribution:"Google Maps",tileSize:256,minZoom:0,maxZoom:20});
+//  layers.push({tileUrl:"http://mt0.google.com/vt/lyrs=s,m@110&hl=en&x={x}&y={y}&z={z}",name:"gmh",alt:"Google Maps (Hybrid)",attribution:"Google Maps",tileSize:256,minZoom:0,maxZoom:20});
+//  layers.push({tileUrl:"http://mt0.google.com/vt/v=w2p.110&hl=en&x={x}&y={y}&z={z}",name:"gmt",alt:"Google Maps (Terrain)",attribution:"Google Maps",tileSize:256,minZoom:0,maxZoom:20});
+  layers.splice(4,0,map_layers["osm_hikebike"]);
+  layers.splice(6,0,map_layers["ocm_transport"]);
+  layers.push(map_layers["gm"]);
+  layers.push(map_layers["gm_satellite"]);
+  layers.push(map_layers["gm_hybrid"]);
+  layers.push(map_layers["gm_terrain"]);
   
   
   //Function called when map is loaded
@@ -2232,6 +2247,18 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\//)){
   
 }
 
+/*
+// Add Layers to Map in Listing
+if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/)){
+  function gclh_map_loaded_listing(){
+    var code = "alert(map);";
+    var script = document.createElement("script");
+    script.innerHTML = code;
+    document.getElementsByTagName("body")[0].appendChild(script);
+  }
+  window.addEventListener("load",gclh_map_loaded_listing,false);
+}
+*/
 
 
 //if(settings_show_homezone && document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\/beta/)){ // BETA map
