@@ -21,6 +21,7 @@
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Version:        7.7             
 // Changelog:
+//                                 - New: Issue #183 - Add directlink to fildnote page
 //                                 - New: Issue #181 - Use the same design for "select all" in Filednotes like in Bookmarks
 //                                 - New: Issue #177 - Add User-Name Variable to Log-Template (New Varaible: #me#)
 //                                 - New: Issue #150 - BBCode for creating a Listing 
@@ -423,7 +424,7 @@ bookmark("Account Details", "/account/default.aspx");
 bookmark("Public Profile", "/profile/");
 bookmark("Search", "/seek/nearest.aspx");
 bookmark("Routes", "/my/userroutes.aspx#find");
-bookmark("Field Notes", "/my/uploadfieldnotes.aspx");
+bookmark("Upload Field Notes", "/my/uploadfieldnotes.aspx");
 bookmark("Pocket Queries", "/pocket/default.aspx");
 bookmark("Saved GPX", "/pocket/saved.aspx");
 bookmark("Bookmarks", "/bookmarks/default.aspx");
@@ -618,6 +619,7 @@ for(var i=0; i<anzCustom; i++){
 // Some more Bookmarks ..
 profileBookmark("Profile Souvenirs", "lnk_profilesouvenirs");
 bookmark("Profile Statistics", "/my/statistics.aspx");
+bookmark("Field Notes", "/my/fieldnotes.aspx");
 
 // Settings: Custom Bookmark-title
 var bookmarks_orig_title = new Array();
