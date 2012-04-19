@@ -2863,6 +2863,7 @@ if(settings_show_vip_list && getElementsByClass("SignedInProfileLink")[0] && (do
   if(!vips) vips = new Array();
   else vips = eval(vips);
   var myself = getElementsByClass("SignedInProfileLink")[0].innerHTML;
+  var gclh_build_vip_list = function(){};
 
   // Add to VIP - image
   function gclh_add_vip(){
@@ -3037,7 +3038,7 @@ if(settings_show_vip_list && getElementsByClass("SignedInProfileLink")[0] && (do
       "}";
     GM_addStyle(css);
   
-    function gclh_build_vip_list(){
+     gclh_build_vip_list = function(){
       var show_owner = settings_show_owner_vip_list;
       var list = document.getElementById("gclh_vip_list");
       list.innerHTML = "";
@@ -3207,7 +3208,7 @@ if(settings_show_vip_list && getElementsByClass("SignedInProfileLink")[0] && (do
     widget.appendChild(box);
     document.getElementById("ctl00_ContentBody_uxBanManWidget").parentNode.insertBefore(widget,document.getElementById("ctl00_ContentBody_uxBanManWidget"));
 
-    function gclh_build_vip_list(){
+     gclh_build_vip_list = function(){
       var box = document.getElementById("box_vips");
       if(!box) return false;
       box.innerHTML = "";
@@ -3241,7 +3242,7 @@ if(settings_show_vip_list && getElementsByClass("SignedInProfileLink")[0] && (do
     gclh_build_vip_list();
   }else if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/myfriends\.aspx/)){
   // Friendlist - VIP-Icon
-    function gclh_build_vip_list(){} // There is no list to show, but ths function will be called from gclh_del_vip/gclh_add_vip
+    gclh_build_vip_list = function(){} // There is no list to show, but ths function will be called from gclh_del_vip/gclh_add_vip
     var links = document.getElementsByTagName('a');
     for(var i=0; i<links.length; i++){
       if(links[i].href.match(/http:\/\/www\.geocaching\.com\/profile\/\?guid=/) && links[i].id){
@@ -3270,7 +3271,7 @@ if(settings_show_vip_list && getElementsByClass("SignedInProfileLink")[0] && (do
     }
   }else if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/profile\//) && document.getElementById("ctl00_ContentBody_ProfilePanel1_lblMemberName")){
   // Public Profile - VIP-Icon
-    function gclh_build_vip_list(){} // There is no list to show, but ths function will be called from gclh_del_vip/gclh_add_vip
+    gclh_build_vip_list = function(){} // There is no list to show, but ths function will be called from gclh_del_vip/gclh_add_vip
     var user = trim(document.getElementById("ctl00_ContentBody_ProfilePanel1_lblMemberName").innerHTML);
     var link = document.createElement("a");
     var img = document.createElement("img");
