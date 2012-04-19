@@ -3612,6 +3612,9 @@ if(settings_load_logs_with_gclh && document.location.href.match(/^http:\/\/www\.
     }
   }
   
+//Required for jquery plugins under opera
+var $ = unsafeWindow.$;
+  
   // Rebuild function - but with full control :)
   function gclh_dynamic_load(logs,num){
     var isBusy = false;
@@ -3620,7 +3623,7 @@ if(settings_load_logs_with_gclh && document.location.href.match(/^http:\/\/www\.
     unsafeWindow.$(window).endlessScroll({
       fireOnce: true,
       fireDelay: 500,
-      bottomPixels: ($(document).height() - $("#cache_logs_container").offset().top) + 50,
+      bottomPixels: (($(document).height() - $("#cache_logs_container").offset().top) + 50),
       ceaseFire: function(){
         // stop the scrolling if the last page is reached.
         return (gclh_totalPages < gclh_currentPageIdx);
