@@ -491,6 +491,17 @@ if (!test_browser) {
   }
 }
 
+// Error-Logging function
+function gclh_error(modul,err){
+  var txt = "GClh_ERROR - "+modul+": "+err.message;
+  if(typeof(console) != "undefined"){
+    console.error(txt);
+  }
+  if(typeof(GM_log) != "undefined"){
+    GM_log(txt);
+  }
+}
+
 
 // Settings: Submit Log on F2
 settings_submit_log_button = GM_getValue("settings_submit_log_button",true);
@@ -954,18 +965,20 @@ if(settings_redirect_to_map && document.location.href.match(/^http:\/\/www\.geoc
 //}
 
 // Hide Disclaimer
-if(settings_hide_disclaimer && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx(\?|\?pf\=\&)(guid|wp)\=[a-zA-Z0-9-]*/)){
-  var disc = getElementsByClass('DisclaimerWidget')[0];
-  if(disc){
-    disc.parentNode.removeChild(disc);
+try{
+  if(settings_hide_disclaimer && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx(\?|\?pf\=\&)(guid|wp)\=[a-zA-Z0-9-]*/)){
+    var disc = getElementsByClass('DisclaimerWidget')[0];
+    if(disc){
+      disc.parentNode.removeChild(disc);
+    }
   }
-}
-if(settings_hide_disclaimer && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cdpf\.aspx/)){
-  var disc = getElementsByClass('TermsWidget no-print')[0];
-  if(disc){
-    disc.parentNode.removeChild(disc);
+  if(settings_hide_disclaimer && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cdpf\.aspx/)){
+    var disc = getElementsByClass('TermsWidget no-print')[0];
+    if(disc){
+      disc.parentNode.removeChild(disc);
+    }
   }
-}
+}catch(e){ gclh_error("Hide Disclaimer",e); }
 
 //remove paragraph containing the link to the advertisement instructions (not the advertisements itself!)
 if (settings_hide_advert_link) {
