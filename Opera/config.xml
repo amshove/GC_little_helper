@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<widget xmlns="http://www.w3.org/ns/widgets" version="7.7.0">
+    <name>GC Little Helper</name>
+    <description>Some little things to make life easy (on www.geocaching.com).</description>
+    <author href="http://www.amshove.net/wiki/greasemonkey:gc_little_helper">Torsten Amshove</author>   
+    <icon src="icons/icon.jpg"/>
+     <access origin="http://www.geocaching.com/" subdomains="true"/>     
+     <access origin="http://maps.google.de/" subdomains="true"/>     
+     <access origin="http://maps.google.com/" subdomains="true"/>     
+     <access origin="http://www.google.de/maps" subdomains="true"/>     
+     <access origin="http://www.google.com/maps/" subdomains="true"/>     
+     <access origin="https://maps.google.de/" subdomains="true"/>     
+     <access origin="https://maps.google.com/" subdomains="true"/>     
+     <access origin="https://www.google.de/maps" subdomains="true"/>     
+     <access origin="https://www.google.com/maps" subdomains="true"/>     
+     <access origin="http://www.amshove.net/" subdomains="true"/>    
+</widget>
