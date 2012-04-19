@@ -2719,7 +2719,7 @@ if(settings_show_fav_percentage && document.location.href.match(/^http:\/\/www\.
       var fav = getElementsByClass('favorite-container')[0];
       if(fav){
         var score = document.getElementById('uxFavoriteScore').innerHTML.match(/<strong>(.*)<\/strong>/);
-        if(score[1]){
+        if(score && score[1]){
           var val = getElementsByClass("favorite-value");
           if(val[0]){
             fav.innerHTML = "<span class='favorite-value'> "+val[0].innerHTML+"</span><br>&nbsp;&nbsp;&nbsp;&nbsp;"+score[1]+" &nbsp;&nbsp;&nbsp;&nbsp;<img id='imgFavoriteArrow' src='/images/arrow-down.png' alt='Expand' title='Expand'>";
