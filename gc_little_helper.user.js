@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           GC little helper
 // @namespace      http://www.amshove.net
-// @version        7.7 
+// @version        7.8 
 // @include        http://www.geocaching.com/*
 // @include        http://maps.google.de/*
 // @include        http://maps.google.com/*
@@ -19,9 +19,7 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
-// Version:        7.7             
-// Changelog:
-//                                 - New: Issue #62 - prevent problems with gc.com-updates by encapsulating single features
+// Changelog:      7.8             - New: Issue #62 - prevent problems with gc.com-updates by encapsulating single features
 //                                 - New: Issue #183 - Add directlink to fildnote page
 //                                 - New: Issue #181 - Use the same design for "select all" in Filednotes like in Bookmarks
 //                                 - New: Issue #177 - Add User-Name Variable to Log-Template (New Varaible: #me#)
@@ -458,7 +456,7 @@ profileBookmark("My Trackables", "lnk_my_trackables");
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "7.7";
+var scriptVersion = "7.8";
 
 var anzCustom = 10;
 var anzTemplates = 10;
