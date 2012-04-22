@@ -889,6 +889,11 @@ function btnClose(){
 ////////////////////////////////////////////////////////////////////////////
 
 // F2 zum Log abschicken
+/**
+ * @name f2_logging
+ * @description You can use the Key "F2" to commit your log entry
+ * @class
+ */
 try{
   if(settings_submit_log_button && (document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?(id|guid|ID|wp|LUID|PLogGuid)\=/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/track\/log\.aspx\?(id|wid|guid|ID|PLogGuid)\=/))){
     function keydown(e){
