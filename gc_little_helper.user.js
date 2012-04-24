@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           GC little helper
 // @namespace      http://www.amshove.net
-// @version        7.8 
+// @version        7.9 
 // @include        http://www.geocaching.com/*
 // @include        http://maps.google.de/*
 // @include        http://maps.google.com/*
@@ -19,8 +19,7 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
-// Changelog:
-//                                 - Fix: Bug #189 - [gc.com update] Remove gc.com-Links - new and removed Links
+// Changelog:      7.9             - Fix: Bug #189 - [gc.com update] Remove gc.com-Links - new and removed Links
 //                                 - Fix: Bug #190 - [gc.com update] Smilies, BBCode & Log-Signature destroyed
 //                 7.8             - New: Issue #62 - prevent problems with gc.com-updates by encapsulating single features
 //                                 - New: Issue #183 - Add directlink to fildnote page
@@ -459,7 +458,7 @@ profileBookmark("My Trackables", "lnk_my_trackables");
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "7.8";
+var scriptVersion = "7.9";
 
 var anzCustom = 10;
 var anzTemplates = 10;
