@@ -19,7 +19,9 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
-// Changelog:      7.8             - New: Issue #62 - prevent problems with gc.com-updates by encapsulating single features
+// Changelog:
+//                                 - Fix: Bug #190 - [gc.com update] Smilies, BBCode & Log-Signature destroyed
+//                 7.8             - New: Issue #62 - prevent problems with gc.com-updates by encapsulating single features
 //                                 - New: Issue #183 - Add directlink to fildnote page
 //                                 - New: Issue #181 - Use the same design for "select all" in Filednotes like in Bookmarks
 //                                 - New: Issue #177 - Add User-Name Variable to Log-Template (New Varaible: #me#)
@@ -1374,7 +1376,7 @@ try{
   if(settings_show_bbcode && (document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?(id|guid|ID|wp|LUID|PLogGuid)\=/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/track\/log\.aspx\?(id|wid|guid|ID|LUID|PLogGuid)\=/)) && document.getElementById('litDescrCharCount')){
     // Get foinds to replace #found# variable
     if(getElementsByClass('SignedInText')[0]){
-      var text = getElementsByClass('SignedInText')[0].childNodes[7].innerHTML;
+      var text = getElementsByClass('SignedInText')[0].childNodes[11].innerHTML;
       var finds = parseInt(text.match(/([0-9,]{1,10}){1}/)[1].replace(/,/g,""));
     }
     if(getElementsByClass('SignedInProfileLink')[0]){
@@ -1838,7 +1840,7 @@ try{
   
     // Replace #found# variable
     if(getElementsByClass('SignedInText')[0]){
-      var text = getElementsByClass('SignedInText')[0].childNodes[7].innerHTML;
+      var text = getElementsByClass('SignedInText')[0].childNodes[11].innerHTML;
       var me = getElementsByClass('SignedInProfileLink')[0].innerHTML;
       var finds = parseInt(text.match(/([0-9,]{1,10})/)[1].replace(/,/g,""));
       document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML = document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML.replace(/#found_no#/g,finds);
@@ -1884,7 +1886,7 @@ try{
   
     // Replace #found# variable
     if(getElementsByClass('SignedInText')[0] && document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo')){
-      var text = getElementsByClass('SignedInText')[0].childNodes[7].innerHTML;
+      var text = getElementsByClass('SignedInText')[0].childNodes[11].innerHTML;
       var me = getElementsByClass('SignedInProfileLink')[0].innerHTML;
       var finds = parseInt(text.match(/([0-9,]{1,10})/)[1].replace(/,/g,""));
       document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML = document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML.replace(/#found_no#/g,finds);
