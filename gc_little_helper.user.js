@@ -502,7 +502,7 @@ if (!test_browser) {
 
 // Error-Logging function
 function gclh_error(modul,err){
-  var txt = "GClh_ERROR - "+modul+" - "+document.location.href+": "+err.message;
+  var txt = "GClh_ERROR - "+modul+" - "+document.location.href+": "+err.message+"\nStacktrace:\n"+err.stack+(err.stacktrace?("\n"+err.stacktrace):"");
   if(typeof(console) != "undefined"){
     console.error(txt);
   }
