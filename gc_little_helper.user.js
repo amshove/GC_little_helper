@@ -19,7 +19,8 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
-// Changelog:      7.9             - Fix: Bug #189 - [gc.com update] Remove gc.com-Links - new and removed Links
+// Changelog:      8.0             - Fix: Bug #190 - [gc.com update] Smilies, BBCode & Log-Signature destroyed - some rework
+//                 7.9             - Fix: Bug #189 - [gc.com update] Remove gc.com-Links - new and removed Links
 //                                 - Fix: Bug #190 - [gc.com update] Smilies, BBCode & Log-Signature destroyed
 //                 7.8             - New: Issue #62 - prevent problems with gc.com-updates by encapsulating single features
 //                                 - New: Issue #183 - Add directlink to fildnote page
@@ -884,6 +885,25 @@ function btnClose(){
   if(document.getElementById('findplayer_overlay')) document.getElementById('findplayer_overlay').style.display = "none";
 }
 
+// Function to get the Finds out of the login-Text-Box
+function get_my_finds(){
+  var finds = "";
+  if(getElementsByClass('SignedInText')[0]){
+    var imgs = getElementsByClass('SignedInText')[0].getElementsByTagName("img");
+    var text = "";
+
+    for(var i=0; i<imgs.length; i++){
+      if(imgs[i].title == "Caches Found"){
+        text = imgs[i].parentNode.innerHTML;
+        break;
+      }
+    }
+//    var text = getElementsByClass('SignedInText')[0].childNodes[11].innerHTML;
+    finds = parseInt(text.match(/([0-9,]{1,10}){1}/)[1].replace(/,/g,""));
+  }
+  return finds;
+}
+
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
@@ -1375,11 +1395,8 @@ function gclh_add_insert_fkt(id){
 // Show Smilies & BBCode --- http://www.cachewiki.de/wiki/Formatierung
 try{
   if(settings_show_bbcode && (document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?(id|guid|ID|wp|LUID|PLogGuid)\=/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/track\/log\.aspx\?(id|wid|guid|ID|LUID|PLogGuid)\=/)) && document.getElementById('litDescrCharCount')){
-    // Get foinds to replace #found# variable
-    if(getElementsByClass('SignedInText')[0]){
-      var text = getElementsByClass('SignedInText')[0].childNodes[11].innerHTML;
-      var finds = parseInt(text.match(/([0-9,]{1,10}){1}/)[1].replace(/,/g,""));
-    }
+    // Get finds to replace #found# variable
+    finds = get_my_finds();
     if(getElementsByClass('SignedInProfileLink')[0]){
       var me = getElementsByClass('SignedInProfileLink')[0].innerHTML;
     }
@@ -1841,9 +1858,8 @@ try{
   
     // Replace #found# variable
     if(getElementsByClass('SignedInText')[0]){
-      var text = getElementsByClass('SignedInText')[0].childNodes[11].innerHTML;
+      var finds = get_my_finds();
       var me = getElementsByClass('SignedInProfileLink')[0].innerHTML;
-      var finds = parseInt(text.match(/([0-9,]{1,10})/)[1].replace(/,/g,""));
       document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML = document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML.replace(/#found_no#/g,finds);
       finds++;
       document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML = document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML.replace(/#found#/g,finds);
@@ -1887,9 +1903,8 @@ try{
   
     // Replace #found# variable
     if(getElementsByClass('SignedInText')[0] && document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo')){
-      var text = getElementsByClass('SignedInText')[0].childNodes[11].innerHTML;
+      var finds = get_my_finds();
       var me = getElementsByClass('SignedInProfileLink')[0].innerHTML;
-      var finds = parseInt(text.match(/([0-9,]{1,10})/)[1].replace(/,/g,""));
       document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML = document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML.replace(/#found_no#/g,finds);
       finds++;
       document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML = document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML.replace(/#found#/g,finds);
