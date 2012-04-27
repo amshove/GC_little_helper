@@ -3,7 +3,7 @@
     <name>GC Little Helper</name>
     <description>Some little things to make life easy (on www.geocaching.com).</description>
     <author href="http://www.amshove.net/wiki/greasemonkey:gc_little_helper">Torsten Amshove</author>   
-    <icon src="icons/icon.jpg"/>
+    <icon src="icons/icon.png"/>
      <access origin="http://www.geocaching.com/" subdomains="true"/>     
      <access origin="http://maps.google.de/" subdomains="true"/>     
      <access origin="http://maps.google.com/" subdomains="true"/>     
