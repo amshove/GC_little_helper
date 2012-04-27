@@ -36,7 +36,7 @@ function GM_setValue(name, value) {
  
 function GM_getValue(name, defaultValue) {
 	var result = widget.preferences.getItem(name);
-	return (result != "" && result != null && result != "undefined" && result != "null" )?result:defaultValue;
+	return (result != "" && result != null && result != "undefined" && result != "null" )?(result==="true"?true:(result==="false"?false:result)):defaultValue;
 }
  
 function GM_deleteValue(name) {		
