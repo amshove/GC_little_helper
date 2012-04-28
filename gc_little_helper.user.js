@@ -2855,7 +2855,7 @@ try{
         "  position: relative;" +
         "}" +
         "a.gclh_log span {" +
-        "  visibility: hidden;" +
+        "  display: none;" +
         "  position: absolute;" +
         "  top:-310px;" +
         "  left:-705px;" +
@@ -2867,7 +2867,7 @@ try{
         "  color: #000000;" +
         "}" +
         "a.gclh_log:hover span { " +
-        "  visibility: visible;" +
+        "  display: block;" +
         "  top: 10px;" +
         "  border: 1px solid #8c9e65;" +
         "  background-color:#dfe1d2;" +
