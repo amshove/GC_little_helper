@@ -3556,12 +3556,12 @@ try{
         var search_text = this.value;
         if(!search_text) return false;
   
-        search_text = search_text.replace(/Ä/,"&#xC4;");
+        /*search_text = search_text.replace(/Ä/,"&#xC4;");
         search_text = search_text.replace(/ä/,"&#xE4;");
         search_text = search_text.replace(/Ö/,"&#xD6;");
         search_text = search_text.replace(/ö/,"&#xF6;");
         search_text = search_text.replace(/Ü/,"&#xDC;");
-        search_text = search_text.replace(/ü/,"&#xFC;");
+        search_text = search_text.replace(/ü/,"&#xFC;");*/
         var regexp = new RegExp("("+search_text+")","i");
   
         var tbodys = document.getElementById("cache_logs_table").getElementsByTagName("tbody");
