@@ -1825,12 +1825,12 @@ try{
   if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?(id|guid|ID|PLogGuid|wp)\=/) && document.getElementById('ctl00_ContentBody_LogBookPanel1_ddLogType')){
     if(settings_default_logtype != "-1" && !document.location.href.match(/\&LogType\=/) && !document.location.href.match(/PLogGuid/)){
       var select = document.getElementById('ctl00_ContentBody_LogBookPanel1_ddLogType');
-      var childs = select.childNodes;
+      var childs = select.children;
   
       if(select.value == "-1"){
         for(var i=0; i<childs.length; i++){
-          if(childs[i].value == settings_default_logtype){
-            childs[i].setAttribute("selected","selected");
+          if(childs[i].value == settings_default_logtype){		
+	    	select.selectedIndex=i;
           }
         }
       }
@@ -1875,11 +1875,11 @@ try{
   if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/track\/log\.aspx/)){
     if(settings_default_tb_logtype != "-1" && !document.location.href.match(/\&LogType\=/)){
       var select = document.getElementById('ctl00_ContentBody_LogBookPanel1_ddLogType');
-      var childs = select.childNodes;
+      var childs = select.children;
   
       for(var i=0; i<childs.length; i++){
         if(childs[i].value == settings_default_tb_logtype){
-          childs[i].setAttribute("selected","selected");
+          select.selectedIndex=i;
         }
       }
     }
