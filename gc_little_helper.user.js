@@ -690,7 +690,8 @@ if(document.location.href.match(/^(http|https):\/\/maps\.google\.(de|com)/) || d
     }
   }
 }else{
-  
+//Required for jquery plugins under opera
+$ = unsafeWindow.$;
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 // Helper
@@ -1511,8 +1512,6 @@ try{
 try{
   if((document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?(id|guid|ID|wp|LUID|PLogGuid)\=/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/track\/log\.aspx\?(id|wid|guid|ID|LUID|PLogGuid)\=/)) && document.getElementById('litDescrCharCount')){
     function limitLogText(limitField) {
-      //Required under opera (I have no idea why the global "$" from above is not visible here)
-      var $ = unsafeWindow.$;    
       // aus gc.com Funktion "checkLogInfoLength"
       var editor = $('#ctl00_ContentBody_LogBookPanel1_uxLogInfo');
       var limitNum = parseInt($('#ctl00_ContentBody_LogBookPanel1_uxLogInfo').attr("CKEMaxLength"));
@@ -3430,8 +3429,6 @@ try{
       var isBusy = false;
       var gclh_currentPageIdx = 1, gclh_totalPages = 1;
       var logInitialLoaded = false;
-      //Required under opera (I have no idea why the global "$" from above is not visible here)
-      var $ = unsafeWindow.$;
 	    
       unsafeWindow.$(window).endlessScroll({
         fireOnce: true,
