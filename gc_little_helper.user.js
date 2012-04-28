@@ -2708,7 +2708,9 @@ try{
           }
         }
       }
-      unsafeWindow.setSelectedActions();
+      if(unsafeWindow.setSelectedActions){
+	     unsafeWindow.setSelectedActions();
+      }
     }
   
     if(document.getElementById("ctl00_ContentBody_LogBookPanel1_ddLogType")){
