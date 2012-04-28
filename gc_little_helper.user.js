@@ -480,8 +480,8 @@ if(!this.uneval){
   this.uneval = function (value) {  };
   browser = "chrome";
 }
-if(!this.eval){
-  this.eval = function (value) { return JSON.parse(value); };
+if(typeof(opera) != "undefined"){
+  //this.eval = function (value) { return JSON.parse(value); };
   this.uneval = function (value) { return JSON.stringify(value); };
   browser = "opera";
 }
