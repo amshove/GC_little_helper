@@ -486,9 +486,6 @@ if(typeof(opera) != "undefined"){
   browser = "opera";
 }
 
-//Required for jquery plugins under opera
-var $ = unsafeWindow.$;
-
 // Check for Scriptish bug in Fennec browser (http://www.geoclub.de/viewtopic.php?f=117&t=62130&p=983614#p983614)
 this.GM_setValue("browser", browser);
 var test_browser = this.GM_getValue("browser");
