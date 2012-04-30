@@ -2,7 +2,7 @@
 // @name           GC little helper
 // @namespace      http://www.amshove.net
 // @version        8.0 
-// @include        http://www.geocaching.com/*
+// @include        /^https?://www\.geocaching\.com/(.*)$/
 // @include        http://maps.google.de/*
 // @include        http://maps.google.com/*
 // @include        http://www.google.de/maps*
@@ -19,7 +19,9 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
-// Changelog:      8.0             - Fix: Bug #190 - [gc.com update] Smilies, BBCode & Log-Signature destroyed - some rework
+// Changelog:      
+//                                 - New: Issue #192 - Remove "Login with Facebook"
+//                 8.0             - Fix: Bug #190 - [gc.com update] Smilies, BBCode & Log-Signature destroyed - some rework
 //                 7.9             - Fix: Bug #189 - [gc.com update] Remove gc.com-Links - new and removed Links
 //                                 - Fix: Bug #190 - [gc.com update] Smilies, BBCode & Log-Signature destroyed
 //                 7.8             - New: Issue #62 - prevent problems with gc.com-updates by encapsulating single features
@@ -523,6 +525,8 @@ settings_bookmarks_search = GM_getValue("settings_bookmarks_search","true");
 settings_bookmarks_search_default = GM_getValue("settings_bookmarks_search_default","");
 // Settings: Redirect to Map
 settings_redirect_to_map = GM_getValue("settings_redirect_to_map",false);
+// Settings: Hide Facebook
+settings_hide_facebook = GM_getValue("settings_hide_facebook",false);
 // Settings: Hide Disclaimer
 settings_hide_disclaimer = GM_getValue("settings_hide_disclaimer",true);
 // Settings: Hide Cache Notes
@@ -1105,6 +1109,24 @@ if(settings_redirect_to_map && document.location.href.match(/^http:\/\/www\.geoc
     if(match[1]) document.location.href = map_url+"?"+match[1];
   }
 }
+
+// Hide Facebook
+try{
+  if(settings_hide_facebook){
+    if(document.getElementById('ctl00_uxSignIn')){
+      document.getElementById('ctl00_uxSignIn').parentNode.style.display = "none";
+    }
+    if(document.location.href.match(/^https?:\/\/www\.geocaching\.com\/login\/default\.aspx(.*)/)){
+      var loginpanelfb = document.getElementById('ctl00_ContentBody_LoginPanel').getElementsByTagName("div")[0].getElementsByTagName("div")[0];
+      loginpanelfb.removeChild(loginpanelfb.getElementsByTagName("h3")[0]);
+      loginpanelfb.removeChild(loginpanelfb.getElementsByTagName("p")[0]);
+      loginpanelfb.removeChild(document.getElementById("ctl00_ContentBody_vsFacebook"));
+      loginpanelfb.removeChild(document.getElementById("ctl00_ContentBody_cvFacebook"));
+      loginpanelfb.removeChild(document.getElementById("ctl00_ContentBody_uxSignIn"));
+      loginpanelfb.removeChild(loginpanelfb.getElementsByTagName("div")[0]);
+    }
+  }
+}catch(e){ gclh_error("Hide Facebook",e); }
 
 // Hide Disclaimer
 try{
@@ -4193,6 +4215,7 @@ function gclh_showConfig(){
     html += "Page-Width: <input class='gclh_form' type='text' size='3' id='settings_new_width' value='"+GM_getValue("settings_new_width",950)+"'> px" + show_help("With this option you can expand the small layout. The default-value of gc.com is 950 px.") + "<br>";
     html += checkbox('settings_automatic_friend_reset', 'Reset Difference-Counter on Friendlist automatically') + show_help("If you enable this option, the difference-counter at Friendlist will automatically reset if you have seen the difference and if the day changed.") + "<br/>";
     html += checkbox('settings_show_big_gallery', 'Show bigger Images in Gallery') + "<br/>";
+    html += checkbox('settings_hide_facebook', 'Hide Facebook-Login') + "<br/>";
     html += "";
     html += "<br>";
     html += "";
@@ -4432,6 +4455,7 @@ function gclh_showConfig(){
       'settings_bookmarks_on_top',
       'settings_bookmarks_search',
       'settings_redirect_to_map',
+      'settings_hide_facebook',
 //      'settings_hide_feedback',
       'settings_hide_disclaimer',
       'settings_hide_cache_notes',
