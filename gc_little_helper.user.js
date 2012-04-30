@@ -1116,7 +1116,7 @@ try{
     if(document.getElementById('ctl00_uxSignIn')){
       document.getElementById('ctl00_uxSignIn').parentNode.style.display = "none";
     }
-    if(document.location.href.match(/^https?:\/\/www\.geocaching\.com\/login\/default\.aspx(.*)/)){
+    if(document.location.href.match(/^https?:\/\/www\.geocaching\.com\/login(.*)/)){
       var loginpanelfb = document.getElementById('ctl00_ContentBody_LoginPanel').getElementsByTagName("div")[0].getElementsByTagName("div")[0];
       loginpanelfb.removeChild(loginpanelfb.getElementsByTagName("h3")[0]);
       loginpanelfb.removeChild(loginpanelfb.getElementsByTagName("p")[0]);
