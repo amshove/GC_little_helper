@@ -2,7 +2,8 @@
 // @name           GC little helper
 // @namespace      http://www.amshove.net
 // @version        8.0 
-// @include        /^https?://www\.geocaching\.com/(.*)$/
+// @include        http://www.geocaching.com/*
+// @include        https://www.geocaching.com/*
 // @include        http://maps.google.de/*
 // @include        http://maps.google.com/*
 // @include        http://www.google.de/maps*
