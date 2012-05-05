@@ -506,7 +506,7 @@ function gclh_error(modul,err){
   if(typeof(console) != "undefined"){
     console.error(txt);
   }
-  if(typeof(GM_log) != "undefined"){
+  else if(typeof(GM_log) != "undefined"){
     GM_log(txt);
   }
 }
