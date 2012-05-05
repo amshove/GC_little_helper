@@ -362,7 +362,18 @@
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
-  
+
+var operaHelperInitComplete = false;
+var operaHelperDomLoaded = false;
+
+if(typeof opera == "object"){
+	window.addEventListener('DOMContentLoaded',function(){		
+		operaHelperDomLoaded=true;
+		if(operaHelperInitComplete){			
+			main();
+		}
+	}, true);
+}
 /**
  * create a bookmark to a page in the geocaching.com name space
  * @param {String} title
@@ -650,8 +661,12 @@ var global_mail_icon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAKCA
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 if(typeof opera == "object"){
-  window.addEventListener('DOMContentLoaded',main, true);
-}else{
+	operaHelperInitComplete=true;
+	if(operaHelperDomLoaded){			
+		main();
+	}
+}
+else{
   main();
 }
 
