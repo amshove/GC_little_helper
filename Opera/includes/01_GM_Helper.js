@@ -67,7 +67,7 @@ function GM_addStyle(style)
 }
  
 function getRandom(){
-	return  date.getTime() * (1 + parseInt( Math.random() * 100));
+	return  (date.getTime() * (1 + parseInt( Math.random() * 100))).toString();
 }
  
 function GM_xmlhttpRequest(details) {
