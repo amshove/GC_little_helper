@@ -67,7 +67,7 @@ function xmlhttpRequestBackground(details, answerPort) {
 		"responseText": (httpReq.readyState < 4 ? "" : httpReq.responseText),
 		"readyState": (httpReq.readyState),
 		//Hope this works
-		"finalUrl": (httpReq.readyState < 4 ? "" : httpReq.responseXML.documentURI),
+		//"finalUrl": (httpReq.readyState < 4 ? "" : httpReq.responseXML.documentURI),
 		"id": details.id
 	};
 
