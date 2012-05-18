@@ -3790,7 +3790,13 @@ try{
 try{
   if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/) && document.getElementById('uxLatLon')){
     var coords = toDec(document.getElementById("uxLatLon").innerHTML);
-    var link = document.getElementById("uxLatLonLink").parentNode;
+    var link;
+    if(document.getElementById("uxLatLonLink") != null){ //If server deliver userDefinedCoords.status="fail", then link will be null
+	link = document.getElementById("uxLatLonLink").parentNode;
+    }
+    else{
+	link = document.getElementById("uxLatLon").parentNode;    
+    }    
     var a = document.createElement("a");
     var small = document.createElement("small");
     a.setAttribute("href",map_url+"?ll="+coords[0]+","+coords[1]);
@@ -3805,7 +3811,13 @@ try{
 try{
   if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/) && document.getElementById('uxLatLon') && GM_getValue("home_lat")){
     var coords = toDec(document.getElementById("uxLatLon").innerHTML);
-    var link = document.getElementById("uxLatLonLink").parentNode;
+    var link;
+     if(document.getElementById("uxLatLonLink") != null){ //If server deliver userDefinedCoords.status="fail", then link will be null
+	link = document.getElementById("uxLatLonLink").parentNode;
+    }
+    else{
+	link = document.getElementById("uxLatLon").parentNode;    
+    }
     var a = document.createElement("a");
     var small = document.createElement("small");
     var name = "";
