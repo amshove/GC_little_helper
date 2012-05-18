@@ -54,13 +54,11 @@ function GM_listValues() {
 	return keys;		
 }
  
-function GM_openInTab(url)
-{
-	postData(ports["openInTab"], serviceIdMapping["openInTab"], url);	
+function GM_openInTab(url){
+	doPostData("openInTab", "openInTab", url,0);	
 }
  
-function GM_addStyle(style)
-{
+function GM_addStyle(style){
 	var sheet = document.createElement('style');
 	sheet.innerHTML = style;
 	document.body.appendChild(sheet);
@@ -81,7 +79,7 @@ function GM_xmlhttpRequest(details) {
 	}
 	
 	//Send request to background worker
-	postData(ports["xmlhttpRequest"], serviceIdMapping["xmlhttpRequest"], details);	
+	doPostData("xmlhttpRequest", "xmlhttpRequest", details, 0);	
 }
  
 function handleGMxmlhttpRequestStatusUpdate(event){
@@ -143,16 +141,32 @@ function handleGMxmlhttpRequestStatusUpdate(event){
  	}
 }
 
-function postData(port, id, data){
+function doPostData(portName, serviceIdMappingName, details, retryCount){
+	if(typeof ports[portName] != "undefined"){
+		//Send request to background worker
+		postData(ports[portName], serviceIdMapping[serviceIdMappingName], details, 0);	
+	}
+	else if (retryCount<10){
+		setTimeout(function () {				
+				doPostData(portName, serviceIdMappingName, details, retryCount+1);				
+			},5);
+	}
+	else{
+		console.error("Communication with the backgroundscript failed.");
+	}
+	
+}
+
+function postData(port, id, data){	
 	var container = {};
 	container.id=id;
 	container.data=data;
-	port.postMessage(JSON.stringify(container));	
+	port.postMessage(JSON.stringify(container));		
 }
 
 function init(){	
 	opera.extension.onmessage = function(event){		
-		if(event.data == "GM_Helper_Background" && !backgroundScript){
+		if(event.data == "GM_Helper_Background" && !backgroundScript){			
 			backgroundScript = event.source;
 			
 			serviceIdMapping["xmlhttpRequest"] = getRandom();
@@ -161,9 +175,9 @@ function init(){
 											
 			serviceIdMapping["openInTab"] = getRandom();
 			backgroundScript.postMessage({service: "openInTab",
-											id: serviceIdMapping["openInTab"]});
+											id: serviceIdMapping["openInTab"]});			
 		}
-		else if(event.data == serviceIdMapping["xmlhttpRequest"]){
+		else if(event.data == serviceIdMapping["xmlhttpRequest"]){			
 			ports["xmlhttpRequest"] = event.ports[0];
 			event.ports[0].onmessage = handleGMxmlhttpRequestStatusUpdate;
 		}

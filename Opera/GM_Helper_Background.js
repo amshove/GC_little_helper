@@ -20,7 +20,7 @@ window.addEventListener("load", setupConnection, false);
 function setupConnection()
 {	
 	opera.extension.onconnect = function(event) {			
-		event.source.postMessage("GM_Helper_Background");	
+		event.source.postMessage("GM_Helper_Background");		
 	};
  
 	opera.extension.onmessage = function(event){
