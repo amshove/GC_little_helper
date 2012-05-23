@@ -28,7 +28,7 @@ var XMLHttpRequest = window.XMLHttpRequest;
  
  
 //GM_log
-GM_log = opera.postError;
+//GM_log = opera.postError;
  
 function GM_setValue(name, value) {
 	widget.preferences.setItem(name,value);	
