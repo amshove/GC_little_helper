@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           GC little helper
 // @namespace      http://www.amshove.net
-// @version        8.0 
+// @version        8.1 
 // @include        http://www.geocaching.com/*
 // @include        https://www.geocaching.com/*
 // @include        http://maps.google.de/*
@@ -477,7 +477,7 @@ profileBookmark("My Trackables", "lnk_my_trackables");
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "8.0";
+var scriptVersion = "8.1";
 
 var anzCustom = 10;
 var anzTemplates = 10;
