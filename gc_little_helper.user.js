@@ -21,6 +21,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:      
+//                                 - Fix: Bug #198 - [gc.com update] Log helper don't work (Smilies, BBCode, ..) 
 //                                 - Fix: Bug #200 - [GC update] Caches on Map are not clickable - Hill-Shadow
 //                                 - Fix: Bug #199 - [GC update] Caches on Map are not clickable
 //                                 - New: Issue #192 - Remove "Login with Facebook"
@@ -913,7 +914,7 @@ function get_my_finds(){
     var text = "";
 
     for(var i=0; i<imgs.length; i++){
-      if(imgs[i].title == "Caches Found"){
+      if(imgs[i].src.match(/icons\/icon_smile\.png$/)){
         text = imgs[i].parentNode.innerHTML;
         break;
       }
