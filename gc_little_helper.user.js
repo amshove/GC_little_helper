@@ -21,7 +21,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:      
-//                                 - New: Issue #194 - Show bigger images in gallery without thumbnail-function enabled
+//                 8.1             - New: Issue #194 - Show bigger images in gallery without thumbnail-function enabled
 //                                 - Fix: Bug #198 - [gc.com update] Log helper don't work (Smilies, BBCode, ..) 
 //                                 - Fix: Bug #200 - [GC update] Caches on Map are not clickable - Hill-Shadow
 //                                 - Fix: Bug #199 - [GC update] Caches on Map are not clickable
