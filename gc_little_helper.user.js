@@ -21,6 +21,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:      
+//                                 - New: Issue #194 - Show bigger images in gallery without thumbnail-function enabled
 //                                 - Fix: Bug #198 - [gc.com update] Log helper don't work (Smilies, BBCode, ..) 
 //                                 - Fix: Bug #200 - [GC update] Caches on Map are not clickable - Hill-Shadow
 //                                 - Fix: Bug #199 - [GC update] Caches on Map are not clickable
@@ -3280,14 +3281,6 @@ try{
         var span = document.createElement('span');
         var img = document.createElement('img');
   
-        // Bigger Images in Gallery
-        if(settings_show_big_gallery){
-          thumb.style.width = "300px";
-          thumb.style.height = "auto";
-          thumb.src = thumb.src.replace(/thumb\//,"");
-          tds.push(thumb.parentNode.parentNode);
-        }
-  
         img.src = thumb.src.replace(/thumb\//,"");
         img.className = "gclh_max";
         span.appendChild(img);
@@ -3298,9 +3291,27 @@ try{
         links[i].appendChild(span);
       }
     }
+  }
+}catch(e){ gclh_error("Show Thumbnails",e); }
+
+// Show gallery-Images in 2 instead of 4 cols
+try{
+  if(settings_show_big_gallery && document.location.href.match(/^http:\/\/www\.geocaching\.com\/(seek\/gallery\.aspx?|profile\/)/)){
+    var links = document.getElementsByTagName("a");
+    var tds = new Array();
+    // Make images bigger
+    for(var i=0; i<links.length; i++){
+      if(links[i].href.match(/^http:\/\/img\.geocaching\.com\/(cache|track)\//) && links[i].childNodes[1] && links[i].childNodes[1].tagName == 'IMG'){
+        var thumb = links[i].childNodes[1];
+        thumb.style.width = "300px";
+        thumb.style.height = "auto";
+        thumb.src = thumb.src.replace(/thumb\//,"");
+        tds.push(thumb.parentNode.parentNode);
+      }
+    }
   
-    // Show gallery-Images in 2 instead of 4 cols
-    if(settings_show_big_gallery && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/gallery\.aspx?/) && tds.length > 1 && document.getElementById("ctl00_ContentBody_GalleryItems_DataListGallery")){
+    // Change from 4 Cols to 2
+    if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/gallery\.aspx?/) && tds.length > 1 && document.getElementById("ctl00_ContentBody_GalleryItems_DataListGallery")){
       var tbody = document.createElement("tbody");
       var tr = document.createElement("tr");
       var x = 0;
@@ -3317,7 +3328,7 @@ try{
       }
       document.getElementById("ctl00_ContentBody_GalleryItems_DataListGallery").removeChild(document.getElementById("ctl00_ContentBody_GalleryItems_DataListGallery").firstChild);
       document.getElementById("ctl00_ContentBody_GalleryItems_DataListGallery").appendChild(tbody);
-    }else if(settings_show_big_gallery && document.location.href.match(/^http:\/\/www\.geocaching\.com\/profile\//) && tds.length > 1 && document.getElementById("ctl00_ContentBody_ProfilePanel1_UserGallery_DataListGallery")){
+    }else if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/profile\//) && tds.length > 1 && document.getElementById("ctl00_ContentBody_ProfilePanel1_UserGallery_DataListGallery")){
       var tbody = document.createElement("tbody");
       var tr = document.createElement("tr");
       var x = 0;
@@ -3336,7 +3347,7 @@ try{
       document.getElementById("ctl00_ContentBody_ProfilePanel1_UserGallery_DataListGallery").appendChild(tbody);
     }
   }
-}catch(e){ gclh_error("Show Thumbnails",e); }
+}catch(e){ gclh_error("Show Bigger Images",e); }
 
 // Log-Template definieren
 if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx?/)){
