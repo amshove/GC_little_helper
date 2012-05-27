@@ -21,6 +21,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:      
+//                                 - Fix: Bug #200 - [GC update] Caches on Map are not clickable - Hill-Shadow
 //                                 - Fix: Bug #199 - [GC update] Caches on Map are not clickable
 //                                 - New: Issue #192 - Remove "Login with Facebook"
 //                 8.0             - Fix: Bug #190 - [gc.com update] Smilies, BBCode & Log-Signature destroyed - some rework
@@ -2263,7 +2264,7 @@ try{
       //add Hill-Shadow
       if(settings_show_hillshadow){
         var hillshadow = new unsafeWindow.L.TileLayer("http://toolserver.org/~cmarqu/hill/{z}/{x}/{y}.png", {maxZoom: 20});
-        unsafeWindow.MapSettings.Map.addLayer(hillshadow);
+        setTimeout(function(){ unsafeWindow.MapSettings.Map.addLayer(hillshadow); },1000);
         hillshadow_akt = true;
         
         function maptoggle(e){
