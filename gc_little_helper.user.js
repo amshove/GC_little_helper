@@ -21,6 +21,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:      
+//                                 - Fix: Bug #199 - [GC update] Caches on Map are not clickable
 //                                 - New: Issue #192 - Remove "Login with Facebook"
 //                 8.0             - Fix: Bug #190 - [gc.com update] Smilies, BBCode & Log-Signature destroyed - some rework
 //                 7.9             - Fix: Bug #189 - [gc.com update] Remove gc.com-Links - new and removed Links
@@ -2283,7 +2284,7 @@ try{
       //Select Default-Layer
       if(settings_map_default_layer != 0) {
         var menu = getElementsByClass("leaflet-control-layers-base")[0];
-        menu.childNodes[settings_map_default_layer].click();
+        setTimeout(function(){ menu.childNodes[settings_map_default_layer].click(); },1000);
       }
   
       if(settings_map_hide_sidebar){
