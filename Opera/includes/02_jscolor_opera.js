@@ -1,3 +1,15 @@
+// ==UserScript==
+// @include        http://www.geocaching.com/*
+// @include        https://www.geocaching.com/*
+// @include        http://maps.google.de/*
+// @include        http://maps.google.com/*
+// @include        http://www.google.de/maps*
+// @include        http://www.google.com/maps*
+// @include        https://maps.google.de/*
+// @include        https://maps.google.com/*
+// @include        https://www.google.de/maps*
+// @include        https://www.google.com/maps*
+// ==/UserScript==
 /*
  * jscolor, JavaScript Color Picker
  * @version 1.3.9
