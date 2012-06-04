@@ -21,6 +21,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:      
+//                                 - New: Issue #176 - Make Hill-Shadow choosable for each Map 
 //                                 - Fix: Issue #204 - [gc.com update] Update list of default maps in settings (My Topo vanished)
 //                 8.1             - New: Issue #194 - Show bigger images in gallery without thumbnail-function enabled
 //                                 - Fix: Bug #198 - [gc.com update] Log helper don't work (Smilies, BBCode, ..) 
@@ -578,6 +579,7 @@ settings_homezone_radius = GM_getValue("settings_homezone_radius","10");
 settings_homezone_color = GM_getValue("settings_homezone_color","#0000FF");
 // Settings: Hill Shadow
 settings_show_hillshadow = GM_getValue("settings_show_hillshadow",false);
+settings_map_hillshadow = GM_getValue("settings_map_hillshadow","").split("###");
 // Settings: default Map
 map_url = "http://www.geocaching.com/map/default.aspx";
 // Settings: default Log Type
@@ -2285,19 +2287,26 @@ try{
       //add Hill-Shadow
       if(settings_show_hillshadow){
         var hillshadow = new unsafeWindow.L.TileLayer("http://toolserver.org/~cmarqu/hill/{z}/{x}/{y}.png", {maxZoom: 20});
-        setTimeout(function(){ unsafeWindow.MapSettings.Map.addLayer(hillshadow); },1000);
-        hillshadow_akt = true;
+
+        function show_hillshadow(bool){
+          GM_log("show_hillshadow: " + bool);
+          if(bool){
+            if(!hillshadow_akt)setTimeout(function(){ unsafeWindow.MapSettings.Map.addLayer(hillshadow); },1000);
+            hillshadow_akt = true;
+          }else{
+            if(hillshadow_akt)unsafeWindow.MapSettings.Map.removeLayer(hillshadow);
+            hillshadow_akt = false;
+          }
+        }
         
-        function maptoggle(e){
+       function maptoggle(e){
           //Mapnames: mpqosm, cloudmade, mpqa, osm, osm_hikebike, ocm, ocm_transport, mq, gm, gm_satellite, gm_hybrid, gm_terrain
-          if(e.layer.options.name !== undefined)
-            GM_log(e.layer.options.name);
-            if(e.layer.options.name == "gm_terrain"){ //|| e.layer.options.name == "ocm"){
-              if(hillshadow_akt)unsafeWindow.MapSettings.Map.removeLayer(hillshadow);
-              hillshadow_akt = false;
+          if(e.layer.options.name !== undefined && (""+e.layer.options.name) != "undefined")
+            GM_log("maptoggel: " + e.layer.options.name);
+            if(settings_map_hillshadow.indexOf(e.layer.options.name) != -1 && e.layer.options.name != "gm_terrain"){
+              if(!hillshadow_akt)show_hillshadow(true);
             }else{
-              if(!hillshadow_akt)unsafeWindow.MapSettings.Map.addLayer(hillshadow);
-              hillshadow_akt = true;
+              if(hillshadow_akt && e.layer.options.name != undefined)show_hillshadow(false);
             }
         }
         unsafeWindow.MapSettings.Map.on('layeradd',maptoggle);
@@ -4322,10 +4331,21 @@ function gclh_showConfig(){
     html += "  <option value='gm_satellite' "+(settings_map_default_layer == 'gm_satellite' ? "selected='selected'" : "")+">Google Maps (Satellite)</option>";
     html += "  <option value='gm_hybrid' "+(settings_map_default_layer == 'gm_hybrid' ? "selected='selected'" : "")+">Google Maps (Hybrid)</option>";
     html += "  <option value='gm_terrain' "+(settings_map_default_layer == 'gm_terrain' ? "selected='selected'" : "")+">Google Maps (Terrain)</option>";
-
     html += "</select>"+show_help("Here you can select the map source you want to use as default in the map.") +"<br>";
+    html += checkbox('settings_show_hillshadow', 'Show Hill-Shadows on Map') + show_help("If you want 3D-like-Shadows to be displayed, activate this function.") + "<br/>";
+    html += "<select class='gclh_form' id='settings_map_hillshadow' multiple='multiple'>";
+    html += "  <option value='mpqosm' "+(settings_map_hillshadow.indexOf('mpqosm') != -1 ? "selected='selected'" : "")+">MapQuest (gc.com default)</option>";
+    html += "  <option value='cloudmade' "+(settings_map_hillshadow.indexOf('cloudmade') != -1 ? "selected='selected'" : "")+">CloudMade</option>";
+    html += "  <option value='mpqa' "+(settings_map_hillshadow.indexOf('mpqa') != -1 ? "selected='selected'" : "")+">MapQuest Aerial</option>";
+    html += "  <option value='osm' "+(settings_map_hillshadow.indexOf('osm') != -1 ? "selected='selected'" : "")+">OpenStreetMap</option>";
+    html += "  <option value='osm_hikebike' "+(settings_map_hillshadow.indexOf('osm_hikebike') != -1 ? "selected='selected'" : "")+">OpenStreetMap (Hike&Bike)</option>";
+    html += "  <option value='ocm' "+(settings_map_hillshadow.indexOf('ocm') != -1 ? "selected='selected'" : "")+">OpenCycleMap</option>";
+    html += "  <option value='ocm_transport' "+(settings_map_hillshadow.indexOf('ocm_transport') != -1 ? "selected='selected'" : "")+">OpenCycleMap (Transport)</option>";
+    html += "  <option value='gm' "+(settings_map_hillshadow.indexOf('gm') != -1 ? "selected='selected'" : "")+">Google Maps</option>";
+    html += "  <option value='gm_satellite' "+(settings_map_hillshadow.indexOf('gm_satellite') != -1 ? "selected='selected'" : "")+">Google Maps (Satellite)</option>";
+    html += "  <option value='gm_hybrid' "+(settings_map_hillshadow.indexOf('gm_hybrid') != -1 ? "selected='selected'" : "")+">Google Maps (Hybrid)</option>";
+    html += "</select>"+show_help("Here you can select the maps which should be loaded with hillshadow. \"Show Hill-Shadows on Map\" requried.") +"<br>";   
     html += checkbox('settings_map_hide_sidebar', 'Hide sidebar by default') + show_help("If you want to hide the sidebar on the map, just select this option.") + "<br/>";
-    html += checkbox('settings_show_hillshadow', 'Shows Hill-Shadows on Map') + show_help("If you want 3D-like-Shadows to be displayed, activate this function.") + "<br/>";
     html += "";
     html += "<br>";
     html += "";
@@ -4527,7 +4547,17 @@ function gclh_showConfig(){
     GM_setValue("settings_tb_signature",document.getElementById('settings_tb_signature').value.replace(/‌/g,""));
     GM_setValue("settings_map_default_layer",document.getElementById('settings_map_default_layer').value);
     GM_setValue("settings_hover_image_max_size",document.getElementById('settings_hover_image_max_size').value);
-
+    
+    var hillmaps = document.getElementById('settings_map_hillshadow');
+    var count = 0;
+    var hillmaparr = new Array();
+    for (i=0; i<hillmaps.options.length; i++) {
+      if (hillmaps.options[i].selected) {
+        hillmaparr[count] = hillmaps.options[i].value;
+        count++;
+      }
+    }
+    GM_setValue("settings_map_hillshadow",hillmaparr.join("###"));
     var checkboxes = new Array(
       'settings_submit_log_button',
       'settings_log_inline',
