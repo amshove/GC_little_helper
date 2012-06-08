@@ -21,7 +21,8 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:      
-//                                 - New: Issue #176 - Make Hill-Shadow choosable for each Map 
+//                                 - New: Issue #206 - [Update] Remove SocialShare
+//                                 - New: Issue #176 - Make Hill-Shadow choosable for each Map
 //                                 - Fix: Issue #204 - [gc.com update] Update list of default maps in settings (My Topo vanished)
 //                 8.1             - New: Issue #194 - Show bigger images in gallery without thumbnail-function enabled
 //                                 - Fix: Bug #198 - [gc.com update] Log helper don't work (Smilies, BBCode, ..) 
@@ -545,6 +546,8 @@ settings_bookmarks_search_default = GM_getValue("settings_bookmarks_search_defau
 settings_redirect_to_map = GM_getValue("settings_redirect_to_map",false);
 // Settings: Hide Facebook
 settings_hide_facebook = GM_getValue("settings_hide_facebook",false);
+// Settings: Hide SocialShare
+settings_hide_socialshare = GM_getValue("settings_hide_socialshare",false);
 // Settings: Hide Disclaimer
 settings_hide_disclaimer = GM_getValue("settings_hide_disclaimer",true);
 // Settings: Hide Cache Notes
@@ -1174,6 +1177,15 @@ try{
     }
   }
 }catch(e){ gclh_error("Hide Facebook",e); }
+
+// Hide Socialshare
+try{
+  if(settings_hide_socialshare && document.location.href.match(/^https?:\/\/www\.geocaching\.com\/seek\/log\.aspx?(.*)/)){
+    var socialshare = document.getElementById('sharing_container');
+    socialshare.style.display = "none";
+  }
+}catch(e){ gclh_error("Hide SocialShare",e); }
+
 
 // Hide Disclaimer
 try{
@@ -4292,6 +4304,7 @@ function gclh_showConfig(){
     html += checkbox('settings_automatic_friend_reset', 'Reset Difference-Counter on Friendlist automatically') + show_help("If you enable this option, the difference-counter at Friendlist will automatically reset if you have seen the difference and if the day changed.") + "<br/>";
     html += checkbox('settings_show_big_gallery', 'Show bigger Images in Gallery') + "<br/>";
     html += checkbox('settings_hide_facebook', 'Hide Facebook-Login') + "<br/>";
+    html += checkbox('settings_hide_socialshare', 'Hide SocialShare-Box after Log') + "<br/>";
     html += "";
     html += "<br>";
     html += "";
@@ -4567,6 +4580,7 @@ function gclh_showConfig(){
       'settings_bookmarks_search',
       'settings_redirect_to_map',
       'settings_hide_facebook',
+      'settings_hide_socialshare',
 //      'settings_hide_feedback',
       'settings_hide_disclaimer',
       'settings_hide_cache_notes',
