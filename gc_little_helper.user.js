@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           GC little helper
 // @namespace      http://www.amshove.net
-// @version        8.1 
+// @version        8.2 
 // @include        http://www.geocaching.com/*
 // @include        https://www.geocaching.com/*
 // @include        http://maps.google.de/*
@@ -21,7 +21,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:      
-//                                 - New: Issue #206 - [Update] Remove SocialShare
+//                 8.2             - New: Issue #206 - [Update] Remove SocialShare
 //                                 - New: Issue #176 - Make Hill-Shadow choosable for each Map
 //                                 - Fix: Issue #204 - [gc.com update] Update list of default maps in settings (My Topo vanished)
 //                 8.1             - New: Issue #194 - Show bigger images in gallery without thumbnail-function enabled
@@ -480,7 +480,7 @@ profileBookmark("My Trackables", "lnk_my_trackables");
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "8.1";
+var scriptVersion = "8.2";
 
 var anzCustom = 10;
 var anzTemplates = 10;
