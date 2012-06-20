@@ -20,7 +20,8 @@
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
-// Changelog:      
+// Changelog:
+//                                 - Fix: Issue #208 - Log gets pushed away
 //                 8.2             - New: Issue #206 - [Update] Remove SocialShare
 //                                 - New: Issue #176 - Make Hill-Shadow choosable for each Map
 //                                 - Fix: Issue #204 - [gc.com update] Update list of default maps in settings (My Topo vanished)
@@ -1261,6 +1262,10 @@ try{
       if (para && para.nodeName == 'P') {
   //      para.parentNode.removeChild(para);
         para.innerHTML = "&nbsp;";
+        para.style.height = "0";
+        para.className = para.className + ' Clear';
+        //get more space for links, when spoiler is hidden
+        document.getElementById('ctl00_ContentBody_uxLogbookLink').parentNode.style.width="100%";
       }
     }
   }
@@ -3589,7 +3594,14 @@ try{
       load_all.setAttribute("href","javascript:void(0);");
       document.getElementById("ctl00_ContentBody_uxLogbookLink").parentNode.appendChild(document.createTextNode(" | "));
       document.getElementById("ctl00_ContentBody_uxLogbookLink").parentNode.appendChild(load_all);
-    
+
+// prevent line-break error
+      document.getElementById("ctl00_ContentBody_uxLogbookLink").parentNode.style.margin = "0";
+      var para = document.getElementById('ctl00_ContentBody_lblFindCounts').nextSibling.nextSibling.nextSibling.nextSibling;
+      if (para && para.nodeName == 'P'){
+        para.className = para.className + ' Clear';
+      }
+
       load_all.addEventListener("click",gclh_load_all_logs,false);
     }
   
