@@ -536,6 +536,7 @@ settings_submit_log_button = GM_getValue("settings_submit_log_button",true);
 // Settings: Log Inline
 settings_log_inline = GM_getValue("settings_log_inline",true);
 settings_log_inline_tb = GM_getValue("settings_log_inline_tb",false);
+settings_log_inline_pmo4basic = GM_getValue("settings_log_inline_pmo4basic",false);
 // Settings: Show Bookmarks
 settings_bookmarks_show = GM_getValue("settings_bookmarks_show",true);
 // Settings: Bookmarks on Top
@@ -2614,7 +2615,7 @@ try{
       if(link) link.parentNode.parentNode.insertBefore(li,link.parentNode);
     }
   }
-  if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?(ID|guid)\=[a-zA-Z0-9-]*\&gclh\=small/)){ // Hide everything to be smart for the iframe :)
+  if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?(ID|guid|wp)\=[a-zA-Z0-9-]*\&gclh\=small/)){ // Hide everything to be smart for the iframe :)
     if(document.getElementsByTagName('html')[0]) document.getElementsByTagName('html')[0].style.backgroundColor = "#FFFFFF";
   
     if(document.getElementsByTagName("header")[0]) document.getElementsByTagName("header")[0].style.display = "none";
@@ -2645,6 +2646,71 @@ try{
     }
   }
 }catch(e){ gclh_error("Inline Logging",e); }
+
+// Post log from PMO-Listing as Basic Member(inline)
+try{
+  if(settings_log_inline_pmo4basic && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/) && document.getElementById("ctl00_ContentBody_memberComparePanel")){
+      function hide_iframe(){
+	      var frame = document.getElementById('gclhFrame');
+	      if(frame.style.display == "") frame.style.display = "none";
+	      else frame.style.display = "";
+	}
+	
+	var idParameter = document.URL.match(/wp=[a-zA-Z0-9]*|guid=[a-zA-Z0-9-]*|id=[0-9]*/)[0];
+	
+        var iframe = document.createElement("iframe");
+        iframe.setAttribute("id","gclhFrame");
+        iframe.setAttribute("width","100%");
+        iframe.setAttribute("height","600px");
+        iframe.setAttribute("style","border: 0px; overflow: auto; display: none;");
+        iframe.setAttribute("src","log.aspx?"+idParameter+"&gclh=small");
+  
+        var a = document.createElement("a");
+        a.setAttribute("href","#gclhLogIt");
+        a.setAttribute("name","gclhLogIt");
+        var img = document.createElement("img");
+        img.setAttribute("src",global_log_it_icon);
+        img.setAttribute("border","0");
+        a.appendChild(img);
+        a.addEventListener("click", hide_iframe, false);
+	
+	var banner = document.getElementById("ctl00_ContentBody_memberComparePanel");
+	
+        banner.parentNode.insertBefore(a,banner);
+        banner.parentNode.insertBefore(iframe,banner);     
+    }
+    else if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?(ID|guid|wp)\=[a-zA-Z0-9-]*\&gclh\=small/)){ // Hide everything to be smart for the iframe :)
+    if(document.getElementsByTagName('html')[0]) document.getElementsByTagName('html')[0].style.backgroundColor = "#FFFFFF";
+  
+    if(document.getElementsByTagName("header")[0]) document.getElementsByTagName("header")[0].style.display = "none";
+     
+    if(document.getElementById('ctl00_divBreadcrumbs')) document.getElementById('ctl00_divBreadcrumbs').style.display = "none";
+  
+    if(getElementsByClass('BottomSpacing')[0]) getElementsByClass('BottomSpacing')[0].style.display = "none";
+    if(getElementsByClass('BottomSpacing')[1]) getElementsByClass('BottomSpacing')[1].style.display = "none";
+  
+    if(document.getElementById('divAdvancedOptions')) document.getElementById('divAdvancedOptions').style.display = "none";
+    if(!settings_log_inline_tb && document.getElementById('ctl00_ContentBody_LogBookPanel1_TBPanel')) document.getElementById('ctl00_ContentBody_LogBookPanel1_TBPanel').style.display = "none";
+  
+    if(document.getElementById('ctl00_ContentBody_uxVistOtherListingLabel')) document.getElementById('ctl00_ContentBody_uxVistOtherListingLabel').style.display = "none";
+    if(document.getElementById('ctl00_ContentBody_uxVistOtherListingGC')) document.getElementById('ctl00_ContentBody_uxVistOtherListingGC').style.display = "none";
+    if(document.getElementById('ctl00_ContentBody_uxVisitOtherListingButton')) document.getElementById('ctl00_ContentBody_uxVisitOtherListingButton').style.display = "none";
+  
+    if(document.getElementById('ctl00_divContentSide')) document.getElementById('ctl00_divContentSide').style.display = "none";
+  
+    if(document.getElementById('UtilityNav')) document.getElementById('UtilityNav').style.display = "none";
+  
+    if(document.getElementsByTagName("footer")[0]) document.getElementsByTagName("footer")[0].style.display = "none";
+  
+    if(getElementsByClass('container')[1]) getElementsByClass('container')[1].style.display = "inline";
+  
+    var links = document.getElementsByTagName("a");
+    for(var i=0; i<links.length; i++){
+      links[i].setAttribute("target","_blank");
+    }
+  }
+    
+}catch(e){ gclh_error("Inline PMO Logging",e); }
 
 // New Width
 try{
@@ -4375,7 +4441,7 @@ function gclh_showConfig(){
     html += "<br>";
     html += "";
     html += "<h4 class='gclh_headline2'>Listing</h4>";
-    html += checkbox('settings_log_inline', 'Log Cache from Listing (inline)') + show_help("With the inline-Log you can open a log-form inside the listing, without loading a new page.") + " - " + checkbox('settings_log_inline_tb', 'Show TB-List') + show_help("With this option you can select, if the TB-List should be shown in inline-Logs.") + "<br/>";
+    html += checkbox('settings_log_inline', 'Log Cache from Listing (inline)') + show_help("With the inline-Log you can open a log-form inside the listing, without loading a new page.") + "<br/> - " + checkbox('settings_log_inline_tb', 'Show TB-List') + show_help("With this option you can select, if the TB-List should be shown in inline-Logs.") + "<br/> - " + checkbox('settings_log_inline_pmo4basic', 'Show also for PMO-Caches (for Basic-Members)') + show_help("With this option you can select, if inline-Logs should appear for Premium-Member-Only-Caches althought you are a basic member (logging of PMO-Caches by basic members is allowed by Groundspeak).") + "<br/>";
     html += checkbox('settings_hide_empty_cache_notes', 'Hide Cache Notes if empty') + show_help("This is a Premium-Feature - you can hide the cache notes if they are empty. There will be a link to show them to add a note.") +"<br/>";
     html += checkbox('settings_hide_cache_notes', 'Hide Cache-Notes completely') + show_help("This is a Premium-Feature - you can hide the cache notes completely, if you don't want to use them.") + "<br/>";
     html += checkbox('settings_hide_disclaimer', 'Hide Disclaimer') + "<br/>";
@@ -4586,6 +4652,7 @@ function gclh_showConfig(){
     var checkboxes = new Array(
       'settings_submit_log_button',
       'settings_log_inline',
+      'settings_log_inline_pmo4basic',
       'settings_log_inline_tb',
       'settings_bookmarks_show',
       'settings_bookmarks_on_top',
