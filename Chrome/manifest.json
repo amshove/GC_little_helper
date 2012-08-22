@@ -1,0 +1,17 @@
+{
+ "manifest_version": 2,
+   "content_scripts": [ {
+      "exclude_globs": [ "http://www.geocaching.com/seek/sendtogps.aspx*" ],
+      "exclude_matches": [  ],
+      "include_globs": [ "http://www.geocaching.com/*", "https://www.geocaching.com/*", "http://maps.google.de/*", "http://maps.google.com/*", "http://www.google.de/maps*", "http://www.google.com/maps*", "https://maps.google.de/*", "https://maps.google.com/*", "https://www.google.de/maps*", "https://www.google.com/maps*" ],
+      "js": [ "gc_little_helper.js", "jscolor.js" ],
+      "matches": [ "http://*/*", "https://*/*" ],
+      "run_at": "document_idle"
+   } ],
+   "converted_from_user_script": true,
+   "icons": { "128": "icon128.png" },
+   "description": "Some little things to make life easy (on www.geocaching.com).", 
+   "homepage_url": "http://www.amshove.net/wiki/greasemonkey:gc_little_helper",
+   "name": "GC little helper",
+   "version": "8.2"
+}
