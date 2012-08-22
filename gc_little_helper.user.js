@@ -382,6 +382,46 @@ if(typeof opera == "object"){
 		}
 	}, true);
 }
+
+if(typeof(chrome) != "undefined"){		
+	var div = document.createElement("div");
+	div.setAttribute("onclick", "return window;");
+	unsafeWindow = div.onclick();
+
+	if ((GM_getValue.toString && GM_getValue.toString().indexOf("not supported") != -1) || typeof(GM_getValue) == "undefined" ) {
+		GM_getValue = function(key, defaultValue){
+			var result = localStorage.getItem(key);
+			if (!result){
+			    return defaultValue;
+			}
+			else{
+				var type = result[0];				
+				switch (type) {
+				    case 'b':
+					result = result.substring(1);
+					return result == 'true';
+				    case 'n':
+					result = result.substring(1);
+					return Number(result);
+				    case 's':
+					result = result.substring(1);
+					return String(result);
+				    default:
+					return result;
+				}
+			}			
+		}
+	}
+	
+	if (typeof(GM_setValue) == "undefined" || (GM_setValue.toString && GM_setValue.toString().indexOf("not supported") != -1)) {
+		GM_setValue = function(key, value){
+			var type = (typeof value)[0];
+			var data = ((type == 'b' || type == 'n' || type == 's')?type:"") + value;
+			localStorage.setItem(key, data);
+		}
+	}
+}
+
 /**
  * create a bookmark to a page in the geocaching.com name space
  * @param {String} title
@@ -4581,7 +4621,7 @@ function gclh_showConfig(){
 
     document.getElementsByTagName('body')[0].appendChild(div);
     
-    if(typeof opera == "object")
+    if(typeof opera == "object" || typeof(chrome) != "undefined")
     {
 	    var homezonepic = new jscolor.color(document.getElementById("settings_homezone_color"), {required:true, adjust:true, hash:true, caps:true, pickerMode:'HSV', pickerPosition:'right'});
     }
