@@ -2455,26 +2455,28 @@ try{
 
 //Display Google-Maps warning (once)
 try{
-	if((typeof (google) == "undefined" && typeof (unsafeWindow.google) == "undefined") && (typeof (google.maps) == "undefined" && typeof (unsafeWindow.google.maps) == "undefined")){		
-		if(! getValue("gclhWasGoogleAlertShown", false)){
-			setTimeout(function () {
-				if(unsafeWindow.$ && unsafeWindow.$.fancybox){
-					unsafeWindow.$.fancybox({
-						width: 780,
-						height: 362,
-						autoScale: false,
-						padding: 0,
-						margin: 0,
-						href: "http://img43.imageshack.us/img43/8825/gcmapleaflet.png",
-						scrolling: 'no',
-						title:"GC Little Helper only supports the Leaflet-Map (you are using the Google-Map)",
-						type: "image"
-					});
-				
-					setValue("gclhWasGoogleAlertShown", true);
-				}
-			},750);
-		}			
+	if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\//)) {
+		if((typeof (google) != "undefined" || typeof (unsafeWindow.google) != "undefined") && (typeof (google.maps) != "undefined" && typeof (unsafeWindow.google.maps) != "undefined")){		
+			if(! getValue("gclhWasGoogleAlertShown", false)){
+				setTimeout(function () {
+					if(unsafeWindow.$ && unsafeWindow.$.fancybox){
+						unsafeWindow.$.fancybox({
+							width: 780,
+							height: 362,
+							autoScale: false,
+							padding: 0,
+							margin: 0,
+							href: "http://img43.imageshack.us/img43/8825/gcmapleaflet.png",
+							scrolling: 'no',
+							title:"GC Little Helper only supports the Leaflet-Map (you are using the Google-Map)",
+							type: "image"
+						});
+					
+						setValue("gclhWasGoogleAlertShown", true);
+					}
+				},750);
+			}			
+		}
 	}
 }catch(e){ gclh_error("Display Google-Maps warning",e); }
 
