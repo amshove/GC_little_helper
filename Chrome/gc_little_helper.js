@@ -388,10 +388,12 @@ if(typeof(chrome) != "undefined"){
 	div.setAttribute("onclick", "return window;");
 	unsafeWindow = div.onclick();
 
+	uneval = JSON.stringify;
+	
 	if ((GM_getValue.toString && GM_getValue.toString().indexOf("not supported") != -1) || typeof(GM_getValue) == "undefined" ) {
 		GM_getValue = function(key, defaultValue){
 			var result = localStorage.getItem(key);
-			if (!result){
+			if (!result || result == "undefined"){
 			    return defaultValue;
 			}
 			else{
