@@ -2400,7 +2400,7 @@ try{
         var latlng = new unsafeWindow.L.LatLng((GM_getValue("home_lat")/10000000), (GM_getValue("home_lng")/10000000));
         var options = {
                        color:       settings_homezone_color,
-                       wight:       1,
+                       weight:       1,
                        opacity:     0.2,
                        fillOpacity: 0.1,
                        clickable:   false
