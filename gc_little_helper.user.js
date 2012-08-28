@@ -2457,7 +2457,7 @@ try{
 try{
 	if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\//)) {
 		if((typeof (google) != "undefined" || typeof (unsafeWindow.google) != "undefined") && (typeof (google.maps) != "undefined" && typeof (unsafeWindow.google.maps) != "undefined")){		
-			if(! getValue("gclhWasGoogleAlertShown", false)){
+			if(! GM_getValue("gclhWasGoogleAlertShown", false)){
 				setTimeout(function () {
 					if(unsafeWindow.$ && unsafeWindow.$.fancybox){
 						unsafeWindow.$.fancybox({
@@ -2472,7 +2472,7 @@ try{
 							type: "image"
 						});
 					
-						setValue("gclhWasGoogleAlertShown", true);
+						GM_setValue("gclhWasGoogleAlertShown", true);
 					}
 				},750);
 			}			
