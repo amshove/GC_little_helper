@@ -17,10 +17,19 @@
 // @require http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js
 // @description    Some little things to make life easy (on www.geocaching.com).
 // @copyright      Torsten Amshove <torsten@amshove.net>
+// @grant          GM_getValue
+// @grant          GM_setValue
+// @grant          GM_log
+// @grant          GM_addStyle
+// @grant          GM_listValues
+// @grant          GM_xmlhttpRequest
+// @grant          GM_getResourceText
+// @grant          GM_registerMenuCommand
 // ==/UserScript==
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                                 - New: Issue #214 - Add @grant to metadata 
 //                                 - Fix: Issue #213 - Challange-Page gets destroyed if page-width is changed 
 //                                 - Fix: Issue #212 - Friends with an "&" in username can be added twice to VIP-List 
 //                                 - New: Add a notification window which is shown once if the user has the google map activated
