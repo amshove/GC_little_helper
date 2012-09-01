@@ -32,7 +32,7 @@
 //                                 - New: Issue #214 - Add @grant to metadata 
 //                                 - Fix: Issue #213 - Challange-Page gets destroyed if page-width is changed 
 //                                 - Fix: Issue #212 - Friends with an "&" in username can be added twice to VIP-List 
-//                                 - New: Add a notification window which is shown once if the user has the google map activated
+//                                 - New: Issue #203 - Add a Hint to user Leaflet instead of google maps 
 //                                 - Fix: Issue #208 - Log gets pushed away
 //                 8.2             - New: Issue #206 - [Update] Remove SocialShare
 //                                 - New: Issue #176 - Make Hill-Shadow choosable for each Map
