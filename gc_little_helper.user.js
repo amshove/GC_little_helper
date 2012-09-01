@@ -21,6 +21,8 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                                 - Fix: Issue #212 - Friends with an "&" in username can be added twice to VIP-List 
+//                                 - New: Add a notification window which is shown once if the user has the google map activated
 //                                 - Fix: Issue #208 - Log gets pushed away
 //                 8.2             - New: Issue #206 - [Update] Remove SocialShare
 //                                 - New: Issue #176 - Make Hill-Shadow choosable for each Map
@@ -3301,7 +3303,7 @@ try{
       for(var i=0; i<links.length; i++){
         if(links[i].href.match(/http:\/\/www\.geocaching\.com\/profile\/\?guid=/) && links[i].id){
           // VIP-Link
-          var user = links[i].innerHTML;
+          var user = trim(links[i].innerHTML).replace(/&amp;/,'&');
           var link = document.createElement("a");
           var img = document.createElement("img");
           img.setAttribute("border","0");
