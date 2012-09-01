@@ -21,6 +21,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                                 - Fix: Issue #213 - Challange-Page gets destroyed if page-width is changed 
 //                                 - Fix: Issue #212 - Friends with an "&" in username can be added twice to VIP-List 
 //                                 - New: Add a notification window which is shown once if the user has the google map activated
 //                                 - Fix: Issue #208 - Log gets pushed away
@@ -2792,7 +2793,8 @@ try{
     css += ".span-24 { width: "+width+"px; }";
     css += ".span-20 { width: "+(width-160)+"px; }";
     css += ".span-16 { width: "+(width-330)+"px; }";
-    css += ".span-17 { width: "+(width-280)+"px; }";
+//    css += ".span-17 { width: "+(width-280)+"px; }";
+    css += ".span-17 { width: "+(width-330)+"px; }";
     css += ".span-19 { width: "+(width-200)+"px; }";
   
     var head = document.getElementsByTagName('head')[0];
