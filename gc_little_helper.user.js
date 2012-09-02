@@ -3340,7 +3340,7 @@ try{
     // Public Profile - VIP-Icon
 //      function gclh_build_vip_list(){} // There is no list to show, but ths function will be called from gclh_del_vip/gclh_add_vip
       gclh_build_vip_list = function(){} // There is no list to show, but ths function will be called from gclh_del_vip/gclh_add_vip
-      var user = trim(document.getElementById("ctl00_ContentBody_ProfilePanel1_lblMemberName").innerHTML);
+      var user = trim(document.getElementById("ctl00_ContentBody_ProfilePanel1_lblMemberName").innerHTML).replace(/&amp;/,'&');
       var link = document.createElement("a");
       var img = document.createElement("img");
       img.setAttribute("border","0");
