@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           GC little helper
 // @namespace      http://www.amshove.net
-// @version        8.2 
+// @version        8.3
 // @include        http://www.geocaching.com/*
 // @include        https://www.geocaching.com/*
 // @include        http://maps.google.de/*
@@ -29,7 +29,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
-//                                 - New: Issue #214 - Add @grant to metadata 
+//                 8.3             - New: Issue #214 - Add @grant to metadata 
 //                                 - Fix: Issue #213 - Challange-Page gets destroyed if page-width is changed 
 //                                 - Fix: Issue #212 - Friends with an "&" in username can be added twice to VIP-List 
 //                                 - New: Issue #203 - Add a Hint to user Leaflet instead of google maps 
@@ -535,7 +535,7 @@ profileBookmark("My Trackables", "lnk_my_trackables");
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "8.2";
+var scriptVersion = "8.3";
 
 var anzCustom = 10;
 var anzTemplates = 10;
