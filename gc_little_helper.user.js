@@ -4878,6 +4878,9 @@ try{
     var lnk = " | <a href='#' id='gclh_config_lnk'>GClh Config</a>";
     document.getElementById('ctl00_ContentBody_WidgetMiniProfile1_logOutLink').parentNode.innerHTML += lnk;
     document.getElementById('gclh_config_lnk').addEventListener("click", gclh_showConfig, false);
+    if(document.location.href.match(/#GClhShowConfig/)){	  
+	setTimeout(gclh_showConfig,5);
+    }
   }
 }catch(e){ gclh_error("Show GClh-Config Links",e); }
 
