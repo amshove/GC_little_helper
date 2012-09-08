@@ -99,7 +99,7 @@ function handleGMxmlhttpRequestStatusUpdate(event){
 			    myCallback["onreadystatechange"]({
 				status: (resultData.readyState < 4 ? 0 : resultData.status),
 				statusText: (resultData.readyState < 4 ? "" : resultData.statusText),
-				responseHeaders: (resultData.readyState < 4 ? "" : resultData.getAllResponseHeaders),
+				responseHeaders: (resultData.readyState < 4 ? "" : resultData.responseHeaders),
 				responseText: (resultData.readyState < 4 ? "" : resultData.responseText),				
 				readyState: resultData.readyState
 			    });
@@ -114,7 +114,7 @@ function handleGMxmlhttpRequestStatusUpdate(event){
 				    myCallback["onerror"]({
 					status: (resultData.status),
 					statusText: (resultData.statusText),
-					responseHeaders: (resultData.getAllResponseHeaders),
+					responseHeaders: (resultData.responseHeaders),
 					responseText: (resultData.responseText),					
 					//API Reference says unsed, but set it
 					readyState: resultData.readyState
@@ -128,7 +128,7 @@ function handleGMxmlhttpRequestStatusUpdate(event){
 				    myCallback["onload"]({
 					status: (resultData.status),
 					statusText: (resultData.statusText),
-					responseHeaders: (resultData.getAllResponseHeaders),
+					responseHeaders: (resultData.responseHeaders),
 					responseText: (resultData.responseText),					
 					//API Reference says unsed, but set it to 4
 					readyState: resultData.readyState,
