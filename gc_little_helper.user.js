@@ -552,10 +552,14 @@ if (!this.GM_getValue || (this.GM_getValue.toString && this.GM_getValue.toString
     return localStorage[key]=value;
   };
 }
-if(!this.uneval){
-  this.uneval = function (value) {  };
-  browser = "chrome";
+
+if(typeof(chrome) != "undefined"){
+	if(!this.uneval){
+	  this.uneval = function (value) {  };	 
+	}
+	browser = "chrome";
 }
+
 if(typeof(opera) != "undefined"){
   //this.eval = function (value) { return JSON.parse(value); };
   this.uneval = function (value) { return JSON.stringify(value); };
@@ -648,10 +652,7 @@ settings_default_tb_logtype = GM_getValue("settings_default_tb_logtype","-1");
 // Settings: Bookmarklist
 settings_bookmarks_list = eval(GM_getValue("settings_bookmarks_list",uneval(bookmarks_def)));
 settings_bookmarks_list_beta = eval(GM_getValue("settings_bookmarks_list_beta",uneval(bookmarks_def)));
-if(browser == "chrome"){
-  settings_bookmarks_list = new Array();
-  settings_bookmarks_list_beta = new Array();
-}
+
 // Settinks: Dynamic Map
 settings_hide_advert_link = GM_getValue('settings_hide_advert_link',true);
 settings_hide_line_breaks = GM_getValue('settings_hide_line_breaks',true);
@@ -1144,6 +1145,19 @@ try{
       nav_list.innerHTML += searchfield;
     }
   
+    //Chrome hover fix
+    if(browser == "chrome"){
+	$('ul.Menu li').hover(function () {
+			$(this).addClass('hover');
+			$('ul:first', this).css('visibility', 'visible');
+		}, 
+		function () {
+			$(this).removeClass('hover');
+			$('ul:first', this).css('visibility', 'hidden');
+		}
+	);
+    }
+    
   // menu      - <li class="">
   // headline  -   <a href="#" title="Shop" accesskey="6" id="ctl00_hlNavShop">Shop ?</a>
   // submenu   -   <ul class="SubMenu" style="visibility: hidden;">
