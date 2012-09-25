@@ -2363,7 +2363,21 @@ try{
     layers.push(map_layers["gm_satellite"]);
     layers.push(map_layers["gm_hybrid"]);
     layers.push(map_layers["gm_terrain"]);
-    
+
+    if(browser == "chrome"){	
+		//Custom layer fix for chrome - Ugly but my best idea yet	
+		var myLayers = {};
+		for(i=0;i<layers.length;i++){
+			myLayers[layers[i].alt]=(new unsafeWindow.L.TileLayer(layers[i].tileUrl, layers[i]));
+		}
+		$(".leaflet-control-layers").hide();
+		unsafeWindow.MapSettings.Map.addControl(new unsafeWindow.L.Control.Layers(myLayers));
+		
+		$(".leaflet-control-layers-base").find("input").attr('checked', false);
+		unsafeWindow.MapSettings.Map.removeLayer(unsafeWindow.MapSettings.Map._layers["1"]);
+		
+		$($(".leaflet-control-layers-base")[1].children[0].firstChild).click();	
+    }
     
     //Function called when map is loaded
     function gclh_map_loaded(){
@@ -2406,8 +2420,9 @@ try{
          var mlayer = layers[lc];
          if(mlayer.name == settings_map_default_layer)break;
         }
-          var menu = getElementsByClass("leaflet-control-layers-base")[0];
-          setTimeout(function(){ menu.childNodes[lc].click(); },1000);
+	    var controlNo = (browser=="chrome"?1:0); //Custom layer fix for chrome Part 2 - Ugly but my best idea yet
+        var menu = getElementsByClass("leaflet-control-layers-base")[controlNo];
+        setTimeout(function(){ menu.childNodes[lc].click(); },1000);
       }
   
       if(settings_map_hide_sidebar){
