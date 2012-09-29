@@ -4894,8 +4894,13 @@ function gclh_showConfig(){
       if(document.getElementById('settings_custom_bookmark_target['+i+']').checked) GM_setValue('settings_custom_bookmark_target['+i+']',"_blank");
       else GM_setValue('settings_custom_bookmark_target['+i+']',"");
     }
-
-    document.location.reload(true);
+	if(document.location.href.indexOf("#")==-1 || document.location.href.indexOf("#") == document.location.href.length -1){
+		$('html, body').animate({ scrollTop: 0 }, 0);
+		document.location.reload(true);
+	}
+	else{
+		document.location.replace(document.location.href.slice(0,document.location.href.indexOf("#")));
+	}
   }
 }
 
