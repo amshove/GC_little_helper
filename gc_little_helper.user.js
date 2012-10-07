@@ -1224,9 +1224,10 @@ try{
 
 // Redirect to Map
 if(settings_redirect_to_map && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/nearest\.aspx\?/)){
-  if(!document.location.href.match(/&disable_redirect/) && !document.location.href.match(/key=/) && document.getElementById('ctl00_ContentBody_LocationPanel1_lnkMapIt')){
-    var match = document.getElementById('ctl00_ContentBody_LocationPanel1_lnkMapIt').href.match(/\.aspx\?(.*)/);
-    if(match[1]) document.location.href = map_url+"?"+match[1];
+  if(!document.location.href.match(/&disable_redirect/) && !document.location.href.match(/key=/) && !document.location.href.match(/ul=/) && document.getElementById('ctl00_ContentBody_LocationPanel1_lnkMapIt')){
+    document.getElementById('ctl00_ContentBody_LocationPanel1_lnkMapIt').click();
+//    var match = document.getElementById('ctl00_ContentBody_LocationPanel1_lnkMapIt').href.match(/\.aspx\?(.*)/);
+//    if(match[1]) document.location.href = map_url+"?"+match[1];
   }
 }
 
