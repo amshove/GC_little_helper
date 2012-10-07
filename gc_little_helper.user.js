@@ -4658,8 +4658,8 @@ function gclh_showConfig(){
 	html += "        </tr>";    
     }
     else{
-	
 	for(var i=0;i<order.length;i++){
+                if(typeof(order[i]) == "undefined") continue;
 		var  text = (typeof(bookmarks_orig_title[order[i]]) != "undefined" && bookmarks_orig_title[order[i]] != "" ? bookmarks_orig_title[order[i]] : bookmarks[order[i]]['title']);
 		if(bookmarks[order[i]].custom){
 			text="Custom" + (order[i]-firstCust);
@@ -4684,6 +4684,7 @@ function gclh_showConfig(){
     else{
 	
 	for(var i=0;i<order.length;i++){
+                if(typeof(order[i]) == "undefined") continue;
 		var  text = (typeof(bookmarks_orig_title[order[i]]) != "undefined" && bookmarks_orig_title[order[i]] != "" ? bookmarks_orig_title[order[i]] : bookmarks[order[i]]['title']);
 		if(bookmarks[order[i]].custom){
 			text="Custom" + (order[i]-firstCust);
