@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           GC little helper
 // @namespace      http://www.amshove.net
-// @version        8.3
+// @version        8.4
 // @include        http://www.geocaching.com/*
 // @include        https://www.geocaching.com/*
 // @include        http://maps.google.de/*
@@ -29,6 +29,17 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                 8.4             - Fix: Bug #220 - Disabled redirection to map on found list of a user
+//                                 - Fix: Settings couldn't be opened because of an undefined order[i] (FireFox)
+//                                 - New: Linklist settings with Drag&Drop
+//                                 - Fix: After the settings dialog is closed, the page reloads but stays scrolled down
+//                                 - Fix: No additional layers in Chrome
+//                                 - Fix: Chrome: Linklistsearch does not work - html does not allow a form in a form -> chrome ignores it -> Deleted the form, use a keyDownEvent now
+//                                 - Fix: Chrome is detected as firefox
+//                                 - Fix: gclh destroys menu hover (i could not find out how -> just repair the hover events)
+//                                 - Fix: Opera helperscripts do net return a responseHeader (not used in gchl yet)
+//                                 - Add: option page for Opera with a link to the gclh options
+//                                 - Add: auto opten options if "#GClhShowConfig" is in the url
 //                 8.3             - New: Issue #214 - Add @grant to metadata 
 //                                 - Fix: Issue #213 - Challange-Page gets destroyed if page-width is changed 
 //                                 - Fix: Issue #212 - Friends with an "&" in username can be added twice to VIP-List 
@@ -535,7 +546,7 @@ profileBookmark("My Trackables", "lnk_my_trackables");
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "8.3";
+var scriptVersion = "8.4";
 
 var anzCustom = 10;
 var anzTemplates = 10;
