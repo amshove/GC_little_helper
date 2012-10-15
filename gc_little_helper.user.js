@@ -1262,7 +1262,7 @@ try{
 
 // Hide Socialshare
 try{
-  if(settings_hide_socialshare && document.location.href.match(/^https?:\/\/www\.geocaching\.com\/seek\/log\.aspx?(.*)/)){
+  if(settings_hide_socialshare && document.location.href.match(/^https?:\/\/www\.geocaching\.com\/seek\/log\.aspx?(.*)/) && document.getElementById('sharing_container')){
     var socialshare = document.getElementById('sharing_container');
     socialshare.style.display = "none";
   }
@@ -1336,7 +1336,7 @@ try{
 
 // remove "Warning! Spoilers may be included in the descriptions or links."
 try{
-  if ( settings_hide_spoilerwarning) {
+  if ( settings_hide_spoilerwarning && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/)) {
     var findCounts = document.getElementById('ctl00_ContentBody_lblFindCounts');
     if (findCounts) {
       var para = findCounts.nextSibling.nextSibling.nextSibling.nextSibling;
@@ -4672,6 +4672,7 @@ function gclh_showConfig(){
     else{
 	for(var i=0;i<order.length;i++){
                 if(typeof(order[i]) == "undefined") continue;
+                if(typeof(bookmarks[order[i]]) == "undefined") continue;
 		var  text = (typeof(bookmarks_orig_title[order[i]]) != "undefined" && bookmarks_orig_title[order[i]] != "" ? bookmarks_orig_title[order[i]] : bookmarks[order[i]]['title']);
 		if(bookmarks[order[i]].custom){
 			text="Custom" + (order[i]-firstCust);
@@ -4697,6 +4698,7 @@ function gclh_showConfig(){
 	
 	for(var i=0;i<order.length;i++){
                 if(typeof(order[i]) == "undefined") continue;
+                if(typeof(bookmarks[order[i]]) == "undefined") continue;
 		var  text = (typeof(bookmarks_orig_title[order[i]]) != "undefined" && bookmarks_orig_title[order[i]] != "" ? bookmarks_orig_title[order[i]] : bookmarks[order[i]]['title']);
 		if(bookmarks[order[i]].custom){
 			text="Custom" + (order[i]-firstCust);
