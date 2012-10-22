@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           GC little helper
 // @namespace      http://www.amshove.net
-// @version        8.4
+// @version        8.5
 // @include        http://www.geocaching.com/*
 // @include        https://www.geocaching.com/*
 // @include        http://maps.google.de/*
@@ -29,6 +29,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                 8.5             - Fix: Settings were not displayed
 //                 8.4             - Fix: Bug #220 - Disabled redirection to map on found list of a user
 //                                 - Fix: Settings couldn't be opened because of an undefined order[i] (FireFox)
 //                                 - New: Linklist settings with Drag&Drop
@@ -546,7 +547,7 @@ profileBookmark("My Trackables", "lnk_my_trackables");
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "8.4";
+var scriptVersion = "8.5";
 
 var anzCustom = 10;
 var anzTemplates = 10;
