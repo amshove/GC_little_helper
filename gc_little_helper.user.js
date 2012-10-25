@@ -29,6 +29,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                                 - New: Issue #215 - Set a border for Thumbnails in Listing
 //                                 - Fix: Issue #218 - Hide Facebook-Button on Login Page
 //                 8.5             - Fix: Settings were not displayed
 //                 8.4             - Fix: Bug #220 - Disabled redirection to map on found list of a user
@@ -3505,6 +3506,7 @@ try{
         }else{
           thumb.src = links[i].href;
           thumb.style.height = "100px";
+          thumb.style.border = "1px solid black";
         }
         thumb.title = span.innerHTML;
         thumb.alt = span.innerHTML;
