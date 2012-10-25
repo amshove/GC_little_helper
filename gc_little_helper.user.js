@@ -29,6 +29,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                                 - New: Issue #130 - Place the caption to the top of the picture on hover with a link to the 
 //                                 - New: Issue #215 - Set a border for Thumbnails in Listing
 //                                 - Fix: Issue #218 - Hide Facebook-Button on Login Page
 //                 8.5             - Fix: Settings were not displayed
@@ -681,6 +682,7 @@ settings_show_vip_list = GM_getValue('settings_show_vip_list', true);
 settings_show_owner_vip_list = GM_getValue('settings_show_owner_vip_list', true);
 settings_autovisit = GM_getValue("settings_autovisit","true");
 settings_show_thumbnails = GM_getValue("settings_show_thumbnails",true);
+settings_imgcaption_on_top = GM_getValue("settings_imgcaption_on_top",false);
 settings_hide_avatar = GM_getValue("settings_hide_avatar",false);
 settings_show_big_gallery = GM_getValue("settings_show_big_gallery",false);
 settings_automatic_friend_reset = GM_getValue("settings_automatic_friend_reset",true);
@@ -3478,9 +3480,13 @@ try{
     if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx?/)){
       var newImageTmpl = "" +
       "          <a class='tb_images lnk gclh_thumb' rel='tb_images[grp${LogID}]' href='http://img.geocaching.com/cache/log/${FileName}' title='${Descr}'>" +
-      "              <img title='${Name}' alt='${Name}' src='http://img.geocaching.com/cache/log/thumb/${FileName}'>" +
-      "              <span><img class='gclh_max' src='http://img.geocaching.com/cache/log/${FileName}'> ${Name}</span>" +
-      "          </a>&nbsp;&nbsp;" +
+      "              <img title='${Name}' alt='${Name}' src='http://img.geocaching.com/cache/log/thumb/${FileName}'>";
+      if(settings_imgcaption_on_top){
+        newImageTmpl += "<span>${Name} <img class='gclh_max' src='http://img.geocaching.com/cache/log/${FileName}'></span>";
+      }else{
+        newImageTmpl += "<span><img class='gclh_max' src='http://img.geocaching.com/cache/log/${FileName}'> ${Name}</span>";
+      }
+      newImageTmpl += "          </a>&nbsp;&nbsp;" +
       "";
   
       var code = "function gclh_updateTmpl() { " +
@@ -3518,7 +3524,11 @@ try{
         big_img.src = links[i].href;
         big_img.className = "gclh_max";
   
-        span.insertBefore(big_img,span.childNodes[0]);
+        if(settings_imgcaption_on_top){
+          span.appendChild(big_img);
+        }else{
+          span.insertBefore(big_img,span.childNodes[0]);
+        }
   
         links[i].parentNode.removeChild(links[i].nextSibling);
       }else if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/(seek\/gallery\.aspx?|profile\/)/) && links[i].href.match(/^http:\/\/img\.geocaching\.com\/(cache|track)\//) && links[i].childNodes[1] && links[i].childNodes[1].tagName == 'IMG'){
@@ -3528,8 +3538,14 @@ try{
   
         img.src = thumb.src.replace(/thumb\//,"");
         img.className = "gclh_max";
-        span.appendChild(img);
-        span.appendChild(document.createTextNode(thumb.parentNode.parentNode.childNodes[7].childNodes[0].innerHTML));
+
+        if(settings_imgcaption_on_top){
+          span.appendChild(document.createTextNode(thumb.parentNode.parentNode.childNodes[7].childNodes[0].innerHTML));
+          span.appendChild(img);
+        }else{
+          span.appendChild(img);
+          span.appendChild(document.createTextNode(thumb.parentNode.parentNode.childNodes[7].childNodes[0].innerHTML));
+        }
         
         links[i].className = links[i].className+" gclh_thumb";
   
@@ -4597,6 +4613,7 @@ function gclh_showConfig(){
     html += checkbox('settings_show_owner_vip_list', 'Show Owner in VIP-List') + "<br/>";
     html += checkbox('settings_show_long_vip', 'Show long VIP-List (one row per log)') + show_help("This is another type of displaying the VIP-List. If you disable this option you get the short list - one row per VIP and the Logs as Icons beside the VIP. If you enable this option, there is a row for every log.")+ "<br/>";
     html += checkbox('settings_show_thumbnails', 'Show Thumbnails of Images') + show_help("With this option the images in logs are displayed as thumbnails to have a preview. If you hover over a Thumbnail, you can see the big one. This also works in gallerys. The max size option prevents the hovered images from leaving the browser window.") + "&nbsp; Max size of big image: <input class='gclh_form' size=2 type='text' id='settings_hover_image_max_size' value='"+settings_hover_image_max_size+"'>px <br/>";
+    html += "- "+checkbox('settings_imgcaption_on_top','Show Caption on Top')+"<br/>";
     html += checkbox('settings_hide_avatar', 'Hide Avatars in Listing') + show_help("This option hides the avatars in logs. This prevents loading the hundreds of images. You have to change the option here, because GClh overrides the log-load-logic of gc.com, so the avatar-option of gc.com doesn't work with GClh.") + "<br/>";
     html += checkbox('settings_load_logs_with_gclh', 'Load Logs with GClh') + show_help("This option should be enabled. You just should disable it, if you have problems with loading the logs. If it is disabled, there are no VIP-, Mail-, Top-Icons at Logs, also the VIP-List, Hide Avatars, Log-filter, Log-Search, .. won't work.") + "<br/>";
     html += "<br>";
@@ -4976,6 +4993,7 @@ function gclh_showConfig(){
       'settings_show_owner_vip_list',
       'settings_autovisit',
       'settings_show_thumbnails',
+      'settings_imgcaption_on_top',
       'settings_hide_avatar',
       'settings_show_big_gallery',
       'settings_automatic_friend_reset',
