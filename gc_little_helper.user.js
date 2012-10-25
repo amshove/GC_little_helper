@@ -4,14 +4,10 @@
 // @version        8.5
 // @include        http://www.geocaching.com/*
 // @include        https://www.geocaching.com/*
-// @include        http://maps.google.de/*
-// @include        http://maps.google.com/*
-// @include        http://www.google.de/maps*
-// @include        http://www.google.com/maps*
-// @include        https://maps.google.de/*
-// @include        https://maps.google.com/*
-// @include        https://www.google.de/maps*
-// @include        https://www.google.com/maps*
+// @include        http://maps.google.tld/*
+// @include        http://www.google.tld/maps*
+// @include        https://maps.google.tld/*
+// @include        https://www.google.tld/maps*
 // @exclude        http://www.geocaching.com/seek/sendtogps.aspx*
 // @resource jscolor http://www.amshove.net/greasemonkey/js/jscolor/jscolor.js
 // @require http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js
@@ -29,6 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                                 - New: Issue #216 - Use an generic URL for google maps to use it in other countries
 //                                 - New: Issue #130 - Place the caption to the top of the picture on hover with a link to the 
 //                                 - New: Issue #215 - Set a border for Thumbnails in Listing
 //                                 - Fix: Issue #218 - Hide Facebook-Button on Login Page
@@ -779,7 +776,7 @@ else{
 
 function main(){
 // Link on Google Maps
-if(document.location.href.match(/^(http|https):\/\/maps\.google\.(de|com)/) || document.location.href.match(/^(http|https):\/\/www\.google\.(de|com)\/maps/)){
+if(document.location.href.match(/^(http|https):\/\/maps\.google\./) || document.location.href.match(/^(http|https):\/\/www\.google\.[a-zA-Z.]*\/maps/)){
   if(settings_show_google_maps){
     var ref_link = document.getElementById("link");
     if(ref_link){
