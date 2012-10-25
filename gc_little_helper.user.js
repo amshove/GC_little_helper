@@ -25,6 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                                 - New: Issue #222 - VIP-List: Show date of log in pop-up
 //                                 - New: Issue #216 - Use an generic URL for google maps to use it in other countries
 //                                 - New: Issue #130 - Place the caption to the top of the picture on hover with a link to the 
 //                                 - New: Issue #215 - Set a border for Thumbnails in Listing
@@ -3199,7 +3200,7 @@ try{
     
               // Log-Date and Link
               var log_text = document.createElement("span");
-              log_text.innerHTML = log_infos_long[i]["log"];
+              log_text.innerHTML = "<img src='"+log_infos_long[i]["icon"]+"'> <b>"+user+" - "+log_infos_long[i]["date"]+"</b><br/>"+log_infos_long[i]["log"];
               var log_img = document.createElement("img");
               var log_link = document.createElement("a");
               log_link.setAttribute("href","#"+log_infos_long[i]["id"]);
@@ -3264,7 +3265,7 @@ try{
               if(log_infos[user][x] && log_infos[user][x]["icon"] && log_infos[user][x]["id"]){
                 var image = document.createElement("img");
                 var log_text = document.createElement("span");
-                log_text.innerHTML = log_infos[user][x]["log"];
+                log_text.innerHTML = "<img src='"+log_infos[user][x]["icon"]+"'> <b>"+user+" - "+log_infos[user][x]["date"]+"</b><br/>"+log_infos[user][x]["log"];
                 image.setAttribute("src",log_infos[user][x]["icon"]);
                 image.setAttribute("border","0");
     
