@@ -29,6 +29,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                                 - Fix: Issue #218 - Hide Facebook-Button on Login Page
 //                 8.5             - Fix: Settings were not displayed
 //                 8.4             - Fix: Bug #220 - Disabled redirection to map on found list of a user
 //                                 - Fix: Settings couldn't be opened because of an undefined order[i] (FireFox)
@@ -1249,13 +1250,14 @@ try{
     if(document.getElementById('ctl00_uxSignIn')){
       document.getElementById('ctl00_uxSignIn').parentNode.style.display = "none";
     }
-    if(document.location.href.match(/^https?:\/\/www\.geocaching\.com\/login(.*)/)){
+    if(document.location.href.match(/^https?:\/\/www\.geocaching\.com\/login(.*)/) && document.getElementById("ctl00_ContentBody_LoginPanel")){
       var loginpanelfb = document.getElementById('ctl00_ContentBody_LoginPanel').getElementsByTagName("div")[0].getElementsByTagName("div")[0];
       loginpanelfb.removeChild(loginpanelfb.getElementsByTagName("h3")[0]);
       loginpanelfb.removeChild(loginpanelfb.getElementsByTagName("p")[0]);
       loginpanelfb.removeChild(document.getElementById("ctl00_ContentBody_vsFacebook"));
       loginpanelfb.removeChild(document.getElementById("ctl00_ContentBody_cvFacebook"));
-      loginpanelfb.removeChild(document.getElementById("ctl00_ContentBody_uxSignIn"));
+//      loginpanelfb.removeChild(document.getElementById("ctl00_ContentBody_uxSignIn"));
+      loginpanelfb.removeChild(loginpanelfb.getElementsByTagName("p")[0]);
       loginpanelfb.removeChild(loginpanelfb.getElementsByTagName("div")[0]);
     }
   }
