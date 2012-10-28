@@ -25,6 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                                 - New: Issue #201 - F2 to submit Pocket Query Settings and Bookmarks
 //                                 - New: Issue #119 - Show breaks in cache notes 
 //                                 - New: Issue #222 - VIP-List: Show date of log in pop-up
 //                                 - New: Issue #216 - Use an generic URL for google maps to use it in other countries
@@ -1040,16 +1041,39 @@ function get_my_finds(){
  * @class
  */
 try{
-  if(settings_submit_log_button && (document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?(id|guid|ID|wp|LUID|PLogGuid)\=/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/track\/log\.aspx\?(id|wid|guid|ID|PLogGuid)\=/))){
+  if(settings_submit_log_button && (document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?(id|guid|ID|wp|LUID|PLogGuid)\=/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/track\/log\.aspx\?(id|wid|guid|ID|PLogGuid)\=/)) && document.getElementById("ctl00_ContentBody_LogBookPanel1_LogButton")){
     function keydown(e){
       if(e.keyCode == 113){
         document.getElementById("ctl00_ContentBody_LogBookPanel1_LogButton").click();
       }
     }
-  
     window.addEventListener('keydown', keydown, true);
   }
 }catch(e){ gclh_error("F2 logging",e); }
+
+// F2 zum PQ speichern
+try{
+  if(settings_submit_log_button && (document.location.href.match(/^http:\/\/www\.geocaching\.com\/pocket\/gcquery\.aspx/)) && document.getElementById("ctl00_ContentBody_btnSubmit")){
+    function keydown(e){
+      if(e.keyCode == 113){
+        document.getElementById("ctl00_ContentBody_btnSubmit").click();
+      }
+    }
+    window.addEventListener('keydown', keydown, true);
+  }
+}catch(e){ gclh_error("F2 save PQ",e); }
+
+// F2 Bookmark speichern
+try{
+  if(settings_submit_log_button && (document.location.href.match(/^http:\/\/www\.geocaching\.com\/bookmarks\/mark\.aspx/)) && document.getElementById("ctl00_ContentBody_Bookmark_btnSubmit")){
+    function keydown(e){
+      if(e.keyCode == 113){
+        document.getElementById("ctl00_ContentBody_Bookmark_btnSubmit").click();
+      }
+    }
+    window.addEventListener('keydown', keydown, true);
+  }
+}catch(e){ gclh_error("F2 save Bookmark",e); }
 
 // Bookmark-Liste im Profil
 try{
@@ -4628,7 +4652,7 @@ function gclh_showConfig(){
     html += "<br>";
     html += "";
     html += "<h4 class='gclh_headline2'>Logging</h4>";
-    html += checkbox('settings_submit_log_button', 'Submit Log Text on F2') + show_help("With this option you are able to submit your log by pressing F2 istead of scrolling to the bottom and move the mouse to the button.") +"<br/>";
+    html += checkbox('settings_submit_log_button', 'Submit Log Text/PQ/Bookmark on F2') + show_help("With this option you are able to submit your log by pressing F2 istead of scrolling to the bottom and move the mouse to the button. This feature also works to save PocketQueries or Bookmarks.") +"<br/>";
     html += checkbox('settings_show_bbcode', 'Show Smilies and BBCode') + show_help("This option displays Smilies and BBCode-Options beside the log-form. If you click on a Smilie or BBCode, it is inserted into your log.") + "<br/>";
     html += checkbox('settings_autovisit', 'Enable AutoVisit-Feature for TBs/Coins') + show_help("With this option you are able to select TBs/Coins which should be automatically set to \"visited\" on every log. You can select \"AutoVisit\" for each TB/Coin in the List on the bottom of the log-form.") + "<br/>";
     html += "Log-Templates: <font class='gclh_small'>(BBCodes have to be enabled - #found# will be replaced with founds+1 - #found_no# will be replaced with founds - #me# with your username)</font>"+show_help("Log-Templates are pre-defined texts like \"!!! I got the FTF !!!\". All your templates are shown beside the log-form. You just have to click to a Template and it will be placed in your log. Also you are able to use variables. #found# will be replaced with your amount of found caches and will be added with 1 - #found_no# is the same without the +1 and #me# with your username (useful for different accounts at one computer). The BBCode-Option has to be enabled. Note: You have to set a title and a text - click to the edit-icon beside the template to edit the text.")+"<br>";
