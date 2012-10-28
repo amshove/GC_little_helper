@@ -628,7 +628,7 @@ settings_hide_disclaimer = GM_getValue("settings_hide_disclaimer",true);
 settings_hide_cache_notes = GM_getValue("settings_hide_cache_notes",false);
 // Settings: Hide Cache Notes if empty
 settings_hide_empty_cache_notes = GM_getValue("settings_hide_empty_cache_notes",true);
-settings_breaks_in_cache_notes = GM_getValue("settings_breaks_in_cache_notes",false);
+settings_breaks_in_cache_notes = GM_getValue("settings_breaks_in_cache_notes",true);
 // Settings: Show all Logs
 settings_show_all_logs = GM_getValue("settings_show_all_logs",true);
 settings_show_all_logs_count = GM_getValue("settings_show_all_logs_count","5");
