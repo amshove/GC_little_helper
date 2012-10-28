@@ -25,6 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                                 - New: Issue #119 - Show breaks in cache notes 
 //                                 - New: Issue #222 - VIP-List: Show date of log in pop-up
 //                                 - New: Issue #216 - Use an generic URL for google maps to use it in other countries
 //                                 - New: Issue #130 - Place the caption to the top of the picture on hover with a link to the 
@@ -627,6 +628,7 @@ settings_hide_disclaimer = GM_getValue("settings_hide_disclaimer",true);
 settings_hide_cache_notes = GM_getValue("settings_hide_cache_notes",false);
 // Settings: Hide Cache Notes if empty
 settings_hide_empty_cache_notes = GM_getValue("settings_hide_empty_cache_notes",true);
+settings_breaks_in_cache_notes = GM_getValue("settings_breaks_in_cache_notes",false);
 // Settings: Show all Logs
 settings_show_all_logs = GM_getValue("settings_show_all_logs",true);
 settings_show_all_logs_count = GM_getValue("settings_show_all_logs_count","5");
@@ -1399,6 +1401,14 @@ try{
     }
   }
 }catch(e){ gclh_error("Hide Cache Notes",e); }
+
+// Show breaks in Cache Notes
+try{
+  if(settings_breaks_in_cache_notes && !settings_hide_cache_notes && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx(\?|\?pf\=\&)(guid|wp)\=[a-zA-Z0-9-]*/)){
+    document.getElementById("cache_note").id = "cache_note_old";
+    document.getElementById("cache_note_old").innerHTML = "<pre id='cache_note'>"+document.getElementById("cache_note_old").innerHTML.replace(/^[\n ]*/,"")+"</pre>";
+  }
+}catch(e){ gclh_error("Show breaks in Cache Notes",e); }
 
 // Hide Hint
 try{
@@ -4584,6 +4594,7 @@ function gclh_showConfig(){
     html += "";
     html += "<h4 class='gclh_headline2'>Listing</h4>";
     html += checkbox('settings_log_inline', 'Log Cache from Listing (inline)') + show_help("With the inline-Log you can open a log-form inside the listing, without loading a new page.") + "<br/> &nbsp; " + checkbox('settings_log_inline_tb', 'Show TB-List') + show_help("With this option you can select, if the TB-List should be shown in inline-Logs.") + "<br/> &nbsp; " + checkbox('settings_log_inline_pmo4basic', 'Show also for PMO-Caches (for Basic-Members)') + show_help("With this option you can select, if inline-Logs should appear for Premium-Member-Only-Caches althought you are a basic member (logging of PMO-Caches by basic members is allowed by Groundspeak).") + "<br/>";
+    html += checkbox('settings_breaks_in_cache_notes', 'Show linebreaks in Cache Notes') + show_help("This is a Premium-Feature - the cache notes are displayed in a flat line by default. This option displays the notes with all breaks as they were saved.")+"<br/>";
     html += checkbox('settings_hide_empty_cache_notes', 'Hide Cache Notes if empty') + show_help("This is a Premium-Feature - you can hide the cache notes if they are empty. There will be a link to show them to add a note.") +"<br/>";
     html += checkbox('settings_hide_cache_notes', 'Hide Cache-Notes completely') + show_help("This is a Premium-Feature - you can hide the cache notes completely, if you don't want to use them.") + "<br/>";
     html += checkbox('settings_hide_disclaimer', 'Hide Disclaimer') + "<br/>";
@@ -4953,6 +4964,7 @@ function gclh_showConfig(){
       'settings_hide_disclaimer',
       'settings_hide_cache_notes',
       'settings_hide_empty_cache_notes',
+      'settings_breaks_in_cache_notes',
       'settings_show_all_logs',
       'settings_decrypt_hint',
       'settings_show_bbcode',
