@@ -25,6 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                                 - New: Issue #193 - Default actions for hiding cache types in map 
 //                                 - New: Issue #201 - F2 to submit Pocket Query Settings and Bookmarks
 //                                 - New: Issue #119 - Show breaks in cache notes 
 //                                 - New: Issue #222 - VIP-List: Show date of log in pop-up
@@ -678,6 +679,19 @@ settings_strike_archived = GM_getValue('settings_strike_archived',true);
 settings_highlight_usercoords = GM_getValue('settings_highlight_usercoords',true);
 settings_map_hide_found = GM_getValue('settings_map_hide_found', false);
 settings_map_hide_hidden = GM_getValue('settings_map_hide_hidden', false);
+settings_map_hide_2 = GM_getValue('settings_map_hide_2', false);
+settings_map_hide_9 = GM_getValue('settings_map_hide_9', false);
+settings_map_hide_5 = GM_getValue('settings_map_hide_5', false);
+settings_map_hide_3 = GM_getValue('settings_map_hide_3', false);
+settings_map_hide_6 = GM_getValue('settings_map_hide_6', false);
+settings_map_hide_453 = GM_getValue('settings_map_hide_453', false);
+settings_map_hide_13 = GM_getValue('settings_map_hide_13', false);
+settings_map_hide_1304 = GM_getValue('settings_map_hide_1304', false);
+settings_map_hide_4 = GM_getValue('settings_map_hide_4', false);
+settings_map_hide_11 = GM_getValue('settings_map_hide_11', false);
+settings_map_hide_137 = GM_getValue('settings_map_hide_137', false);
+settings_map_hide_8 = GM_getValue('settings_map_hide_8', false);
+settings_map_hide_1858 = GM_getValue('settings_map_hide_1858', false);
 settings_show_fav_percentage = GM_getValue('settings_show_fav_percentage', false);
 settings_show_vip_list = GM_getValue('settings_show_vip_list', true);
 settings_show_owner_vip_list = GM_getValue('settings_show_owner_vip_list', true);
@@ -2541,8 +2555,26 @@ try{
     if (settings_map_hide_hidden) {
       window.addEventListener("load", hideHiddenCaches, false);
     }
+
+    // Apply Cache Type Filter
+    function hideCacheTypes(){
+      if(settings_map_hide_2    && document.getElementById("Legend2"))    document.getElementById("Legend2").click();
+      if(settings_map_hide_9    && document.getElementById("Legend9"))    document.getElementById("Legend9").click();
+      if(settings_map_hide_5    && document.getElementById("Legend5"))    document.getElementById("Legend5").click();
+      if(settings_map_hide_3    && document.getElementById("Legend3"))    document.getElementById("Legend3").click();
+      if(settings_map_hide_6    && document.getElementById("Legend6"))    document.getElementById("Legend6").click();
+      if(settings_map_hide_453  && document.getElementById("Legend453"))  document.getElementById("Legend453").click();
+      if(settings_map_hide_13   && document.getElementById("Legend13"))   document.getElementById("Legend13").click();
+      if(settings_map_hide_1304 && document.getElementById("Legend1304")) document.getElementById("Legend1304").click();
+      if(settings_map_hide_4    && document.getElementById("Legend4"))    document.getElementById("Legend4").click();
+      if(settings_map_hide_11   && document.getElementById("Legend11"))   document.getElementById("Legend11").click();
+      if(settings_map_hide_137  && document.getElementById("Legend137"))  document.getElementById("Legend137").click();
+      if(settings_map_hide_8    && document.getElementById("Legend8"))    document.getElementById("Legend8").click();
+      if(settings_map_hide_1858 && document.getElementById("Legend1858")) document.getElementById("Legend1858").click();
+    }
+    window.addEventListener("load", hideCacheTypes, false);
   }
-}catch(e){ gclh_error("Hide found/hidden Caches on Map",e); }
+}catch(e){ gclh_error("Hide found/hidden Caches / Cache Types on Map",e); }
 
 //Display Google-Maps warning (once)
 try{
@@ -4573,6 +4605,12 @@ function gclh_showConfig(){
     html += "Homezone-Color: <input class='gclh_form' type='text' size='5' id='settings_homezone_color' value='"+settings_homezone_color+"'>"+show_help("Here you can change the color of your homezone-circle.")+"<br>";
     html += checkbox('settings_map_hide_found', 'Hide found caches by default') + show_help("This is a Premium-Feature - it enables automatically the option to hide your found caches on map.") + "<br/>";
     html += checkbox('settings_map_hide_hidden', 'Hide own caches by default') + show_help("This is a Premium-Feature - it enables automatically the option to hide your caches on map.") + "<br/>";
+    html += "Hide Cache Types by default: "+show_help("This is a Premium-Feature - it enables automatically the option to hide the specific cache type.")+"<br/>";
+    html += " &nbsp; "+checkbox('settings_map_hide_2',"<img src='http://www.geocaching.com/images/WptTypes/sm/2.gif'>")+" &nbsp; "+checkbox('settings_map_hide_9',"<img src='http://www.geocaching.com/images/WptTypes/sm/9.gif'>")+" &nbsp; "+checkbox('settings_map_hide_5',"<img src='http://www.geocaching.com/images/WptTypes/sm/5.gif'>")+"<br/>";
+    html += " &nbsp; "+checkbox('settings_map_hide_3',"<img src='http://www.geocaching.com/images/WptTypes/sm/3.gif'>")+"<br/>";
+    html += " &nbsp; "+checkbox('settings_map_hide_6',"<img src='http://www.geocaching.com/images/WptTypes/sm/6.gif'>")+" &nbsp; "+checkbox('settings_map_hide_453',"<img src='http://www.geocaching.com/images/WptTypes/sm/453.gif'>")+" &nbsp; "+checkbox('settings_map_hide_13',"<img src='http://www.geocaching.com/images/WptTypes/sm/13.gif'>")+" &nbsp; "+checkbox('settings_map_hide_1304',"<img src='http://www.geocaching.com/images/WptTypes/sm/1304.gif'>")+"<br/>";
+    html += " &nbsp; "+checkbox('settings_map_hide_4',"<img src='http://www.geocaching.com/images/WptTypes/sm/4.gif'>")+" &nbsp; "+checkbox('settings_map_hide_11',"<img src='http://www.geocaching.com/images/WptTypes/sm/11.gif'>")+" &nbsp; "+checkbox('settings_map_hide_137',"<img src='http://www.geocaching.com/images/WptTypes/sm/137.gif'>")+"<br/>";
+    html += " &nbsp; "+checkbox('settings_map_hide_8',"<img src='http://www.geocaching.com/images/WptTypes/sm/8.gif'>")+" &nbsp; "+checkbox('settings_map_hide_1858',"<img src='http://www.geocaching.com/images/WptTypes/sm/1858.gif'>")+"<br/>";
     html += "Default Layer: <select class='gclh_form' id='settings_map_default_layer'>";
 /*  html += "  <option value='0' "+(settings_map_default_layer == '0' ? "selected='selected'" : "")+">MapQuest (gc.com default)</option>";
     html += "  <option value='1' "+(settings_map_default_layer == '1' ? "selected='selected'" : "")+">CloudMade</option>";
@@ -5022,6 +5060,19 @@ function gclh_showConfig(){
       'settings_highlight_usercoords',
       'settings_map_hide_found',
       'settings_map_hide_hidden',
+      'settings_map_hide_2',
+      'settings_map_hide_9',
+      'settings_map_hide_5',
+      'settings_map_hide_3',
+      'settings_map_hide_6',
+      'settings_map_hide_453',
+      'settings_map_hide_13',
+      'settings_map_hide_1304',
+      'settings_map_hide_4',
+      'settings_map_hide_11',
+      'settings_map_hide_137',
+      'settings_map_hide_8',
+      'settings_map_hide_1858',
       'settings_show_fav_percentage',
       'settings_show_vip_list',
       'settings_show_owner_vip_list',
