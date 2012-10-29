@@ -25,6 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                                 - Fix: Searchbox fixed
 //                                 - New: Issue #193 - Default actions for hiding cache types in map 
 //                                 - New: Issue #201 - F2 to submit Pocket Query Settings and Bookmarks
 //                                 - New: Issue #119 - Show breaks in cache notes 
@@ -2605,9 +2606,9 @@ try{
 
 // Aplly Search-field in Navigation
 try{
-  if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/default\.aspx\?navi_search=/)){
+  if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/default\.aspx\?navi_search=/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/\?navi_search=/)){
     var matches = document.location.href.match(/\?navi_search=(.*)/);
-    if(matches) document.getElementById("tbSearch").value = decodeURIComponent(matches[1]).replace(/\+/g," ");
+    if(matches) document.getElementById("tbSearch").value = urldecode(matches[1]).replace(/%20/g," ");
   
     function click_search(){
       document.getElementById("ibSearch").click();
