@@ -25,6 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                                 - New: Issue #209 - Counter for given favorite points 
 //                                 - Fix: Searchbox fixed
 //                                 - New: Issue #193 - Default actions for hiding cache types in map 
 //                                 - New: Issue #201 - F2 to submit Pocket Query Settings and Bookmarks
@@ -2617,6 +2618,55 @@ try{
     window.addEventListener("load", click_search, false);
   }
 }catch(e){ gclh_error("Apply the Search",e); }
+
+// Count Fav-points
+try{
+  if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/favorites\.aspx/)){
+    var table = getElementsByClass("Table BottomSpacing")[0];
+    if(table){
+      var imgs = table.getElementsByTagName("img");
+      var stats = new Object();
+      var count = 0;
+      if(imgs){
+        for(var i=0; i<imgs.length; i++){
+          if(imgs[i].src){
+            if(!stats[imgs[i].src]) stats[imgs[i].src] = 0;
+            stats[imgs[i].src]++;
+            count++;
+          }
+        }
+      }
+
+
+      var tr = document.createElement("tr");
+
+      var td = document.createElement("td");
+      td.style.backgroundColor = "#DFE1D2";
+      tr.appendChild(td);
+
+      var td = document.createElement("td");
+      td.style.backgroundColor = "#DFE1D2";
+      tr.appendChild(td);
+
+      var td = document.createElement("td");
+      for(src in stats){
+        var img = document.createElement("img");
+        img.src = src;
+        td.appendChild(img);
+        td.appendChild(document.createTextNode(" "+stats[src]+"  "));
+      }
+      td.style.backgroundColor = "#DFE1D2";
+      tr.appendChild(td);
+
+      var td = document.createElement("td");
+      td.appendChild(document.createTextNode("Sum: "+count));
+      td.style.backgroundColor = "#DFE1D2";
+      tr.appendChild(td);
+
+      table.appendChild(tr);
+    }
+  }
+}catch(e){ gclh_error("Count Fav-Points",e); }
 
 // Improve Fieldnotes
 try{
