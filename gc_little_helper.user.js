@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           GC little helper
 // @namespace      http://www.amshove.net
-// @version        8.5
+// @version        8.6
 // @include        http://www.geocaching.com/*
 // @include        https://www.geocaching.com/*
 // @include        http://maps.google.tld/*
@@ -25,7 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
-//                                 - New: Issue #209 - Counter for given favorite points 
+//                 8.6             - New: Issue #209 - Counter for given favorite points 
 //                                 - Fix: Searchbox fixed
 //                                 - New: Issue #193 - Default actions for hiding cache types in map 
 //                                 - New: Issue #201 - F2 to submit Pocket Query Settings and Bookmarks
@@ -553,7 +553,7 @@ profileBookmark("My Trackables", "lnk_my_trackables");
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "8.5";
+var scriptVersion = "8.6";
 
 var anzCustom = 10;
 var anzTemplates = 10;
