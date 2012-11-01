@@ -25,6 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                                 - Fix: One image was hidden in Gallery, in the two-cols-layout if the number of images is odd
 //                 8.6             - New: Issue #209 - Counter for given favorite points 
 //                                 - Fix: Searchbox fixed
 //                                 - New: Issue #193 - Default actions for hiding cache types in map 
@@ -3616,7 +3617,6 @@ try{
       unsafeWindow.gclh_updateTmpl();
     }
   
-    var tds = new Array();
     for(var i=0; i<links.length; i++){
       if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx?/) && links[i].href.match(/^http:\/\/img\.geocaching\.com\/cache/) && !links[i].innerHTML.match(/(spoiler|hinweis)/i)){
         var thumb = links[i].childNodes[0];
@@ -3702,6 +3702,10 @@ try{
           x = 0;
         }
       }
+      if(x != 0){ //einzelnes Bild uebrig
+        tr.appendChild(document.createElement("td"));
+        tbody.appendChild(tr);
+      }
       document.getElementById("ctl00_ContentBody_GalleryItems_DataListGallery").removeChild(document.getElementById("ctl00_ContentBody_GalleryItems_DataListGallery").firstChild);
       document.getElementById("ctl00_ContentBody_GalleryItems_DataListGallery").appendChild(tbody);
     }else if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/profile\//) && tds.length > 1 && document.getElementById("ctl00_ContentBody_ProfilePanel1_UserGallery_DataListGallery")){
@@ -3718,6 +3722,10 @@ try{
           tr = document.createElement("tr");
           x = 0;
         }
+      }
+      if(x != 0){ //einzelnes Bild uebrig
+        tr.appendChild(document.createElement("td"));
+        tbody.appendChild(tr);
       }
       document.getElementById("ctl00_ContentBody_ProfilePanel1_UserGallery_DataListGallery").removeChild(document.getElementById("ctl00_ContentBody_ProfilePanel1_UserGallery_DataListGallery").firstChild);
       document.getElementById("ctl00_ContentBody_ProfilePanel1_UserGallery_DataListGallery").appendChild(tbody);
