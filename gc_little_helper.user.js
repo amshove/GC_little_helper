@@ -2437,7 +2437,7 @@ try{
 		for(i=0;i<layers.length;i++){
 			myLayers[layers[i].alt]=(new unsafeWindow.L.TileLayer(layers[i].tileUrl, layers[i]));
 		}
-		$(".leaflet-control-layers").hide();
+		$(".leaflet-control-layers").first().hide();
 		unsafeWindow.MapSettings.Map.addControl(new unsafeWindow.L.Control.Layers(myLayers));
 		
 		$(".leaflet-control-layers-base").find("input").attr('checked', false);
