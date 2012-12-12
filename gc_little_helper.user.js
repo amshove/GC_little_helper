@@ -25,6 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//								   - Fix: Issue #225  -  Icons broken with GC.com 2012-12-11 update 
 //                                 - Fix: One image was hidden in Gallery, in the two-cols-layout if the number of images is odd
 //                 8.6             - New: Issue #209 - Counter for given favorite points 
 //                                 - Fix: Searchbox fixed
@@ -3777,7 +3778,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_det
     '            <div class="FloatLeft LogDisplayRight">' +
     '                <div class="HalfLeft LogType">' +
     '                    <strong>' +
-    '                        <img title="${LogType}" alt="${LogType}" src="/images/icons/${LogTypeImage}">&nbsp;${LogType}</strong></div>' +
+    '                        <img title="${LogType}" alt="${LogType}" src="/images/logtypes/${LogTypeImage}">&nbsp;${LogType}</strong></div>' +
     '                <div class="HalfRight AlignRight">' +
     '                    <span class="minorDetails LogDate">${Visited}</span></div>' +
     '                <div class="Clear LogContent">' +
@@ -4077,13 +4078,13 @@ try{
                 
                   if(!log_infos[user]) log_infos[user] = new Array();
                   log_infos[user][index] = new Object();
-                  log_infos[user][index]["icon"] = "/images/icons/"+json.data[i].LogTypeImage;
+                  log_infos[user][index]["icon"] = "/images/logtypes/"+json.data[i].LogTypeImage;
                   log_infos[user][index]["id"] = json.data[i].LogID;
                   log_infos[user][index]["date"] = json.data[i].Visited;
                   log_infos[user][index]["log"] = json.data[i].LogText;
                   log_infos_long[index] = new Object();
                   log_infos_long[index]["user"] = user;
-                  log_infos_long[index]["icon"] = "/images/icons/"+json.data[i].LogTypeImage;
+                  log_infos_long[index]["icon"] = "/images/logtypes/"+json.data[i].LogTypeImage;
                   log_infos_long[index]["id"] = json.data[i].LogID;
                   log_infos_long[index]["date"] = json.data[i].Visited;
                   log_infos_long[index]["log"] = json.data[i].LogText;
