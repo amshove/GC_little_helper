@@ -25,6 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//								   - Fix: Issue #228 - [GC-Update] Log-Formating does not work anymore  
 //								   - Fix: Issue #227 - [GC-Update] Link from GoogleMaps does not work correct 
 //								   - Fix: Issue #226 - Challenges not present any more 
 //								   - Fix: Issue #225 - Icons broken with GC.com 2012-12-11 update 
@@ -1035,17 +1036,7 @@ function btnClose(){
 function get_my_finds(){
   var finds = "";
   if(getElementsByClass('SignedInText')[0]){
-    var imgs = getElementsByClass('SignedInText')[0].getElementsByTagName("img");
-    var text = "";
-
-    for(var i=0; i<imgs.length; i++){
-      if(imgs[i].src.match(/icons\/icon_smile\.png$/)){
-        text = imgs[i].parentNode.innerHTML;
-        break;
-      }
-    }
-//    var text = getElementsByClass('SignedInText')[0].childNodes[11].innerHTML;
-    finds = parseInt(text.match(/([0-9,]{1,10}){1}/)[1].replace(/,/g,""));
+    finds = parseInt(getElementsByClass('SignedInText')[0].getElementsByTagName("strong")[1].innerHTML);
   }
   return finds;
 }
