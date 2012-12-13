@@ -25,6 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//								   - new: Issue #229 - Add Mailto-Link to Mail-Adresses in Profilpage   
 //								   - Fix: Issue #228 - [GC-Update] Log-Formating does not work anymore  
 //								   - Fix: Issue #227 - [GC-Update] Link from GoogleMaps does not work correct 
 //								   - Fix: Issue #226 - Challenges not present any more 
@@ -4321,6 +4322,23 @@ try{
     }
   }
 }catch(e){ gclh_error("Count Cache Matrix",e); }
+
+
+// add mailto-link to profilpage
+try{
+  if (isLocation("profile/?guid")) {
+  	var messagelink = document.getElementById('ctl00_ContentBody_ProfilePanel1_lnkEmailUser');
+    var messagelinktext = messagelink.innerHTML;
+    if(messagelinktext.match(/^.+@.+\..+$/)){
+    	var mailtolink = document.createElement('a');
+    	mailtolink.href= "mailto:" + messagelinktext + '?subject=[GC]';
+    	mailtolink.appendChild(document.createTextNode("(@)"));
+    	var messagelinkparent = messagelink.parentNode;
+    	messagelinkparent.appendChild(document.createTextNode(" "));
+    	messagelinkparent.appendChild(mailtolink);
+    }
+  }
+}catch(e){ gclh_error("add mailto-link to profilepage",e); }
 
 // Special Links
 try{
