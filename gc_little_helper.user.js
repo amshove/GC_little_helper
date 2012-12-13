@@ -25,6 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//								   - Fix: Issue #227 - [GC-Update] Link from GoogleMaps does not work correct 
 //								   - Fix: Issue #226 - Challenges not present any more 
 //								   - Fix: Issue #225 - Icons broken with GC.com 2012-12-11 update 
 //                                 - Fix: One image was hidden in Gallery, in the two-cols-layout if the number of images is odd
@@ -807,7 +808,7 @@ if(document.location.href.match(/^(http|https):\/\/maps\.google\./) || document.
         var matches = ref_link.href.match(/&ll=([-0-9]*\.[0-9]*),([-0-9]*\.[0-9]*)/);
         var zoom = ref_link.href.match(/z=([0-9]*)/);
         if (matches != null && zoom != null) {
-          var gc_map_url = map_url + "?lat=" + matches[1] + "&lng=" + matches[2] + "&zm=" + zoom[1];
+          var gc_map_url = map_url + "?lat=" + matches[1] + "&lng=" + matches[2] + "&z=" + zoom[1];
           window.open(gc_map_url);
         }
         else {
