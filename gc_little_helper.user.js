@@ -4327,7 +4327,7 @@ try{
 
 // add mailto-link to profilpage
 try{
-  if (isLocation("profile/?guid")) {
+  if (isLocation("/profile/?guid=") || isLocation("/profile/default.aspx?guid=") || isLocation("/profile/?u=") || isLocation("/profile/default.aspx?u=") || isLocation("/profile/?id=") || isLocation("/profile/default.aspx?id=")) {
   	var messagelink = document.getElementById('ctl00_ContentBody_ProfilePanel1_lnkEmailUser');
     var messagelinktext = messagelink.innerHTML;
     if(messagelinktext.match(/^.+@.+\..+$/)){
