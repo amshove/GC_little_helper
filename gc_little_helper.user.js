@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           GC little helper
 // @namespace      http://www.amshove.net
-// @version        8.7
+// @version        8.8
 // @include        http://www.geocaching.com/*
 // @include        https://www.geocaching.com/*
 // @include        http://maps.google.tld/*
@@ -25,6 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                 8.8             - Fix: Mailto-Link wasn't working on every profile-URL
 //                                 - Fix: [GC-Update] Number of Finds was wrong (#found#)
 //                 8.7             - new: Issue #229 - Add Mailto-Link to Mail-Adresses in Profilpage   
 //                                 - Fix: Issue #228 - [GC-Update] Log-Formating does not work anymore  
@@ -560,7 +561,7 @@ profileBookmark("My Trackables", "lnk_my_trackables");
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "8.7";
+var scriptVersion = "8.8";
 
 var anzCustom = 10;
 var anzTemplates = 10;
