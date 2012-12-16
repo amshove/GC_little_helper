@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           GC little helper
 // @namespace      http://www.amshove.net
-// @version        8.6
+// @version        8.7
 // @include        http://www.geocaching.com/*
 // @include        https://www.geocaching.com/*
 // @include        http://maps.google.tld/*
@@ -25,11 +25,11 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
-//								   - new: Issue #229 - Add Mailto-Link to Mail-Adresses in Profilpage   
-//								   - Fix: Issue #228 - [GC-Update] Log-Formating does not work anymore  
-//								   - Fix: Issue #227 - [GC-Update] Link from GoogleMaps does not work correct 
-//								   - Fix: Issue #226 - Challenges not present any more 
-//								   - Fix: Issue #225 - Icons broken with GC.com 2012-12-11 update 
+//                 8.7             - new: Issue #229 - Add Mailto-Link to Mail-Adresses in Profilpage   
+//                                 - Fix: Issue #228 - [GC-Update] Log-Formating does not work anymore  
+//                                 - Fix: Issue #227 - [GC-Update] Link from GoogleMaps does not work correct 
+//                                 - Fix: Issue #226 - Challenges not present any more 
+//                                 - Fix: Issue #225 - Icons broken with GC.com 2012-12-11 update 
 //                                 - Fix: One image was hidden in Gallery, in the two-cols-layout if the number of images is odd
 //                 8.6             - New: Issue #209 - Counter for given favorite points 
 //                                 - Fix: Searchbox fixed
@@ -559,7 +559,7 @@ profileBookmark("My Trackables", "lnk_my_trackables");
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "8.6";
+var scriptVersion = "8.7";
 
 var anzCustom = 10;
 var anzTemplates = 10;
