@@ -25,6 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                                 - Fix: [GC-Update] Number of Finds was wrong (#found#)
 //                 8.7             - new: Issue #229 - Add Mailto-Link to Mail-Adresses in Profilpage   
 //                                 - Fix: Issue #228 - [GC-Update] Log-Formating does not work anymore  
 //                                 - Fix: Issue #227 - [GC-Update] Link from GoogleMaps does not work correct 
@@ -1037,7 +1038,7 @@ function btnClose(){
 function get_my_finds(){
   var finds = "";
   if(getElementsByClass('SignedInText')[0]){
-    finds = parseInt(getElementsByClass('SignedInText')[0].getElementsByTagName("strong")[1].innerHTML);
+    finds = parseInt(getElementsByClass('SignedInText')[0].getElementsByTagName("strong")[1].innerHTML.replace(/[,.]/,''));
   }
   return finds;
 }
