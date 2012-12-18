@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           GC little helper
 // @namespace      http://www.amshove.net
-// @version        8.8
+// @version        8.9
 // @include        http://www.geocaching.com/*
 // @include        https://www.geocaching.com/*
 // @include        http://maps.google.tld/*
@@ -25,7 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
-//                                 - New: Issue #27 - Save Cache-Log-Text for TB/Coin-Log
+//                 8.9             - New: Issue #27 - Save Cache-Log-Text for TB/Coin-Log
 //                                 - New: Added #me#-Variable to Mail-Signature
 //                                 - New: Issue #233 - Add Username to Mail
 //                                 - Fix: Issue #230 - Default map issues when running both GClh and Geocaching Map Enhancement scripts (Disable new option 'Add additinal Layers to Map' and set default-Layer to '-- no default --')
@@ -566,7 +566,7 @@ profileBookmark("My Trackables", "lnk_my_trackables");
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "8.8";
+var scriptVersion = "8.9";
 
 var anzCustom = 10;
 var anzTemplates = 10;
