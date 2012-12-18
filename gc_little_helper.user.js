@@ -25,6 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                                 - Fix: Issue #234 - Log Cache inline-Link gets displayed in the wrong place 
 //                 8.8             - Fix: Mailto-Link wasn't working on every profile-URL
 //                                 - Fix: [GC-Update] Number of Finds was wrong (#found#)
 //                 8.7             - new: Issue #229 - Add Mailto-Link to Mail-Adresses in Profilpage   
@@ -2775,7 +2776,7 @@ try{
     for(var i = 0; i < links.length; i++){
       if(links[i].href.match(/log\.aspx\?ID/) && !menu){
         menu = links[i];
-      }else if(links[i].href.match(/gallery\.aspx/) && !gallery){
+      }else if(links[i].href.match(/gallery\.aspx/) && !gallery && links[i].parentNode.tagName.toLowerCase() == "li"){
         gallery = links[i];
       }else if(links[i].href.match(/watchlist\.aspx/) && !watch){
         watch = links[i];
