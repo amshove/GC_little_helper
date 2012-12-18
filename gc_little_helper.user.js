@@ -25,6 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                                 - New: Issue #27 - Save Cache-Log-Text for TB/Coin-Log
 //                                 - New: Added #me#-Variable to Mail-Signature
 //                                 - New: Issue #233 - Add Username to Mail
 //                                 - Fix: Issue #230 - Default map issues when running both GClh and Geocaching Map Enhancement scripts (Disable new option 'Add additinal Layers to Map' and set default-Layer to '-- no default --')
@@ -1053,6 +1054,16 @@ function get_my_finds(){
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
+// Last Log-Text speichern fuer TB-Log-Template
+try{
+  if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx/) && document.getElementById("ctl00_ContentBody_LogBookPanel1_LogButton")){
+    function send_log(e){
+      GM_setValue("last_logtext",document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').value);
+    }
+    document.getElementById("ctl00_ContentBody_LogBookPanel1_LogButton").addEventListener('click', send_log, true);
+  }
+}catch(e){ gclh_error("Last-Log-Text speichern",e); }
+
 // F2 zum Log abschicken
 /**
  * @name f2_logging
@@ -1704,6 +1715,10 @@ try{
         liste += "<div id='gclh_template["+i+"]' style='display: none;'>"+GM_getValue("settings_log_template["+i+"]","")+"</div>";
         liste += "<a href='#' onClick='gclh_insert_from_div(\"gclh_template["+i+"]\"); return false;' style='color: #000000; text-decoration: none; font-weight: normal;'> - "+GM_getValue("settings_log_template_name["+i+"]","")+"</a><br>";
       }
+    }
+    if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/track\/log\.aspx/) && GM_getValue("last_logtext","") != ""){
+      liste += "<div id='gclh_template[last_log]' style='display: none;'>"+GM_getValue("last_logtext","")+"</div>";
+      liste += "<a href='#' onClick='gclh_insert_from_div(\"gclh_template[last_log]\"); return false;' style='color: #000000; text-decoration: none; font-weight: normal;'> - [Last Cache-Log]</a><br>";
     }
     box.innerHTML = liste;
   
