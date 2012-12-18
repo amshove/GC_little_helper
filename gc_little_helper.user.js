@@ -25,6 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                                 - New: Issue #233 - Add Username to Mail
 //                                 - Fix: Issue #230 - Default map issues when running both GClh and Geocaching Map Enhancement scripts (Disable new option 'Add additinal Layers to Map' and set default-Layer to '-- no default --')
 //                                 - Fix: Issue #234 - Log Cache inline-Link gets displayed in the wrong place 
 //                 8.8             - Fix: Mailto-Link wasn't working on every profile-URL
@@ -1972,6 +1973,8 @@ try{
       if(links[i].href.match(/http:\/\/www\.geocaching\.com\/profile\/\?guid=/) && links[i].parentNode.className != "logOwnerStats" && !links[i].childNodes[0].src){
         var guid = links[i].href.match(/http:\/\/www\.geocaching\.com\/profile\/\?guid=(.*)/);
         guid = guid[1];
+
+        var username = links[i].innerHTML;
   
         var mail_link = document.createElement("a");
         var mail_img = document.createElement("img");
@@ -1979,12 +1982,10 @@ try{
         mail_img.setAttribute("title","Send a mail to this user");
         mail_img.setAttribute("src",global_mail_icon);
         mail_link.appendChild(mail_img);
-        mail_link.setAttribute("href","http://www.geocaching.com/email/?guid="+guid+"&text="+name);
+        mail_link.setAttribute("href","http://www.geocaching.com/email/?guid="+guid+"&text=Hi "+username+",%0A%0A"+name);
   
         links[i].parentNode.appendChild(document.createTextNode("   "));
         links[i].parentNode.appendChild(mail_link);
-  
-        //GM_setValue("run_after_redirect","document.getElementById(\"ctl00_ContentBody_SendMessagePanel1_tbMessage\").innerHTML = \""+name+"\";");
       }
     }
     
@@ -3716,7 +3717,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_det
     '                <p class="logOwnerProfileName">' +
     '                    <strong><a id="${LogID}" name="${LogID}" href="/profile/?guid=${AccountGuid}">${UserName}</a>';
 
-  if(settings_show_mail) new_tmpl += ' <a href="http://www.geocaching.com/email/?guid=${AccountGuid}&text='+global_cache_name+'"><img border=0 title="Send a mail to this user" src="'+global_mail_icon+'"></a>';
+  if(settings_show_mail) new_tmpl += ' <a href="http://www.geocaching.com/email/?guid=${AccountGuid}&text=Hi ${UserName},%0A%0A'+global_cache_name+'"><img border=0 title="Send a mail to this user" src="'+global_mail_icon+'"></a>';
   if(settings_show_vip_list) new_tmpl += ' <a href="javascript:void(0);" name="${UserName}" class="gclh_vip"><img class="gclh_vip" border=0></a>';
 
   new_tmpl += '&nbsp;&nbsp;<a title="Top" href="#gclh_top" style="color: #000000; text-decoration: none;">↑</a>';
