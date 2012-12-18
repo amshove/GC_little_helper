@@ -25,6 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                                 - Fix: Issue #230 - Default map issues when running both GClh and Geocaching Map Enhancement scripts
 //                                 - Fix: Issue #234 - Log Cache inline-Link gets displayed in the wrong place 
 //                 8.8             - Fix: Mailto-Link wasn't working on every profile-URL
 //                                 - Fix: [GC-Update] Number of Finds was wrong (#found#)
@@ -2451,7 +2452,7 @@ try{
       }
   
       //Select Default-Layer
-      if(settings_map_default_layer != "mq") {
+      if(settings_map_default_layer != "mq" && settings_map_default_layer != "false") {
         //Mapnames: mpqosm, cloudmade, mpqa, osm, osm_hikebike, ocm, ocm_transport, mq, gm, gm_satellite, gm_hybrid, gm_terrain
         var lc;
         for(lc = 0; lc < layers.length; lc++){
@@ -4666,6 +4667,7 @@ function gclh_showConfig(){
     html += "  <option value='10' "+(settings_map_default_layer == '10' ? "selected='selected'" : "")+">Google Maps (Hybrid)</option>";
      */
     /*Mapnames: mpqosm, cloudmade, mpqa, osm, osm_hikebike, ocm, ocm_transport, mq, gm, gm_satellite, gm_hybrid, gm_terrain*/
+    html += "  <option value='mpqosm' "+(settings_map_default_layer == 'false' ? "selected='selected'" : "")+">-- no default --</option>";
     html += "  <option value='mpqosm' "+(settings_map_default_layer == 'mpqosm' ? "selected='selected'" : "")+">MapQuest (gc.com default)</option>";
     html += "  <option value='cloudmade' "+(settings_map_default_layer == 'cloudmade' ? "selected='selected'" : "")+">CloudMade</option>";
     html += "  <option value='mpqa' "+(settings_map_default_layer == 'mpqa' ? "selected='selected'" : "")+">MapQuest Aerial</option>";
