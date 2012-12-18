@@ -25,6 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                                 - New: Added #me#-Variable to Mail-Signature
 //                                 - New: Issue #233 - Add Username to Mail
 //                                 - Fix: Issue #230 - Default map issues when running both GClh and Geocaching Map Enhancement scripts (Disable new option 'Add additinal Layers to Map' and set default-Layer to '-- no default --')
 //                                 - Fix: Issue #234 - Log Cache inline-Link gets displayed in the wrong place 
@@ -2035,7 +2036,11 @@ try{
     if(matches) document.getElementById("ctl00_ContentBody_SendMessagePanel1_tbMessage").innerHTML = decodeURIComponent(matches[1]);
     
     // Add Mail-Signature
-    if(typeof(GM_getValue("settings_mail_signature")) != "undefined" && GM_getValue("settings_mail_signature") != "") document.getElementById("ctl00_ContentBody_SendMessagePanel1_tbMessage").innerHTML += "\n\n"+GM_getValue("settings_mail_signature");
+    if(typeof(GM_getValue("settings_mail_signature")) != "undefined" && GM_getValue("settings_mail_signature") != ""){
+      var me = "#me#";
+      if(getElementsByClass("SignedInProfileLink")[0]) me = getElementsByClass("SignedInProfileLink")[0].innerHTML;
+      document.getElementById("ctl00_ContentBody_SendMessagePanel1_tbMessage").innerHTML += "\n\n"+GM_getValue("settings_mail_signature").replace(/#me#/g,me);
+    }
   }
 }catch(e){ gclh_error("Improve E-Mail-Site",e); }
 
@@ -4769,7 +4774,7 @@ function gclh_showConfig(){
     html += "<br>";
     html += "";
     html += "<h4 class='gclh_headline2'>Mail-Form</h4>";
-    html += "Signature: &nbsp; &nbsp; &nbsp; "+show_help("The Signature will automatically be inserted into your mails.")+"<br>";
+    html += "Signature: &nbsp; &nbsp; &nbsp; "+show_help("The Signature will automatically be inserted into your mails. #me# will be replaced with your username.")+"<br>";
     html += "<textarea class='gclh_form' rows='8' cols='40' id='settings_mail_signature'>&zwnj;"+GM_getValue("settings_mail_signature","")+"</textarea><br>";
     html += "<br>";
     html += "";
