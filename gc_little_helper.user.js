@@ -25,7 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
-//                                 - Fix: Issue #230 - Default map issues when running both GClh and Geocaching Map Enhancement scripts
+//                                 - Fix: Issue #230 - Default map issues when running both GClh and Geocaching Map Enhancement scripts (Disable new option 'Add additinal Layers to Map' and set default-Layer to '-- no default --')
 //                                 - Fix: Issue #234 - Log Cache inline-Link gets displayed in the wrong place 
 //                 8.8             - Fix: Mailto-Link wasn't working on every profile-URL
 //                                 - Fix: [GC-Update] Number of Finds was wrong (#found#)
@@ -716,6 +716,7 @@ settings_automatic_friend_reset = GM_getValue("settings_automatic_friend_reset",
 settings_show_long_vip = GM_getValue("settings_show_long_vip",false);
 settings_load_logs_with_gclh = GM_getValue("settings_load_logs_with_gclh",true);
 settings_configsync_enabled = GM_getValue("settings_configsync_enabled",false);
+settings_map_add_layer = GM_getValue("settings_map_add_layer",true);
 settings_map_default_layer = GM_getValue("settings_map_default_layer","mpqosm");
  /*temp-helper to change from number to text --> will only be accessed once*/
 try{
@@ -2395,13 +2396,15 @@ map_layers["gm_terrain"] = {tileUrl:"http://mt0.google.com/vt/v=w2p.110&hl=en&x=
 // Add additional Layers to Map & Select Default-Layer, add Hill-Shadow, add Homezone
 try{
   if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\//)){
-    layers = unsafeWindow.Groundspeak.Map.MapLayers;
-    layers.splice(4,0,map_layers["osm_hikebike"]);
-    layers.splice(6,0,map_layers["ocm_transport"]);
-    layers.push(map_layers["gm"]);
-    layers.push(map_layers["gm_satellite"]);
-    layers.push(map_layers["gm_hybrid"]);
-    layers.push(map_layers["gm_terrain"]);
+    if(settings_map_add_layer){
+      layers = unsafeWindow.Groundspeak.Map.MapLayers;
+      layers.splice(4,0,map_layers["osm_hikebike"]);
+      layers.splice(6,0,map_layers["ocm_transport"]);
+      layers.push(map_layers["gm"]);
+      layers.push(map_layers["gm_satellite"]);
+      layers.push(map_layers["gm_hybrid"]);
+      layers.push(map_layers["gm_terrain"]);
+    }
 
     if(browser == "chrome"){	
 		//Custom layer fix for chrome - Ugly but my best idea yet	
@@ -4653,6 +4656,7 @@ function gclh_showConfig(){
     html += " &nbsp; "+checkbox('settings_map_hide_6',"<img src='http://www.geocaching.com/images/WptTypes/sm/6.gif'>")+" &nbsp; "+checkbox('settings_map_hide_453',"<img src='http://www.geocaching.com/images/WptTypes/sm/453.gif'>")+" &nbsp; "+checkbox('settings_map_hide_13',"<img src='http://www.geocaching.com/images/WptTypes/sm/13.gif'>")+" &nbsp; "+checkbox('settings_map_hide_1304',"<img src='http://www.geocaching.com/images/WptTypes/sm/1304.gif'>")+"<br/>";
     html += " &nbsp; "+checkbox('settings_map_hide_4',"<img src='http://www.geocaching.com/images/WptTypes/sm/4.gif'>")+" &nbsp; "+checkbox('settings_map_hide_11',"<img src='http://www.geocaching.com/images/WptTypes/sm/11.gif'>")+" &nbsp; "+checkbox('settings_map_hide_137',"<img src='http://www.geocaching.com/images/WptTypes/sm/137.gif'>")+"<br/>";
     html += " &nbsp; "+checkbox('settings_map_hide_8',"<img src='http://www.geocaching.com/images/WptTypes/sm/8.gif'>")+" &nbsp; "+checkbox('settings_map_hide_1858',"<img src='http://www.geocaching.com/images/WptTypes/sm/1858.gif'>")+"<br/>";
+    html += checkbox('settings_map_add_layer', 'Add additinal Layers to Map') + show_help("This option adds additional Layers to Map - it has to be enabled for the Default Layer option. It has to be disabled, if you want to use 'Geocaching Map Enhancements' Greasemonkey-Script.") + "<br/>";
     html += "Default Layer: <select class='gclh_form' id='settings_map_default_layer'>";
 /*  html += "  <option value='0' "+(settings_map_default_layer == '0' ? "selected='selected'" : "")+">MapQuest (gc.com default)</option>";
     html += "  <option value='1' "+(settings_map_default_layer == '1' ? "selected='selected'" : "")+">CloudMade</option>";
@@ -4667,7 +4671,7 @@ function gclh_showConfig(){
     html += "  <option value='10' "+(settings_map_default_layer == '10' ? "selected='selected'" : "")+">Google Maps (Hybrid)</option>";
      */
     /*Mapnames: mpqosm, cloudmade, mpqa, osm, osm_hikebike, ocm, ocm_transport, mq, gm, gm_satellite, gm_hybrid, gm_terrain*/
-    html += "  <option value='mpqosm' "+(settings_map_default_layer == 'false' ? "selected='selected'" : "")+">-- no default --</option>";
+    html += "  <option value='false' "+(settings_map_default_layer == 'false' ? "selected='selected'" : "")+">-- no default --</option>";
     html += "  <option value='mpqosm' "+(settings_map_default_layer == 'mpqosm' ? "selected='selected'" : "")+">MapQuest (gc.com default)</option>";
     html += "  <option value='cloudmade' "+(settings_map_default_layer == 'cloudmade' ? "selected='selected'" : "")+">CloudMade</option>";
     html += "  <option value='mpqa' "+(settings_map_default_layer == 'mpqa' ? "selected='selected'" : "")+">MapQuest Aerial</option>";
@@ -5116,6 +5120,7 @@ function gclh_showConfig(){
       'settings_map_hide_137',
       'settings_map_hide_8',
       'settings_map_hide_1858',
+      'settings_map_add_layer',
       'settings_show_fav_percentage',
       'settings_show_vip_list',
       'settings_show_owner_vip_list',
