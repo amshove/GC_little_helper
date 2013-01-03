@@ -25,6 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//								   - New: Issue #238 - Replace PQ-Name, if PQ is created from bookmarks
 //                 8.9             - New: Issue #27 - Save Cache-Log-Text for TB/Coin-Log
 //                                 - New: Added #me#-Variable to Mail-Signature
 //                                 - New: Issue #233 - Add Username to Mail
@@ -1095,7 +1096,7 @@ try{
 
 // F2 Bookmark speichern
 try{
-  if(settings_submit_log_button && (document.location.href.match(/^http:\/\/www\.geocaching\.com\/bookmarks\/mark\.aspx/)) && document.getElementById("ctl00_ContentBody_Bookmark_btnSubmit")){
+  if(settings_submit_log_button && ((document.location.href.match(/^http:\/\/www\.geocaching\.com\/bookmarks\/mark\.aspx/)) || (document.location.href.match(/^http:\/\/www\.geocaching\.com\/pocket\/bmquery\.aspx/))) && document.getElementById("ctl00_ContentBody_Bookmark_btnSubmit")){
     function keydown(e){
       if(e.keyCode == 113){
         document.getElementById("ctl00_ContentBody_Bookmark_btnSubmit").click();
@@ -1104,6 +1105,17 @@ try{
     window.addEventListener('keydown', keydown, true);
   }
 }catch(e){ gclh_error("F2 save Bookmark",e); }
+
+// Name for PocketQuery from Bookmark
+try{
+  if((document.location.href.match(/^http:\/\/www\.geocaching\.com\/pocket\/bmquery\.aspx/)) && document.getElementById("ctl00_ContentBody_lnkListName")){
+    document.getElementById('ctl00_ContentBody_tbName').value = document.getElementById("ctl00_ContentBody_lnkListName").innerHTML;
+    document.getElementById('ctl00_ContentBody_rbRunOption_2').checked = true;
+    document.getElementById('ctl00_ContentBody_cbIncludePQNameInFileName').checked = true;
+  }
+}catch(e){ gclh_error("PQ-Name from Bookmark",e); }
+
+
 
 // Bookmark-Liste im Profil
 try{
