@@ -25,6 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//								   - New: Issue #236 - Add Gallery-Link to the top menu 
 //								   - New: Issue #238 - Replace PQ-Name, if PQ is created from bookmarks
 //                 8.9             - New: Issue #27 - Save Cache-Log-Text for TB/Coin-Log
 //                                 - New: Added #me#-Variable to Mail-Signature
@@ -690,6 +691,7 @@ settings_bookmarks_list_beta = eval(GM_getValue("settings_bookmarks_list_beta",u
 settings_hide_advert_link = GM_getValue('settings_hide_advert_link',true);
 settings_hide_line_breaks = GM_getValue('settings_hide_line_breaks',true);
 settings_hide_spoilerwarning = GM_getValue('settings_hide_spoilerwarning',true);
+settings_show_gallerylink = GM_getValue('settings_show_gallerylink',true)
 settings_hide_hint = GM_getValue('settings_hide_hint',true);
 settings_strike_archived = GM_getValue('settings_strike_archived',true);
 settings_highlight_usercoords = GM_getValue('settings_highlight_usercoords',true);
@@ -2036,6 +2038,20 @@ try{
     }
   }
 }catch(e){ gclh_error("Switch title-color",e); }
+
+// Add Gallery-Link to Cachepage
+try{
+  if(settings_show_gallerylink && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/) && document.getElementById('ctl00_ContentBody_uxGalleryImagesLink')){
+  	var gallerylink = document.getElementById('ctl00_ContentBody_uxGalleryImagesLink');
+  	var navlinks = getElementsByClass('CacheDetailsNavLinks')[0];
+  	var gallerynaventry = navlinks.getElementsByTagName('li')[0].cloneNode('true');
+  	var gallerynavlink = gallerynaventry.getElementsByTagName('a')[0];
+  	gallerynavlink.href=gallerylink.href;
+  	gallerynavlink.getElementsByTagName('img')[0].src = '/images/icons/16/photo.png';
+  	gallerynavlink.getElementsByTagName('span')[0].innerHTML = gallerylink.getAttribute('displayformatsingular');
+  	navlinks.insertBefore(gallerynaventry, navlinks.getElementsByTagName('li')[1]);
+  }
+}catch(e){ gclh_error("Add Galleylink to Cachepage",e); }
 
 // Improve EMail-Site
 try{
@@ -4741,6 +4757,7 @@ function gclh_showConfig(){
     html += checkbox('settings_hide_cache_notes', 'Hide Cache-Notes completely') + show_help("This is a Premium-Feature - you can hide the cache notes completely, if you don't want to use them.") + "<br/>";
     html += checkbox('settings_hide_disclaimer', 'Hide Disclaimer') + "<br/>";
     html += checkbox('settings_hide_spoilerwarning', 'Hide spoiler warning') + "<br/>";
+    html += checkbox('settings_show_gallerylink', 'Show gallery link') + show_help("Show gallery link in navigation widget") + "<br/>";
     html += checkbox('settings_show_all_logs', 'Show ') + " <input class='gclh_form' type='text' size='2' id='settings_show_all_logs_count' value='"+settings_show_all_logs_count+"'> logs (0 = all)"+show_help("With this option you can choose how many logs should be shown if you load the listing - if you type 0, all logs are shown by default.")+"<br>";
     html += checkbox('settings_hide_hint', 'Hide hint behind a link') + show_help("This option hides the hint behind a link - you have to click it to display the hints (already decrypted).")+ "<br/>";
     html += checkbox('settings_decrypt_hint', 'Decrypt Hint') + "<br/>";
@@ -5135,6 +5152,7 @@ function gclh_showConfig(){
       'settings_hide_advert_link',
       'settings_hide_line_breaks',
       'settings_hide_spoilerwarning',
+      'settings_show_gallerylink',
       'settings_hide_hint',
       'settings_strike_archived',
       'settings_highlight_usercoords',
