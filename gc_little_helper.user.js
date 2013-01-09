@@ -25,8 +25,9 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
-//								   - New: Issue #236 - Add Gallery-Link to the top menu 
-//								   - New: Issue #238 - Replace PQ-Name, if PQ is created from bookmarks
+//                                 - New: Hide Header in Map
+//                                 - New: Issue #236 - Add Gallery-Link to the top menu 
+//                                 - New: Issue #238 - Replace PQ-Name, if PQ is created from bookmarks
 //                 8.9             - New: Issue #27 - Save Cache-Log-Text for TB/Coin-Log
 //                                 - New: Added #me#-Variable to Mail-Signature
 //                                 - New: Issue #233 - Add Username to Mail
@@ -724,6 +725,7 @@ settings_load_logs_with_gclh = GM_getValue("settings_load_logs_with_gclh",true);
 settings_configsync_enabled = GM_getValue("settings_configsync_enabled",false);
 settings_map_add_layer = GM_getValue("settings_map_add_layer",true);
 settings_map_default_layer = GM_getValue("settings_map_default_layer","mpqosm");
+settings_hide_map_header = GM_getValue("settings_hide_map_header",false);
  /*temp-helper to change from number to text --> will only be accessed once*/
 try{
     if(!isNaN(settings_map_default_layer)){
@@ -2472,6 +2474,24 @@ try{
     
     //Function called when map is loaded
     function gclh_map_loaded(){
+      // Hide Header
+      if(settings_hide_map_header){
+        // Hide Header
+        var header = document.getElementsByTagName("header");
+        header[0].style.display = "none";
+        // Move Map to Top
+        document.getElementById("map_canvas").style.top = 0;
+        // Move Sidebar to Top
+        document.getElementById("searchtabs").parentNode.style.top = 0;
+        // Move "Leaflet About" to Bottom
+        var map = document.getElementById("map_canvas");
+        var divs = map.getElementsByTagName("div");
+        for(var i=0; i<divs.length; i++){
+          if(divs[i].className.match(/leaflet-bottom/)){
+            divs[i].setAttribute("style","bottom: 0px !important;");
+          }
+        }
+      }
     
     //unsafeWindow.Groundspeak.Map.UserSession.options.showFinds = false;
       var hillshadow_akt = false;
@@ -4747,6 +4767,7 @@ function gclh_showConfig(){
     html += "  <option value='gm_hybrid' "+(settings_map_hillshadow.indexOf('gm_hybrid') != -1 ? "selected='selected'" : "")+">Google Maps (Hybrid)</option>";
     html += "</select>"+show_help("Here you can select the maps which should be loaded with hillshadow. \"Show Hill-Shadows on Map\" requried.") +"<br>";   
     html += checkbox('settings_map_hide_sidebar', 'Hide sidebar by default') + show_help("If you want to hide the sidebar on the map, just select this option.") + "<br/>";
+    html += checkbox('settings_hide_map_header', 'Hide Header') + show_help("If you want to hide the header of the map, just select this option.") + "<br/>";
     html += "";
     html += "<br>";
     html += "";
@@ -5183,6 +5204,7 @@ function gclh_showConfig(){
       'settings_automatic_friend_reset',
       'settings_show_long_vip',
       'settings_load_logs_with_gclh',
+      'settings_hide_map_header',
       'settings_map_hide_sidebar'
 //      'settings_hide_recentlyviewed'
     );
