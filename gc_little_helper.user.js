@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           GC little helper
 // @namespace      http://www.amshove.net
-// @version        8.9
+// @version        9.0
 // @include        http://www.geocaching.com/*
 // @include        https://www.geocaching.com/*
 // @include        http://maps.google.tld/*
@@ -25,7 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
-//                                 - New: Default-Log-Type for Events
+//                 9.0             - New: Default-Log-Type for Events
 //                                 - New: Hide Header in Map
 //                                 - New: Issue #236 - Add Gallery-Link to the top menu 
 //                                 - New: Issue #238 - Replace PQ-Name, if PQ is created from bookmarks
@@ -570,7 +570,7 @@ profileBookmark("My Trackables", "lnk_my_trackables");
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "8.9";
+var scriptVersion = "9.0";
 
 var anzCustom = 10;
 var anzTemplates = 10;
