@@ -25,6 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                                 - New: Default-Log-Type for Events
 //                                 - New: Hide Header in Map
 //                                 - New: Issue #236 - Add Gallery-Link to the top menu 
 //                                 - New: Issue #238 - Replace PQ-Name, if PQ is created from bookmarks
@@ -682,6 +683,7 @@ settings_map_hillshadow = GM_getValue("settings_map_hillshadow","").split("###")
 map_url = "http://www.geocaching.com/map/default.aspx";
 // Settings: default Log Type
 settings_default_logtype = GM_getValue("settings_default_logtype","-1");
+settings_default_logtype_event = GM_getValue("settings_default_logtype_event",settings_default_logtype);
 // Settings: default TB-Log Type
 settings_default_tb_logtype = GM_getValue("settings_default_tb_logtype","-1");
 // Settings: Bookmarklist
@@ -2092,13 +2094,19 @@ try{
 // Default Log Type && Log Signature
 try{
   if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?(id|guid|ID|PLogGuid|wp)\=/) && document.getElementById('ctl00_ContentBody_LogBookPanel1_ddLogType')){
-    if(settings_default_logtype != "-1" && !document.location.href.match(/\&LogType\=/) && !document.location.href.match(/PLogGuid/)){
+    if(!document.location.href.match(/\&LogType\=/) && !document.location.href.match(/PLogGuid/)){
+      var cache_type = document.getElementById("ctl00_ContentBody_LogBookPanel1_WaypointLink").nextSibling.childNodes[0].title;
+      var select_val = "-1";
+
+      if(cache_type.match(/event/i)) select_val = settings_default_logtype_event;
+      else select_val = settings_default_logtype;
+
       var select = document.getElementById('ctl00_ContentBody_LogBookPanel1_ddLogType');
       var childs = select.children;
   
       if(select.value == "-1"){
         for(var i=0; i<childs.length; i++){
-          if(childs[i].value == settings_default_logtype){		
+          if(childs[i].value == select_val){
 	    	select.selectedIndex=i;
           }
         }
@@ -4817,7 +4825,7 @@ function gclh_showConfig(){
       html += "<a onClick=\"if(document.getElementById(\'settings_log_template_div["+i+"]\').style.display == \'\') document.getElementById(\'settings_log_template_div["+i+"]\').style.display = \'none\'; else document.getElementById(\'settings_log_template_div["+i+"]\').style.display = \'\'; return false;\" href='#'><img src='http://www.geocaching.com/images/stockholm/16x16/page_white_edit.gif' border='0'></a><br>";
       html += "<div id='settings_log_template_div["+i+"]' style='display: none;'>&nbsp;&nbsp;&nbsp;&nbsp;<textarea class='gclh_form' rows='6' cols='30' id='settings_log_template["+i+"]'>&zwnj;"+GM_getValue("settings_log_template["+i+"]","")+"</textarea></div>";
     }
-    html += "Default Log-Type: &nbsp; &nbsp; &nbsp;<select class='gclh_form' id='settings_default_logtype'>";
+    html += "Default Log-Type: &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <select class='gclh_form' id='settings_default_logtype'>";
     html += "  <option value=\"-1\" "+(settings_default_logtype == "-1" ? "selected=\"selected\"" : "")+">- Select Type of Log -</option>";
     html += "  <option value=\"2\" "+(settings_default_logtype == "2" ? "selected=\"selected\"" : "")+">Found it</option>";
     html += "  <option value=\"3\" "+(settings_default_logtype == "3" ? "selected=\"selected\"" : "")+">Didn't find it</option>";
@@ -4825,7 +4833,14 @@ function gclh_showConfig(){
     html += "  <option value=\"7\" "+(settings_default_logtype == "7" ? "selected=\"selected\"" : "")+">Needs Archived</option>";
     html += "  <option value=\"45\" "+(settings_default_logtype == "45" ? "selected=\"selected\"" : "")+">Needs Maintenance</option>";
     html += "</select>"+show_help("If you set this option, the selected value will be selected automatically, if you open a log-page.")+"<br>";
-    html += "Default TB-Log-Type: <select class='gclh_form' id='settings_default_tb_logtype'>";
+    html += "Default Event-Log-Type: <select class='gclh_form' id='settings_default_logtype_event'>";
+    html += "  <option value=\"-1\" "+(settings_default_logtype_event == "-1" ? "selected=\"selected\"" : "")+">- Select Type of Log -</option>";
+    html += "  <option value=\"4\" "+(settings_default_logtype_event == "4" ? "selected=\"selected\"" : "")+">Write note</option>";
+    html += "  <option value=\"7\" "+(settings_default_logtype_event == "7" ? "selected=\"selected\"" : "")+">Needs Archived</option>";
+    html += "  <option value=\"9\" "+(settings_default_logtype_event == "9" ? "selected=\"selected\"" : "")+">Will Attend</option>";
+    html += "  <option value=\"10\" "+(settings_default_logtype_event == "10" ? "selected=\"selected\"" : "")+">Attended</option>";
+    html += "</select>"+show_help("If you set this option, the selected value will be selected automatically, if you open a log-page of an event.")+"<br>";
+    html += "Default TB-Log-Type: &nbsp; &nbsp; &nbsp;<select class='gclh_form' id='settings_default_tb_logtype'>";
     html += "  <option value=\"-1\" "+(settings_default_tb_logtype == "-1" ? "selected=\"selected\"" : "")+">- Select Type of Log -</option>";
     html += "  <option value=\"13\" "+(settings_default_tb_logtype == "13" ? "selected=\"selected\"" : "")+">Retrieve from ..</option>";
     html += "  <option value=\"19\" "+(settings_default_tb_logtype == "19" ? "selected=\"selected\"" : "")+">Grab it from ..</option>";
@@ -5112,6 +5127,7 @@ function gclh_showConfig(){
     GM_setValue("settings_new_width",document.getElementById('settings_new_width').value);
     GM_setValue("settings_date_format",document.getElementById('settings_date_format').value);
     GM_setValue("settings_default_logtype",document.getElementById('settings_default_logtype').value);
+    GM_setValue("settings_default_logtype_event",document.getElementById('settings_default_logtype_event').value);
     GM_setValue("settings_default_tb_logtype",document.getElementById('settings_default_tb_logtype').value);
     GM_setValue("settings_mail_signature",document.getElementById('settings_mail_signature').value.replace(/‌/g,"")); // Fix: Entfernt das Steuerzeichen
     GM_setValue("settings_log_signature",document.getElementById('settings_log_signature').value.replace(/‌/g,""));
