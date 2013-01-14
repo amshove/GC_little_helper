@@ -25,6 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                                 - New: Issue #235 - Show "Last Log"-LogTemplate also when logging a cache 
 //                                 - New: New Log-Variable: #owner# will be replaced by the name of the owner
 //                 9.0             - New: Default-Log-Type for Events
 //                                 - New: Hide Header in Map
@@ -1739,7 +1740,7 @@ try{
         liste += "<a href='#' onClick='gclh_insert_from_div(\"gclh_template["+i+"]\"); return false;' style='color: #000000; text-decoration: none; font-weight: normal;'> - "+GM_getValue("settings_log_template_name["+i+"]","")+"</a><br>";
       }
     }
-    if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/track\/log\.aspx/) && GM_getValue("last_logtext","") != ""){
+    if(GM_getValue("last_logtext","") != ""){
       liste += "<div id='gclh_template[last_log]' style='display: none;'>"+GM_getValue("last_logtext","")+"</div>";
       liste += "<a href='#' onClick='gclh_insert_from_div(\"gclh_template[last_log]\"); return false;' style='color: #000000; text-decoration: none; font-weight: normal;'> - [Last Cache-Log]</a><br>";
     }
