@@ -25,6 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                                 - New: Issue #223 - Better statistic of Coins/TBs (As fix for broken statistics after gc.com update)
 //                                 - New: Issue #235 - Show "Last Log"-LogTemplate also when logging a cache 
 //                                 - New: New Log-Variable: #owner# will be replaced by the name of the owner
 //                 9.0             - New: Default-Log-Type for Events
@@ -3065,48 +3066,93 @@ try{
 // Show amount of different Coins in public profile
 try{
   if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/profile\//) && document.getElementById('ctl00_ContentBody_ProfilePanel1_lnkCollectibles').className == "Active"){
-    var tables = getElementsByClass("Table");
-    if(tables){
-      var table = tables[0];
-      var rows = table.getElementsByTagName("tr");
-      var tbs = 0;
-      var tbs2 = 0;
-      var coins = 0;
-      var coins2 = 0;
-  
-      for(var i=1; i<(rows.length-1); i++){
-        if(rows[i].innerHTML.match(/geocoin/i)){
-          coins++;
-          coins2 = coins2 + parseInt(rows[i].childNodes[5].innerHTML,10);
+
+    function gclh_coin_stats(table_id){
+      var table = document.getElementById(table_id).getElementsByTagName("table");
+      table = table[0];
+      var rows = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+      var sums = new Object();
+      sums["tbs"] = 0;
+      sums["coins"] = 0;
+      sums["patches"] = 0;
+      sums["signal"] = 0;
+      sums["unknown"] = 0;
+      var diff = new Object();
+      diff["tbs"] = 0;
+      diff["coins"] = 0;
+      diff["patches"] = 0;
+      diff["signal"] = 0;
+      diff["unknown"] = 0;
+
+      for(var i=0; i<(rows.length-1); i++){
+        if(rows[i].innerHTML.match(/travel bug/i)){
+          diff["tbs"]++;
+          sums["tbs"] += parseInt(rows[i].childNodes[5].innerHTML,10);
+        }else if(rows[i].innerHTML.match(/geocoin/i)){
+          diff["coins"]++;
+          sums["coins"] += parseInt(rows[i].childNodes[5].innerHTML,10);
+        }else if(rows[i].innerHTML.match(/geopatch/i)){
+          diff["patches"]++;
+          sums["patches"] += parseInt(rows[i].childNodes[5].innerHTML,10);
+        }else if(rows[i].innerHTML.match(/signal/i)){
+          diff["signal"]++;
+          sums["signal"] += parseInt(rows[i].childNodes[5].innerHTML,10);
         }else{
-          tbs++;
-          tbs2 = tbs2 + parseInt(rows[i].childNodes[5].innerHTML,10)
+          diff["unknown"]++;
+          sums["unknown"] += parseInt(rows[i].childNodes[5].innerHTML,10);
         }
       }
-      var last = rows[rows.length-1];
-      last.childNodes[5].childNodes[1].innerHTML = "<center>"+last.childNodes[5].childNodes[1].innerHTML+"<br>("+tbs2+"+"+coins2+")</center>";
-      last.childNodes[1].innerHTML = "<strong><center>"+(rows.length-2)+"<br>("+tbs+"+"+coins+")</center></strong>";
-  
-      var table = tables[1];
-      var rows = table.getElementsByTagName("tr");
-      var tbs = 0;
-      var tbs2 = 0;
-      var coins = 0;
-      var coins2 = 0;
-  
-      for(var i=1; i<(rows.length-1); i++){
-        if(rows[i].innerHTML.match(/geocoin/i)){
-          coins++;
-          coins2 = coins2 + parseInt(rows[i].childNodes[5].innerHTML,10);
-        }else{
-          tbs++;
-          tbs2 = tbs2 + parseInt(rows[i].childNodes[5].innerHTML,10)
-        }
+
+      var tfoot = table.getElementsByTagName("tfoot")[0];
+      var tr = document.createElement("tr");
+      var td = document.createElement("td");
+      var new_table = "";
+      td.colSpan = 3;
+
+      new_table += "<table>"; 
+      new_table += "  <tr>"; 
+      new_table += "    <td></td>"; 
+      new_table += "    <td><b>Sum</b></td>"; 
+      new_table += "    <td><b>Different</b></td>"; 
+      new_table += "  </tr>"; 
+      new_table += "  <tr>"; 
+      new_table += "    <td><b>Travel Bugs:</b></td>"; 
+      new_table += "    <td style='text-align: center;'>"+sums["tbs"]+"</td>"; 
+      new_table += "    <td style='text-align: center;'>"+diff["tbs"]+"</td>"; 
+      new_table += "  </tr>"; 
+      new_table += "  <tr>"; 
+      new_table += "    <td><b>Geocoins:</b></td>"; 
+      new_table += "    <td style='text-align: center;'>"+sums["coins"]+"</td>"; 
+      new_table += "    <td style='text-align: center;'>"+diff["coins"]+"</td>"; 
+      new_table += "  </tr>"; 
+      new_table += "  <tr>"; 
+      new_table += "    <td><b>Geopatches:</b></td>"; 
+      new_table += "    <td style='text-align: center;'>"+sums["patches"]+"</td>"; 
+      new_table += "    <td style='text-align: center;'>"+diff["patches"]+"</td>"; 
+      new_table += "  </tr>"; 
+      new_table += "  <tr>"; 
+      new_table += "    <td><b>Signal Tags:</b></td>"; 
+      new_table += "    <td style='text-align: center;'>"+sums["signal"]+"</td>"; 
+      new_table += "    <td style='text-align: center;'>"+diff["signal"]+"</td>"; 
+      new_table += "  </tr>"; 
       }
-      var last = rows[rows.length-1];
-      last.childNodes[5].childNodes[1].innerHTML = "<center>"+last.childNodes[5].childNodes[1].innerHTML+"<br>("+tbs2+"+"+coins2+")</center>";
-      last.childNodes[1].innerHTML = "<strong><center>"+(rows.length-2)+"<br>("+tbs+"+"+coins+")</center></strong>";
+      if(sums["unknown"] > 0 || diff["unknown"] > 0){
+        new_table += "  <tr>"; 
+        new_table += "    <td><b>Unknown:</b></td>"; 
+        new_table += "    <td style='text-align: center;'>"+sums["unknown"]+"</td>"; 
+        new_table += "    <td style='text-align: center;'>"+diff["unknown"]+"</td>"; 
+        new_table += "  </tr>"; 
+        new_table += "</table>"; 
+      }
+
+      td.innerHTML = new_table;
+
+      tr.appendChild(td);
+      tfoot.appendChild(tr);
     }
+
+    gclh_coin_stats("ctl00_ContentBody_ProfilePanel1_dlCollectibles");
+    gclh_coin_stats("ctl00_ContentBody_ProfilePanel1_dlCollectiblesOwned");
   }
 }catch(e){ gclh_error("Show Coin-Sums",e); }
 
