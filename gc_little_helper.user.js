@@ -3135,7 +3135,6 @@ try{
       new_table += "    <td style='text-align: center;'>"+sums["signal"]+"</td>"; 
       new_table += "    <td style='text-align: center;'>"+diff["signal"]+"</td>"; 
       new_table += "  </tr>"; 
-      }
       if(sums["unknown"] > 0 || diff["unknown"] > 0){
         new_table += "  <tr>"; 
         new_table += "    <td><b>Unknown:</b></td>"; 
