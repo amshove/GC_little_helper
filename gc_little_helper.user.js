@@ -25,6 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                                 - Fix: [gc.com update] FieldNotes-Statistics was broken
 //                                 - New: Issue #223 - Better statistic of Coins/TBs (As fix for broken statistics after gc.com update)
 //                                 - New: Issue #235 - Show "Last Log"-LogTemplate also when logging a cache 
 //                                 - New: New Log-Variable: #owner# will be replaced by the name of the owner
@@ -2752,7 +2753,7 @@ try{
       var count = 0;
       var imgs = table.getElementsByTagName("img");
       for(var i=0; i<imgs.length; i++){
-        if(imgs[i].src.match(/images\/icons/)){
+        if(imgs[i].src.match(/images\/logtypes/)){
           count++;
           if(!stats[imgs[i].src]) stats[imgs[i].src] = 0;
           stats[imgs[i].src]++;
@@ -2800,7 +2801,7 @@ try{
       var td = document.createElement("td");
       td.style.verticalAlign = "top";
       var b = document.createElement("b");
-      b.appendChild(document.createTextNode("Statistic"));
+      b.appendChild(document.createTextNode("Statistics"));
       td.appendChild(b);
       td.style.backgroundColor = "#DFE1D2";
       tr.appendChild(td);
