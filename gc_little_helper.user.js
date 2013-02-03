@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           GC little helper
 // @namespace      http://www.amshove.net
-// @version        9.0
+// @version        9.1
 // @include        http://www.geocaching.com/*
 // @include        https://www.geocaching.com/*
 // @include        http://maps.google.tld/*
@@ -25,7 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
-//                                 - Fix: [gc.com update] FieldNotes-Statistics was broken
+//                 9.1             - Fix: [gc.com update] FieldNotes-Statistics was broken
 //                                 - New: Issue #223 - Better statistic of Coins/TBs (As fix for broken statistics after gc.com update)
 //                                 - New: Issue #235 - Show "Last Log"-LogTemplate also when logging a cache 
 //                                 - New: New Log-Variable: #owner# will be replaced by the name of the owner
@@ -574,7 +574,7 @@ profileBookmark("My Trackables", "lnk_my_trackables");
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "9.0";
+var scriptVersion = "9.1";
 
 var anzCustom = 10;
 var anzTemplates = 10;
