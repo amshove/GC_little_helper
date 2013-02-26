@@ -1392,7 +1392,7 @@ try{
     //remove line break after "Print" label
     var printHeader = document.getElementById('ctl00_ContentBody_uxPrintHeader');
     if (printHeader) {
-      var br = printHeader.nextSibling.nextSibling;
+      var br = printHeader.parentElement.nextElementSibling;
       if (br) {
         br.parentNode.removeChild(br);
       }
@@ -1468,7 +1468,7 @@ try{
       function hide_on_load() {
         var notes = getElementsByClass('NotesWidget')[0];
         var notesText = document.getElementById("cache_note").innerHTML;
-        if (notesText == "Click to enter a note" || notesText == "Klicken zum Eingeben einer Notiz") {
+        if (notesText != null && (notesText == "Click to enter a note" || notesText == "Klicken zum Eingeben einer Notiz")) {
           notes.style.display = "none";
         }
       }
