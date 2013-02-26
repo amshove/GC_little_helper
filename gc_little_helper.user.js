@@ -1391,16 +1391,16 @@ try{
   if (settings_hide_line_breaks) {
     //remove line break after "Print" label
     var printHeader = document.getElementById('ctl00_ContentBody_uxPrintHeader');
-    if (printHeader) {
+    if (printHeader && br.nodeName == 'BR') {
       var br = printHeader.parentElement.nextElementSibling;
       if (br) {
         br.parentNode.removeChild(br);
       }
     }
-    // remove line break between "distance from home" and "Bundesland, Land"
-    var distFromHome = document.getElementById('ctl00_ContentBody_lblDistFromHome');
+    // remove line break between "distance from home" and "Bundesland, Land" -> layout change - looks not good without and has no effect an the height -> removed
+    /*var distFromHome = document.getElementById('lblDistFromHome');
     if (distFromHome) {
-      var br = distFromHome.nextSibling.nextSibling;
+      var br = distFromHome.previousElementSibling;
       if (br && br.nodeName == 'BR') {
         br.parentNode.removeChild(br);
         // append dots to the former 2 lines to avoid confusion when reading
@@ -1412,7 +1412,8 @@ try{
           }
         }
       }
-    }
+    }*/
+    
   }
 }catch(e){ gclh_error("Hide Linebreaks",e); }
 
