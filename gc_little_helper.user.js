@@ -1482,8 +1482,18 @@ try{
 // Show breaks in Cache Notes
 try{
   if(settings_breaks_in_cache_notes && !settings_hide_cache_notes && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx(\?|\?pf\=\&)(guid|wp)\=[a-zA-Z0-9-]*/)){
-    document.getElementById("cache_note").id = "cache_note_old";
-    document.getElementById("cache_note_old").innerHTML = "<pre id='cache_note'>"+document.getElementById("cache_note_old").innerHTML.replace(/^[\n ]*/,"")+"</pre>";
+    if(browser == "chrome"){
+	    //Chrome selects an other element as FireFox and so the inline editor deletes the wrong element.
+	    //NOT a nice hack - but it fixes the savenote bug (but no breaks after saving)	   
+	    $("#cache_note").attr("id","cache_note1"); 
+	    var content = $("#cache_note1")[0].innerHTML.replace(/^[\n ]*/,"");
+	    $("#cache_note1")[0].innerHTML = "";
+	    $("#cache_note1").append("<pre id='cache_note'>"+content+"</pre>");
+    }
+    else{
+	    document.getElementById("cache_note").id = "cache_note_old";
+	    document.getElementById("cache_note_old").innerHTML = "<pre id='cache_note'>"+document.getElementById("cache_note_old").innerHTML.replace(/^[\n ]*/,"")+"</pre>";
+    }
   }
 }catch(e){ gclh_error("Show breaks in Cache Notes",e); }
 
