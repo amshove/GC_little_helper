@@ -5320,7 +5320,7 @@ function gclh_showConfig(){
     }
 
     // Create the settings_bookmarks_list Array (gclh_LinkListTop)
-    var queue = $("#gclh_LinkListTop tr");
+    var queue = $("#gclh_LinkListTop tr:not(.gclh_LinkListPlaceHolder)");
     var tmp = new Array();
     for(var i=0; i<queue.length; i++){
 	tmp[i] = queue[i].id.replace("gclh_LinkListTop_", "");
@@ -5328,7 +5328,7 @@ function gclh_showConfig(){
     GM_setValue("settings_bookmarks_list",uneval(tmp));
     
     // Create the settings_bookmarks_list_beta Array (gclh_LinkListMap)
-    var queue = $("#gclh_LinkListMap tr");
+    var queue = $("#gclh_LinkListMap tr:not(.gclh_LinkListPlaceHolder)");
     var tmp = new Array();
     for(var i=0; i<queue.length; i++){
 	tmp[i] = queue[i].id.replace("gclh_LinkListMap_", "");
