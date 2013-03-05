@@ -2495,12 +2495,26 @@ try{
 			myLayers[layers[i].alt]=(new unsafeWindow.L.TileLayer(layers[i].tileUrl, layers[i]));
 		}
 		$(".leaflet-control-layers").first().hide();
+		
+		$("input[name=leaflet-base-layers]").attr('name', 'old_leaflet-base-layers');
+		
+		$(".leaflet-control-layers").first().append("<div id='myHelper' style=''visibility:hidden;height:0px;width:0px;> </div>");
+		
+		
 		unsafeWindow.MapSettings.Map.addControl(new unsafeWindow.L.Control.Layers(myLayers));
 		
 		$(".leaflet-control-layers-base").find("input").attr('checked', false);
 		unsafeWindow.MapSettings.Map.removeLayer(unsafeWindow.MapSettings.Map._layers["1"]);
 		
-		$($(".leaflet-control-layers-base")[1].children[0].firstChild).click();	
+		$("#myHelper").bind("DOMSubtreeModified", function() {	
+			$("input[name=leaflet-base-layers]").each(function(index, element){
+				element.layerId = myLayers[$(element).parent().text().trim()]._leaflet_id;
+				$(element).attr("layerId", myLayers[$(element).parent().text().trim()]._leaflet_id);
+			});		
+		
+			$($(".leaflet-control-layers-base")[1].children[0].firstChild).click();	
+		}).append("<div id='myHelper2' style=''visibility:hidden;height:0px;width:0px;> </div>");
+		
     }
     
     //Function called when map is loaded
