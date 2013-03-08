@@ -25,6 +25,13 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                                 - Fix: Issue #254 - [gc.com update] VIP-List broken
+//                                 - Fix: LinkList and LinksListOptions get broken if an emty list is saved in the options
+//                                 - Fix: map is broken under chrome if "Add additinal Layers to Map" is active
+//                                 - Fix: Workaround for the chrome save-notes-bug (still no breaks will be added after saving under chrome)
+//                                 - Fix: Hide Linebreaks Bug (Chrome)
+//                                 - Fix: Cache Notes: hide_on_load() crashes if the load event fires after the user switched to edit mode (Chrome)
+//                                 - Fix: Fix: BB-Code-Editor partially broken under chrome
 //                 9.1             - Fix: [gc.com update] FieldNotes-Statistics was broken
 //                                 - New: Issue #223 - Better statistic of Coins/TBs (As fix for broken statistics after gc.com update)
 //                                 - New: Issue #235 - Show "Last Log"-LogTemplate also when logging a cache 
@@ -3315,15 +3322,12 @@ try{
       var log_infos_long = new Array();
       var index = 0;
       var links = document.getElementsByTagName('a');
-      var owner;
-      var owner_name;
-      if(document.getElementById('ctl00_ContentBody_uxFindLinksHiddenByThisUser')){
-        var matches = document.getElementById('ctl00_ContentBody_uxFindLinksHiddenByThisUser').href.match(/\?u=(.*)/);
-        if(matches){
-          // ka, warum zwei Variablen - vllt. hab ich schonmal versucht das Freitext-Owner-Problem mit der GUID zu umgehen?!
-          owner = urldecode(matches[1]);
-          owner_name = owner;
-        }
+      var owner = "";
+      var owner_name = "";
+      if(document.getElementById('ctl00_ContentBody_mcd1')){
+        // ka, warum zwei Variablen - vllt. hab ich schonmal versucht das Freitext-Owner-Problem mit der GUID zu umgehen?!
+        owner = urldecode(document.getElementById('ctl00_ContentBody_mcd1').childNodes[1].innerHTML);
+        owner_name = owner;
       }
   
       for(var i=0; i<links.length; i++){
