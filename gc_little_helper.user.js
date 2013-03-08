@@ -1398,9 +1398,9 @@ try{
   if (settings_hide_line_breaks) {
     //remove line break after "Print" label
     var printHeader = document.getElementById('ctl00_ContentBody_uxPrintHeader');
-    if (printHeader && br.nodeName == 'BR') {
+    if (printHeader) {
       var br = printHeader.parentElement.nextElementSibling;
-      if (br) {
+      if (br && br.nodeName == 'BR') {
         br.parentNode.removeChild(br);
       }
     }
