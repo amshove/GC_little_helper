@@ -25,7 +25,8 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
-//                                 - Fix: Issue #247 - Spoiler-Filter for Thumbnails now configurable
+//                                 - New: Issue #245 - Replace Log by Last-Log-Template <- configurable
+//                                 - New: Issue #247 - Spoiler-Filter for Thumbnails now configurable
 //                                 - Fix: Issue #250 - Jumping to log-entry doesn't work, if it is not displayed
 //                                 - Fix: Issue #248 - Remove "gallery link"-function - it's duplicated 
 //                                 - Fix: Issue #249 - Map control is on top of the hovered log in VIP-List 
@@ -745,6 +746,7 @@ settings_map_add_layer = GM_getValue("settings_map_add_layer",true);
 settings_map_default_layer = GM_getValue("settings_map_default_layer","mpqosm");
 settings_hide_map_header = GM_getValue("settings_hide_map_header",false);
 settings_spoiler_strings = GM_getValue("settings_spoiler_strings","spoiler|hinweis|hint");
+settings_replace_log_by_last_log = GM_getValue("settings_replace_log_by_last_log",false);
  /*temp-helper to change from number to text --> will only be accessed once*/
 try{
     if(!isNaN(settings_map_default_layer)){
@@ -1685,6 +1687,7 @@ try{
     var code = "function gclh_insert_from_div(id){";
     code += "  var finds = '"+finds+"';";
     code += "  var me = '"+me+"';";
+    code += "  var settings_replace_log_by_last_log = "+settings_replace_log_by_last_log+";";
     code += "  var owner = document.getElementById('ctl00_ContentBody_LogBookPanel1_WaypointLink').nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML;";
     code += "  var input = document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo');";
     code += "  var inhalt = document.getElementById(id).innerHTML;";
@@ -1700,16 +1703,20 @@ try{
     code += "  if(owner){";
     code += "    inhalt = inhalt.replace(/#owner#/g,owner);";
     code += "  }";
-    code += "  if(typeof input.selectionStart != 'undefined' && inhalt){";
-    code += "    var start = input.selectionStart;";
-    code += "    var end = input.selectionEnd;";
-    code += "    var insText = input.value.substring(start, end);";
-    code += "    input.value = input.value.substr(0, start) + inhalt + input.value.substr(end);";
-    code += "    /* Anpassen der Cursorposition */";
-    code += "    var pos;";
-    code += "    pos = start + inhalt.length;";
-    code += "    input.selectionStart = pos;";
-    code += "    input.selectionEnd = pos;";
+    code += "  if(id.match(/last_log/) && settings_replace_log_by_last_log){";
+    code += "    input.value = inhalt;";
+    code += "  }else{";
+    code += "    if(typeof input.selectionStart != 'undefined' && inhalt){";
+    code += "      var start = input.selectionStart;";
+    code += "      var end = input.selectionEnd;";
+    code += "      var insText = input.value.substring(start, end);";
+    code += "      input.value = input.value.substr(0, start) + inhalt + input.value.substr(end);";
+    code += "      /* Anpassen der Cursorposition */";
+    code += "      var pos;";
+    code += "      pos = start + inhalt.length;";
+    code += "      input.selectionStart = pos;";
+    code += "      input.selectionEnd = pos;";
+    code += "    }";
     code += "  }";
     code += "  input.focus();";
     code += "}";
@@ -4902,6 +4909,7 @@ function gclh_showConfig(){
     html += checkbox('settings_submit_log_button', 'Submit Log Text/PQ/Bookmark on F2') + show_help("With this option you are able to submit your log by pressing F2 istead of scrolling to the bottom and move the mouse to the button. This feature also works to save PocketQueries or Bookmarks.") +"<br/>";
     html += checkbox('settings_show_bbcode', 'Show Smilies and BBCode') + show_help("This option displays Smilies and BBCode-Options beside the log-form. If you click on a Smilie or BBCode, it is inserted into your log.") + "<br/>";
     html += checkbox('settings_autovisit', 'Enable AutoVisit-Feature for TBs/Coins') + show_help("With this option you are able to select TBs/Coins which should be automatically set to \"visited\" on every log. You can select \"AutoVisit\" for each TB/Coin in the List on the bottom of the log-form.") + "<br/>";
+    html += checkbox('settings_replace_log_by_last_log', 'Replace Log by Last-Log Template') + show_help("If you enable this option, the \"Last-Log\"-Template will replace the whole Log. If you disable it, it will be appended to the log.") + "<br/>";
     html += "Log-Templates: <font class='gclh_small'>(BBCodes have to be enabled - #found# will be replaced with founds+1 - #found_no# will be replaced with founds - #me# with your username - #owner# with the name of the owner)</font>"+show_help("Log-Templates are pre-defined texts like \"!!! I got the FTF !!!\". All your templates are shown beside the log-form. You just have to click to a Template and it will be placed in your log. Also you are able to use variables. #found# will be replaced with your amount of found caches and will be added with 1 - #found_no# is the same without the +1 and #me# with your username (useful for different accounts at one computer) - #owner# with the name of the owner. The BBCode-Option has to be enabled. Note: You have to set a title and a text - click to the edit-icon beside the template to edit the text.")+"<br>";
     for(var i = 0; i < anzTemplates; i++){
       html += "&nbsp;&nbsp;<input class='gclh_form' type='text' size='15' id='settings_log_template_name["+i+"]' value='"+GM_getValue('settings_log_template_name['+i+']','')+"'> ";
@@ -5306,6 +5314,7 @@ function gclh_showConfig(){
       'settings_show_long_vip',
       'settings_load_logs_with_gclh',
       'settings_hide_map_header',
+      'settings_replace_log_by_last_log',
       'settings_map_hide_sidebar'
 //      'settings_hide_recentlyviewed'
     );
