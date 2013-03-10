@@ -25,6 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                                 - Fix: Issue #249 - Map control is on top of the hovered log in VIP-List 
 //                                 - Fix: Issue #252 - GClh removes "Top" Button in Listings 
 //                                 - Fix: Issue #254 - [gc.com update] VIP-List broken
 //                                 - Fix: LinkList and LinksListOptions get broken if an emty list is saved in the options
@@ -3409,7 +3410,7 @@ try{
         "  top: 10px;" +
         "  border: 1px solid #8c9e65;" +
         "  background-color:#dfe1d2;" +
-        "  z-index:100;" +
+        "  z-index:10000;" +
         "}";
       GM_addStyle(css);
     
