@@ -25,6 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                                 - Fix: Issue #252 - GClh removes "Top" Button in Listings 
 //                                 - Fix: Issue #254 - [gc.com update] VIP-List broken
 //                                 - Fix: LinkList and LinksListOptions get broken if an emty list is saved in the options
 //                                 - Fix: map is broken under chrome if "Add additinal Layers to Map" is active
@@ -4018,6 +4019,7 @@ try{
             }
   
             gclh_add_vip_icon();
+            $("#topScroll").fadeIn();
                   
             if(unsafeWindow.$tfoot) unsafeWindow.$tfoot.hide();
             isBusy = false;
