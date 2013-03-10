@@ -25,6 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                                 - Fix: Issue #250 - Jumping to log-entry doesn't work, if it is not displayed
 //                                 - Fix: Issue #248 - Remove "gallery link"-function - it's duplicated 
 //                                 - Fix: Issue #249 - Map control is on top of the hovered log in VIP-List 
 //                                 - Fix: Issue #252 - GClh removes "Top" Button in Listings 
@@ -3449,6 +3450,7 @@ try{
               var log_link = document.createElement("a");
               log_link.setAttribute("href","#"+log_infos_long[i]["id"]);
               log_link.className = "gclh_log";
+              log_link.addEventListener("click",function(){document.getElementById("gclh_load_all_logs").click();},false);
               log_img.setAttribute("src",log_infos_long[i]["icon"]);
               log_img.setAttribute("border","0");
               log_link.appendChild(document.createTextNode(log_infos_long[i]["date"]));
@@ -3521,6 +3523,7 @@ try{
                 var a = document.createElement("a");
                 a.setAttribute("href","#"+log_infos[user][x]["id"]);
                 a.className = "gclh_log";
+                a.addEventListener("click",function(){document.getElementById("gclh_load_all_logs").click();},false);
                 a.appendChild(image); 
                 a.appendChild(log_text);
                
@@ -4046,6 +4049,7 @@ try{
       var load_all = document.createElement("a");
       load_all.appendChild(document.createTextNode("Show all logs"));
       load_all.setAttribute("href","javascript:void(0);");
+      load_all.setAttribute("id","gclh_load_all_logs");
       document.getElementById("ctl00_ContentBody_uxLogbookLink").parentNode.appendChild(document.createTextNode(" | "));
       document.getElementById("ctl00_ContentBody_uxLogbookLink").parentNode.appendChild(load_all);
 
