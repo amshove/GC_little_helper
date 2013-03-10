@@ -587,7 +587,7 @@ profileBookmark("My Trackables", "lnk_my_trackables");
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "9.1";
+var scriptVersion = "9.2";
 
 var anzCustom = 10;
 var anzTemplates = 10;
