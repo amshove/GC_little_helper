@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           GC little helper
 // @namespace      http://www.amshove.net
-// @version        9.1
+// @version        9.2
 // @include        http://www.geocaching.com/*
 // @include        https://www.geocaching.com/*
 // @include        http://maps.google.tld/*
@@ -25,7 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
-//                                 - New: Issue #245 - Replace Log by Last-Log-Template <- configurable
+//                 9.2             - New: Issue #245 - Replace Log by Last-Log-Template <- configurable
 //                                 - New: Issue #247 - Spoiler-Filter for Thumbnails now configurable
 //                                 - Fix: Issue #250 - Jumping to log-entry doesn't work, if it is not displayed
 //                                 - Fix: Issue #248 - Remove "gallery link"-function - it's duplicated 
