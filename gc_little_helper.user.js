@@ -25,6 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                                 - Fix: Issue #247 - Spoiler-Filter for Thumbnails now configurable
 //                                 - Fix: Issue #250 - Jumping to log-entry doesn't work, if it is not displayed
 //                                 - Fix: Issue #248 - Remove "gallery link"-function - it's duplicated 
 //                                 - Fix: Issue #249 - Map control is on top of the hovered log in VIP-List 
@@ -743,6 +744,7 @@ settings_configsync_enabled = GM_getValue("settings_configsync_enabled",false);
 settings_map_add_layer = GM_getValue("settings_map_add_layer",true);
 settings_map_default_layer = GM_getValue("settings_map_default_layer","mpqosm");
 settings_hide_map_header = GM_getValue("settings_hide_map_header",false);
+settings_spoiler_strings = GM_getValue("settings_spoiler_strings","spoiler|hinweis|hint");
  /*temp-helper to change from number to text --> will only be accessed once*/
 try{
     if(!isNaN(settings_map_default_layer)){
@@ -3745,9 +3747,10 @@ try{
   
       unsafeWindow.gclh_updateTmpl();
     }
-  
+
+    var regexp = new RegExp(settings_spoiler_strings,"i");
     for(var i=0; i<links.length; i++){
-      if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx?/) && links[i].href.match(/^http:\/\/img\.geocaching\.com\/cache/) && !links[i].innerHTML.match(/(spoiler|hinweis)/i)){
+      if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx?/) && links[i].href.match(/^http:\/\/img\.geocaching\.com\/cache/) && !links[i].innerHTML.match(regexp)){
         var thumb = links[i].childNodes[0];
         var span = links[i].childNodes[1];
         if(!thumb || !span || !thumb.style) continue;
@@ -4889,6 +4892,7 @@ function gclh_showConfig(){
     html += "&nbsp; "+checkbox('settings_show_owner_vip_list', 'Show Owner in VIP-List') + "<br/>";
     html += "&nbsp; "+checkbox('settings_show_long_vip', 'Show long VIP-List (one row per log)') + show_help("This is another type of displaying the VIP-List. If you disable this option you get the short list - one row per VIP and the Logs as Icons beside the VIP. If you enable this option, there is a row for every log.")+ "<br/>";
     html += checkbox('settings_show_thumbnails', 'Show Thumbnails of Images') + show_help("With this option the images in logs are displayed as thumbnails to have a preview. If you hover over a Thumbnail, you can see the big one. This also works in gallerys. The max size option prevents the hovered images from leaving the browser window.") + "&nbsp; Max size of big image: <input class='gclh_form' size=2 type='text' id='settings_hover_image_max_size' value='"+settings_hover_image_max_size+"'>px <br/>";
+    html += "Spoiler-Filter: <input class='gclh_form' type='text' id='settings_spoiler_strings' value='"+settings_spoiler_strings+"'> "+show_help("If one of these words is found in the caption of the image, there will be no thumbnail. It is to prevent seeing spoilers as thumbnails. Words have to be divided by |")+"<br/>";
     html += "&nbsp; "+checkbox('settings_imgcaption_on_top','Show Caption on Top')+"<br/>";
     html += checkbox('settings_hide_avatar', 'Hide Avatars in Listing') + show_help("This option hides the avatars in logs. This prevents loading the hundreds of images. You have to change the option here, because GClh overrides the log-load-logic of gc.com, so the avatar-option of gc.com doesn't work with GClh.") + "<br/>";
     html += checkbox('settings_load_logs_with_gclh', 'Load Logs with GClh') + show_help("This option should be enabled. You just should disable it, if you have problems with loading the logs. If it is disabled, there are no VIP-, Mail-, Top-Icons at Logs, also the VIP-List, Hide Avatars, Log-filter, Log-Search, .. won't work.") + "<br/>";
@@ -5213,6 +5217,8 @@ function gclh_showConfig(){
     GM_setValue("settings_tb_signature",document.getElementById('settings_tb_signature').value.replace(/‌/g,""));
     GM_setValue("settings_map_default_layer",document.getElementById('settings_map_default_layer').value);
     GM_setValue("settings_hover_image_max_size",document.getElementById('settings_hover_image_max_size').value);
+    GM_setValue("settings_spoiler_strings",document.getElementById('settings_spoiler_strings').value);
+
     
     var hillmaps = document.getElementById('settings_map_hillshadow');
     var count = 0;
