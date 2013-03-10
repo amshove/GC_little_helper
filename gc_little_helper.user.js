@@ -25,6 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                                 - Fix: Issue #248 - Remove "gallery link"-function - it's duplicated 
 //                                 - Fix: Issue #249 - Map control is on top of the hovered log in VIP-List 
 //                                 - Fix: Issue #252 - GClh removes "Top" Button in Listings 
 //                                 - Fix: Issue #254 - [gc.com update] VIP-List broken
@@ -2070,20 +2071,6 @@ try{
     }
   }
 }catch(e){ gclh_error("Switch title-color",e); }
-
-// Add Gallery-Link to Cachepage
-try{
-  if(settings_show_gallerylink && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/) && document.getElementById('ctl00_ContentBody_uxGalleryImagesLink')){
-  	var gallerylink = document.getElementById('ctl00_ContentBody_uxGalleryImagesLink');
-  	var navlinks = getElementsByClass('CacheDetailsNavLinks')[0];
-  	var gallerynaventry = navlinks.getElementsByTagName('li')[0].cloneNode('true');
-  	var gallerynavlink = gallerynaventry.getElementsByTagName('a')[0];
-  	gallerynavlink.href=gallerylink.href;
-  	gallerynavlink.getElementsByTagName('img')[0].src = '/images/icons/16/photo.png';
-  	gallerynavlink.getElementsByTagName('span')[0].innerHTML = gallerylink.getAttribute('displayformatsingular');
-  	navlinks.insertBefore(gallerynaventry, navlinks.getElementsByTagName('li')[1]);
-  }
-}catch(e){ gclh_error("Add Galleylink to Cachepage",e); }
 
 // Improve EMail-Site
 try{
