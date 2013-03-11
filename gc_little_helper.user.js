@@ -25,6 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                                 - New: Issue #257 - Option to remove green gc.com "To Top"-Button in Listings 
 //                 9.2             - New: Issue #245 - Replace Log by Last-Log-Template <- configurable
 //                                 - New: Issue #247 - Spoiler-Filter for Thumbnails now configurable
 //                                 - Fix: Issue #250 - Jumping to log-entry doesn't work, if it is not displayed
@@ -711,7 +712,6 @@ settings_bookmarks_list_beta = eval(GM_getValue("settings_bookmarks_list_beta",u
 settings_hide_advert_link = GM_getValue('settings_hide_advert_link',true);
 settings_hide_line_breaks = GM_getValue('settings_hide_line_breaks',true);
 settings_hide_spoilerwarning = GM_getValue('settings_hide_spoilerwarning',true);
-settings_show_gallerylink = GM_getValue('settings_show_gallerylink',true)
 settings_hide_hint = GM_getValue('settings_hide_hint',true);
 settings_strike_archived = GM_getValue('settings_strike_archived',true);
 settings_highlight_usercoords = GM_getValue('settings_highlight_usercoords',true);
@@ -747,6 +747,7 @@ settings_map_default_layer = GM_getValue("settings_map_default_layer","mpqosm");
 settings_hide_map_header = GM_getValue("settings_hide_map_header",false);
 settings_spoiler_strings = GM_getValue("settings_spoiler_strings","spoiler|hinweis|hint");
 settings_replace_log_by_last_log = GM_getValue("settings_replace_log_by_last_log",false);
+settings_hide_top_button = GM_getValue("settings_hide_top_button",false);
  /*temp-helper to change from number to text --> will only be accessed once*/
 try{
     if(!isNaN(settings_map_default_layer)){
@@ -4020,7 +4021,7 @@ try{
             }
   
             gclh_add_vip_icon();
-            $("#topScroll").fadeIn();
+            if(!settings_hide_top_button) $("#topScroll").fadeIn();
                   
             if(unsafeWindow.$tfoot) unsafeWindow.$tfoot.hide();
             isBusy = false;
@@ -4875,7 +4876,7 @@ function gclh_showConfig(){
     html += checkbox('settings_hide_cache_notes', 'Hide Cache-Notes completely') + show_help("This is a Premium-Feature - you can hide the cache notes completely, if you don't want to use them.") + "<br/>";
     html += checkbox('settings_hide_disclaimer', 'Hide Disclaimer') + "<br/>";
     html += checkbox('settings_hide_spoilerwarning', 'Hide spoiler warning') + "<br/>";
-    html += checkbox('settings_show_gallerylink', 'Show gallery link') + show_help("Show gallery link in navigation widget") + "<br/>";
+    html += checkbox('settings_hide_top_button', 'Hide green Top-Button') + show_help("Hides the green \"To Top\"-Button, which appears if you are reading logs.") + "<br/>";
     html += checkbox('settings_show_all_logs', 'Show ') + " <input class='gclh_form' type='text' size='2' id='settings_show_all_logs_count' value='"+settings_show_all_logs_count+"'> logs (0 = all)"+show_help("With this option you can choose how many logs should be shown if you load the listing - if you type 0, all logs are shown by default.")+"<br>";
     html += checkbox('settings_hide_hint', 'Hide hint behind a link') + show_help("This option hides the hint behind a link - you have to click it to display the hints (already decrypted).")+ "<br/>";
     html += checkbox('settings_decrypt_hint', 'Decrypt Hint') + "<br/>";
@@ -5282,7 +5283,7 @@ function gclh_showConfig(){
       'settings_hide_advert_link',
       'settings_hide_line_breaks',
       'settings_hide_spoilerwarning',
-      'settings_show_gallerylink',
+      'settings_hide_top_button',
       'settings_hide_hint',
       'settings_strike_archived',
       'settings_highlight_usercoords',
