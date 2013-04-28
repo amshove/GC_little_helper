@@ -25,6 +25,8 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                                 - New: Replace owner pseudonym by real owner name (Settings)
+//                                 - New: Show real owner name as tooltip
 //                                 - Fix: Show Day of Week in events was broken
 //                                 - Fix: Issue #267 - VIP Button on Pseudonym-Owners doesn't work
 //                                 - Fix: Removed Frog-Icons (gc.com removed them)
@@ -751,6 +753,8 @@ settings_hide_map_header = GM_getValue("settings_hide_map_header",false);
 settings_spoiler_strings = GM_getValue("settings_spoiler_strings","spoiler|hinweis|hint");
 settings_replace_log_by_last_log = GM_getValue("settings_replace_log_by_last_log",false);
 settings_hide_top_button = GM_getValue("settings_hide_top_button",false);
+settings_show_real_owner = GM_getValue("settings_show_real_owner",false);
+
  /*temp-helper to change from number to text --> will only be accessed once*/
 try{
     if(!isNaN(settings_map_default_layer)){
@@ -3280,6 +3284,32 @@ try{
   }
 }catch(e){ gclh_error("Autovisit",e); }
 
+// Show Real Owner
+try{
+  if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/) && document.getElementById("ctl00_ContentBody_mcd1")){
+    var real_owner = get_real_owner();
+    var owner_link = false;
+    var links = document.getElementById("ctl00_ContentBody_mcd1").getElementsByTagName("a");
+    for(var i=0; i<links.length; i++){
+      if(links[i].href.match(/\/profile\/\?guid\=/)){
+        owner_link = links[i];
+        break;
+      }
+    }
+
+    if(owner_link && real_owner){
+      var pseudo = owner_link.innerHTML;
+      if(settings_show_real_owner){
+        owner_link.innerHTML = real_owner;
+        owner_link.title = pseudo;
+      }else{
+        owner_link.innerHTML = pseudo;
+        owner_link.title = real_owner;
+      }
+    }
+  }
+}catch(e){ gclh_error("Show Real Owner",e); }
+
 // VIP
 try{
   if(settings_show_vip_list && getElementsByClass("SignedInProfileLink")[0] && (document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\//) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/myfriends\.aspx/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/profile\//))){
@@ -4925,6 +4955,7 @@ function gclh_showConfig(){
     html += "&nbsp; "+checkbox('settings_imgcaption_on_top','Show Caption on Top')+"<br/>";
     html += checkbox('settings_hide_avatar', 'Hide Avatars in Listing') + show_help("This option hides the avatars in logs. This prevents loading the hundreds of images. You have to change the option here, because GClh overrides the log-load-logic of gc.com, so the avatar-option of gc.com doesn't work with GClh.") + "<br/>";
     html += checkbox('settings_load_logs_with_gclh', 'Load Logs with GClh') + show_help("This option should be enabled. You just should disable it, if you have problems with loading the logs. If it is disabled, there are no VIP-, Mail-, Top-Icons at Logs, also the VIP-List, Hide Avatars, Log-filter, Log-Search, .. won't work.") + "<br/>";
+    html += checkbox('settings_show_real_owner', 'Show real Owner-Name') + show_help("If the option is enabled, GClh will replace the pseudonym a owner took to publish the cache with the real owner name.") + "<br/>";
     html += "<br>";
     html += "";
     html += "<h4 class='gclh_headline2'>Logging</h4>";
@@ -5337,6 +5368,7 @@ function gclh_showConfig(){
       'settings_load_logs_with_gclh',
       'settings_hide_map_header',
       'settings_replace_log_by_last_log',
+      'settings_show_real_owner',
       'settings_map_hide_sidebar'
 //      'settings_hide_recentlyviewed'
     );
