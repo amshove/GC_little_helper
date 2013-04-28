@@ -25,6 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                                 - New: Issue #264 - Enhance google-calendar link for events
 //                                 - New: Issue #258 - Hide TBs in Log-Summary on Profile Page 
 //                                 - Fix: Issue #260 - Facebook-Button is displayed again
 //                                 - New: Issue #241 - Hide header on map with button in menu 
@@ -1495,6 +1496,29 @@ try{
     
   }
 }catch(e){ gclh_error("Hide Linebreaks",e); }
+
+// Improve calendar-Link in Events
+try{
+  if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/) && document.getElementById("calLinks")){
+    function calendar_link(){
+      var div = document.getElementById("calLinks");
+      var links = div.getElementsByTagName("a");
+      for(var i=0; i<links.length; i++){
+        if(links[i].title == "Google"){
+          var link = links[i].href.split("&");
+          var new_link = link[0]+"&"+link[1]+"&"+link[2];
+
+          var loc = link[4].split("(");
+
+          new_link += "&"+loc[0].substr(0,loc[0].length-3)+"&details="+loc[1].substr(0,loc[1].length-1)+"&"+link[5];
+
+          links[i].href = new_link;
+        }
+      }
+    }
+    window.addEventListener("load",calendar_link,false); // Div wird erst nachtraeglich gefuellt, deswegen auf load warten
+  }
+}catch(e){ gclh_error("improve calendar-link",e); }
 
 // remove "Warning! Spoilers may be included in the descriptions or links."
 try{
