@@ -25,6 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                                 - Fix: [gc.com update] Linklist in Map was broken
 //                                 - Removed additional map layers - for this function use "Geocaching Map Enhancements (http://userscripts.org/scripts/show/109145)
 //                                 - New: Replace owner pseudonym by real owner name (Settings)
 //                                 - New: Show real owner name as tooltip
@@ -1303,7 +1304,8 @@ try{
 // Bookmarks on top - Beta Map
 try{
   if(settings_bookmarks_on_top && document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\//)){
-    var header = getElementsByClass("ui-block-b")[0];
+//    var header = getElementsByClass("ui-block-b")[0];
+    var header = document.getElementsByTagName("header")[0];
     if(header){
       var div = document.createElement("div");
       div.style.float = 'left';
@@ -1329,7 +1331,7 @@ try{
         }
       }
   
-      header.appendChild(div);
+      header.childNodes[3].appendChild(div);
     }
   }
 }catch(e){ gclh_error("Linklist on top (MAP)",e); }
