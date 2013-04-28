@@ -25,6 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                                 - New: Issue #258 - Hide TBs in Log-Summary on Profile Page 
 //                                 - Fix: Issue #260 - Facebook-Button is displayed again
 //                                 - New: Issue #241 - Hide header on map with button in menu 
 //                                 - Fix: [gc.com update] Linklist in Map was broken
@@ -758,6 +759,7 @@ settings_spoiler_strings = GM_getValue("settings_spoiler_strings","spoiler|hinwe
 settings_replace_log_by_last_log = GM_getValue("settings_replace_log_by_last_log",false);
 settings_hide_top_button = GM_getValue("settings_hide_top_button",false);
 settings_show_real_owner = GM_getValue("settings_show_real_owner",false);
+settings_hide_visits_in_profile = GM_getValue("settings_hide_visits_in_profile",false);
 
  /*temp-helper to change from number to text --> will only be accessed once*/
 try{
@@ -2959,6 +2961,21 @@ try{
   }
 }catch(e){ gclh_error("Additinal Links to own Caches in Profile",e); }
 
+// Hide TBs/Coins in Profile
+try{
+  if(settings_hide_visits_in_profile && document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\//)){
+    var tables = getElementsByClass("Table WordWrap");
+    if(tables && tables[0]){
+      var trs = tables[0].getElementsByTagName("tr");
+      for(var i=0; i<trs.length; i++){
+        if(trs[i].childNodes[1].innerHTML.match(/logtypes\/75\.png/)){
+          trs[i].parentNode.removeChild(trs[i]);
+        }
+      }
+    }
+  }
+}catch(e){ gclh_error("Hide TBs/Coins in Profile",e); }
+
 // Post log from Listing (inline)
 try{
   if(settings_log_inline && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/) && document.getElementById("ctl00_ContentBody_MapLinks_MapLinks")){
@@ -4899,6 +4916,7 @@ function gclh_showConfig(){
     html += checkbox('settings_show_big_gallery', 'Show bigger Images in Gallery') + "<br/>";
     html += checkbox('settings_hide_facebook', 'Hide Facebook-Login') + "<br/>";
     html += checkbox('settings_hide_socialshare', 'Hide SocialShare-Box after Log') + "<br/>";
+    html += checkbox('settings_hide_visits_in_profile', 'Hide TB/Coin-Visits in Profile') + "<br/>";
     html += "";
     html += "<br>";
     html += "";
@@ -5414,6 +5432,7 @@ function gclh_showConfig(){
       'settings_hide_map_header',
       'settings_replace_log_by_last_log',
       'settings_show_real_owner',
+      'settings_hide_visits_in_profile',
       'settings_map_hide_sidebar'
 //      'settings_hide_recentlyviewed'
     );
