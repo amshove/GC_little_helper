@@ -25,6 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                                 - New: Issue #241 - Hide header on map with button in menu 
 //                                 - Fix: [gc.com update] Linklist in Map was broken
 //                                 - Removed additional map layers - for this function use "Geocaching Map Enhancements (http://userscripts.org/scripts/show/109145)
 //                                 - New: Replace owner pseudonym by real owner name (Settings)
@@ -1098,6 +1099,40 @@ function get_real_owner(){
     }
     return false;
   }else return false;
+}
+
+// Versteckt den Header in der Map-Ansicht
+function hide_map_header(){
+  var header = document.getElementsByTagName("header");
+  if(header[0].style.display != "none"){  // Header verstecken
+    header[0].style.display = "none";
+    // Move Map to Top
+    document.getElementById("map_canvas").style.top = 0;
+    // Move Sidebar to Top
+    document.getElementById("searchtabs").parentNode.style.top = 0;
+    // Move "Leaflet About" to Bottom
+    var map = document.getElementById("map_canvas");
+    var divs = map.getElementsByTagName("div");
+    for(var i=0; i<divs.length; i++){
+      if(divs[i].className.match(/leaflet-bottom/)){
+        divs[i].setAttribute("style","bottom: 0px !important;");
+      }
+    }
+  }else{ // Header zeigen
+    header[0].style.display = "block";
+    // Move Map to Top
+    document.getElementById("map_canvas").style.top = "56px";
+    // Move Sidebar to Top
+    document.getElementById("searchtabs").parentNode.style.top = "56px";
+    // Move "Leaflet About" to Bottom
+    var map = document.getElementById("map_canvas");
+    var divs = map.getElementsByTagName("div");
+    for(var i=0; i<divs.length; i++){
+      if(divs[i].className.match(/leaflet-bottom/)){
+        divs[i].setAttribute("style","bottom: 56px !important;");
+      }
+    }
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -2500,6 +2535,27 @@ try{
   }
 }catch(e){ gclh_error("Improve MyProfile",e); }
 
+// Hide Map Header
+try{
+  if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\//)){
+    if(settings_hide_map_header){
+      // ... by default
+      hide_map_header();
+    }
+
+    // ... with button in sidebar
+    var sidebar = document.getElementById("searchtabs");
+    var link = document.createElement("a");
+
+    link.appendChild(document.createTextNode("Hide/Show Header"));
+    link.href = "#";
+    link.addEventListener("click",hide_map_header,false);
+
+    sidebar.setAttribute("style","height: 58px !important"); // default: 56px
+    sidebar.appendChild(link);
+  }
+}catch(e){ gclh_error("Hide Map Header",e); }
+
 //// Map-Layers
 //var map_layers = new Object();
 //map_layers["osm_hikebike"] = {tileUrl:"http://toolserver.org/tiles/hikebike/{z}/{x}/{y}.png",name:"osm_hikebike",alt:"OpenStreetMap (Hike&Bike)",attribution:'Map and map data \u00a9 2012 <a href="http://www.openstreetmap.org" target=\'_blank\'>OpenStreetMap</a> and contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.',tileSize:256,minZoom:0,maxZoom:20};
@@ -2551,26 +2607,9 @@ try{
 //		
 //    }
     
+
     //Function called when map is loaded
     function gclh_map_loaded(){
-      // Hide Header
-      if(settings_hide_map_header){
-        // Hide Header
-        var header = document.getElementsByTagName("header");
-        header[0].style.display = "none";
-        // Move Map to Top
-        document.getElementById("map_canvas").style.top = 0;
-        // Move Sidebar to Top
-        document.getElementById("searchtabs").parentNode.style.top = 0;
-        // Move "Leaflet About" to Bottom
-        var map = document.getElementById("map_canvas");
-        var divs = map.getElementsByTagName("div");
-        for(var i=0; i<divs.length; i++){
-          if(divs[i].className.match(/leaflet-bottom/)){
-            divs[i].setAttribute("style","bottom: 0px !important;");
-          }
-        }
-      }
     
     //unsafeWindow.Groundspeak.Map.UserSession.options.showFinds = false;
       var hillshadow_akt = false;
@@ -4920,7 +4959,7 @@ function gclh_showConfig(){
 //    html += "  <option value='gm_hybrid' "+(settings_map_hillshadow.indexOf('gm_hybrid') != -1 ? "selected='selected'" : "")+">Google Maps (Hybrid)</option>";
 //    html += "</select>"+show_help("Here you can select the maps which should be loaded with hillshadow. \"Show Hill-Shadows on Map\" requried.") +"<br>";   
     html += checkbox('settings_map_hide_sidebar', 'Hide sidebar by default') + show_help("If you want to hide the sidebar on the map, just select this option.") + "<br/>";
-    html += checkbox('settings_hide_map_header', 'Hide Header') + show_help("If you want to hide the header of the map, just select this option.") + "<br/>";
+    html += checkbox('settings_hide_map_header', 'Hide Header by default') + show_help("If you want to hide the header of the map, just select this option.") + "<br/>";
     html += "";
     html += "<br>";
     html += "";
@@ -5280,21 +5319,21 @@ function gclh_showConfig(){
     GM_setValue("settings_mail_signature",document.getElementById('settings_mail_signature').value.replace(/‌/g,"")); // Fix: Entfernt das Steuerzeichen
     GM_setValue("settings_log_signature",document.getElementById('settings_log_signature').value.replace(/‌/g,""));
     GM_setValue("settings_tb_signature",document.getElementById('settings_tb_signature').value.replace(/‌/g,""));
-    GM_setValue("settings_map_default_layer",document.getElementById('settings_map_default_layer').value);
+//    GM_setValue("settings_map_default_layer",document.getElementById('settings_map_default_layer').value);
     GM_setValue("settings_hover_image_max_size",document.getElementById('settings_hover_image_max_size').value);
     GM_setValue("settings_spoiler_strings",document.getElementById('settings_spoiler_strings').value);
 
     
-    var hillmaps = document.getElementById('settings_map_hillshadow');
-    var count = 0;
-    var hillmaparr = new Array();
-    for (i=0; i<hillmaps.options.length; i++) {
-      if (hillmaps.options[i].selected) {
-        hillmaparr[count] = hillmaps.options[i].value;
-        count++;
-      }
-    }
-    GM_setValue("settings_map_hillshadow",hillmaparr.join("###"));
+//    var hillmaps = document.getElementById('settings_map_hillshadow');
+//    var count = 0;
+//    var hillmaparr = new Array();
+//    for (i=0; i<hillmaps.options.length; i++) {
+//      if (hillmaps.options[i].selected) {
+//        hillmaparr[count] = hillmaps.options[i].value;
+//        count++;
+//      }
+//    }
+//    GM_setValue("settings_map_hillshadow",hillmaparr.join("###"));
     var checkboxes = new Array(
       'settings_submit_log_button',
       'settings_log_inline',
@@ -5358,7 +5397,7 @@ function gclh_showConfig(){
       'settings_map_hide_137',
       'settings_map_hide_8',
       'settings_map_hide_1858',
-      'settings_map_add_layer',
+//      'settings_map_add_layer',
       'settings_show_fav_percentage',
       'settings_show_vip_list',
       'settings_show_owner_vip_list',
