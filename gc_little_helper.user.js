@@ -25,6 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                                 - Fix: Show Day of Week in events was broken
 //                                 - Fix: Issue #267 - VIP Button on Pseudonym-Owners doesn't work
 //                                 - Fix: Removed Frog-Icons (gc.com removed them)
 //                                 - New: Issue #257 - Option to remove green gc.com "To Top"-Button in Listings 
@@ -1857,20 +1858,21 @@ try{
 try{
   if(settings_show_eventday && document.location.href.match(/^http:\/\/www\.geocaching\.com\/(seek\/cache_details)\.aspx.*/) && document.getElementById('cacheDetails').getElementsByTagName("img")[0].src.match(/.*\/images\/WptTypes\/(6|453|13).gif/)){ //Event, MegaEvent, Cito
     if(document.getElementById('cacheDetails').getElementsByTagName("span")){
-      var cont = document.getElementById('cacheDetails').getElementsByTagName("span");
-      var counter = 0;
-      var spanelem = null;
-      var elem;
-      for (var elemName in cont){
-        elem=cont[elemName];
-        if(elem.className == "minorCacheDetails"){
-          counter++;
-          if(counter == 2){
-            spanelem = elem;
-            break;
-          }
-        }
-      }
+//      var cont = document.getElementById('cacheDetails').getElementsByTagName("span");
+//      var counter = 0;
+//      var spanelem = null;
+//      var elem;
+//      for (var elemName in cont){
+//        elem=cont[elemName];
+//        if(elem.className == "minorCacheDetails"){
+//          counter++;
+//          if(counter == 2){
+//            spanelem = elem;
+//            break;
+//          }
+//        }
+//      }
+      var spanelem = document.getElementById("ctl00_ContentBody_mcd2");
       var datetxt = spanelem.innerHTML.substr(spanelem.innerHTML.indexOf(":") + 2).replace( /^\s+|\s+$/g, '' );
       var month_names = new Object();
       month_names["Jan"] = 1; 
@@ -1968,8 +1970,10 @@ try{
         weekday[4]="Thursday";
         weekday[5]="Friday";
         weekday[6]="Saturday";
-        spanelem.innerHTML = spanelem.innerHTML + " (" + weekday[d.getDay()] + ")";
-      }else spanelem.innerHTML = spanelem.innerHTML + " (date format mismatch - see settings)";
+        var text = " (" + weekday[d.getDay()] + ") ";
+      }else var text = " (date format mismatch - see settings) ";
+      var text_elem = document.createTextNode(text);
+      spanelem.insertBefore(text_elem,spanelem.childNodes[1]);
     }
   }
 }catch(e){ gclh_error("Show DoW on Events",e); }
