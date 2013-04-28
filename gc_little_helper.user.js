@@ -25,6 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                                 - Removed additional map layers - for this function use "Geocaching Map Enhancements (http://userscripts.org/scripts/show/109145)
 //                                 - New: Replace owner pseudonym by real owner name (Settings)
 //                                 - New: Show real owner name as tooltip
 //                                 - Fix: Show Day of Week in events was broken
@@ -2497,56 +2498,56 @@ try{
   }
 }catch(e){ gclh_error("Improve MyProfile",e); }
 
-// Map-Layers
-var map_layers = new Object();
-map_layers["osm_hikebike"] = {tileUrl:"http://toolserver.org/tiles/hikebike/{z}/{x}/{y}.png",name:"osm_hikebike",alt:"OpenStreetMap (Hike&Bike)",attribution:'Map and map data \u00a9 2012 <a href="http://www.openstreetmap.org" target=\'_blank\'>OpenStreetMap</a> and contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.',tileSize:256,minZoom:0,maxZoom:20};
-map_layers["ocm_transport"] = {tileUrl:"http://a.tile2.opencyclemap.org/transport/{z}/{x}/{y}.png",name:"ocm_transport",alt:"OpenCycleMap (Transport)",attribution:'Map and map data \u00a9 2012 <a href="http://www.opencyclemap.org" target=\'_blank\'>OpenCycleMap</a> and contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.',tileSize:256,minZoom:0,maxZoom:18};
-map_layers["gm"] = {tileUrl:"http://mt.google.com/vt?x={x}&y={y}&z={z}",name:"gm",alt:"Google Maps",attribution:"Google Maps",tileSize:256,minZoom:0,maxZoom:20};
-map_layers["gm_satellite"] = {tileUrl:"http://mt0.google.com/vt/lyrs=s@110&hl=en&x={x}&y={y}&z={z}",name:"gm_satellite",alt:"Google Maps (Satellite)",attribution:"Google Maps",tileSize:256,minZoom:0,maxZoom:20};
-map_layers["gm_hybrid"] = {tileUrl:"http://mt0.google.com/vt/lyrs=s,m@110&hl=en&x={x}&y={y}&z={z}",name:"gm_hybrid",alt:"Google Maps (Hybrid)",attribution:"Google Maps",tileSize:256,minZoom:0,maxZoom:20};
-map_layers["gm_terrain"] = {tileUrl:"http://mt0.google.com/vt/v=w2p.110&hl=en&x={x}&y={y}&z={z}",name:"gm_terrain",alt:"Google Maps (Terrain)",attribution:"Google Maps",tileSize:256,minZoom:0,maxZoom:20};
+//// Map-Layers
+//var map_layers = new Object();
+//map_layers["osm_hikebike"] = {tileUrl:"http://toolserver.org/tiles/hikebike/{z}/{x}/{y}.png",name:"osm_hikebike",alt:"OpenStreetMap (Hike&Bike)",attribution:'Map and map data \u00a9 2012 <a href="http://www.openstreetmap.org" target=\'_blank\'>OpenStreetMap</a> and contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.',tileSize:256,minZoom:0,maxZoom:20};
+//map_layers["ocm_transport"] = {tileUrl:"http://a.tile2.opencyclemap.org/transport/{z}/{x}/{y}.png",name:"ocm_transport",alt:"OpenCycleMap (Transport)",attribution:'Map and map data \u00a9 2012 <a href="http://www.opencyclemap.org" target=\'_blank\'>OpenCycleMap</a> and contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.',tileSize:256,minZoom:0,maxZoom:18};
+//map_layers["gm"] = {tileUrl:"http://mt.google.com/vt?x={x}&y={y}&z={z}",name:"gm",alt:"Google Maps",attribution:"Google Maps",tileSize:256,minZoom:0,maxZoom:20};
+//map_layers["gm_satellite"] = {tileUrl:"http://mt0.google.com/vt/lyrs=s@110&hl=en&x={x}&y={y}&z={z}",name:"gm_satellite",alt:"Google Maps (Satellite)",attribution:"Google Maps",tileSize:256,minZoom:0,maxZoom:20};
+//map_layers["gm_hybrid"] = {tileUrl:"http://mt0.google.com/vt/lyrs=s,m@110&hl=en&x={x}&y={y}&z={z}",name:"gm_hybrid",alt:"Google Maps (Hybrid)",attribution:"Google Maps",tileSize:256,minZoom:0,maxZoom:20};
+//map_layers["gm_terrain"] = {tileUrl:"http://mt0.google.com/vt/v=w2p.110&hl=en&x={x}&y={y}&z={z}",name:"gm_terrain",alt:"Google Maps (Terrain)",attribution:"Google Maps",tileSize:256,minZoom:0,maxZoom:20};
 
 // Add additional Layers to Map & Select Default-Layer, add Hill-Shadow, add Homezone
 try{
   if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\//)){
-    if(settings_map_add_layer){
-      layers = unsafeWindow.Groundspeak.Map.MapLayers;
-      layers.splice(4,0,map_layers["osm_hikebike"]);
-      layers.splice(6,0,map_layers["ocm_transport"]);
-      layers.push(map_layers["gm"]);
-      layers.push(map_layers["gm_satellite"]);
-      layers.push(map_layers["gm_hybrid"]);
-      layers.push(map_layers["gm_terrain"]);
-    }
-
-    if(browser == "chrome"){	
-		//Custom layer fix for chrome - Ugly but my best idea yet	
-		var myLayers = {};
-		for(i=0;i<layers.length;i++){
-			myLayers[layers[i].alt]=(new unsafeWindow.L.TileLayer(layers[i].tileUrl, layers[i]));
-		}
-		$(".leaflet-control-layers").first().hide();
-		
-		$("input[name=leaflet-base-layers]").attr('name', 'old_leaflet-base-layers');
-		
-		$(".leaflet-control-layers").first().append("<div id='myHelper' style=''visibility:hidden;height:0px;width:0px;> </div>");
-		
-		
-		unsafeWindow.MapSettings.Map.addControl(new unsafeWindow.L.Control.Layers(myLayers));
-		
-		$(".leaflet-control-layers-base").find("input").attr('checked', false);
-		unsafeWindow.MapSettings.Map.removeLayer(unsafeWindow.MapSettings.Map._layers["1"]);
-		
-		$("#myHelper").bind("DOMSubtreeModified", function() {	
-			$("input[name=leaflet-base-layers]").each(function(index, element){
-				element.layerId = myLayers[$(element).parent().text().trim()]._leaflet_id;
-				$(element).attr("layerId", myLayers[$(element).parent().text().trim()]._leaflet_id);
-			});		
-		
-			$($(".leaflet-control-layers-base")[1].children[0].firstChild).click();	
-		}).append("<div id='myHelper2' style=''visibility:hidden;height:0px;width:0px;> </div>");
-		
-    }
+//    if(settings_map_add_layer){
+//      layers = unsafeWindow.Groundspeak.Map.MapLayers;
+//      layers.splice(4,0,map_layers["osm_hikebike"]);
+//      layers.splice(6,0,map_layers["ocm_transport"]);
+//      layers.push(map_layers["gm"]);
+//      layers.push(map_layers["gm_satellite"]);
+//      layers.push(map_layers["gm_hybrid"]);
+//      layers.push(map_layers["gm_terrain"]);
+//    }
+//
+//    if(browser == "chrome"){	
+//		//Custom layer fix for chrome - Ugly but my best idea yet	
+//		var myLayers = {};
+//		for(i=0;i<layers.length;i++){
+//			myLayers[layers[i].alt]=(new unsafeWindow.L.TileLayer(layers[i].tileUrl, layers[i]));
+//		}
+//		$(".leaflet-control-layers").first().hide();
+//		
+//		$("input[name=leaflet-base-layers]").attr('name', 'old_leaflet-base-layers');
+//		
+//		$(".leaflet-control-layers").first().append("<div id='myHelper' style=''visibility:hidden;height:0px;width:0px;> </div>");
+//		
+//		
+//		unsafeWindow.MapSettings.Map.addControl(new unsafeWindow.L.Control.Layers(myLayers));
+//		
+//		$(".leaflet-control-layers-base").find("input").attr('checked', false);
+//		unsafeWindow.MapSettings.Map.removeLayer(unsafeWindow.MapSettings.Map._layers["1"]);
+//		
+//		$("#myHelper").bind("DOMSubtreeModified", function() {	
+//			$("input[name=leaflet-base-layers]").each(function(index, element){
+//				element.layerId = myLayers[$(element).parent().text().trim()]._leaflet_id;
+//				$(element).attr("layerId", myLayers[$(element).parent().text().trim()]._leaflet_id);
+//			});		
+//		
+//			$($(".leaflet-control-layers-base")[1].children[0].firstChild).click();	
+//		}).append("<div id='myHelper2' style=''visibility:hidden;height:0px;width:0px;> </div>");
+//		
+//    }
     
     //Function called when map is loaded
     function gclh_map_loaded(){
@@ -2574,43 +2575,44 @@ try{
       //add Hill-Shadow
       if(settings_show_hillshadow){
         var hillshadow = new unsafeWindow.L.TileLayer("http://toolserver.org/~cmarqu/hill/{z}/{x}/{y}.png", {maxZoom: 20});
+        setTimeout(function(){ unsafeWindow.MapSettings.Map.addLayer(hillshadow); },1000);
 
-        function show_hillshadow(bool){
-          GM_log("show_hillshadow: " + bool);
-          if(bool){
-            if(!hillshadow_akt)setTimeout(function(){ unsafeWindow.MapSettings.Map.addLayer(hillshadow); },1000);
-            hillshadow_akt = true;
-          }else{
-            if(hillshadow_akt)unsafeWindow.MapSettings.Map.removeLayer(hillshadow);
-            hillshadow_akt = false;
-          }
-        }
+//        function show_hillshadow(bool){
+//          GM_log("show_hillshadow: " + bool);
+//          if(bool){
+//            if(!hillshadow_akt)setTimeout(function(){ unsafeWindow.MapSettings.Map.addLayer(hillshadow); },1000);
+//            hillshadow_akt = true;
+//          }else{
+//            if(hillshadow_akt)unsafeWindow.MapSettings.Map.removeLayer(hillshadow);
+//            hillshadow_akt = false;
+//          }
+//        }
         
-       function maptoggle(e){
-          //Mapnames: mpqosm, cloudmade, mpqa, osm, osm_hikebike, ocm, ocm_transport, mq, gm, gm_satellite, gm_hybrid, gm_terrain
-          if(e.layer.options.name !== undefined && (""+e.layer.options.name) != "undefined")
-            GM_log("maptoggel: " + e.layer.options.name);
-            if(settings_map_hillshadow.indexOf(e.layer.options.name) != -1 && e.layer.options.name != "gm_terrain"){
-              if(!hillshadow_akt)show_hillshadow(true);
-            }else{
-              if(hillshadow_akt && e.layer.options.name != undefined)show_hillshadow(false);
-            }
-        }
-        unsafeWindow.MapSettings.Map.on('layeradd',maptoggle);
+//       function maptoggle(e){
+//          //Mapnames: mpqosm, cloudmade, mpqa, osm, osm_hikebike, ocm, ocm_transport, mq, gm, gm_satellite, gm_hybrid, gm_terrain
+//          if(e.layer.options.name !== undefined && (""+e.layer.options.name) != "undefined")
+//            GM_log("maptoggel: " + e.layer.options.name);
+//            if(settings_map_hillshadow.indexOf(e.layer.options.name) != -1 && e.layer.options.name != "gm_terrain"){
+//              if(!hillshadow_akt)show_hillshadow(true);
+//            }else{
+//              if(hillshadow_akt && e.layer.options.name != undefined)show_hillshadow(false);
+//       /     }
+//        }
+//        unsafeWindow.MapSettings.Map.on('layeradd',maptoggle);
       }
   
-      //Select Default-Layer
-      if(settings_map_default_layer != "mq" && settings_map_default_layer != "false") {
-        //Mapnames: mpqosm, cloudmade, mpqa, osm, osm_hikebike, ocm, ocm_transport, mq, gm, gm_satellite, gm_hybrid, gm_terrain
-        var lc;
-        for(lc = 0; lc < layers.length; lc++){
-         var mlayer = layers[lc];
-         if(mlayer.name == settings_map_default_layer)break;
-        }
-	    var controlNo = (browser=="chrome"?1:0); //Custom layer fix for chrome Part 2 - Ugly but my best idea yet
-        var menu = getElementsByClass("leaflet-control-layers-base")[controlNo];
-        setTimeout(function(){ menu.childNodes[lc].click(); },1000);
-      }
+//      //Select Default-Layer
+//      if(settings_map_default_layer != "mq" && settings_map_default_layer != "false") {
+//        //Mapnames: mpqosm, cloudmade, mpqa, osm, osm_hikebike, ocm, ocm_transport, mq, gm, gm_satellite, gm_hybrid, gm_terrain
+//        var lc;
+//        for(lc = 0; lc < layers.length; lc++){
+//         var mlayer = layers[lc];
+//         if(mlayer.name == settings_map_default_layer)break;
+//        }
+//	    var controlNo = (browser=="chrome"?1:0); //Custom layer fix for chrome Part 2 - Ugly but my best idea yet
+//        var menu = getElementsByClass("leaflet-control-layers-base")[controlNo];
+//        setTimeout(function(){ menu.childNodes[lc].click(); },1000);
+//      }
   
       if(settings_map_hide_sidebar){
         var links = document.getElementsByTagName("a");
@@ -4874,8 +4876,8 @@ function gclh_showConfig(){
     html += " &nbsp; "+checkbox('settings_map_hide_6',"<img src='http://www.geocaching.com/images/WptTypes/sm/6.gif'>")+" &nbsp; "+checkbox('settings_map_hide_453',"<img src='http://www.geocaching.com/images/WptTypes/sm/453.gif'>")+" &nbsp; "+checkbox('settings_map_hide_13',"<img src='http://www.geocaching.com/images/WptTypes/sm/13.gif'>")+" &nbsp; "+checkbox('settings_map_hide_1304',"<img src='http://www.geocaching.com/images/WptTypes/sm/1304.gif'>")+"<br/>";
     html += " &nbsp; "+checkbox('settings_map_hide_4',"<img src='http://www.geocaching.com/images/WptTypes/sm/4.gif'>")+" &nbsp; "+checkbox('settings_map_hide_11',"<img src='http://www.geocaching.com/images/WptTypes/sm/11.gif'>")+" &nbsp; "+checkbox('settings_map_hide_137',"<img src='http://www.geocaching.com/images/WptTypes/sm/137.gif'>")+"<br/>";
     html += " &nbsp; "+checkbox('settings_map_hide_8',"<img src='http://www.geocaching.com/images/WptTypes/sm/8.gif'>")+" &nbsp; "+checkbox('settings_map_hide_1858',"<img src='http://www.geocaching.com/images/WptTypes/sm/1858.gif'>")+"<br/>";
-    html += checkbox('settings_map_add_layer', 'Add additinal Layers to Map') + show_help("This option adds additional Layers to Map - it has to be enabled for the Default Layer option. It has to be disabled, if you want to use 'Geocaching Map Enhancements' Greasemonkey-Script.") + "<br/>";
-    html += "Default Layer: <select class='gclh_form' id='settings_map_default_layer'>";
+//    html += checkbox('settings_map_add_layer', 'Add additinal Layers to Map') + show_help("This option adds additional Layers to Map - it has to be enabled for the Default Layer option. It has to be disabled, if you want to use 'Geocaching Map Enhancements' Greasemonkey-Script.") + "<br/>";
+//    html += "Default Layer: <select class='gclh_form' id='settings_map_default_layer'>";
 /*  html += "  <option value='0' "+(settings_map_default_layer == '0' ? "selected='selected'" : "")+">MapQuest (gc.com default)</option>";
     html += "  <option value='1' "+(settings_map_default_layer == '1' ? "selected='selected'" : "")+">CloudMade</option>";
     html += "  <option value='2' "+(settings_map_default_layer == '2' ? "selected='selected'" : "")+">Aerial</option>";
@@ -4889,32 +4891,32 @@ function gclh_showConfig(){
     html += "  <option value='10' "+(settings_map_default_layer == '10' ? "selected='selected'" : "")+">Google Maps (Hybrid)</option>";
      */
     /*Mapnames: mpqosm, cloudmade, mpqa, osm, osm_hikebike, ocm, ocm_transport, mq, gm, gm_satellite, gm_hybrid, gm_terrain*/
-    html += "  <option value='false' "+(settings_map_default_layer == 'false' ? "selected='selected'" : "")+">-- no default --</option>";
-    html += "  <option value='mpqosm' "+(settings_map_default_layer == 'mpqosm' ? "selected='selected'" : "")+">MapQuest (gc.com default)</option>";
-    html += "  <option value='cloudmade' "+(settings_map_default_layer == 'cloudmade' ? "selected='selected'" : "")+">CloudMade</option>";
-    html += "  <option value='mpqa' "+(settings_map_default_layer == 'mpqa' ? "selected='selected'" : "")+">MapQuest Aerial</option>";
-    html += "  <option value='osm' "+(settings_map_default_layer == 'osm' ? "selected='selected'" : "")+">OpenStreetMap</option>";
-    html += "  <option value='osm_hikebike' "+(settings_map_default_layer == 'osm_hikebike' ? "selected='selected'" : "")+">OpenStreetMap (Hike&Bike)</option>";
-    html += "  <option value='ocm' "+(settings_map_default_layer == 'ocm' ? "selected='selected'" : "")+">OpenCycleMap</option>";
-    html += "  <option value='ocm_transport' "+(settings_map_default_layer == 'ocm_transport' ? "selected='selected'" : "")+">OpenCycleMap (Transport)</option>";
-    html += "  <option value='gm' "+(settings_map_default_layer == 'gm' ? "selected='selected'" : "")+">Google Maps</option>";
-    html += "  <option value='gm_satellite' "+(settings_map_default_layer == 'gm_satellite' ? "selected='selected'" : "")+">Google Maps (Satellite)</option>";
-    html += "  <option value='gm_hybrid' "+(settings_map_default_layer == 'gm_hybrid' ? "selected='selected'" : "")+">Google Maps (Hybrid)</option>";
-    html += "  <option value='gm_terrain' "+(settings_map_default_layer == 'gm_terrain' ? "selected='selected'" : "")+">Google Maps (Terrain)</option>";
-    html += "</select>"+show_help("Here you can select the map source you want to use as default in the map.") +"<br>";
+//    html += "  <option value='false' "+(settings_map_default_layer == 'false' ? "selected='selected'" : "")+">-- no default --</option>";
+//    html += "  <option value='mpqosm' "+(settings_map_default_layer == 'mpqosm' ? "selected='selected'" : "")+">MapQuest (gc.com default)</option>";
+//    html += "  <option value='cloudmade' "+(settings_map_default_layer == 'cloudmade' ? "selected='selected'" : "")+">CloudMade</option>";
+//    html += "  <option value='mpqa' "+(settings_map_default_layer == 'mpqa' ? "selected='selected'" : "")+">MapQuest Aerial</option>";
+//    html += "  <option value='osm' "+(settings_map_default_layer == 'osm' ? "selected='selected'" : "")+">OpenStreetMap</option>";
+//    html += "  <option value='osm_hikebike' "+(settings_map_default_layer == 'osm_hikebike' ? "selected='selected'" : "")+">OpenStreetMap (Hike&Bike)</option>";
+//    html += "  <option value='ocm' "+(settings_map_default_layer == 'ocm' ? "selected='selected'" : "")+">OpenCycleMap</option>";
+//    html += "  <option value='ocm_transport' "+(settings_map_default_layer == 'ocm_transport' ? "selected='selected'" : "")+">OpenCycleMap (Transport)</option>";
+//    html += "  <option value='gm' "+(settings_map_default_layer == 'gm' ? "selected='selected'" : "")+">Google Maps</option>";
+//    html += "  <option value='gm_satellite' "+(settings_map_default_layer == 'gm_satellite' ? "selected='selected'" : "")+">Google Maps (Satellite)</option>";
+//    html += "  <option value='gm_hybrid' "+(settings_map_default_layer == 'gm_hybrid' ? "selected='selected'" : "")+">Google Maps (Hybrid)</option>";
+//    html += "  <option value='gm_terrain' "+(settings_map_default_layer == 'gm_terrain' ? "selected='selected'" : "")+">Google Maps (Terrain)</option>";
+//    html += "</select>"+show_help("Here you can select the map source you want to use as default in the map.") +"<br>";
     html += checkbox('settings_show_hillshadow', 'Show Hill-Shadows on Map') + show_help("If you want 3D-like-Shadows to be displayed, activate this function.") + "<br/>";
-    html += "<select class='gclh_form' id='settings_map_hillshadow' multiple='multiple'>";
-    html += "  <option value='mpqosm' "+(settings_map_hillshadow.indexOf('mpqosm') != -1 ? "selected='selected'" : "")+">MapQuest (gc.com default)</option>";
-    html += "  <option value='cloudmade' "+(settings_map_hillshadow.indexOf('cloudmade') != -1 ? "selected='selected'" : "")+">CloudMade</option>";
-    html += "  <option value='mpqa' "+(settings_map_hillshadow.indexOf('mpqa') != -1 ? "selected='selected'" : "")+">MapQuest Aerial</option>";
-    html += "  <option value='osm' "+(settings_map_hillshadow.indexOf('osm') != -1 ? "selected='selected'" : "")+">OpenStreetMap</option>";
-    html += "  <option value='osm_hikebike' "+(settings_map_hillshadow.indexOf('osm_hikebike') != -1 ? "selected='selected'" : "")+">OpenStreetMap (Hike&Bike)</option>";
-    html += "  <option value='ocm' "+(settings_map_hillshadow.indexOf('ocm') != -1 ? "selected='selected'" : "")+">OpenCycleMap</option>";
-    html += "  <option value='ocm_transport' "+(settings_map_hillshadow.indexOf('ocm_transport') != -1 ? "selected='selected'" : "")+">OpenCycleMap (Transport)</option>";
-    html += "  <option value='gm' "+(settings_map_hillshadow.indexOf('gm') != -1 ? "selected='selected'" : "")+">Google Maps</option>";
-    html += "  <option value='gm_satellite' "+(settings_map_hillshadow.indexOf('gm_satellite') != -1 ? "selected='selected'" : "")+">Google Maps (Satellite)</option>";
-    html += "  <option value='gm_hybrid' "+(settings_map_hillshadow.indexOf('gm_hybrid') != -1 ? "selected='selected'" : "")+">Google Maps (Hybrid)</option>";
-    html += "</select>"+show_help("Here you can select the maps which should be loaded with hillshadow. \"Show Hill-Shadows on Map\" requried.") +"<br>";   
+//    html += "<select class='gclh_form' id='settings_map_hillshadow' multiple='multiple'>";
+//    html += "  <option value='mpqosm' "+(settings_map_hillshadow.indexOf('mpqosm') != -1 ? "selected='selected'" : "")+">MapQuest (gc.com default)</option>";
+//    html += "  <option value='cloudmade' "+(settings_map_hillshadow.indexOf('cloudmade') != -1 ? "selected='selected'" : "")+">CloudMade</option>";
+//    html += "  <option value='mpqa' "+(settings_map_hillshadow.indexOf('mpqa') != -1 ? "selected='selected'" : "")+">MapQuest Aerial</option>";
+//    html += "  <option value='osm' "+(settings_map_hillshadow.indexOf('osm') != -1 ? "selected='selected'" : "")+">OpenStreetMap</option>";
+//    html += "  <option value='osm_hikebike' "+(settings_map_hillshadow.indexOf('osm_hikebike') != -1 ? "selected='selected'" : "")+">OpenStreetMap (Hike&Bike)</option>";
+//    html += "  <option value='ocm' "+(settings_map_hillshadow.indexOf('ocm') != -1 ? "selected='selected'" : "")+">OpenCycleMap</option>";
+//    html += "  <option value='ocm_transport' "+(settings_map_hillshadow.indexOf('ocm_transport') != -1 ? "selected='selected'" : "")+">OpenCycleMap (Transport)</option>";
+//    html += "  <option value='gm' "+(settings_map_hillshadow.indexOf('gm') != -1 ? "selected='selected'" : "")+">Google Maps</option>";
+//    html += "  <option value='gm_satellite' "+(settings_map_hillshadow.indexOf('gm_satellite') != -1 ? "selected='selected'" : "")+">Google Maps (Satellite)</option>";
+//    html += "  <option value='gm_hybrid' "+(settings_map_hillshadow.indexOf('gm_hybrid') != -1 ? "selected='selected'" : "")+">Google Maps (Hybrid)</option>";
+//    html += "</select>"+show_help("Here you can select the maps which should be loaded with hillshadow. \"Show Hill-Shadows on Map\" requried.") +"<br>";   
     html += checkbox('settings_map_hide_sidebar', 'Hide sidebar by default') + show_help("If you want to hide the sidebar on the map, just select this option.") + "<br/>";
     html += checkbox('settings_hide_map_header', 'Hide Header') + show_help("If you want to hide the header of the map, just select this option.") + "<br/>";
     html += "";
