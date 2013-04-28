@@ -25,6 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                                 - Fix: Issue #260 - Facebook-Button is displayed again
 //                                 - New: Issue #241 - Hide header on map with button in menu 
 //                                 - Fix: [gc.com update] Linklist in Map was broken
 //                                 - Removed additional map layers - for this function use "Geocaching Map Enhancements (http://userscripts.org/scripts/show/109145)
@@ -1405,14 +1406,15 @@ try{
       document.getElementById('ctl00_uxSignIn').parentNode.style.display = "none";
     }
     if(document.location.href.match(/^https?:\/\/www\.geocaching\.com\/login(.*)/) && document.getElementById("ctl00_ContentBody_LoginPanel")){
-      var loginpanelfb = document.getElementById('ctl00_ContentBody_LoginPanel').getElementsByTagName("div")[0].getElementsByTagName("div")[0];
-      loginpanelfb.removeChild(loginpanelfb.getElementsByTagName("h3")[0]);
-      loginpanelfb.removeChild(loginpanelfb.getElementsByTagName("p")[0]);
-      loginpanelfb.removeChild(document.getElementById("ctl00_ContentBody_vsFacebook"));
-      loginpanelfb.removeChild(document.getElementById("ctl00_ContentBody_cvFacebook"));
-//      loginpanelfb.removeChild(document.getElementById("ctl00_ContentBody_uxSignIn"));
-      loginpanelfb.removeChild(loginpanelfb.getElementsByTagName("p")[0]);
-      loginpanelfb.removeChild(loginpanelfb.getElementsByTagName("div")[0]);
+      var loginpanelfb = getElementsByClass("LoginWithFacebook")[0];
+      loginpanelfb.parentNode.removeChild(loginpanelfb);
+//      loginpanelfb.removeChild(loginpanelfb.getElementsByTagName("h3")[0]);
+//      loginpanelfb.removeChild(loginpanelfb.getElementsByTagName("p")[0]);
+//      loginpanelfb.removeChild(document.getElementById("ctl00_ContentBody_vsFacebook"));
+//      loginpanelfb.removeChild(document.getElementById("ctl00_ContentBody_cvFacebook"));
+////      loginpanelfb.removeChild(document.getElementById("ctl00_ContentBody_uxSignIn"));
+//      loginpanelfb.removeChild(loginpanelfb.getElementsByTagName("p")[0]);
+//      loginpanelfb.removeChild(loginpanelfb.getElementsByTagName("div")[0]);
     }
   }
 }catch(e){ gclh_error("Hide Facebook",e); }
