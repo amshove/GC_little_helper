@@ -25,6 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                                 - Fix: Issue #267 - VIP Button on Pseudonym-Owners doesn't work
 //                                 - Fix: Removed Frog-Icons (gc.com removed them)
 //                                 - New: Issue #257 - Option to remove green gc.com "To Top"-Button in Listings 
 //                 9.2             - New: Issue #245 - Replace Log by Last-Log-Template <- configurable
@@ -1076,6 +1077,20 @@ function get_my_finds(){
     finds = parseInt(getElementsByClass('SignedInText')[0].getElementsByTagName("strong")[1].innerHTML.replace(/[,.]/,''));
   }
   return finds;
+}
+
+// Sucht den Original Usernamen des Owners aus dem Listing
+function get_real_owner(){
+  if(document.getElementById("ctl00_ContentBody_bottomSection")){
+    var links = document.getElementById("ctl00_ContentBody_bottomSection").getElementsByTagName("a");
+    for(var i=0; i<links.length; i++){
+      var match = links[i].href.match(/\/seek\/nearest\.aspx\?u\=(.*)$/);
+      if(match){
+        return match[1];
+      }
+    }
+    return false;
+  }else return false;
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -3327,7 +3342,8 @@ try{
       var owner_name = "";
       if(document.getElementById('ctl00_ContentBody_mcd1')){
         // ka, warum zwei Variablen - vllt. hab ich schonmal versucht das Freitext-Owner-Problem mit der GUID zu umgehen?!
-        owner = urldecode(document.getElementById('ctl00_ContentBody_mcd1').childNodes[1].innerHTML);
+        owner = get_real_owner();
+        if(!owner) owner = urldecode(document.getElementById('ctl00_ContentBody_mcd1').childNodes[1].innerHTML);
         owner_name = owner;
       }
   
@@ -3338,14 +3354,14 @@ try{
           var matches = links[i].href.match(/http:\/\/www\.geocaching\.com\/profile\/\?guid=([a-zA-Z0-9]*)/);
           var user = trim(links[i].innerHTML);
     
-          if(links[i].parentNode.className == "minorCacheDetails" && matches && !owner){
-            owner = matches[1];
-          }
-          if(!owner_name && owner && matches && matches[1] == owner){
-            owner_name = user;
-          }
+//          if(links[i].parentNode.className == "minorCacheDetails" && matches && !owner){
+//            owner = matches[1];
+//          }
+//          if(!owner_name && owner && matches && matches[1] == owner){
+//            owner_name = user;
+//          }
   
-          if(links[i].parentNode.className == "minorCacheDetails"){
+          if(links[i].parentNode.id == "ctl00_ContentBody_mcd1"){
             user = owner;
           }
     
