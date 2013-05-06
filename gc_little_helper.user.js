@@ -466,7 +466,7 @@ if(typeof(chrome) != "undefined"){
 
 	uneval = JSON.stringify;
 	
-	if ((GM_getValue.toString && GM_getValue.toString().indexOf("not supported") != -1) || typeof(GM_getValue) == "undefined" ) {
+	if (typeof(GM_getValue) == "undefined" || (GM_getValue.toString && GM_getValue.toString().indexOf("not supported") != -1) ) {
 		GM_getValue = function(key, defaultValue){
 			var result = localStorage.getItem(key);
 			if (!result || result == "undefined"){
@@ -498,6 +498,38 @@ if(typeof(chrome) != "undefined"){
 			localStorage.setItem(key, data);
 		}
 	}
+    
+        if (typeof(GM_addStyle) == "undefined" || (GM_addStyle.toString && GM_addStyle.toString().indexOf("not supported") != -1)) {
+		GM_addStyle = function(style){
+            var sheet = document.createElement('style');
+            sheet.innerHTML = style;
+            document.body.appendChild(sheet);
+}
+	}
+    
+    if(typeof(GM_xmlhttpRequest) == "undefined" || (GM_xmlhttpRequest.toString && GM_xmlhttpRequest.toString().indexOf("not supported") != -1)) {
+        GM_xmlhttpRequest = function(requestData){
+            var httpReq = new window.XMLHttpRequest();
+            httpReq.onreadystatechange = function(data) { 	
+                if (requestData["onreadystatechange"]) {
+                    requestData["onreadystatechange"](data);
+                }                
+            }
+            
+            httpReq.open(requestData.method, requestData.url);
+
+            if (requestData.headers) {
+                for (var header in requestData.headers) {
+                    if(header == "User-Agent" || header == "Origin" ||header == "Cookie" ||header == "Cookie2" ||header == "Referer"){
+                        continue;
+                    }
+                    httpReq.setRequestHeader(header, requestData.headers[header]);
+                }
+            }
+            
+            httpReq.send(typeof requestData.data == 'undefined' ? null : requestData.data);              
+        }
+    }
 }
 
 /**
@@ -1317,15 +1349,17 @@ try{
   
     //Chrome hover fix
     if(browser == "chrome"){
-	$('ul.Menu li').hover(function () {
-			$(this).addClass('hover');
-			$('ul:first', this).css('visibility', 'visible');
-		}, 
-		function () {
-			$(this).removeClass('hover');
-			$('ul:first', this).css('visibility', 'hidden');
-		}
-	);
+        injectPageScriptFunction(function(){        
+			$('ul.Menu li').hover(function () {
+					$(this).addClass('hover');
+					$('ul:first', this).css('visibility', 'visible');
+				}, 
+				function () {
+					$(this).removeClass('hover');
+					$('ul:first', this).css('visibility', 'hidden');
+				}
+			);
+        }, "()");
     }
     
   // menu      - <li class="">
@@ -1588,10 +1622,12 @@ try{
     if(browser == "chrome"){
 	    //Chrome selects an other element as FireFox and so the inline editor deletes the wrong element.
 	    //NOT a nice hack - but it fixes the savenote bug (but no breaks after saving)	   
-	    $("#cache_note").attr("id","cache_note1"); 
-	    var content = $("#cache_note1")[0].innerHTML.replace(/^[\n ]*/,"");
-	    $("#cache_note1")[0].innerHTML = "";
-	    $("#cache_note1").append("<pre id='cache_note'>"+content+"</pre>");
+        injectPageScriptFunction(function(){   
+		    $("#cache_note").attr("id","cache_note1"); 
+		    var content = $("#cache_note1")[0].innerHTML.replace(/^[\n ]*/,"");
+		    $("#cache_note1")[0].innerHTML = "";
+		    $("#cache_note1").append("<pre id='cache_note'>"+content+"</pre>");
+        }, "()");
     }
     else{
 	    document.getElementById("cache_note").id = "cache_note_old";
@@ -5763,3 +5799,16 @@ if(settings_configsync_enabled){
 
 } // Google Maps site
 } // Function "main" 
+
+//Chrome helperfunctions
+function injectPageScript(scriptContent){
+    var script = document.createElement("script");
+    script.setAttribute("type", "text/javascript");
+    script.innerHTML = scriptContent;
+    var pageHead = document.getElementsByTagName("head")[0];
+    pageHead.appendChild(script);
+}
+
+function injectPageScriptFunction(funct, functCall){
+    injectPageScript("("+funct.toString()+")"+functCall+";");    
+}
