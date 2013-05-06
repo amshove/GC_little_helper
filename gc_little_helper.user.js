@@ -3920,13 +3920,13 @@ try{
       var code = "function gclh_updateTmpl() { " +
       "  delete $.template['tmplCacheLogImages'];" +
       "  $.template(\"tmplCacheLogImages\",\""+newImageTmpl+"\");" +
-      "}";
+      "}"+
+      "gclh_updateTmpl();";
   
       var script = document.createElement("script");
       script.innerHTML = code;
       document.getElementsByTagName("body")[0].appendChild(script);
   
-      unsafeWindow.gclh_updateTmpl();
     }
 
     var regexp = new RegExp(settings_spoiler_strings,"i");
