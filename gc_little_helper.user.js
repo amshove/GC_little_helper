@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           GC little helper
 // @namespace      http://www.amshove.net
-// @version        9.2
+// @version        9.3
 // @include        http://www.geocaching.com/*
 // @include        https://www.geocaching.com/*
 // @include        http://maps.google.tld/*
@@ -25,12 +25,12 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
-//                                 - New: Issue #264 - Enhance google-calendar link for events
+//                 9.3             - New: Issue #264 - Enhance google-calendar link for events
 //                                 - New: Issue #258 - Hide TBs in Log-Summary on Profile Page 
 //                                 - Fix: Issue #260 - Facebook-Button is displayed again
 //                                 - New: Issue #241 - Hide header on map with button in menu 
 //                                 - Fix: [gc.com update] Linklist in Map was broken
-//                                 - Removed additional map layers - for this function use "Geocaching Map Enhancements (http://userscripts.org/scripts/show/109145)
+//                                 - Temporary removed additional map layers - we need more time - in the meantime try "Geocaching Map Enhancements (http://userscripts.org/scripts/show/109145)
 //                                 - New: Replace owner pseudonym by real owner name (Settings)
 //                                 - New: Show real owner name as tooltip
 //                                 - Fix: Show Day of Week in events was broken
@@ -631,7 +631,7 @@ profileBookmark("My Trackables", "lnk_my_trackables");
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "9.2";
+var scriptVersion = "9.3";
 
 var anzCustom = 10;
 var anzTemplates = 10;
