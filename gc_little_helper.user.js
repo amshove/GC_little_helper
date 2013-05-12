@@ -2622,12 +2622,16 @@ try{
 
 // Map-Layers
 var map_layers = new Object();
+map_layers["osm"] = {tileUrl:"http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",name:"osm",alt:"OpenStreetMap",attribution:'&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',tileSize:256,minZoom:0,maxZoom:20};
 map_layers["osm_hikebike"] = {tileUrl:"http://toolserver.org/tiles/hikebike/{z}/{x}/{y}.png",name:"osm_hikebike",alt:"OpenStreetMap (Hike&Bike)",attribution:'Map and map data \u00a9 2012 <a href="http://www.openstreetmap.org" target=\'_blank\'>OpenStreetMap</a> and contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.',tileSize:256,minZoom:0,maxZoom:20};
 map_layers["ocm_transport"] = {tileUrl:"http://a.tile2.opencyclemap.org/transport/{z}/{x}/{y}.png",name:"ocm_transport",alt:"OpenCycleMap (Transport)",attribution:'Map and map data \u00a9 2012 <a href="http://www.opencyclemap.org" target=\'_blank\'>OpenCycleMap</a> and contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.',tileSize:256,minZoom:0,maxZoom:18};
 map_layers["gm"] = {tileUrl:"http://mt.google.com/vt?x={x}&y={y}&z={z}",name:"gm",alt:"Google Maps",attribution:"Google Maps",tileSize:256,minZoom:0,maxZoom:20};
 map_layers["gm_satellite"] = {tileUrl:"http://mt0.google.com/vt/lyrs=s@130&hl=en&x={x}&y={y}&z={z}",name:"gm_satellite",alt:"Google Maps (Satellite)",attribution:"Google Maps",tileSize:256,minZoom:0,maxZoom:20};
 map_layers["gm_hybrid"] = {tileUrl:"http://mt0.google.com/vt/lyrs=s,m@110&hl=en&x={x}&y={y}&z={z}",name:"gm_hybrid",alt:"Google Maps (Hybrid)",attribution:"Google Maps",tileSize:256,minZoom:0,maxZoom:20};
 map_layers["gm_terrain"] = {tileUrl:"http://mt0.google.com/vt/v=w2p.110&hl=en&x={x}&y={y}&z={z}",name:"gm_terrain",alt:"Google Maps (Terrain)",attribution:"Google Maps",tileSize:256,minZoom:0,maxZoom:20};
+map_layers["osm_cycle"] = {tileUrl:"http://{s}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png",name:"osm_cycle",alt:"OpenCycleMap",attribution:'&copy; <a href="http://www.opencyclemap.org">OpenCycleMap</a>, <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',tileSize:256,minZoom:0,maxZoom:20};
+map_layers["osm_tf"] = {tileUrl:"http://{s}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png",name:"osm_tf",alt:"Thunderforest",attribution:'&copy; <a href="http://www.opencyclemap.org">OpenCycleMap</a>, <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',tileSize:256,minZoom:0,maxZoom:20};
+//map_layers["mqOpen"] = {tileUrl:"http://otile{s}.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpg",name:"mqOpen",alt:"MapQuestOpen",attribution:'&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',tileSize:256,minZoom:0,maxZoom:20};
 
 // Map-Overlays
 var map_overlays = new Object();
@@ -2686,6 +2690,7 @@ try{
                     var layerControl = new window.L.Control.Layers();
                     var layerToAdd = null;
                     var defaultLayer = null;
+                    var hillshadowLayer = null;
                     for(name in map_layers){
                         layerToAdd = new L.tileLayer(map_layers[name].tileUrl,map_layers[name]);
                         layerControl.addBaseLayer(layerToAdd, map_layers[name].alt);
@@ -2697,7 +2702,11 @@ try{
                         }
                     }         
                     for(name in map_overlays){
-                        layerControl.addOverlay(new L.tileLayer(map_overlays[name].tileUrl,map_overlays[name]), map_overlays[name].alt);
+                        layerToAdd = new L.tileLayer(map_overlays[name].tileUrl,map_overlays[name])
+                        layerControl.addOverlay(layerToAdd, map_overlays[name].alt);
+                        if(name == "hillshadow"){
+                            hillshadowLayer=layerToAdd;
+                    	}
                     }
                     
                     window.MapSettings.Map.addControl(layerControl);
@@ -2710,6 +2719,9 @@ try{
                         }
                     }
                     window.MapSettings.Map.addLayer(defaultLayer);
+                    if(settings_show_hillshadow){
+                        settings_show_hillshadow(hillshadowLayer);
+                    }
                     
                 }
             };
@@ -2727,9 +2739,9 @@ try{
     //unsafeWindow.Groundspeak.Map.UserSession.options.showFinds = false;
       var hillshadow_akt = false;
       //add Hill-Shadow
-      if(settings_show_hillshadow){
-        var hillshadow = new unsafeWindow.L.TileLayer("http://toolserver.org/~cmarqu/hill/{z}/{x}/{y}.png", {maxZoom: 20});
-        setTimeout(function(){ unsafeWindow.MapSettings.Map.addLayer(hillshadow); },1000);
+ //     if(settings_show_hillshadow){
+        //var hillshadow = new unsafeWindow.L.TileLayer("http://toolserver.org/~cmarqu/hill/{z}/{x}/{y}.png", {maxZoom: 20});
+        //setTimeout(function(){ unsafeWindow.MapSettings.Map.addLayer(hillshadow); },1000);
 
 //        function show_hillshadow(bool){
 //          GM_log("show_hillshadow: " + bool);
@@ -2753,7 +2765,7 @@ try{
 //       /     }
 //        }
 //        unsafeWindow.MapSettings.Map.on('layeradd',maptoggle);
-      }
+//      }
   
 //      //Select Default-Layer
 //      if(settings_map_default_layer != "mq" && settings_map_default_layer != "false") {
