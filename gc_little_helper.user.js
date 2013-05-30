@@ -25,6 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                                 - Fix: Issue #269 - Special Charecters in owner name are destroyed 
 //                                 - New: Issue #268 - Don't add signature when logging via fieldnotes (new option)
 //                 9.3             - New: Issue #264 - Enhance google-calendar link for events
 //                                 - New: Issue #258 - Hide TBs in Log-Summary on Profile Page 
@@ -1132,7 +1133,7 @@ function get_real_owner(){
     for(var i=0; i<links.length; i++){
       var match = links[i].href.match(/\/seek\/nearest\.aspx\?u\=(.*)$/);
       if(match){
-        return match[1];
+        return urldecode(match[1]);
       }
     }
     return false;
