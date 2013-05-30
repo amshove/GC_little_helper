@@ -25,6 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                                 - New: Issue #268 - Don't add signature when logging via fieldnotes (new option)
 //                 9.3             - New: Issue #264 - Enhance google-calendar link for events
 //                                 - New: Issue #258 - Hide TBs in Log-Summary on Profile Page 
 //                                 - Fix: Issue #260 - Facebook-Button is displayed again
@@ -793,6 +794,7 @@ settings_replace_log_by_last_log = GM_getValue("settings_replace_log_by_last_log
 settings_hide_top_button = GM_getValue("settings_hide_top_button",false);
 settings_show_real_owner = GM_getValue("settings_show_real_owner",false);
 settings_hide_visits_in_profile = GM_getValue("settings_hide_visits_in_profile",false);
+settings_log_signature_on_fieldnotes = GM_getValue("settings_log_signature_on_fieldnotes",true);
 
  /*temp-helper to change from number to text --> will only be accessed once*/
 try{
@@ -2266,8 +2268,10 @@ try{
     }
   
     // Signature
-    if(document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML == "" || document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?PLogGuid\=/)){
-      document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML += GM_getValue("settings_log_signature","");
+    if(document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML == ""){
+      if(settings_log_signature_on_fieldnotes && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?PLogGuid\=/)){
+        document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML += GM_getValue("settings_log_signature","");
+      }
     }
   
     // Set Cursor to Pos1
@@ -5164,6 +5168,7 @@ function gclh_showConfig(){
     html += "</select>"+show_help("If you set this option, the selected value will be selected automatically, if you open a log-page.")+"<br>";
     html += "Cache-Signature:"+show_help("The Signature will automatically be inserted into your logs. Also you are able to use variables. #found# will be replaced with your amount of found caches and will be added with 1 - #found_no# is the same without the +1 and #me# with your username (useful for different accounts at one computer) - #owner# with the name of the owner.")+" <font class='gclh_small'>(#found# will be replaced with founds+1 - #found_no# will be replaced with founds - #me# with your username - #owner# with the name of the owner)</font><br>";
     html += "<textarea class='gclh_form' rows='8' cols='40' id='settings_log_signature'>&zwnj;"+GM_getValue("settings_log_signature","")+"</textarea><br>";
+    html += checkbox('settings_log_signature_on_fieldnotes', 'Add Log-Signature on FieldNotes-Logs') + show_help('If this option is disabled, the Log-Signature will not be used by Logs out of FieldNotes - you can use it, if you already have an signature in your FieldNotes.')+"<br>";
     html += "TB-Signature:"+show_help("The Signature will automatically be inserted into your TB-logs. Also you are able to use variables. #found# will be replaced with your amount of found caches and will be added with 1 - #found_no# is the same without the +1 and #me# with your username (useful for different accounts at one computer) - #owner# with the name of the owner.")+" <font class='gclh_small'>(#found# will be replaced with founds+1 - #found_no# will be replaced with founds - #me# with your username - #owner# with the name of the owner)</font><br>";
     html += "<textarea class='gclh_form' rows='8' cols='40' id='settings_tb_signature'>&zwnj;"+GM_getValue("settings_tb_signature","")+"</textarea><br>";
     html += "<br>";
@@ -5541,6 +5546,7 @@ function gclh_showConfig(){
       'settings_replace_log_by_last_log',
       'settings_show_real_owner',
       'settings_hide_visits_in_profile',
+      'settings_log_signature_on_fieldnotes',
       'settings_map_hide_sidebar'
 //      'settings_hide_recentlyviewed'
     );
