@@ -25,6 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                                 - New: Issue #271 - Remove footer from print-page of listings
 //                                 - Fix: Issue #269 - Special Charecters in owner name are destroyed 
 //                                 - New: Issue #268 - Don't add signature when logging via fieldnotes (new option)
 //                 9.3             - New: Issue #264 - Enhance google-calendar link for events
@@ -1483,6 +1484,13 @@ try{
     }
   }
 }catch(e){ gclh_error("Hide Disclaimer",e); }
+
+// Hide on print-page
+try{
+  if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cdpf\.aspx/)){
+    document.getElementById("pnlDisplay").removeChild(document.getElementById("Footer"));
+  }
+}catch(e){ gclh_error("Hide on print-page",e); }
 
 //remove paragraph containing the link to the advertisement instructions (not the advertisements itself!)
 try{
