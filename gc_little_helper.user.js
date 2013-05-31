@@ -25,6 +25,8 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                                 - New: List of Map-Layers can be selected in settings to reduce the long gc.com list of layers
+//                                 - Fix: Issue #266 - [gc.com update] Map selection problem and additinal map layers, Hillshadow, ..
 //                                 - New: Issue #271 - Remove footer from print-page of listings
 //                                 - Fix: Issue #269 - Special Charecters in owner name are destroyed 
 //                                 - New: Issue #268 - Don't add signature when logging via fieldnotes (new option)
@@ -742,7 +744,7 @@ settings_homezone_radius = GM_getValue("settings_homezone_radius","10");
 settings_homezone_color = GM_getValue("settings_homezone_color","#0000FF");
 // Settings: Hill Shadow
 settings_show_hillshadow = GM_getValue("settings_show_hillshadow",false);
-settings_map_hillshadow = GM_getValue("settings_map_hillshadow","").split("###");
+settings_map_layers = GM_getValue("settings_map_layers","").split("###");
 // Settings: default Map
 map_url = "http://www.geocaching.com/map/default.aspx";
 // Settings: default Log Type
@@ -2609,35 +2611,35 @@ try{
 }catch(e){ gclh_error("Hide Map Header",e); }
 
 // Map-Layers
-var map_layers = new Object();
+var all_map_layers = new Object();
 // gc.com Default-Layers
-map_layers["OpenStreetMap Default"] = {tileUrl:"http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",attribution: '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'};
-map_layers["OpenStreetMap German Style"] = {tileUrl:"http://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png",attribution: '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'};
-map_layers["OpenStreetMap Black and White"] = {tileUrl:"http://{s}.www.toolserver.org/tiles/bw-mapnik/{z}/{x}/{y}.png",attribution: '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'};
+all_map_layers["OpenStreetMap Default"] = {tileUrl:"http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",attribution: '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'};
+all_map_layers["OpenStreetMap German Style"] = {tileUrl:"http://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png",attribution: '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'};
+all_map_layers["OpenStreetMap Black and White"] = {tileUrl:"http://{s}.www.toolserver.org/tiles/bw-mapnik/{z}/{x}/{y}.png",attribution: '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'};
 
-map_layers["Thunderforest OpenCycleMap"] = {tileUrl:"http://{s}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png",attribution: '&copy; <a href="http://www.opencyclemap.org">OpenCycleMap</a>, <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'};
-map_layers["Thunderforest Transport"] = {tileUrl:"http://{s}.tile2.opencyclemap.org/transport/{z}/{x}/{y}.png",attribution: '&copy; <a href="http://www.opencyclemap.org">OpenCycleMap</a>, <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'};
-map_layers["Thunderforest Landscape"] = {tileUrl:"http://{s}.tile3.opencyclemap.org/landscape/{z}/{x}/{y}.png",attribution: '&copy; <a href="http://www.opencyclemap.org">OpenCycleMap</a>, <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'};
+all_map_layers["Thunderforest OpenCycleMap"] = {tileUrl:"http://{s}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png",attribution: '&copy; <a href="http://www.opencyclemap.org">OpenCycleMap</a>, <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'};
+all_map_layers["Thunderforest Transport"] = {tileUrl:"http://{s}.tile2.opencyclemap.org/transport/{z}/{x}/{y}.png",attribution: '&copy; <a href="http://www.opencyclemap.org">OpenCycleMap</a>, <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'};
+all_map_layers["Thunderforest Landscape"] = {tileUrl:"http://{s}.tile3.opencyclemap.org/landscape/{z}/{x}/{y}.png",attribution: '&copy; <a href="http://www.opencyclemap.org">OpenCycleMap</a>, <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'};
 
-map_layers["MapQuest OSM"] = {tileUrl:"http://otile{s}.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpg",attribution: 'Tiles Courtesy of <a href="http://www.mapquest.com/">MapQuest</a> &mdash; Map data {attribution.OpenStreetMap}',subdomains: "1234"};
-map_layers["MapQuest Aerial"] = {tileUrl:"http://oatile{s}.mqcdn.com/tiles/1.0.0/sat/{z}/{x}/{y}.jpg",attribution: 'Tiles Courtesy of <a href="http://www.mapquest.com/">MapQuest</a> &mdash; ' + "Portions Courtesy NASA/JPL-Caltech and U.S. Depart. of Agriculture, Farm Service Agency",subdomains: "1234"};
+all_map_layers["MapQuest OSM"] = {tileUrl:"http://otile{s}.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpg",attribution: 'Tiles Courtesy of <a href="http://www.mapquest.com/">MapQuest</a> &mdash; Map data {attribution.OpenStreetMap}',subdomains: "1234"};
+all_map_layers["MapQuest Aerial"] = {tileUrl:"http://oatile{s}.mqcdn.com/tiles/1.0.0/sat/{z}/{x}/{y}.jpg",attribution: 'Tiles Courtesy of <a href="http://www.mapquest.com/">MapQuest</a> &mdash; ' + "Portions Courtesy NASA/JPL-Caltech and U.S. Depart. of Agriculture, Farm Service Agency",subdomains: "1234"};
 
-map_layers["Stamen Toner"] = {tileUrl:"http://{s}.tile.stamen.com/toner/{z}/{x}/{y}.png",attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; ' + "Map data {attribution.OpenStreetMap}",subdomains: "abcd",minZoom: 0,maxZoom: 20};
-map_layers["Stamen Terrain"] = {tileUrl:"http://{s}.tile.stamen.com/terrain/{z}/{x}/{y}.png",attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; ' + "Map data {attribution.OpenStreetMap}",subdomains: "abcd",minZoom: 4,maxZoom: 18};
-map_layers["Stamen Watercolor"] = {tileUrl:"http://{s}.tile.stamen.com/watercolor/{z}/{x}/{y}.png",attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; ' + "Map data {attribution.OpenStreetMap}",subdomains: "abcd",minZoom: 3,maxZoom: 16};
+all_map_layers["Stamen Toner"] = {tileUrl:"http://{s}.tile.stamen.com/toner/{z}/{x}/{y}.png",attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; ' + "Map data {attribution.OpenStreetMap}",subdomains: "abcd",minZoom: 0,maxZoom: 20};
+all_map_layers["Stamen Terrain"] = {tileUrl:"http://{s}.tile.stamen.com/terrain/{z}/{x}/{y}.png",attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; ' + "Map data {attribution.OpenStreetMap}",subdomains: "abcd",minZoom: 4,maxZoom: 18};
+all_map_layers["Stamen Watercolor"] = {tileUrl:"http://{s}.tile.stamen.com/watercolor/{z}/{x}/{y}.png",attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; ' + "Map data {attribution.OpenStreetMap}",subdomains: "abcd",minZoom: 3,maxZoom: 16};
 
-map_layers["Esri WorldStreetMap"] = {tileUrl:"http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",attribution: "Tiles &copy; Esri"};
-map_layers["Esri DeLorme"] = {tileUrl:"http://server.arcgisonline.com/ArcGIS/rest/services/Specialty/DeLorme_World_Base_Map/MapServer/tile/{z}/{y}/{x}",attribution: "Tiles &copy; Esri &mdash; Copyright: \u00a92012 DeLorme",maxZoom: 11};
-map_layers["Esri WorldTopoMap"] = {tileUrl:"http://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}",attribution: "Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community"};
-map_layers["Esri WorldImagery"] = {tileUrl:"http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",attribution: "Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community"};
-map_layers["Esri OceanBasemap"] = {tileUrl:"http://services.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/{z}/{y}/{x}",attribution: "Tiles &copy; Esri &mdash; Sources: GEBCO, NOAA, CHS, OSU, UNH, CSUMB, National Geographic, DeLorme, NAVTEQ, and Esri",maxZoom: 11};
-map_layers["Esri NatGeoWorldMap"] = {tileUrl:"http://services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}",attribution: "Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC"};
+all_map_layers["Esri WorldStreetMap"] = {tileUrl:"http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",attribution: "Tiles &copy; Esri"};
+all_map_layers["Esri DeLorme"] = {tileUrl:"http://server.arcgisonline.com/ArcGIS/rest/services/Specialty/DeLorme_World_Base_Map/MapServer/tile/{z}/{y}/{x}",attribution: "Tiles &copy; Esri &mdash; Copyright: \u00a92012 DeLorme",maxZoom: 11};
+all_map_layers["Esri WorldTopoMap"] = {tileUrl:"http://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}",attribution: "Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community"};
+all_map_layers["Esri WorldImagery"] = {tileUrl:"http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",attribution: "Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community"};
+all_map_layers["Esri OceanBasemap"] = {tileUrl:"http://services.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/{z}/{y}/{x}",attribution: "Tiles &copy; Esri &mdash; Sources: GEBCO, NOAA, CHS, OSU, UNH, CSUMB, National Geographic, DeLorme, NAVTEQ, and Esri",maxZoom: 11};
+all_map_layers["Esri NatGeoWorldMap"] = {tileUrl:"http://services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}",attribution: "Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC"};
 
 // GClh additional Layers
-map_layers["OpenStreetMap Hike and Bike"] = {tileUrl:"http://toolserver.org/tiles/hikebike/{z}/{x}/{y}.png",attribution:'Map and map data \u00a9 2012 <a href="http://www.openstreetmap.org" target=\'_blank\'>OpenStreetMap</a> and contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.',tileSize:256,minZoom:0,maxZoom:20};
-map_layers["Google Maps"] = {tileUrl:"http://mt.google.com/vt?x={x}&y={y}&z={z}",attribution:"Google Maps",tileSize:256,minZoom:0,maxZoom:20};
-map_layers["Google Maps Satellite"] = {tileUrl:"http://mt0.google.com/vt/lyrs=s@130&hl=en&x={x}&y={y}&z={z}",attribution:"Google Maps",tileSize:256,minZoom:0,maxZoom:20};
-map_layers["Google Maps Hybrid"] = {tileUrl:"http://mt0.google.com/vt/lyrs=s,m@110&hl=en&x={x}&y={y}&z={z}",attribution:"Google Maps",tileSize:256,minZoom:0,maxZoom:20};
+all_map_layers["OpenStreetMap Hike and Bike"] = {tileUrl:"http://toolserver.org/tiles/hikebike/{z}/{x}/{y}.png",attribution:'Map and map data \u00a9 2012 <a href="http://www.openstreetmap.org" target=\'_blank\'>OpenStreetMap</a> and contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.',tileSize:256,minZoom:0,maxZoom:20};
+all_map_layers["Google Maps"] = {tileUrl:"http://mt.google.com/vt?x={x}&y={y}&z={z}",attribution:"Google Maps",tileSize:256,minZoom:0,maxZoom:20};
+all_map_layers["Google Maps Satellite"] = {tileUrl:"http://mt0.google.com/vt/lyrs=s@130&hl=en&x={x}&y={y}&z={z}",attribution:"Google Maps",tileSize:256,minZoom:0,maxZoom:20};
+all_map_layers["Google Maps Hybrid"] = {tileUrl:"http://mt0.google.com/vt/lyrs=s,m@110&hl=en&x={x}&y={y}&z={z}",attribution:"Google Maps",tileSize:256,minZoom:0,maxZoom:20};
 
 // Map-Overlays
 var map_overlays = new Object();
@@ -2685,6 +2687,13 @@ try{
 //		}).append("<div id='myHelper2' style=''visibility:hidden;height:0px;width:0px;> </div>");
 //		
 //    }
+
+    // Auswahl nur bestimmter Layer
+    var map_layers = new Object();
+    if(settings_map_layers == "" || settings_map_layers.length < 1) map_layers = all_map_layers;
+    else{
+      for(var i=0; i<settings_map_layers.length; i++) map_layers[settings_map_layers[i]] = all_map_layers[settings_map_layers[i]];
+    }
 
     function addLayer(){  
         injectPageScriptFunction(function(map_layers, map_overlays,  settings_map_default_layer, settings_show_hillshadow){
@@ -5064,25 +5073,18 @@ function gclh_showConfig(){
     html += " &nbsp; "+checkbox('settings_map_hide_6',"<img src='http://www.geocaching.com/images/WptTypes/sm/6.gif'>")+" &nbsp; "+checkbox('settings_map_hide_453',"<img src='http://www.geocaching.com/images/WptTypes/sm/453.gif'>")+" &nbsp; "+checkbox('settings_map_hide_13',"<img src='http://www.geocaching.com/images/WptTypes/sm/13.gif'>")+" &nbsp; "+checkbox('settings_map_hide_1304',"<img src='http://www.geocaching.com/images/WptTypes/sm/1304.gif'>")+"<br/>";
     html += " &nbsp; "+checkbox('settings_map_hide_4',"<img src='http://www.geocaching.com/images/WptTypes/sm/4.gif'>")+" &nbsp; "+checkbox('settings_map_hide_11',"<img src='http://www.geocaching.com/images/WptTypes/sm/11.gif'>")+" &nbsp; "+checkbox('settings_map_hide_137',"<img src='http://www.geocaching.com/images/WptTypes/sm/137.gif'>")+"<br/>";
     html += " &nbsp; "+checkbox('settings_map_hide_8',"<img src='http://www.geocaching.com/images/WptTypes/sm/8.gif'>")+" &nbsp; "+checkbox('settings_map_hide_1858',"<img src='http://www.geocaching.com/images/WptTypes/sm/1858.gif'>")+"<br/>";
+    html += "Available Layers in Map: <font class='gclh_small'>(multiselect with Strg)</font><br><select class='gclh_form' id='settings_map_layers' multiple='multiple'>";
+    for(name in all_map_layers){
+      html += "  <option value='"+name+"' "+(settings_map_layers.indexOf(name) != -1 ? "selected='selected'" : "")+">"+name+"</option>";
+    }
+    html += "</select>"+show_help("Here you can select the maps which should be available to select with the map. With this option you can reduce the long list to the layers you really need. If none is select, all will be displayed.") +"<br>";   
     html += "Default Layer: <select class='gclh_form' id='settings_map_default_layer'>";
     html += "  <option value='false' "+(settings_map_default_layer == 'false' ? "selected='selected'" : "")+">-- no default --</option>";
-    for(name in map_layers){
+    for(name in all_map_layers){
       html += "  <option value='"+name+"' "+(settings_map_default_layer == name ? "selected='selected'" : "")+">"+name+"</option>";
     }
     html += "</select>"+show_help("Here you can select the map source you want to use as default in the map.") +"<br>";
-    html += checkbox('settings_show_hillshadow', 'Show Hillishadow by Default') + show_help("If you want 3D-like-Shadow to be displayed by default, activate this function.") + "<br/>";
-    html += "<select class='gclh_form' id='settings_map_hillshadow' multiple='multiple'>";
-    html += "  <option value='mpqosm' "+(settings_map_hillshadow.indexOf('mpqosm') != -1 ? "selected='selected'" : "")+">MapQuest (gc.com default)</option>";
-    html += "  <option value='cloudmade' "+(settings_map_hillshadow.indexOf('cloudmade') != -1 ? "selected='selected'" : "")+">CloudMade</option>";
-    html += "  <option value='mpqa' "+(settings_map_hillshadow.indexOf('mpqa') != -1 ? "selected='selected'" : "")+">MapQuest Aerial</option>";
-    html += "  <option value='osm' "+(settings_map_hillshadow.indexOf('osm') != -1 ? "selected='selected'" : "")+">OpenStreetMap</option>";
-    html += "  <option value='osm_hikebike' "+(settings_map_hillshadow.indexOf('osm_hikebike') != -1 ? "selected='selected'" : "")+">OpenStreetMap (Hike&Bike)</option>";
-    html += "  <option value='ocm' "+(settings_map_hillshadow.indexOf('ocm') != -1 ? "selected='selected'" : "")+">OpenCycleMap</option>";
-    html += "  <option value='ocm_transport' "+(settings_map_hillshadow.indexOf('ocm_transport') != -1 ? "selected='selected'" : "")+">OpenCycleMap (Transport)</option>";
-    html += "  <option value='gm' "+(settings_map_hillshadow.indexOf('gm') != -1 ? "selected='selected'" : "")+">Google Maps</option>";
-    html += "  <option value='gm_satellite' "+(settings_map_hillshadow.indexOf('gm_satellite') != -1 ? "selected='selected'" : "")+">Google Maps (Satellite)</option>";
-    html += "  <option value='gm_hybrid' "+(settings_map_hillshadow.indexOf('gm_hybrid') != -1 ? "selected='selected'" : "")+">Google Maps (Hybrid)</option>";
-    html += "</select>"+show_help("Here you can select the maps which should be loaded with hillshadow. \"Show Hill-Shadows on Map\" requried.") +"<br>";   
+    html += checkbox('settings_show_hillshadow', 'Show Hillshadow by Default') + show_help("If you want 3D-like-Shadow to be displayed by default, activate this function.") + "<br/>";
     html += checkbox('settings_map_hide_sidebar', 'Hide sidebar by default') + show_help("If you want to hide the sidebar on the map, just select this option.") + "<br/>";
     html += checkbox('settings_hide_map_header', 'Hide Header by default') + show_help("If you want to hide the header of the map, just select this option.") + "<br/>";
     html += "";
@@ -5450,16 +5452,13 @@ function gclh_showConfig(){
     GM_setValue("settings_spoiler_strings",document.getElementById('settings_spoiler_strings').value);
 
     
-//    var hillmaps = document.getElementById('settings_map_hillshadow');
-//    var count = 0;
-//    var hillmaparr = new Array();
-//    for (i=0; i<hillmaps.options.length; i++) {
-//      if (hillmaps.options[i].selected) {
-//        hillmaparr[count] = hillmaps.options[i].value;
-//        count++;
-//      }
-//    }
-//    GM_setValue("settings_map_hillshadow",hillmaparr.join("###"));
+    var new_map_layers = document.getElementById('settings_map_layers');
+    var new_settings_map_layers = new Array();
+    for(var i=0; i<new_map_layers.options.length; i++){
+      if(new_map_layers.options[i].selected) new_settings_map_layers.push(new_map_layers.options[i].value);
+    }
+    GM_setValue('settings_map_layers',new_settings_map_layers.join("###"));
+
     var checkboxes = new Array(
       'settings_submit_log_button',
       'settings_log_inline',
