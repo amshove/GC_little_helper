@@ -25,6 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                                 - New: Issue #224 - Warn user when navigating off the page while editing the log
 //                                 - Fix: Issue #129 - Mail-Icon beside username on trackables 
 //                                 - Fix: Issue #11 - Mail-Icon beside username on log-page
 //                                 - Fix: Issue #237 - Show PQ in Map doesn't work with direct link
@@ -1894,10 +1895,13 @@ try{
   }
 }catch(e){ gclh_error("Show BBCode (Listing-Editor)",e); }
 
-//Maxlength of Logtext
+//Maxlength of Logtext and unsaved warning
 try{
   if((document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?(id|guid|ID|wp|LUID|PLogGuid)\=/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/track\/log\.aspx\?(id|wid|guid|ID|LUID|PLogGuid)\=/)) && document.getElementById('litDescrCharCount')){
+    var changed = false;
+
     function limitLogText(limitField) {
+      changed = true; // Logtext hat sich geaendert - Warnung beim Seite verlassen
       // aus gc.com Funktion "checkLogInfoLength"
       var editor = $('#ctl00_ContentBody_LogBookPanel1_uxLogInfo');
       var limitNum = parseInt($('#ctl00_ContentBody_LogBookPanel1_uxLogInfo').attr("CKEMaxLength"));
@@ -1913,6 +1917,14 @@ try{
         counterelement.innerHTML = length + '/' + limitNum;
       }
     }
+
+    // Meldung bei ungespeichertem Log
+    window.onbeforeunload = function (){
+      if(changed){
+        return "This page is asking you to confirm that you want to leave - data you have entered may not be saved."; // Text wird nicht angezeigt bei FF sondern deren default (ist der gleiche weil ich den vorsichtshalber hier reingepackt habe)
+      }
+    }
+    document.getElementById("ctl00_ContentBody_LogBookPanel1_LogButton").addEventListener("click",function(){ changed = false; },false); // Damit die Meldung nicht beim Submit kommt
   
     var logfield = document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo');
     logfield.addEventListener("keyup", function(){ limitLogText(logfield); }, false);
@@ -1927,7 +1939,7 @@ try{
     counterspan.appendChild(counterelement);
     counterpos.appendChild(counterspan);
   }
-}catch(e){ gclh_error("Maxlength of Logtext",e); }
+}catch(e){ gclh_error("Maxlength of Logtext and unsaved warning",e); }
 
 // Show Eventday beside Date
 try{
