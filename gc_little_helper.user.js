@@ -25,6 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                                 - New: Issue #251 - Show VIPs who haven't found the cache (new option)
 //                                 - New: Issue #224 - Warn user when navigating off the page while editing the log
 //                                 - Fix: Issue #129 - Mail-Icon beside username on trackables 
 //                                 - Fix: Issue #11 - Mail-Icon beside username on log-page
@@ -808,6 +809,7 @@ settings_hide_visits_in_profile = GM_getValue("settings_hide_visits_in_profile",
 settings_log_signature_on_fieldnotes = GM_getValue("settings_log_signature_on_fieldnotes",true);
 settings_map_hide_sidebar = GM_getValue("settings_map_hide_sidebar",false);
 settings_hover_image_max_size = GM_getValue("settings_hover_image_max_size",600);
+settings_vip_show_nofound = GM_getValue("settings_vip_show_nofound",false);
 
 
 // Settings: Custom Bookmarks
@@ -3520,6 +3522,23 @@ try{
       box.innerHTML = "<br>"+box.innerHTML;
       map.parentNode.insertBefore(box,map);
       map.parentNode.insertBefore(document.createElement("p"),map);
+
+      // Show VIP List "not found"
+      if(settings_vip_show_nofound){
+        var box2 = document.createElement("div");
+        var headline2 = document.createElement("h3");
+        var body2 = document.createElement("div");
+        box2.setAttribute("class","CacheDetailNavigationWidget NoPrint");
+        headline2.setAttribute("class","WidgetHeader");
+        body2.setAttribute("class","WidgetBody");
+        body2.setAttribute("id","gclh_vip_list_nofound");
+        headline2.innerHTML = "<img width=\"16\" height=\"16\" title=\"VIP-List\" alt=\"VIP-List\" src=\"http://www.geocaching.com/images/icons/icon_attended.gif\"> VIP-List \"not found\"";
+        box2.appendChild(headline2);
+        box2.appendChild(body2);
+        box2.innerHTML = box2.innerHTML;
+        map.parentNode.insertBefore(box2,map);
+        map.parentNode.insertBefore(document.createElement("p"),map);
+      }
   
       var css = "a.gclh_log:hover { " +
         "  text-decoration:underline;" +
@@ -3550,12 +3569,22 @@ try{
         var show_owner = settings_show_owner_vip_list;
         var list = document.getElementById("gclh_vip_list");
         list.innerHTML = "";
+
+        // Liste "not found"-VIPs
+        var list_nofound = false;
+        if(document.getElementById("gclh_vip_list_nofound")){
+          list_nofound = document.getElementById("gclh_vip_list_nofound");
+          list_nofound.innerHTML = "";
+        }
+        users_found = new Array();
   
         function gclh_build_long_list(){
           for(var i=0; i<log_infos_long.length; i++){
             var user = log_infos_long[i]["user"];
             if(in_array(user,vips) || user == owner_name){
               if(!log_infos_long[i]["date"]) continue;
+
+              if(log_infos_long[i]["icon"].match(/\/(2|10)\.png$/)) users_found.push(user); // fuer not found liste
   
               var span = document.createElement("span");
               var profile = document.createElement("a");
@@ -3652,6 +3681,8 @@ try{
             // Log-Links
             for(var x=0; x<log_infos[user].length; x++){
               if(log_infos[user][x] && log_infos[user][x]["icon"] && log_infos[user][x]["id"]){
+                if(log_infos[user][x]["icon"].match(/\/(2|10)\.png$/)) users_found.push(user); // fuer not found liste
+
                 var image = document.createElement("img");
                 var log_text = document.createElement("span");
                 log_text.innerHTML = "<img src='"+log_infos[user][x]["icon"]+"'> <b>"+user+" - "+log_infos[user][x]["date"]+"</b><br/>"+log_infos[user][x]["log"];
@@ -3691,8 +3722,45 @@ try{
             gclh_build_list(vips[i]);
           }
         }
+
+        // "Not found"-Liste erstellen
+        if(document.getElementById("gclh_vip_list_nofound")){
+          for(var i=0; i<vips.length; i++){
+            var user = vips[i];
+            if(in_array(user,users_found)) continue;
+
+            var span = document.createElement("span");
+            var profile = document.createElement("a");
+            profile.setAttribute("href","http://www.geocaching.com/profile/?u="+urlencode(user));
+            profile.innerHTML = user;
+            if(owner_name && owner_name == user){
+              continue;
+            }else if(user == myself){
+              continue;
+            }
+            span.appendChild(profile);
+
+            // VIP-Link
+            var link = document.createElement("a");
+            var img = document.createElement("img");
+            img.setAttribute("border","0");
+            link.appendChild(img);
+            link.setAttribute("href","javascript:void(0);");
+            link.setAttribute("name",user);
+
+            img.setAttribute("src",img_vip_on);
+            img.setAttribute("title","Remove User "+user+" from VIP-List");
+            link.addEventListener("click",gclh_del_vip,false);
+
+            list_nofound.appendChild(span);
+            list_nofound.appendChild(document.createTextNode("   "));
+            list_nofound.appendChild(link);            
+
+            list_nofound.appendChild(document.createElement("br"));
+          }
+        }
       }
-      gclh_build_vip_list();
+//      gclh_build_vip_list();
     // Listing (All-VIP-List)
     }else if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\//) && document.getElementById("ctl00_ContentBody_uxBanManWidget")){
       var widget = document.createElement("div");
@@ -4309,6 +4377,11 @@ try{
         var span_loading = document.createElement("span");
         span_loading.innerHTML = '<img src="/images/loading2.gif" class="StatusIcon" alt="Loading" />Loading Cache Logs...';
         document.getElementById("gclh_vip_list").appendChild(span_loading);
+      }
+      if(document.getElementById("gclh_vip_list_nofound")){
+        var span_loading = document.createElement("span");
+        span_loading.innerHTML = '<img src="/images/loading2.gif" class="StatusIcon" alt="Loading" />Loading Cache Logs...';
+        document.getElementById("gclh_vip_list_nofound").appendChild(span_loading);
       }
       
       function gclh_load_helper(){
@@ -4980,6 +5053,7 @@ function gclh_showConfig(){
     html += checkbox('settings_show_vip_list', 'Show VIP-List') + show_help("The VIP-List is a list, displayed at the side on a cache-listing. You can add any user to your VIP-List by clicking the little VIP-Icon beside the username. If it is green, this person is a VIP. The VIP-List only shows VIPs and the logs of VIPs, wich already posted a log to this cache. With this option you are able to see wich of your VIPs already found this cache. The Owner is automatically a VIP for the cache, so you can see, what happened with the cache (disable, maint, enable, ..). On your profile-page there is an overview of all your VIPs.") + "<br/>";
     html += "&nbsp; "+checkbox('settings_show_owner_vip_list', 'Show Owner in VIP-List') + "<br/>";
     html += "&nbsp; "+checkbox('settings_show_long_vip', 'Show long VIP-List (one row per log)') + show_help("This is another type of displaying the VIP-List. If you disable this option you get the short list - one row per VIP and the Logs as Icons beside the VIP. If you enable this option, there is a row for every log.")+ "<br/>";
+    html += "&nbsp; "+checkbox('settings_vip_show_nofound', 'Show a list of VIPs who have not found the cache') + show_help("This option enables an additional VIP-List with VIPs who have not found the cache.")+"<br>";
     html += checkbox('settings_show_thumbnails', 'Show Thumbnails of Images') + show_help("With this option the images in logs are displayed as thumbnails to have a preview. If you hover over a Thumbnail, you can see the big one. This also works in gallerys. The max size option prevents the hovered images from leaving the browser window.") + "&nbsp; Max size of big image: <input class='gclh_form' size=2 type='text' id='settings_hover_image_max_size' value='"+settings_hover_image_max_size+"'>px <br/>";
     html += "Spoiler-Filter: <input class='gclh_form' type='text' id='settings_spoiler_strings' value='"+settings_spoiler_strings+"'> "+show_help("If one of these words is found in the caption of the image, there will be no thumbnail. It is to prevent seeing spoilers as thumbnails. Words have to be divided by |")+"<br/>";
     html += "&nbsp; "+checkbox('settings_imgcaption_on_top','Show Caption on Top')+"<br/>";
@@ -5399,6 +5473,7 @@ function gclh_showConfig(){
       'settings_show_real_owner',
       'settings_hide_visits_in_profile',
       'settings_log_signature_on_fieldnotes',
+      'settings_vip_show_nofound',
       'settings_map_hide_sidebar'
 //      'settings_hide_recentlyviewed'
     );
