@@ -28,6 +28,7 @@
 //                                 - Fix: Issue #237 - Show PQ in Map doesn't work with direct link
 //                                 - Fix: Issue #274 - [gc.com update] Apply GClh to new listing design and urls (Not fully tested by now, but the most will work)
 //                                 - New: Removed "Route to this Location"-Link - gc.com has added it natively ("Driving Directions")
+//                                 - New: Issue #207 - Make HillShadow-Overlay "live"-choosable 
 //                                 - New: List of Map-Layers can be selected in settings to reduce the long gc.com list of layers
 //                                 - Fix: Issue #266 - [gc.com update] Map selection problem and additinal map layers, Hillshadow, ..
 //                                 - New: Issue #271 - Remove footer from print-page of listings
@@ -2213,7 +2214,9 @@ try{
   
     // Signature
     if(document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML == ""){
-      if(settings_log_signature_on_fieldnotes && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?PLogGuid\=/)){
+      if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?PLogGuid\=/)){
+        if(settings_log_signature_on_fieldnotes) document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML += GM_getValue("settings_log_signature","");
+      }else{
         document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML += GM_getValue("settings_log_signature","");
       }
     }
