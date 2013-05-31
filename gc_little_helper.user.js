@@ -25,6 +25,8 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                                 - Fix: Issue #129 - Mail-Icon beside username on trackables 
+//                                 - Fix: Issue #11 - Mail-Icon beside username on log-page
 //                                 - Fix: Issue #237 - Show PQ in Map doesn't work with direct link
 //                                 - Fix: Issue #274 - [gc.com update] Apply GClh to new listing design and urls (Not fully tested by now, but the most will work)
 //                                 - New: Removed "Route to this Location"-Link - gc.com has added it natively ("Driving Directions")
@@ -866,15 +868,21 @@ else{
   main();
 }
 
-function is_page(name){
+// Wrapper, um zu pruefen auf welche Seite der Link zeigt - um zu vermeiden, die URL-Abfrage mehrfach im Quelltext wiederholen zu muessen
+function is_link(name,url){
   switch(name){
     case "cache_listing":
-      if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/geocache\//)) return true;
+      if(url.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/geocache\//)) return true;
       else return false;
      break;
     default:
       return false;
   }
+}
+
+// Wrapper fuer die aktuelle Seite (siehe is_link)
+function is_page(name){
+  return is_link(name,document.location.href);
 }
 
 function main(){
@@ -2076,11 +2084,13 @@ try{
 try{
   if(settings_show_mail && (is_page("cache_listing") || document.location.href.match(/^http:\/\/www\.geocaching\.com\/(seek\/log|track\/details|track\/log)\.aspx(\?|\?pf\=\&)(guid|wp|tracker|id|LUID|ID|PLogGuid)\=[a-zA-Z0-9-]*/))){
     var links = document.getElementsByTagName('a');
+
+    // Name des Caches herausfinden
     if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?.*/)){
-      var name = "";
+      var name = ""; 
       var image = true;
       for(var i=0; i<links.length; i++){
-        if(links[i].href.match(/http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/)){
+        if(is_link("cache_listing",links[i].href)){
           if(image){
             image = false;  // First hit is an Image
           }else{
@@ -2116,6 +2126,7 @@ try{
       } catch(e) {}
     }else var name = ""; 
   
+    // Link hinzufuegen
     for(var i=0; i<links.length; i++){
       if(links[i].href.match(/http:\/\/www\.geocaching\.com\/profile\/\?guid=/) && links[i].parentNode.className != "logOwnerStats" && !links[i].childNodes[0].src){
         var guid = links[i].href.match(/http:\/\/www\.geocaching\.com\/profile\/\?guid=(.*)/);
@@ -2131,8 +2142,10 @@ try{
         mail_link.appendChild(mail_img);
         mail_link.setAttribute("href","http://www.geocaching.com/email/?guid="+guid+"&text=Hi "+username+",%0A%0A"+name);
   
-        links[i].parentNode.appendChild(document.createTextNode("   "));
-        links[i].parentNode.appendChild(mail_link);
+//        links[i].parentNode.appendChild(document.createTextNode("   "));
+//        links[i].parentNode.appendChild(mail_link);
+        links[i].parentNode.insertBefore(mail_link,links[i].nextSibling);
+        links[i].parentNode.insertBefore(document.createTextNode("   "),links[i].nextSibling);
       }
     }
     
