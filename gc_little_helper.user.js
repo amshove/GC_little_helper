@@ -2641,8 +2641,8 @@ map_layers["Google Maps Hybrid"] = {tileUrl:"http://mt0.google.com/vt/lyrs=s,m@1
 
 // Map-Overlays
 var map_overlays = new Object();
-map_overlays["Public Transport Lines"] = {tileUrl:"http://openptmap.org/tiles/{z}/{x}/{y}.png",attribution:'Public Transport Lines\u00a9 <a href="http://openptmap.org/" target=\'_blank\'>OpenPTMap</a>',tileSize:256,minZoom:0,maxZoom:17};
 map_overlays["Hillshadow"] = {tileUrl:"http://toolserver.org/~cmarqu/hill/{z}/{x}/{y}.png",attribution:'hillshadow \u00a9 <a href="http://toolserver.org/" target=\'_blank\'>toolserver.org</a>',tileSize:256,minZoom:0,maxZoom:17};
+map_overlays["Public Transport Lines"] = {tileUrl:"http://openptmap.org/tiles/{z}/{x}/{y}.png",attribution:'Public Transport Lines\u00a9 <a href="http://openptmap.org/" target=\'_blank\'>OpenPTMap</a>',tileSize:256,minZoom:0,maxZoom:17};
 
 // Add additional Layers to Map & Select Default-Layer, add Hill-Shadow, add Homezone
 try{
@@ -2687,10 +2687,10 @@ try{
 //    }
 
     function addLayer(){  
-        injectPageScriptFunction(function(map_layers, map_overlays,  settings_map_default_layer){
-            window["GCLittleHelper_MapLayerHelper"] = function(map_layers, map_overlays, settings_map_default_layer){
+        injectPageScriptFunction(function(map_layers, map_overlays,  settings_map_default_layer, settings_show_hillshadow){
+            window["GCLittleHelper_MapLayerHelper"] = function(map_layers, map_overlays, settings_map_default_layer, settings_show_hillshadow){
                 if(!window.MapSettings.Map){
-                            setTimeout(function(){ window["GCLittleHelper_MapLayerHelper"](map_layers, map_overlays, settings_map_default_layer)}, 10);
+                            setTimeout(function(){ window["GCLittleHelper_MapLayerHelper"](map_layers, map_overlays, settings_map_default_layer, settings_show_hillshadow)}, 10);
                 }
                 else{
                     var layerControl = new window.L.Control.Layers();
@@ -2726,14 +2726,14 @@ try{
                     }
                     window.MapSettings.Map.addLayer(defaultLayer);
                     if(settings_show_hillshadow){
-                        settings_show_hillshadow(hillshadowLayer);
+                      $(".leaflet-control-layers-overlays").find("input").first().click();
                     }
                     
                 }
             };
                 
-            window["GCLittleHelper_MapLayerHelper"](map_layers, map_overlays, settings_map_default_layer);
-        }, "("+JSON.stringify(map_layers)+","+JSON.stringify(map_overlays)+",'"+settings_map_default_layer+"')");
+            window["GCLittleHelper_MapLayerHelper"](map_layers, map_overlays, settings_map_default_layer, settings_show_hillshadow);
+        }, "("+JSON.stringify(map_layers)+","+JSON.stringify(map_overlays)+",'"+settings_map_default_layer+"',"+settings_show_hillshadow+")");
     }
   
     addLayer();   
@@ -5069,18 +5069,8 @@ function gclh_showConfig(){
     for(name in map_layers){
       html += "  <option value='"+name+"' "+(settings_map_default_layer == name ? "selected='selected'" : "")+">"+name+"</option>";
     }
-//    html += "  <option value='cloudmade' "+(settings_map_default_layer == 'cloudmade' ? "selected='selected'" : "")+">CloudMade</option>";
-//    html += "  <option value='mpqa' "+(settings_map_default_layer == 'mpqa' ? "selected='selected'" : "")+">MapQuest Aerial</option>";
-//    html += "  <option value='osm' "+(settings_map_default_layer == 'osm' ? "selected='selected'" : "")+">OpenStreetMap</option>";
-//    html += "  <option value='osm_hikebike' "+(settings_map_default_layer == 'osm_hikebike' ? "selected='selected'" : "")+">OpenStreetMap (Hike&Bike)</option>";
-//    html += "  <option value='ocm' "+(settings_map_default_layer == 'ocm' ? "selected='selected'" : "")+">OpenCycleMap</option>";
-//    html += "  <option value='ocm_transport' "+(settings_map_default_layer == 'ocm_transport' ? "selected='selected'" : "")+">OpenCycleMap (Transport)</option>";
-//    html += "  <option value='gm' "+(settings_map_default_layer == 'gm' ? "selected='selected'" : "")+">Google Maps</option>";
-//    html += "  <option value='gm_satellite' "+(settings_map_default_layer == 'gm_satellite' ? "selected='selected'" : "")+">Google Maps (Satellite)</option>";
-//    html += "  <option value='gm_hybrid' "+(settings_map_default_layer == 'gm_hybrid' ? "selected='selected'" : "")+">Google Maps (Hybrid)</option>";
-//    html += "  <option value='gm_terrain' "+(settings_map_default_layer == 'gm_terrain' ? "selected='selected'" : "")+">Google Maps (Terrain)</option>";
     html += "</select>"+show_help("Here you can select the map source you want to use as default in the map.") +"<br>";
-    html += checkbox('settings_show_hillshadow', 'Show Hill-Shadows on Map') + show_help("If you want 3D-like-Shadows to be displayed, activate this function.") + "<br/>";
+    html += checkbox('settings_show_hillshadow', 'Show Hillishadow by Default') + show_help("If you want 3D-like-Shadow to be displayed by default, activate this function.") + "<br/>";
     html += "<select class='gclh_form' id='settings_map_hillshadow' multiple='multiple'>";
     html += "  <option value='mpqosm' "+(settings_map_hillshadow.indexOf('mpqosm') != -1 ? "selected='selected'" : "")+">MapQuest (gc.com default)</option>";
     html += "  <option value='cloudmade' "+(settings_map_hillshadow.indexOf('cloudmade') != -1 ? "selected='selected'" : "")+">CloudMade</option>";
