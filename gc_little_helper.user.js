@@ -1412,8 +1412,6 @@ try{
 if(settings_redirect_to_map && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/nearest\.aspx\?/)){
   if(!document.location.href.match(/&disable_redirect/) && !document.location.href.match(/key=/) && !document.location.href.match(/ul=/) && document.getElementById('ctl00_ContentBody_LocationPanel1_lnkMapIt')){
     document.getElementById('ctl00_ContentBody_LocationPanel1_lnkMapIt').click();
-//    var match = document.getElementById('ctl00_ContentBody_LocationPanel1_lnkMapIt').href.match(/\.aspx\?(.*)/);
-//    if(match[1]) document.location.href = map_url+"?"+match[1];
   }
 }
 
@@ -1426,13 +1424,6 @@ try{
     if(document.location.href.match(/^https?:\/\/www\.geocaching\.com\/login(.*)/) && document.getElementById("ctl00_ContentBody_LoginPanel")){
       var loginpanelfb = getElementsByClass("LoginWithFacebook")[0];
       loginpanelfb.parentNode.removeChild(loginpanelfb);
-//      loginpanelfb.removeChild(loginpanelfb.getElementsByTagName("h3")[0]);
-//      loginpanelfb.removeChild(loginpanelfb.getElementsByTagName("p")[0]);
-//      loginpanelfb.removeChild(document.getElementById("ctl00_ContentBody_vsFacebook"));
-//      loginpanelfb.removeChild(document.getElementById("ctl00_ContentBody_cvFacebook"));
-////      loginpanelfb.removeChild(document.getElementById("ctl00_ContentBody_uxSignIn"));
-//      loginpanelfb.removeChild(loginpanelfb.getElementsByTagName("p")[0]);
-//      loginpanelfb.removeChild(loginpanelfb.getElementsByTagName("div")[0]);
     }
   }
 }catch(e){ gclh_error("Hide Facebook",e); }
@@ -1499,23 +1490,6 @@ try{
         br.parentNode.removeChild(br);
       }
     }
-    // remove line break between "distance from home" and "Bundesland, Land" -> layout change - looks not good without and has no effect an the height -> removed
-    /*var distFromHome = document.getElementById('lblDistFromHome');
-    if (distFromHome) {
-      var br = distFromHome.previousElementSibling;
-      if (br && br.nodeName == 'BR') {
-        br.parentNode.removeChild(br);
-        // append dots to the former 2 lines to avoid confusion when reading
-        if (("" + distFromHome.innerHTML).length > 0) {
-          distFromHome.innerHTML += '.';
-          var loc = document.getElementById('ctl00_ContentBody_Location');
-          if (loc) {
-            loc.innerHTML += '.';
-          }
-        }
-      }
-    }*/
-    
   }
 }catch(e){ gclh_error("Hide Linebreaks",e); }
 
@@ -1862,21 +1836,6 @@ try{
     liste += "<a href='#' onClick='gclh_insert(\"[^]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_approve.gif' border='0'></a>&nbsp;";
     liste += "<a href='#' onClick='gclh_insert(\"[V]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_dissapprove.gif' border='0'></a>&nbsp;";
     liste += "<a href='#' onClick='gclh_insert(\"[?]\",\"\"); return false;'><img src='http://www.geocaching.com/images/icons/icon_smile_question.gif' border='0'></a>";
-//    liste += "<br>";
-//    liste += "<a href='#' onClick='gclh_insert(\":angry:\",\"\"); return false;'><img src='http://img.groundspeak.com/forums/emoticons/signal/mad.gif' border='0'></a>&nbsp;";
-//    liste += "<a href='#' onClick='gclh_insert(\":grin:\",\"\"); return false;'><img src='http://img.groundspeak.com/forums/emoticons/signal/big_smile.gif' border='0'></a>&nbsp;";
-//    liste += "<a href='#' onClick='gclh_insert(\":sad:\",\"\"); return false;'><img src='http://img.groundspeak.com/forums/emoticons/signal/sad.gif' border='0'></a>&nbsp;";
-//    liste += "<a href='#' onClick='gclh_insert(\":shocked:\",\"\"); return false;'><img src='http://img.groundspeak.com/forums/emoticons/signal/shock.gif' border='0'></a>";
-//    liste += "<br>";
-//    liste += "<a href='#' onClick='gclh_insert(\":smile:\",\"\"); return false;'><img src='http://img.groundspeak.com/forums/emoticons/signal/smile.gif' border='0'></a>&nbsp;";
-//    liste += "<a href='#' onClick='gclh_insert(\":surprise:\",\"\"); return false;'><img src='http://img.groundspeak.com/forums/emoticons/signal/surprise.gif' border='0'></a>&nbsp;";
-//    liste += "<a href='#' onClick='gclh_insert(\":tired:\",\"\"); return false;'><img src='http://img.groundspeak.com/forums/emoticons/signal/tired.gif' border='0'></a>&nbsp;";
-//    liste += "<a href='#' onClick='gclh_insert(\":yikes:\",\"\"); return false;'><img src='http://img.groundspeak.com/forums/emoticons/signal/ohh.gif' border='0'></a>";
-//    liste += "<br>";
-//    liste += "<a href='#' onClick='gclh_insert(\":tongue:\",\"\"); return false;'><img src='http://img.groundspeak.com/forums/emoticons/signal/tongue.gif' border='0'></a>&nbsp;";
-//    liste += "<a href='#' onClick='gclh_insert(\":bad:\",\"\"); return false;'><img src='http://img.groundspeak.com/forums/emoticons/signal/bad_boy.gif' border='0'></a>&nbsp;";
-//    liste += "<a href='#' onClick='gclh_insert(\":back:\",\"\"); return false;'><img src='http://img.groundspeak.com/forums/emoticons/signal/back.gif' border='0'></a>&nbsp;";
-//    liste += "<a href='#' onClick='gclh_insert(\":cute:\",\"\"); return false;'><img src='http://img.groundspeak.com/forums/emoticons/signal/cute.gif' border='0'></a>";
     liste += "<br><br>";
     liste += "Templates:<br>";
     for(var i = 0; i < anzTemplates; i++){
@@ -1952,20 +1911,6 @@ try{
 try{
   if(settings_show_eventday && document.location.href.match(/^http:\/\/www\.geocaching\.com\/(seek\/cache_details)\.aspx.*/) && document.getElementById('cacheDetails').getElementsByTagName("img")[0].src.match(/.*\/images\/WptTypes\/(6|453|13).gif/)){ //Event, MegaEvent, Cito
     if(document.getElementById('cacheDetails').getElementsByTagName("span")){
-//      var cont = document.getElementById('cacheDetails').getElementsByTagName("span");
-//      var counter = 0;
-//      var spanelem = null;
-//      var elem;
-//      for (var elemName in cont){
-//        elem=cont[elemName];
-//        if(elem.className == "minorCacheDetails"){
-//          counter++;
-//          if(counter == 2){
-//            spanelem = elem;
-//            break;
-//          }
-//        }
-//      }
       var spanelem = document.getElementById("ctl00_ContentBody_mcd2");
       var datetxt = spanelem.innerHTML.substr(spanelem.innerHTML.indexOf(":") + 2).replace( /^\s+|\s+$/g, '' );
       var month_names = new Object();
@@ -2649,45 +2594,6 @@ map_overlays["Public Transport Lines"] = {tileUrl:"http://openptmap.org/tiles/{z
 // Add additional Layers to Map & Select Default-Layer, add Hill-Shadow, add Homezone
 try{
   if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\//)){
-//    if(settings_map_add_layer){
-//      layers = unsafeWindow.Groundspeak.Map.MapLayers;
-//      layers.splice(4,0,map_layers["osm_hikebike"]);
-//      layers.splice(6,0,map_layers["ocm_transport"]);
-//      layers.push(map_layers["gm"]);
-//      layers.push(map_layers["gm_satellite"]);
-//      layers.push(map_layers["gm_hybrid"]);
-//      layers.push(map_layers["gm_terrain"]);
-//    }
-//
-//    if(browser == "chrome"){	
-//		//Custom layer fix for chrome - Ugly but my best idea yet	
-//		var myLayers = {};
-//		for(i=0;i<layers.length;i++){
-//			myLayers[layers[i].alt]=(new unsafeWindow.L.TileLayer(layers[i].tileUrl, layers[i]));
-//		}
-//		$(".leaflet-control-layers").first().hide();
-//		
-//		$("input[name=leaflet-base-layers]").attr('name', 'old_leaflet-base-layers');
-//		
-//		$(".leaflet-control-layers").first().append("<div id='myHelper' style=''visibility:hidden;height:0px;width:0px;> </div>");
-//		
-//		
-//		unsafeWindow.MapSettings.Map.addControl(new unsafeWindow.L.Control.Layers(myLayers));
-//		
-//		$(".leaflet-control-layers-base").find("input").attr('checked', false);
-//		unsafeWindow.MapSettings.Map.removeLayer(unsafeWindow.MapSettings.Map._layers["1"]);
-//		
-//		$("#myHelper").bind("DOMSubtreeModified", function() {	
-//			$("input[name=leaflet-base-layers]").each(function(index, element){
-//				element.layerId = myLayers[$(element).parent().text().trim()]._leaflet_id;
-//				$(element).attr("layerId", myLayers[$(element).parent().text().trim()]._leaflet_id);
-//			});		
-//		
-//			$($(".leaflet-control-layers-base")[1].children[0].firstChild).click();	
-//		}).append("<div id='myHelper2' style=''visibility:hidden;height:0px;width:0px;> </div>");
-//		
-//    }
-
     // Auswahl nur bestimmter Layer
     var map_layers = new Object();
     if(settings_map_layers == "" || settings_map_layers.length < 1) map_layers = all_map_layers;
@@ -2750,51 +2656,6 @@ try{
 
     //Function called when map is loaded
     function gclh_map_loaded(){
-    
-    //unsafeWindow.Groundspeak.Map.UserSession.options.showFinds = false;
-      var hillshadow_akt = false;
-      //add Hill-Shadow
- //     if(settings_show_hillshadow){
-        //var hillshadow = new unsafeWindow.L.TileLayer("http://toolserver.org/~cmarqu/hill/{z}/{x}/{y}.png", {maxZoom: 20});
-        //setTimeout(function(){ unsafeWindow.MapSettings.Map.addLayer(hillshadow); },1000);
-
-//        function show_hillshadow(bool){
-//          GM_log("show_hillshadow: " + bool);
-//          if(bool){
-//            if(!hillshadow_akt)setTimeout(function(){ unsafeWindow.MapSettings.Map.addLayer(hillshadow); },1000);
-//            hillshadow_akt = true;
-//          }else{
-//            if(hillshadow_akt)unsafeWindow.MapSettings.Map.removeLayer(hillshadow);
-//            hillshadow_akt = false;
-//          }
-//        }
-        
-//       function maptoggle(e){
-//          //Mapnames: mpqosm, cloudmade, mpqa, osm, osm_hikebike, ocm, ocm_transport, mq, gm, gm_satellite, gm_hybrid, gm_terrain
-//          if(e.layer.options.name !== undefined && (""+e.layer.options.name) != "undefined")
-//            GM_log("maptoggel: " + e.layer.options.name);
-//            if(settings_map_hillshadow.indexOf(e.layer.options.name) != -1 && e.layer.options.name != "gm_terrain"){
-//              if(!hillshadow_akt)show_hillshadow(true);
-//            }else{
-//              if(hillshadow_akt && e.layer.options.name != undefined)show_hillshadow(false);
-//       /     }
-//        }
-//        unsafeWindow.MapSettings.Map.on('layeradd',maptoggle);
-//      }
-  
-//      //Select Default-Layer
-//      if(settings_map_default_layer != "mq" && settings_map_default_layer != "false") {
-//        //Mapnames: mpqosm, cloudmade, mpqa, osm, osm_hikebike, ocm, ocm_transport, mq, gm, gm_satellite, gm_hybrid, gm_terrain
-//        var lc;
-//        for(lc = 0; lc < layers.length; lc++){
-//         var mlayer = layers[lc];
-//         if(mlayer.name == settings_map_default_layer)break;
-//        }
-//	    var controlNo = (browser=="chrome"?1:0); //Custom layer fix for chrome Part 2 - Ugly but my best idea yet
-//        var menu = getElementsByClass("leaflet-control-layers-base")[controlNo];
-//        setTimeout(function(){ menu.childNodes[lc].click(); },1000);
-//      }
-  
       if(settings_map_hide_sidebar){
         var links = document.getElementsByTagName("a");
         if(document.getElementById("searchtabs").parentNode.style.left != "-355px")
@@ -2819,25 +2680,10 @@ try{
         var circle = new unsafeWindow.L.Circle(latlng, settings_homezone_radius*1000,options);
         unsafeWindow.MapSettings.Map.addLayer(circle);
       }
-    
-    
     }
     window.addEventListener("load",gclh_map_loaded,false);
   }
 }catch(e){ gclh_error("Add Layers & Homezone to map",e); }
-
-/*
-// Add Layers to Map in Listing
-if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/)){
-  function gclh_map_loaded_listing(){
-    var code = "alert(map);";
-    var script = document.createElement("script");
-    script.innerHTML = code;
-    document.getElementsByTagName("body")[0].appendChild(script);
-  }
-  window.addEventListener("load",gclh_map_loaded_listing,false);
-}
-*/
 
 // Hide found/hidden Caches on Map
 try{
@@ -2885,7 +2731,6 @@ try{
 //Display Google-Maps warning (once)
 try{
   if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\//)) {
-//    if((typeof (google) != "undefined" || typeof (unsafeWindow.google) != "undefined") && (typeof (google.maps) != "undefined" && typeof (unsafeWindow.google.maps) != "undefined")){
     if(typeof(L) == "undefined" && typeof(unsafeWindow.L) == "undefined"){
       if(! GM_getValue("gclhWasGoogleAlertShown", false)){
         setTimeout(function () {
@@ -3586,13 +3431,6 @@ try{
           var matches = links[i].href.match(/http:\/\/www\.geocaching\.com\/profile\/\?guid=([a-zA-Z0-9]*)/);
           var user = trim(links[i].innerHTML);
     
-//          if(links[i].parentNode.className == "minorCacheDetails" && matches && !owner){
-//            owner = matches[1];
-//          }
-//          if(!owner_name && owner && matches && matches[1] == owner){
-//            owner_name = user;
-//          }
-  
           if(links[i].parentNode.id == "ctl00_ContentBody_mcd1"){
             user = owner;
           }
@@ -3661,7 +3499,6 @@ try{
         "}";
       GM_addStyle(css);
     
-//      function gclh_build_vip_list(){
       gclh_build_vip_list = function(){
         var show_owner = settings_show_owner_vip_list;
         var list = document.getElementById("gclh_vip_list");
@@ -3825,7 +3662,6 @@ try{
       widget.appendChild(box);
       document.getElementById("ctl00_ContentBody_uxBanManWidget").parentNode.insertBefore(widget,document.getElementById("ctl00_ContentBody_uxBanManWidget"));
   
-//      function gclh_build_vip_list(){
       gclh_build_vip_list = function(){
         var box = document.getElementById("box_vips");
         if(!box) return false;
@@ -3859,7 +3695,6 @@ try{
       gclh_build_vip_list();
     }else if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/myfriends\.aspx/)){
     // Friendlist - VIP-Icon
-//      function gclh_build_vip_list(){} // There is no list to show, but ths function will be called from gclh_del_vip/gclh_add_vip
       gclh_build_vip_list = function(){} // There is no list to show, but ths function will be called from gclh_del_vip/gclh_add_vip
       var links = document.getElementsByTagName('a');
       for(var i=0; i<links.length; i++){
@@ -3889,7 +3724,6 @@ try{
       }
     }else if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/profile\//) && document.getElementById("ctl00_ContentBody_ProfilePanel1_lblMemberName")){
     // Public Profile - VIP-Icon
-//      function gclh_build_vip_list(){} // There is no list to show, but ths function will be called from gclh_del_vip/gclh_add_vip
       gclh_build_vip_list = function(){} // There is no list to show, but ths function will be called from gclh_del_vip/gclh_add_vip
       var user = trim(document.getElementById("ctl00_ContentBody_ProfilePanel1_lblMemberName").innerHTML).replace(/&amp;/,'&');
       var link = document.createElement("a");
@@ -4381,12 +4215,6 @@ try{
         var search_text = this.value;
         if(!search_text) return false;
   
-        /*search_text = search_text.replace(/Ä/,"&#xC4;");
-        search_text = search_text.replace(/ä/,"&#xE4;");
-        search_text = search_text.replace(/Ö/,"&#xD6;");
-        search_text = search_text.replace(/ö/,"&#xF6;");
-        search_text = search_text.replace(/Ü/,"&#xDC;");
-        search_text = search_text.replace(/ü/,"&#xFC;");*/
         var regexp = new RegExp("("+search_text+")","i");
   
         var tbodys = document.getElementById("cache_logs_table").getElementsByTagName("tbody");
@@ -4519,21 +4347,6 @@ try{
     else gclh_load_logs(5);
   }
 }catch(e){ gclh_error("Replace Log-Loading function",e); }
-
-// Show Icons at Logbook
-//if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_logbook\.aspx/)){
-//  var new_tmpl_block = document.createElement("script");
-//  new_tmpl_block.innerHTML = "function gclh_change_tmpl() {"+
-//  "delete $.template(\"tmplCacheLogRow\");"+
-//  "$(\"#tmpl_CacheLogRow\").template(\"tmplCacheLogRow\");"+
-//  "}";
-//  new_tmpl_block.setAttribute("id","tmpl_CacheLogRow_gclh");
-//  document.getElementsByTagName("body")[0].appendChild(new_tmpl_block);
-//
-//  document.getElementById('tmpl_CacheLogRow').innerHTML = new_tmpl;
-//  delete unsafeWindow.$.template("tmplCacheLogRow");
-//  unsafeWindow.$("#tmpl_CacheLogRow").template("tmplCacheLogRow");
-//}
 
 // Show other Coord-Formats in Listing
 try{
