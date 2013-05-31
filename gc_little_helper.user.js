@@ -25,7 +25,8 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
-//                                 - Fix: Issue #274 - [gc.com update] Apply GClh to new listing design and urls 
+//                                 - Fix: Issue #237 - Show PQ in Map doesn't work with direct link
+//                                 - Fix: Issue #274 - [gc.com update] Apply GClh to new listing design and urls (Not fully tested by now, but the most will work)
 //                                 - New: Removed "Route to this Location"-Link - gc.com has added it natively ("Driving Directions")
 //                                 - New: List of Map-Layers can be selected in settings to reduce the long gc.com list of layers
 //                                 - Fix: Issue #266 - [gc.com update] Map selection problem and additinal map layers, Hillshadow, ..
@@ -2665,7 +2666,6 @@ try{
             window["GCLittleHelper_MapLayerHelper"](map_layers, map_overlays, settings_map_default_layer, settings_show_hillshadow);
         }, "("+JSON.stringify(map_layers)+","+JSON.stringify(map_overlays)+",'"+settings_map_default_layer+"',"+settings_show_hillshadow+")");
     }
-  
     addLayer();   
     
 
@@ -2702,7 +2702,7 @@ try{
 
 // Hide found/hidden Caches on Map
 try{
-  if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\//)) {
+  if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\//) && !document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\/default.aspx\?pq/)){ // Nicht bei PQ-Anzeige
     function hideFoundCaches(){
       var button = unsafeWindow.document.getElementById("m_myCaches").childNodes[1];
       if(button){
