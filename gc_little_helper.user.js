@@ -789,7 +789,7 @@ settings_show_long_vip = GM_getValue("settings_show_long_vip",false);
 settings_load_logs_with_gclh = GM_getValue("settings_load_logs_with_gclh",true);
 settings_configsync_enabled = GM_getValue("settings_configsync_enabled",false);
 settings_map_add_layer = GM_getValue("settings_map_add_layer",true);
-settings_map_default_layer = GM_getValue("settings_map_default_layer","mpqosm");
+settings_map_default_layer = GM_getValue("settings_map_default_layer","MapQuest OSM");
 settings_hide_map_header = GM_getValue("settings_hide_map_header",false);
 settings_spoiler_strings = GM_getValue("settings_spoiler_strings","spoiler|hinweis|hint");
 settings_replace_log_by_last_log = GM_getValue("settings_replace_log_by_last_log",false);
@@ -797,31 +797,6 @@ settings_hide_top_button = GM_getValue("settings_hide_top_button",false);
 settings_show_real_owner = GM_getValue("settings_show_real_owner",false);
 settings_hide_visits_in_profile = GM_getValue("settings_hide_visits_in_profile",false);
 settings_log_signature_on_fieldnotes = GM_getValue("settings_log_signature_on_fieldnotes",true);
-
- /*temp-helper to change from number to text --> will only be accessed once*/
-try{
-    if(!isNaN(settings_map_default_layer)){
-      var layerNum2Name = new Array("mpqosm", /*0*/
-    								"cloudmade", /*1*/
-    								"mqqa", /*2*/
-    								"osm", /*3*/
-    								"osm_hikebike", /*4*/
-    								"ocm", /*5*/
-    								"ocm_transport", /*6*/
-    								"mq", /*7*/ /*My Topo does not exist anymore, so swich to default*/
-    								"gm", /*8*/
-    								"gm_satellite", /*9*/    
-    								"gm_hybrid" /*10*/
-    								);
-      if(layerNum2Name[parseInt(settings_map_default_layer)]){
-        settings_map_default_layer = ""+layerNum2Name[parseInt(settings_map_default_layer)];
-      }else{
-        settings_map_default_layer = "mpqosm";
-      }
-      GM_setValue("settings_map_default_layer", settings_map_default_layer);
-    }
-  }catch(e){ gclh_error("Maplayer temp-helper",e); }
-/*END temp-helper*/
 settings_map_hide_sidebar = GM_getValue("settings_map_hide_sidebar",false);
 settings_hover_image_max_size = GM_getValue("settings_hover_image_max_size",600);
 
@@ -2635,21 +2610,39 @@ try{
 
 // Map-Layers
 var map_layers = new Object();
-map_layers["osm"] = {tileUrl:"http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",name:"osm",alt:"OpenStreetMap",attribution:'&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',tileSize:256,minZoom:0,maxZoom:20};
-map_layers["osm_hikebike"] = {tileUrl:"http://toolserver.org/tiles/hikebike/{z}/{x}/{y}.png",name:"osm_hikebike",alt:"OpenStreetMap (Hike&Bike)",attribution:'Map and map data \u00a9 2012 <a href="http://www.openstreetmap.org" target=\'_blank\'>OpenStreetMap</a> and contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.',tileSize:256,minZoom:0,maxZoom:20};
-map_layers["ocm_transport"] = {tileUrl:"http://a.tile2.opencyclemap.org/transport/{z}/{x}/{y}.png",name:"ocm_transport",alt:"OpenCycleMap (Transport)",attribution:'Map and map data \u00a9 2012 <a href="http://www.opencyclemap.org" target=\'_blank\'>OpenCycleMap</a> and contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.',tileSize:256,minZoom:0,maxZoom:18};
-map_layers["gm"] = {tileUrl:"http://mt.google.com/vt?x={x}&y={y}&z={z}",name:"gm",alt:"Google Maps",attribution:"Google Maps",tileSize:256,minZoom:0,maxZoom:20};
-map_layers["gm_satellite"] = {tileUrl:"http://mt0.google.com/vt/lyrs=s@130&hl=en&x={x}&y={y}&z={z}",name:"gm_satellite",alt:"Google Maps (Satellite)",attribution:"Google Maps",tileSize:256,minZoom:0,maxZoom:20};
-map_layers["gm_hybrid"] = {tileUrl:"http://mt0.google.com/vt/lyrs=s,m@110&hl=en&x={x}&y={y}&z={z}",name:"gm_hybrid",alt:"Google Maps (Hybrid)",attribution:"Google Maps",tileSize:256,minZoom:0,maxZoom:20};
-map_layers["gm_terrain"] = {tileUrl:"http://mt0.google.com/vt/v=w2p.110&hl=en&x={x}&y={y}&z={z}",name:"gm_terrain",alt:"Google Maps (Terrain)",attribution:"Google Maps",tileSize:256,minZoom:0,maxZoom:20};
-map_layers["osm_cycle"] = {tileUrl:"http://{s}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png",name:"osm_cycle",alt:"OpenCycleMap",attribution:'&copy; <a href="http://www.opencyclemap.org">OpenCycleMap</a>, <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',tileSize:256,minZoom:0,maxZoom:20};
-map_layers["osm_tf"] = {tileUrl:"http://{s}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png",name:"osm_tf",alt:"Thunderforest",attribution:'&copy; <a href="http://www.opencyclemap.org">OpenCycleMap</a>, <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',tileSize:256,minZoom:0,maxZoom:20};
-//map_layers["mqOpen"] = {tileUrl:"http://otile{s}.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpg",name:"mqOpen",alt:"MapQuestOpen",attribution:'&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',tileSize:256,minZoom:0,maxZoom:20};
+// gc.com Default-Layers
+map_layers["OpenStreetMap Default"] = {tileUrl:"http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",attribution: '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'};
+map_layers["OpenStreetMap German Style"] = {tileUrl:"http://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png",attribution: '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'};
+map_layers["OpenStreetMap Black and White"] = {tileUrl:"http://{s}.www.toolserver.org/tiles/bw-mapnik/{z}/{x}/{y}.png",attribution: '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'};
+
+map_layers["Thunderforest OpenCycleMap"] = {tileUrl:"http://{s}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png",attribution: '&copy; <a href="http://www.opencyclemap.org">OpenCycleMap</a>, <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'};
+map_layers["Thunderforest Transport"] = {tileUrl:"http://{s}.tile2.opencyclemap.org/transport/{z}/{x}/{y}.png",attribution: '&copy; <a href="http://www.opencyclemap.org">OpenCycleMap</a>, <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'};
+map_layers["Thunderforest Landscape"] = {tileUrl:"http://{s}.tile3.opencyclemap.org/landscape/{z}/{x}/{y}.png",attribution: '&copy; <a href="http://www.opencyclemap.org">OpenCycleMap</a>, <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'};
+
+map_layers["MapQuest OSM"] = {tileUrl:"http://otile{s}.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpg",attribution: 'Tiles Courtesy of <a href="http://www.mapquest.com/">MapQuest</a> &mdash; Map data {attribution.OpenStreetMap}',subdomains: "1234"};
+map_layers["MapQuest Aerial"] = {tileUrl:"http://oatile{s}.mqcdn.com/tiles/1.0.0/sat/{z}/{x}/{y}.jpg",attribution: 'Tiles Courtesy of <a href="http://www.mapquest.com/">MapQuest</a> &mdash; ' + "Portions Courtesy NASA/JPL-Caltech and U.S. Depart. of Agriculture, Farm Service Agency",subdomains: "1234"};
+
+map_layers["Stamen Toner"] = {tileUrl:"http://{s}.tile.stamen.com/toner/{z}/{x}/{y}.png",attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; ' + "Map data {attribution.OpenStreetMap}",subdomains: "abcd",minZoom: 0,maxZoom: 20};
+map_layers["Stamen Terrain"] = {tileUrl:"http://{s}.tile.stamen.com/terrain/{z}/{x}/{y}.png",attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; ' + "Map data {attribution.OpenStreetMap}",subdomains: "abcd",minZoom: 4,maxZoom: 18};
+map_layers["Stamen Watercolor"] = {tileUrl:"http://{s}.tile.stamen.com/watercolor/{z}/{x}/{y}.png",attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; ' + "Map data {attribution.OpenStreetMap}",subdomains: "abcd",minZoom: 3,maxZoom: 16};
+
+map_layers["Esri WorldStreetMap"] = {tileUrl:"http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",attribution: "Tiles &copy; Esri"};
+map_layers["Esri DeLorme"] = {tileUrl:"http://server.arcgisonline.com/ArcGIS/rest/services/Specialty/DeLorme_World_Base_Map/MapServer/tile/{z}/{y}/{x}",attribution: "Tiles &copy; Esri &mdash; Copyright: \u00a92012 DeLorme",maxZoom: 11};
+map_layers["Esri WorldTopoMap"] = {tileUrl:"http://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}",attribution: "Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community"};
+map_layers["Esri WorldImagery"] = {tileUrl:"http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",attribution: "Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community"};
+map_layers["Esri OceanBasemap"] = {tileUrl:"http://services.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/{z}/{y}/{x}",attribution: "Tiles &copy; Esri &mdash; Sources: GEBCO, NOAA, CHS, OSU, UNH, CSUMB, National Geographic, DeLorme, NAVTEQ, and Esri",maxZoom: 11};
+map_layers["Esri NatGeoWorldMap"] = {tileUrl:"http://services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}",attribution: "Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC"};
+
+// GClh additional Layers
+map_layers["OpenStreetMap Hike and Bike"] = {tileUrl:"http://toolserver.org/tiles/hikebike/{z}/{x}/{y}.png",attribution:'Map and map data \u00a9 2012 <a href="http://www.openstreetmap.org" target=\'_blank\'>OpenStreetMap</a> and contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.',tileSize:256,minZoom:0,maxZoom:20};
+map_layers["Google Maps"] = {tileUrl:"http://mt.google.com/vt?x={x}&y={y}&z={z}",attribution:"Google Maps",tileSize:256,minZoom:0,maxZoom:20};
+map_layers["Google Maps Satellite"] = {tileUrl:"http://mt0.google.com/vt/lyrs=s@130&hl=en&x={x}&y={y}&z={z}",attribution:"Google Maps",tileSize:256,minZoom:0,maxZoom:20};
+map_layers["Google Maps Hybrid"] = {tileUrl:"http://mt0.google.com/vt/lyrs=s,m@110&hl=en&x={x}&y={y}&z={z}",attribution:"Google Maps",tileSize:256,minZoom:0,maxZoom:20};
 
 // Map-Overlays
 var map_overlays = new Object();
-map_overlays["openpt"] = {tileUrl:"http://openptmap.org/tiles/{z}/{x}/{y}.png",name:"openpt",alt:"Public Transport Lines (ÖV-Linien)",attribution:'Public Transport Lines (ÖV-Linien)\u00a9 <a href="http://openptmap.org/" target=\'_blank\'>OpenPTMap</a>',tileSize:256,minZoom:0,maxZoom:17};
-map_overlays["hillshadow"] = {tileUrl:"http://toolserver.org/~cmarqu/hill/{z}/{x}/{y}.png",name:"hillshadow",alt:"Hillshadow",attribution:'hillshadow \u00a9 <a href="http://toolserver.org/" target=\'_blank\'>toolserver.org</a>',tileSize:256,minZoom:0,maxZoom:17};
+map_overlays["Public Transport Lines"] = {tileUrl:"http://openptmap.org/tiles/{z}/{x}/{y}.png",attribution:'Public Transport Lines\u00a9 <a href="http://openptmap.org/" target=\'_blank\'>OpenPTMap</a>',tileSize:256,minZoom:0,maxZoom:17};
+map_overlays["Hillshadow"] = {tileUrl:"http://toolserver.org/~cmarqu/hill/{z}/{x}/{y}.png",attribution:'hillshadow \u00a9 <a href="http://toolserver.org/" target=\'_blank\'>toolserver.org</a>',tileSize:256,minZoom:0,maxZoom:17};
 
 // Add additional Layers to Map & Select Default-Layer, add Hill-Shadow, add Homezone
 try{
@@ -2706,7 +2699,7 @@ try{
                     var hillshadowLayer = null;
                     for(name in map_layers){
                         layerToAdd = new L.tileLayer(map_layers[name].tileUrl,map_layers[name]);
-                        layerControl.addBaseLayer(layerToAdd, map_layers[name].alt);
+                        layerControl.addBaseLayer(layerToAdd, name);
                         if(name == settings_map_default_layer){
                             defaultLayer=layerToAdd;
                         }
@@ -2716,7 +2709,7 @@ try{
                     }         
                     for(name in map_overlays){
                         layerToAdd = new L.tileLayer(map_overlays[name].tileUrl,map_overlays[name])
-                        layerControl.addOverlay(layerToAdd, map_overlays[name].alt);
+                        layerControl.addOverlay(layerToAdd, name);
                         if(name == "hillshadow"){
                             hillshadowLayer=layerToAdd;
                     	}
@@ -5071,20 +5064,21 @@ function gclh_showConfig(){
     html += " &nbsp; "+checkbox('settings_map_hide_6',"<img src='http://www.geocaching.com/images/WptTypes/sm/6.gif'>")+" &nbsp; "+checkbox('settings_map_hide_453',"<img src='http://www.geocaching.com/images/WptTypes/sm/453.gif'>")+" &nbsp; "+checkbox('settings_map_hide_13',"<img src='http://www.geocaching.com/images/WptTypes/sm/13.gif'>")+" &nbsp; "+checkbox('settings_map_hide_1304',"<img src='http://www.geocaching.com/images/WptTypes/sm/1304.gif'>")+"<br/>";
     html += " &nbsp; "+checkbox('settings_map_hide_4',"<img src='http://www.geocaching.com/images/WptTypes/sm/4.gif'>")+" &nbsp; "+checkbox('settings_map_hide_11',"<img src='http://www.geocaching.com/images/WptTypes/sm/11.gif'>")+" &nbsp; "+checkbox('settings_map_hide_137',"<img src='http://www.geocaching.com/images/WptTypes/sm/137.gif'>")+"<br/>";
     html += " &nbsp; "+checkbox('settings_map_hide_8',"<img src='http://www.geocaching.com/images/WptTypes/sm/8.gif'>")+" &nbsp; "+checkbox('settings_map_hide_1858',"<img src='http://www.geocaching.com/images/WptTypes/sm/1858.gif'>")+"<br/>";
-    /*Mapnames: mpqosm, cloudmade, mpqa, osm, osm_hikebike, ocm, ocm_transport, mq, gm, gm_satellite, gm_hybrid, gm_terrain*/
     html += "Default Layer: <select class='gclh_form' id='settings_map_default_layer'>";
     html += "  <option value='false' "+(settings_map_default_layer == 'false' ? "selected='selected'" : "")+">-- no default --</option>";
-    html += "  <option value='mpqosm' "+(settings_map_default_layer == 'mpqosm' ? "selected='selected'" : "")+">MapQuest (gc.com default)</option>";
-    html += "  <option value='cloudmade' "+(settings_map_default_layer == 'cloudmade' ? "selected='selected'" : "")+">CloudMade</option>";
-    html += "  <option value='mpqa' "+(settings_map_default_layer == 'mpqa' ? "selected='selected'" : "")+">MapQuest Aerial</option>";
-    html += "  <option value='osm' "+(settings_map_default_layer == 'osm' ? "selected='selected'" : "")+">OpenStreetMap</option>";
-    html += "  <option value='osm_hikebike' "+(settings_map_default_layer == 'osm_hikebike' ? "selected='selected'" : "")+">OpenStreetMap (Hike&Bike)</option>";
-    html += "  <option value='ocm' "+(settings_map_default_layer == 'ocm' ? "selected='selected'" : "")+">OpenCycleMap</option>";
-    html += "  <option value='ocm_transport' "+(settings_map_default_layer == 'ocm_transport' ? "selected='selected'" : "")+">OpenCycleMap (Transport)</option>";
-    html += "  <option value='gm' "+(settings_map_default_layer == 'gm' ? "selected='selected'" : "")+">Google Maps</option>";
-    html += "  <option value='gm_satellite' "+(settings_map_default_layer == 'gm_satellite' ? "selected='selected'" : "")+">Google Maps (Satellite)</option>";
-    html += "  <option value='gm_hybrid' "+(settings_map_default_layer == 'gm_hybrid' ? "selected='selected'" : "")+">Google Maps (Hybrid)</option>";
-    html += "  <option value='gm_terrain' "+(settings_map_default_layer == 'gm_terrain' ? "selected='selected'" : "")+">Google Maps (Terrain)</option>";
+    for(name in map_layers){
+      html += "  <option value='"+name+"' "+(settings_map_default_layer == name ? "selected='selected'" : "")+">"+name+"</option>";
+    }
+//    html += "  <option value='cloudmade' "+(settings_map_default_layer == 'cloudmade' ? "selected='selected'" : "")+">CloudMade</option>";
+//    html += "  <option value='mpqa' "+(settings_map_default_layer == 'mpqa' ? "selected='selected'" : "")+">MapQuest Aerial</option>";
+//    html += "  <option value='osm' "+(settings_map_default_layer == 'osm' ? "selected='selected'" : "")+">OpenStreetMap</option>";
+//    html += "  <option value='osm_hikebike' "+(settings_map_default_layer == 'osm_hikebike' ? "selected='selected'" : "")+">OpenStreetMap (Hike&Bike)</option>";
+//    html += "  <option value='ocm' "+(settings_map_default_layer == 'ocm' ? "selected='selected'" : "")+">OpenCycleMap</option>";
+//    html += "  <option value='ocm_transport' "+(settings_map_default_layer == 'ocm_transport' ? "selected='selected'" : "")+">OpenCycleMap (Transport)</option>";
+//    html += "  <option value='gm' "+(settings_map_default_layer == 'gm' ? "selected='selected'" : "")+">Google Maps</option>";
+//    html += "  <option value='gm_satellite' "+(settings_map_default_layer == 'gm_satellite' ? "selected='selected'" : "")+">Google Maps (Satellite)</option>";
+//    html += "  <option value='gm_hybrid' "+(settings_map_default_layer == 'gm_hybrid' ? "selected='selected'" : "")+">Google Maps (Hybrid)</option>";
+//    html += "  <option value='gm_terrain' "+(settings_map_default_layer == 'gm_terrain' ? "selected='selected'" : "")+">Google Maps (Terrain)</option>";
     html += "</select>"+show_help("Here you can select the map source you want to use as default in the map.") +"<br>";
     html += checkbox('settings_show_hillshadow', 'Show Hill-Shadows on Map') + show_help("If you want 3D-like-Shadows to be displayed, activate this function.") + "<br/>";
     html += "<select class='gclh_form' id='settings_map_hillshadow' multiple='multiple'>";
