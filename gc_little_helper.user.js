@@ -25,6 +25,8 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                                 - Fix: Issue #274 - [gc.com update] Apply GClh to new listing design and urls 
+//                                 - New: Removed "Route to this Location"-Link - gc.com has added it natively ("Driving Directions")
 //                                 - New: List of Map-Layers can be selected in settings to reduce the long gc.com list of layers
 //                                 - Fix: Issue #266 - [gc.com update] Map selection problem and additinal map layers, Hillshadow, ..
 //                                 - New: Issue #271 - Remove footer from print-page of listings
@@ -862,6 +864,17 @@ else{
   main();
 }
 
+function is_page(name){
+  switch(name){
+    case "cache_listing":
+      if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/geocache\//)) return true;
+      else return false;
+     break;
+    default:
+      return false;
+  }
+}
+
 function main(){
 // Link on Google Maps
 if(document.location.href.match(/^(http|https):\/\/maps\.google\./) || document.location.href.match(/^(http|https):\/\/www\.google\.[a-zA-Z.]*\/maps/)){
@@ -1439,7 +1452,7 @@ try{
 
 // Hide Disclaimer
 try{
-  if(settings_hide_disclaimer && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx(\?|\?pf\=\&)(guid|wp)\=[a-zA-Z0-9-]*/)){
+  if(settings_hide_disclaimer && is_page("cache_listing")){
     var disc = getElementsByClass('DisclaimerWidget')[0];
     if(disc){
       disc.parentNode.removeChild(disc);
@@ -1495,7 +1508,7 @@ try{
 
 // Improve calendar-Link in Events
 try{
-  if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/) && document.getElementById("calLinks")){
+  if(is_page("cache_listing") && document.getElementById("calLinks")){
     function calendar_link(){
       var div = document.getElementById("calLinks");
       var links = div.getElementsByTagName("a");
@@ -1518,12 +1531,11 @@ try{
 
 // remove "Warning! Spoilers may be included in the descriptions or links."
 try{
-  if ( settings_hide_spoilerwarning && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/)) {
+  if ( settings_hide_spoilerwarning && is_page("cache_listing")){
     var findCounts = document.getElementById('ctl00_ContentBody_lblFindCounts');
     if (findCounts) {
       var para = findCounts.nextSibling.nextSibling.nextSibling.nextSibling;
       if (para && para.nodeName == 'P') {
-  //      para.parentNode.removeChild(para);
         para.innerHTML = "&nbsp;";
         para.style.height = "0";
         para.className = para.className + ' Clear';
@@ -1536,7 +1548,7 @@ try{
 
 // Hide Cache Notes
 try{
-  if(settings_hide_cache_notes && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx(\?|\?pf\=\&)(guid|wp)\=[a-zA-Z0-9-]*/)){
+  if(settings_hide_cache_notes && is_page("cache_listing")){
     var disc = getElementsByClass('NotesWidget')[0];
     if(disc){
       disc.parentNode.removeChild(disc);
@@ -1546,7 +1558,7 @@ try{
 
 // Hide/Show Cache Notes
 try{
-  if(settings_hide_empty_cache_notes && !settings_hide_cache_notes && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx(\?|\?pf\=\&)(guid|wp)\=[a-zA-Z0-9-]*/)){
+  if(settings_hide_empty_cache_notes && !settings_hide_cache_notes && is_page("cache_listing")){
     var box = getElementsByClass('NotesWidget')[0];
     if(box){
       var code = 
@@ -1580,7 +1592,7 @@ try{
 
 // Show breaks in Cache Notes
 try{
-  if(settings_breaks_in_cache_notes && !settings_hide_cache_notes && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx(\?|\?pf\=\&)(guid|wp)\=[a-zA-Z0-9-]*/)){
+  if(settings_breaks_in_cache_notes && !settings_hide_cache_notes && is_page("cache_listing")){
     if(browser == "chrome"){
 	    //Chrome selects an other element as FireFox and so the inline editor deletes the wrong element.
 	    //NOT a nice hack - but it fixes the savenote bug (but no breaks after saving)	   
@@ -1645,7 +1657,7 @@ try{
 
 //show disabled/archived caches with strikeout in title
 try{
-  if(settings_strike_archived && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx(\?|\?pf\=\&)(guid|wp)\=[a-zA-Z0-9-]*/)){
+  if(settings_strike_archived && is_page("cache_listing")){
     var warnings = getElementsByClass('OldWarning');
     if (warnings[0]) {
       var cacheTitle = document.getElementById('ctl00_ContentBody_CacheName');
@@ -1664,7 +1676,7 @@ try{
 
 //Highlight Usercoords
 try{
-  if(settings_highlight_usercoords && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx(\?|\?pf\=\&)(guid|wp)\=[a-zA-Z0-9-]*/)){
+  if(settings_highlight_usercoords && is_page("cache_listing")){
     var head = document.getElementsByTagName('head')[0];
     var style = document.createElement('style');
     style.type = 'text/css';
@@ -1675,7 +1687,7 @@ try{
 
 // Decrypt Hint
 try{
-  if(settings_decrypt_hint && !settings_hide_hint && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx(\?|\?pf\=\&)(guid|wp)\=[a-zA-Z0-9-]*/)){
+  if(settings_decrypt_hint && !settings_hide_hint && is_page("cache_listing")){
     if (document.getElementById('ctl00_ContentBody_EncryptionKey')) {
       unsafeWindow.dht(document.getElementById("ctl00_ContentBody_lnkDH"));
   
@@ -1909,7 +1921,7 @@ try{
 
 // Show Eventday beside Date
 try{
-  if(settings_show_eventday && document.location.href.match(/^http:\/\/www\.geocaching\.com\/(seek\/cache_details)\.aspx.*/) && document.getElementById('cacheDetails').getElementsByTagName("img")[0].src.match(/.*\/images\/WptTypes\/(6|453|13).gif/)){ //Event, MegaEvent, Cito
+  if(settings_show_eventday && is_page("cache_listing") && document.getElementById('cacheDetails').getElementsByTagName("img")[0].src.match(/.*\/images\/WptTypes\/(6|453|13).gif/)){ //Event, MegaEvent, Cito
     if(document.getElementById('cacheDetails').getElementsByTagName("span")){
       var spanelem = document.getElementById("ctl00_ContentBody_mcd2");
       var datetxt = spanelem.innerHTML.substr(spanelem.innerHTML.indexOf(":") + 2).replace( /^\s+|\s+$/g, '' );
@@ -2060,7 +2072,7 @@ try{
 
 // Show eMail-Link beside Username
 try{
-  if(settings_show_mail && document.location.href.match(/^http:\/\/www\.geocaching\.com\/(seek\/cache_details|seek\/log|track\/details|track\/log)\.aspx(\?|\?pf\=\&)(guid|wp|tracker|id|LUID|ID|PLogGuid)\=[a-zA-Z0-9-]*/)){
+  if(settings_show_mail && (is_page("cache_listing") || document.location.href.match(/^http:\/\/www\.geocaching\.com\/(seek\/log|track\/details|track\/log)\.aspx(\?|\?pf\=\&)(guid|wp|tracker|id|LUID|ID|PLogGuid)\=[a-zA-Z0-9-]*/))){
     var links = document.getElementsByTagName('a');
     if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?.*/)){
       var name = "";
@@ -2128,7 +2140,7 @@ try{
 
 // Switch title-color to red, if cache is archived & rename the gallery-link to prevent destroying the layout on to many images
 try{
-  if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/)){
+  if(is_page("cache_listing")){
   
     if(document.getElementById("ctl00_ContentBody_uxGalleryImagesLink")) document.getElementById("ctl00_ContentBody_uxGalleryImagesLink").innerHTML = document.getElementById("ctl00_ContentBody_uxGalleryImagesLink").innerHTML.replace("View the ","");
   
@@ -2400,7 +2412,7 @@ try{
 
 // Show Google-Maps Link on Cache Page
 try{
-  if(settings_show_google_maps && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx\?/) && document.getElementById("ctl00_ContentBody_uxViewLargerMap") && document.getElementById("uxLatLon") && document.getElementById("ctl00_ContentBody_CoordInfoLinkControl1_uxCoordInfoCode")){
+  if(settings_show_google_maps && is_page("cache_listing") && document.getElementById("ctl00_ContentBody_uxViewLargerMap") && document.getElementById("uxLatLon") && document.getElementById("ctl00_ContentBody_CoordInfoLinkControl1_uxCoordInfoCode")){
     var ref_link = document.getElementById("ctl00_ContentBody_uxViewLargerMap");
     var box = ref_link.parentNode;
       
@@ -2434,6 +2446,9 @@ try{
     for(var i=0; i<links.length; i++){
       if(links[i].href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx\?.*/) && links[i].innerHTML.match(/^<span>/)){
         links[i].parentNode.innerHTML = links[i].parentNode.innerHTML.replace("<br>","<a title='Log it' href='"+links[i].href.replace("cache_details","log")+"'><img src='/images/stockholm/16x16/add_comment.gif'></a><br>");
+      }else if(links[i].href.match(/^http:\/\/www\.geocaching\.com\/geocache\/.*/) && links[i].innerHTML.match(/^<span>/)){
+        var match = links[i].href.match(/^http:\/\/www\.geocaching\.com\/geocache\/([^_]*)/);
+        links[i].parentNode.innerHTML = links[i].parentNode.innerHTML.replace("<br>","<a title='Log it' href='http://www.geocaching.com/seek/log.aspx?wp="+match[1]+"'><img src='/images/stockholm/16x16/add_comment.gif'></a><br>");
       }
     }
   }
@@ -2959,7 +2974,7 @@ try{
 
 // Post log from Listing (inline)
 try{
-  if(settings_log_inline && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/) && document.getElementById("ctl00_ContentBody_MapLinks_MapLinks")){
+  if(settings_log_inline && is_page("cache_listing") && document.getElementById("ctl00_ContentBody_MapLinks_MapLinks")){
     var links = document.getElementsByTagName('a');
   
     var menu = false;
@@ -2974,7 +2989,7 @@ try{
         watch = links[i];
       }
     }
-    
+
     var head = document.getElementById("ctl00_ContentBody_MapLinks_MapLinks").parentNode.parentNode.nextSibling;
     
     function hide_iframe(){
@@ -2991,7 +3006,7 @@ try{
         iframe.setAttribute("width","100%");
         iframe.setAttribute("height","600px");
         iframe.setAttribute("style","border: 0px; overflow: auto; display: none;");
-        iframe.setAttribute("src","log.aspx?ID="+match[1]+"&gclh=small");
+        iframe.setAttribute("src","http://www.geocaching.com/seek/log.aspx?ID="+match[1]+"&gclh=small");
   
         var a = document.createElement("a");
         a.setAttribute("href","#gclhLogIt");
@@ -3056,7 +3071,7 @@ try{
 
 // Post log from PMO-Listing as Basic Member(inline)
 try{
-  if(settings_log_inline_pmo4basic && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/) && document.getElementById("ctl00_ContentBody_memberComparePanel")){
+  if(settings_log_inline_pmo4basic && is_page("cache_listing") && document.getElementById("ctl00_ContentBody_memberComparePanel")){
       function hide_iframe(){
 	      var frame = document.getElementById('gclhFrame');
 	      if(frame.style.display == "") frame.style.display = "none";
@@ -3064,13 +3079,14 @@ try{
 	}
 	
 	var idParameter = document.URL.match(/wp=[a-zA-Z0-9]*|guid=[a-zA-Z0-9-]*|id=[0-9]*/)[0];
+        if(!idParameter | idParameter == "") idParameter = "wp="+document.URL.match(/\/geocache\/([^_]*)/)[1];
 	
         var iframe = document.createElement("iframe");
         iframe.setAttribute("id","gclhFrame");
         iframe.setAttribute("width","100%");
         iframe.setAttribute("height","600px");
         iframe.setAttribute("style","border: 0px; overflow: auto; display: none;");
-        iframe.setAttribute("src","log.aspx?"+idParameter+"&gclh=small");
+        iframe.setAttribute("src","http://www.geocaching.com/seek/log.aspx?"+idParameter+"&gclh=small");
   
         var a = document.createElement("a");
         a.setAttribute("href","#gclhLogIt");
@@ -3142,7 +3158,7 @@ try{
 
 // Show Favourite percentage
 try{
-  if(settings_show_fav_percentage && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details.aspx/)){
+  if(settings_show_fav_percentage && is_page("cache_listing")){
     function gclh_load_score(){
       unsafeWindow.showFavoriteScore();
   
@@ -3152,8 +3168,11 @@ try{
           var score = document.getElementById('uxFavoriteScore').innerHTML.match(/<strong>(.*)<\/strong>/);
           if(score && score[1]){
             var val = getElementsByClass("favorite-value");
-            if(val[0]){
+            if(val[0] && document.location.href.match("cache_details")){
               fav.innerHTML = "<span class='favorite-value'> "+val[0].innerHTML+"</span><br>&nbsp;&nbsp;&nbsp;&nbsp;"+score[1]+" &nbsp;&nbsp;&nbsp;&nbsp;<img id='imgFavoriteArrow' src='/images/arrow-down.png' alt='Expand' title='Expand'>";
+            }else if(val[0] && document.location.href.match(/\/geocache\//)){ // New Listing-Design
+              fav.innerHTML = fav.innerHTML.replace(/Favorites/,"");
+              fav.innerHTML += score[1];
             }
           }
         }
@@ -3329,7 +3348,7 @@ try{
 
 // Show Real Owner
 try{
-  if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/) && document.getElementById("ctl00_ContentBody_mcd1")){
+  if(is_page("cache_listing") && document.getElementById("ctl00_ContentBody_mcd1")){
     var real_owner = get_real_owner();
     var owner_link = false;
     var links = document.getElementById("ctl00_ContentBody_mcd1").getElementsByTagName("a");
@@ -3355,7 +3374,7 @@ try{
 
 // VIP
 try{
-  if(settings_show_vip_list && getElementsByClass("SignedInProfileLink")[0] && (document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\//) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/myfriends\.aspx/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/profile\//))){
+  if(settings_show_vip_list && getElementsByClass("SignedInProfileLink")[0] && (is_page("cache_listing") || document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\//) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/myfriends\.aspx/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/profile\//))){
     var img_vip_off = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAKCAYAAAC9vt6cAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9sHDhEzBX83tZcAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAsElEQVQoz6WSsQ2DUAxEz4gdfkdBQQUlDAU9E0ALHQWLsMAfA8o/BNVLkYCS0ETkGstn6+kk2yShPxRLEtxjmJmio8nzXN57SZL3XkVRnEtHNTNlWaZ5nj9AAHRdR9M0ANR1Td/38Iz2UZdlIUmS0zsB67rinGPfd5xzbNt2AUgiTVOmaboCAMqypG1bqqo6ve8E77oAhmEgiiLGcbwHCCEQxzEhhJ8B9hrcPqP9+0gPbh/tf/c8szwAAAAASUVORK5CYII=";
     var img_vip_on = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAKCAYAAAC9vt6cAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9sHDhE0Aq4StvMAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAzklEQVQoz6WSwQvBcBTHP7/lanFT3DdzV9yw+RNc8E/s6A/YSa6KUrs4u4omB6KUKJoc5a+Q5rRlOCz7Xl7feu/zXu89AXjEUAKgszb/KrbKPSTfDJo2t8MdgNvhzrBlB0l+tMo9+o0R+8kxgASAgqFynrsAnGYumqF+deysTepmhZW9/QZouoLrXHk+nlwWVzRd+TnytOtQahfDOwBI51LImSTLwQo5I5POpn5O8Cnp3WiGyma8o1BXIi8yDKgpCEmQr0YHCMCLc0YR95Fe0bc6eQ97MqYAAAAASUVORK5CYII=";
     var vips = GM_getValue("vips",false);
@@ -3409,7 +3428,7 @@ try{
     }
   
     // Listing
-    if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/)){
+    if(is_page("cache_listing")){
       var all_users = new Array();
       var log_infos = new Object();
       var log_infos_long = new Array();
@@ -3769,7 +3788,7 @@ try{
 
 // Highlight related web page link
 try{
-  if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx?/) && document.getElementById("ctl00_ContentBody_uxCacheUrl")){
+  if(is_page("cache_listing") && document.getElementById("ctl00_ContentBody_uxCacheUrl")){
     var lnk = document.getElementById("ctl00_ContentBody_uxCacheUrl");
   
     var html = "<fieldset class=\"DisclaimerWidget\">";
@@ -3785,7 +3804,7 @@ try{
 
 // Show thumbnails
 try{
-  if(settings_show_thumbnails && document.location.href.match(/^http:\/\/www\.geocaching\.com\/(seek\/cache_details\.aspx?|seek\/gallery\.aspx?|profile\/)/)){
+  if(settings_show_thumbnails && (is_page("cache_listing") || document.location.href.match(/^http:\/\/www\.geocaching\.com\/(seek\/gallery\.aspx?|profile\/)/))){
     var links = document.getElementsByTagName("a");
     
     var css = "a.gclh_thumb:hover { " + 
@@ -3815,7 +3834,7 @@ try{
   
     GM_addStyle(css);
   
-    if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx?/)){
+    if(is_page("cache_listing")){
       var newImageTmpl = "" +
       "          <a class='tb_images lnk gclh_thumb' rel='tb_images[grp${LogID}]' href='http://img.geocaching.com/cache/log/${FileName}' title='${Descr}'>" +
       "              <img title='${Name}' alt='${Name}' src='http://img.geocaching.com/cache/log/thumb/${FileName}'>";
@@ -3841,7 +3860,7 @@ try{
 
     var regexp = new RegExp(settings_spoiler_strings,"i");
     for(var i=0; i<links.length; i++){
-      if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx?/) && links[i].href.match(/^http:\/\/img\.geocaching\.com\/cache/) && !links[i].innerHTML.match(regexp)){
+      if(is_page("cache_listing") && links[i].href.match(/^http:\/\/img\.geocaching\.com\/cache/) && !links[i].innerHTML.match(regexp)){
         var thumb = links[i].childNodes[0];
         var span = links[i].childNodes[1];
         if(!thumb || !span || !thumb.style) continue;
@@ -3957,7 +3976,7 @@ try{
 }catch(e){ gclh_error("Show Bigger Images",e); }
 
 // Log-Template definieren
-if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx?/)){
+if(is_page("cache_listing")){
   var new_tmpl = '<tr class="log-row" data-encoded="${IsEncoded}" >' +
     '        <td>' +
     '            <div class="FloatLeft LogDisplayLeft" >' +
@@ -4029,7 +4048,7 @@ if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_det
 
 // Overwrite Log-Template and Log-Load-Function
 try{
-  if(settings_load_logs_with_gclh && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx?/) && !document.getElementById("ctl00_divNotSignedIn")){
+  if(settings_load_logs_with_gclh && is_page("cache_listing") && !document.getElementById("ctl00_divNotSignedIn")){
     // to Top Link
     var a = document.createElement("a");
     a.setAttribute("href","#");
@@ -4350,7 +4369,7 @@ try{
 
 // Show other Coord-Formats in Listing
 try{
-  if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/) && document.getElementById('uxLatLon')){
+  if(is_page("cache_listing") && document.getElementById('uxLatLon')){
     var box = document.getElementById('ctl00_ContentBody_LocationSubPanel').childNodes[0];
     var coords = document.getElementById('uxLatLon').innerHTML;
     var dec = toDec(coords);
@@ -4391,7 +4410,7 @@ try{
 
 // Show Map-It button at Listing
 try{
-  if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/) && document.getElementById('uxLatLon')){
+  if(is_page("cache_listing") && document.getElementById('uxLatLon')){
     var coords = toDec(document.getElementById("uxLatLon").innerHTML);
     var link;
     if(document.getElementById("uxLatLonLink") != null){ //If server deliver userDefinedCoords.status="fail", then link will be null
@@ -4410,29 +4429,29 @@ try{
   }
 }catch(e){ gclh_error("Map It Button",e); }
 
-// Show Route-It button at Listing
-try{
-  if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/) && document.getElementById('uxLatLon') && GM_getValue("home_lat")){
-    var coords = toDec(document.getElementById("uxLatLon").innerHTML);
-    var link;
-     if(document.getElementById("uxLatLonLink") != null){ //If server deliver userDefinedCoords.status="fail", then link will be null
-	link = document.getElementById("uxLatLonLink").parentNode;
-    }
-    else{
-	link = document.getElementById("uxLatLon").parentNode;    
-    }
-    var a = document.createElement("a");
-    var small = document.createElement("small");
-    var name = "";
-    if(document.getElementById("ctl00_ContentBody_CacheName")) name = "+("+trim(document.getElementById("ctl00_ContentBody_CacheName").innerHTML)+")";
-    a.setAttribute("href","http://maps.google.com/?saddr="+(GM_getValue("home_lat")/10000000)+","+(GM_getValue("home_lng")/10000000)+"+(HomeCoords)&daddr="+coords[0]+","+coords[1]+name);
-    a.setAttribute("target","_blank");
-    a.appendChild(document.createTextNode("Route to this Location"));
-    small.appendChild(document.createTextNode(" - "));
-    small.appendChild(a);
-    link.appendChild(small);
-  }
-}catch(e){ gclh_error("Route It Button",e); }
+//// Show Route-It button at Listing
+//try{
+//  if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/) && document.getElementById('uxLatLon') && GM_getValue("home_lat")){
+//    var coords = toDec(document.getElementById("uxLatLon").innerHTML);
+//    var link;
+//     if(document.getElementById("uxLatLonLink") != null){ //If server deliver userDefinedCoords.status="fail", then link will be null
+//	link = document.getElementById("uxLatLonLink").parentNode;
+//    }
+//    else{
+//	link = document.getElementById("uxLatLon").parentNode;    
+//    }
+//    var a = document.createElement("a");
+//    var small = document.createElement("small");
+//    var name = "";
+//    if(document.getElementById("ctl00_ContentBody_CacheName")) name = "+("+trim(document.getElementById("ctl00_ContentBody_CacheName").innerHTML)+")";
+//    a.setAttribute("href","http://maps.google.com/?saddr="+(GM_getValue("home_lat")/10000000)+","+(GM_getValue("home_lng")/10000000)+"+(HomeCoords)&daddr="+coords[0]+","+coords[1]+name);
+//    a.setAttribute("target","_blank");
+//    a.appendChild(document.createTextNode("Route to this Location"));
+//    small.appendChild(document.createTextNode(" - "));
+//    small.appendChild(a);
+//    link.appendChild(small);
+//  }
+//}catch(e){ gclh_error("Route It Button",e); }
 
 // Transfer TB-Tracking Number to Log-Field
 try{
