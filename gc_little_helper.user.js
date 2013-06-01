@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           GC little helper
 // @namespace      http://www.amshove.net
-// @version        9.3
+// @version        9.4
 // @include        http://www.geocaching.com/*
 // @include        https://www.geocaching.com/*
 // @include        http://maps.google.tld/*
@@ -25,7 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
-//                                 - New: Issue #251 - Show VIPs who haven't found the cache (new option)
+//                 9.4             - New: Issue #251 - Show VIPs who haven't found the cache (new option)
 //                                 - New: Issue #224 - Warn user when navigating off the page while editing the log
 //                                 - Fix: Issue #129 - Mail-Icon beside username on trackables 
 //                                 - Fix: Issue #11 - Mail-Icon beside username on log-page
@@ -644,7 +644,7 @@ profileBookmark("My Trackables", "lnk_my_trackables");
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "9.3";
+var scriptVersion = "9.4";
 
 var anzCustom = 10;
 var anzTemplates = 10;
