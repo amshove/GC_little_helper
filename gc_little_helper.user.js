@@ -3504,8 +3504,10 @@ try{
             link.addEventListener("click",gclh_add_vip,false);
           } 
     
-          links[i].parentNode.appendChild(document.createTextNode("   "));
-          links[i].parentNode.appendChild(link);
+//          links[i].parentNode.appendChild(document.createTextNode("   "));
+//          links[i].parentNode.appendChild(link);
+          links[i].parentNode.insertBefore(link,links[i].nextSibling);
+          links[i].parentNode.insertBefore(document.createTextNode("   "),links[i].nextSibling);
         }
       }
     
@@ -3835,8 +3837,10 @@ try{
             link.addEventListener("click",gclh_add_vip,false);
           }
   
-          links[i].parentNode.appendChild(document.createTextNode("   "));
-          links[i].parentNode.appendChild(link);
+//          links[i].parentNode.appendChild(document.createTextNode("   "));
+//          links[i].parentNode.appendChild(link);
+          links[i].parentNode.insertBefore(link,links[i].nextSibling);
+          links[i].parentNode.insertBefore(document.createTextNode("   "),links[i].nextSibling);
         }
       }
     }else if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/profile\//) && document.getElementById("ctl00_ContentBody_ProfilePanel1_lblMemberName")){
