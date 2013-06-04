@@ -25,6 +25,8 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                                 - Fix: Issue #275 - Count of Characters and "not saved"-Note doesn't work on log-page
+//                                 - Fix: Issue #277 - F2 to log doesn't work
 //                 9.4             - New: Issue #251 - Show VIPs who haven't found the cache (new option)
 //                                 - New: Issue #224 - Warn user when navigating off the page while editing the log
 //                                 - Fix: Issue #129 - Mail-Icon beside username on trackables 
@@ -1184,11 +1186,11 @@ function hide_map_header(){
 
 // Last Log-Text speichern fuer TB-Log-Template
 try{
-  if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx/) && document.getElementById("ctl00_ContentBody_LogBookPanel1_LogButton")){
+  if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx/) && document.getElementById("ctl00_ContentBody_LogBookPanel1_btnSubmitLog")){
     function send_log(e){
       GM_setValue("last_logtext",document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').value);
     }
-    document.getElementById("ctl00_ContentBody_LogBookPanel1_LogButton").addEventListener('click', send_log, true);
+    document.getElementById("ctl00_ContentBody_LogBookPanel1_btnSubmitLog").addEventListener('click', send_log, true);
   }
 }catch(e){ gclh_error("Last-Log-Text speichern",e); }
 
@@ -1199,10 +1201,10 @@ try{
  * @class
  */
 try{
-  if(settings_submit_log_button && (document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?(id|guid|ID|wp|LUID|PLogGuid)\=/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/track\/log\.aspx\?(id|wid|guid|ID|PLogGuid)\=/)) && document.getElementById("ctl00_ContentBody_LogBookPanel1_LogButton")){
+  if(settings_submit_log_button && (document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?(id|guid|ID|wp|LUID|PLogGuid)\=/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/track\/log\.aspx\?(id|wid|guid|ID|PLogGuid)\=/)) && document.getElementById("ctl00_ContentBody_LogBookPanel1_btnSubmitLog")){
     function keydown(e){
       if(e.keyCode == 113){
-        document.getElementById("ctl00_ContentBody_LogBookPanel1_LogButton").click();
+        document.getElementById("ctl00_ContentBody_LogBookPanel1_btnSubmitLog").click();
       }
     }
     window.addEventListener('keydown', keydown, true);
@@ -1926,7 +1928,7 @@ try{
         return "This page is asking you to confirm that you want to leave - data you have entered may not be saved."; // Text wird nicht angezeigt bei FF sondern deren default (ist der gleiche weil ich den vorsichtshalber hier reingepackt habe)
       }
     }
-    document.getElementById("ctl00_ContentBody_LogBookPanel1_LogButton").addEventListener("click",function(){ changed = false; },false); // Damit die Meldung nicht beim Submit kommt
+    document.getElementById("ctl00_ContentBody_LogBookPanel1_btnSubmitLog").addEventListener("click",function(){ changed = false; },false); // Damit die Meldung nicht beim Submit kommt
   
     var logfield = document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo');
     logfield.addEventListener("keyup", function(){ limitLogText(logfield); }, false);
