@@ -25,6 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                                 - New: GClh now overwrites the layercontrol of GC Map Enhancements (can be disabled in settings)
 //                                 - Fix: Issue #278 - hide hint behind link doesn't work in new layout
 //                                 - Fix: Issue #275 - Count of Characters and "not saved"-Note doesn't work on log-page
 //                                 - Fix: Issue #277 - F2 to log doesn't work
@@ -813,7 +814,7 @@ settings_log_signature_on_fieldnotes = GM_getValue("settings_log_signature_on_fi
 settings_map_hide_sidebar = GM_getValue("settings_map_hide_sidebar",false);
 settings_hover_image_max_size = GM_getValue("settings_hover_image_max_size",600);
 settings_vip_show_nofound = GM_getValue("settings_vip_show_nofound",false);
-
+settings_use_gclh_layercontrol = GM_getValue("settings_use_gclh_layercontrol",true);
 
 // Settings: Custom Bookmarks
 var num = bookmarks.length;
@@ -2701,7 +2702,7 @@ try{
             window["GCLittleHelper_MapLayerHelper"](map_layers, map_overlays, settings_map_default_layer, settings_show_hillshadow);
         }, "("+JSON.stringify(map_layers)+","+JSON.stringify(map_overlays)+",'"+settings_map_default_layer+"',"+settings_show_hillshadow+")");
     }
-    addLayer();   
+    if(settings_use_gclh_layercontrol) setTimeout(addLayer,1000); // 1 Sekunde warten, um Layercontrol von GC Map Enhancements zu ueberschreiben
     
 
     //Function called when map is loaded
@@ -5019,14 +5020,15 @@ function gclh_showConfig(){
     for(name in all_map_layers){
       html += "  <option value='"+name+"' "+(settings_map_layers.indexOf(name) != -1 ? "selected='selected'" : "")+">"+name+"</option>";
     }
-    html += "</select>"+show_help("Here you can select the maps which should be available to select with the map. With this option you can reduce the long list to the layers you really need. If none is select, all will be displayed.") +"<br>";   
+    html += "</select>"+show_help("Here you can select the maps which should be available to select with the map. With this option you can reduce the long list to the layers you really need. If none is select, all will be displayed. Option 'Replace Layercontrol by GClh' must be enabled.") +"<br>";   
     html += "Default Layer: <select class='gclh_form' id='settings_map_default_layer'>";
     html += "  <option value='false' "+(settings_map_default_layer == 'false' ? "selected='selected'" : "")+">-- no default --</option>";
     for(name in all_map_layers){
       html += "  <option value='"+name+"' "+(settings_map_default_layer == name ? "selected='selected'" : "")+">"+name+"</option>";
     }
-    html += "</select>"+show_help("Here you can select the map source you want to use as default in the map.") +"<br>";
-    html += checkbox('settings_show_hillshadow', 'Show Hillshadow by Default') + show_help("If you want 3D-like-Shadow to be displayed by default, activate this function.") + "<br/>";
+    html += "</select>"+show_help("Here you can select the map source you want to use as default in the map. Option 'Replace Layercontrol by GClh' must be enabled.") +"<br>";
+    html += checkbox('settings_show_hillshadow', 'Show Hillshadow by Default') + show_help("If you want 3D-like-Shadow to be displayed by default, activate this function. Option 'Replace Layercontrol by GClh' must be enabled.") + "<br/>";
+    html += checkbox('settings_use_gclh_layercontrol', 'Replace Layercontrol by GClh') + show_help("If you use other scripts like 'Geocaching Map Enhancements' GClh will overwrite its layercontrol. With this option you can disable GClh layers to use the layers from gc.com or GME.") + "<br/>";
     html += checkbox('settings_map_hide_sidebar', 'Hide sidebar by default') + show_help("If you want to hide the sidebar on the map, just select this option.") + "<br/>";
     html += checkbox('settings_hide_map_header', 'Hide Header by default') + show_help("If you want to hide the header of the map, just select this option.") + "<br/>";
     html += "";
@@ -5483,6 +5485,7 @@ function gclh_showConfig(){
       'settings_hide_visits_in_profile',
       'settings_log_signature_on_fieldnotes',
       'settings_vip_show_nofound',
+      'settings_use_gclh_layercontrol',
       'settings_map_hide_sidebar'
 //      'settings_hide_recentlyviewed'
     );
