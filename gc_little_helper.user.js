@@ -691,6 +691,17 @@ if (!test_browser) {
   }
 }
 
+// Logging function
+function gclh_log(log){
+  var txt = "GClh_LOG - "+document.location.href+": "+log;
+  if(typeof(console) != "undefined"){
+    console.info(txt);
+  }
+  if(typeof(GM_log) != "undefined"){
+    GM_log(txt);
+  }
+}
+
 // Error-Logging function
 function gclh_error(modul,err){
   var txt = "GClh_ERROR - "+modul+" - "+document.location.href+": "+err.message+"\nStacktrace:\n"+err.stack+(err.stacktrace?("\n"+err.stacktrace):"");
@@ -4397,11 +4408,16 @@ try{
       
       function gclh_load_helper(){
         if(numPages >= curIdx){
-        if(unsafeWindow.$tfoot) unsafeWindow.$tfoot.show();
+
+          var url = "http://www.geocaching.com/seek/geocache.logbook?tkn="+unsafeWindow.userToken+"&idx="+curIdx+"&num=100&decrypt=false";
+          if(unsafeWindow.$tfoot) unsafeWindow.$tfoot.show();
+
           GM_xmlhttpRequest({
             method: "GET",
-            url: "http://www.geocaching.com/seek/geocache.logbook?tkn="+unsafeWindow.userToken+"&idx="+curIdx+"&num=100&decrypt=false",
+            url: url,
             onload: function(response){
+              gclh_log("Loading Logs Status: "+response.statusText+" - URL: "+url);
+
               var json = JSON.parse(response.responseText);
               if(numPages == 1){
                 numPages = json.pageInfo.totalPages;
