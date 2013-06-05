@@ -25,6 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                                 - Fix: Issue #276 - log-signature is ignored if there is a comment in fieldnotes
 //                                 - New: GClh now overwrites the layercontrol of GC Map Enhancements (can be disabled in settings)
 //                                 - Fix: Issue #278 - hide hint behind link doesn't work in new layout
 //                                 - Fix: Issue #275 - Count of Characters and "not saved"-Note doesn't work on log-page
@@ -2246,13 +2247,13 @@ try{
     }
   
     // Signature
-    if(document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML == ""){
-      if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?PLogGuid\=/)){
-        if(settings_log_signature_on_fieldnotes) document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML += GM_getValue("settings_log_signature","");
-      }else{
-        document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML += GM_getValue("settings_log_signature","");
-      }
+//    if(document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML == ""){
+    if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?PLogGuid\=/)){
+      if(settings_log_signature_on_fieldnotes) document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML += GM_getValue("settings_log_signature","");
+    }else{
+      document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML += GM_getValue("settings_log_signature","");
     }
+//    }
   
     // Set Cursor to Pos1
     function gclh_setFocus(){
