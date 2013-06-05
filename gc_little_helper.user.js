@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           GC little helper
 // @namespace      http://www.amshove.net
-// @version        9.4
+// @version        9.5
 // @include        http://www.geocaching.com/*
 // @include        https://www.geocaching.com/*
 // @include        http://maps.google.tld/*
@@ -25,7 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
-//                                 - Fix: Issue #276 - log-signature is ignored if there is a comment in fieldnotes
+//                 9.5             - Fix: Issue #276 - log-signature is ignored if there is a comment in fieldnotes
 //                                 - New: GClh now overwrites the layercontrol of GC Map Enhancements (can be disabled in settings)
 //                                 - Fix: Issue #278 - hide hint behind link doesn't work in new layout
 //                                 - Fix: Issue #275 - Count of Characters and "not saved"-Note doesn't work on log-page
@@ -649,7 +649,7 @@ profileBookmark("My Trackables", "lnk_my_trackables");
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "9.4";
+var scriptVersion = "9.5";
 
 var anzCustom = 10;
 var anzTemplates = 10;
