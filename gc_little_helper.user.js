@@ -25,6 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                                 - Fix: Issue #278 - hide hint behind link doesn't work in new layout
 //                                 - Fix: Issue #275 - Count of Characters and "not saved"-Note doesn't work on log-page
 //                                 - Fix: Issue #277 - F2 to log doesn't work
 //                 9.4             - New: Issue #251 - Show VIPs who haven't found the cache (new option)
@@ -1627,11 +1628,13 @@ try{
 
 // Hide Hint
 try{
-  if (settings_hide_hint) {
+  if (settings_hide_hint && is_page("cache_listing")) {
     //replace hint by a link which shows the hint dynamically
     var hint = document.getElementById('div_hint');
     if (hint) {
-      var para = hint.previousSibling.previousSibling;
+      var para = hint.previousSibling; // Neues Listing-Layout
+      if(para.nodeName != "P") para = hint.previousSibling.previousSibling; // Altes Layout
+
       if (para && para.nodeName == 'P') {
         if (trim(hint.innerHTML).length > 0) {
           var label = para.getElementsByTagName('strong')[0];
