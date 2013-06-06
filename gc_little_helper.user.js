@@ -25,6 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                                 - Fix: Chrome doesn't load logs correctly
 //                 9.5             - Fix: Issue #276 - log-signature is ignored if there is a comment in fieldnotes
 //                                 - New: GClh now overwrites the layercontrol of GC Map Enhancements (can be disabled in settings)
 //                                 - Fix: Issue #278 - hide hint behind link doesn't work in new layout
@@ -4189,6 +4190,19 @@ try{
     for(var i=0; i<tbodys.length; i++){
       document.getElementById("cache_logs_table").removeChild(tbodys[i]);
     }
+
+    // get userToken
+    var userToken = unsafeWindow.userToken;
+    if(!userToken){ // Umgehung fuer Chrome
+      var scripts = document.getElementsByTagName("script");
+      for(var i=0; i<scripts.length; i++){
+        var match = scripts[i].innerHTML.match(/userToken = \'([A-Za-z0-9]*)\'/);
+        if(match){
+          userToken = match[1];
+          break;
+        }
+      }
+    }
   
     // Helper: Add VIP-Icon
     function gclh_add_vip_icon(){
@@ -4409,7 +4423,7 @@ try{
       function gclh_load_helper(){
         if(numPages >= curIdx){
 
-          var url = "http://www.geocaching.com/seek/geocache.logbook?tkn="+unsafeWindow.userToken+"&idx="+curIdx+"&num=100&decrypt=false";
+          var url = "http://www.geocaching.com/seek/geocache.logbook?tkn="+userToken+"&idx="+curIdx+"&num=100&decrypt=false";
           if(unsafeWindow.$tfoot) unsafeWindow.$tfoot.show();
 
           GM_xmlhttpRequest({
