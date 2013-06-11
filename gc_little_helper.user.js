@@ -2731,9 +2731,11 @@ try{
           }
       }
       
-      // Show Homezone-Circle on Map
-      if(settings_show_homezone){
-        var latlng = new unsafeWindow.L.LatLng((GM_getValue("home_lat")/10000000), (GM_getValue("home_lng")/10000000));
+        function addHomeZoneMap(unsafeWindow, home_lat, home_lng, settings_homezone_radius, settings_homezone_color){
+            if(unsafeWindow=="none"){
+                unsafeWindow = window;
+            }
+            var latlng = new unsafeWindow.L.LatLng((home_lat/10000000), (home_lng/10000000));
         var options = {
                        color:       settings_homezone_color,
                        weight:       1,
@@ -2744,6 +2746,16 @@ try{
         var circle = new unsafeWindow.L.Circle(latlng, settings_homezone_radius*1000,options);
         unsafeWindow.MapSettings.Map.addLayer(circle);
       }
+      
+        // Show Homezone-Circle on Map
+        if(settings_show_homezone){
+            if(browser == "chrome"){
+                injectPageScriptFunction(addHomeZoneMap, "('"+ "none" + "', " + GM_getValue("home_lat") + ", " + GM_getValue("home_lng") + ", " + settings_homezone_radius + ", '" + settings_homezone_color+"')");                
+            }
+            else{                
+                addHomeZoneMap(unsafeWindow, GM_getValue("home_lat"), GM_getValue("home_lng"), settings_homezone_radius, settings_homezone_color);
+            }
+        }
     }
     window.addEventListener("load",gclh_map_loaded,false);
   }
