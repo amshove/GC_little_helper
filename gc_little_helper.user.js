@@ -2792,6 +2792,11 @@ try{
             if(unsafeWindow=="none"){
                 unsafeWindow = window;
             }
+            
+            if(typeof home_lat == "undefined" || typeof home_lng == "undefined" || home_lat == null || home_lng == null){
+                return;
+            }
+            
             var latlng = new unsafeWindow.L.LatLng((home_lat/10000000), (home_lng/10000000));
         var options = {
                        color:       settings_homezone_color,
