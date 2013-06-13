@@ -4266,7 +4266,6 @@ try{
         }
       }
     }*/
-    }
   
     // Helper: Add VIP-Icon
     function gclh_add_vip_icon(){
