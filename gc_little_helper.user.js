@@ -2864,11 +2864,15 @@ try{
 //Display Google-Maps warning (once)
 try{
   if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\//)) {
-    if(typeof(L) == "undefined" && typeof(unsafeWindow.L) == "undefined"){
-      if(! GM_getValue("gclhWasGoogleAlertShown", false)){
-        setTimeout(function () {
-          if(unsafeWindow.$ && unsafeWindow.$.fancybox){
-            unsafeWindow.$.fancybox({
+   if(typeof(L) == "undefined" && typeof(unsafeWindow.L) == "undefined" && $(".leaflet-container").length == 0){
+    if( GM_getValue("gclhWasGoogleAlertShown", false)){
+        function showGMapInfo(){
+          if(typeof $  == "undefined"){
+            $ = unsafeWindow.$;
+          }
+          
+          if(typeof $.fancybox != "undefined"){
+            $.fancybox({
               width: 780,
               height: 362,
               autoScale: false,
@@ -2879,8 +2883,16 @@ try{
               title:"GC Little Helper only supports the Leaflet-Map (you are using the Google-Map)",
               type: "image"
             });
-            GM_setValue("gclhWasGoogleAlertShown", true);
           }
+          }
+        setTimeout(function () {
+            if(browser == "chrome"){
+                injectPageScriptFunction(showGMapInfo,"()");
+            }
+            else{
+                showGMapInfo();
+            }
+            GM_setValue("gclhWasGoogleAlertShown", true);
         },750);
       }			
     }
