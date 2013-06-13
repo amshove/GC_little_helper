@@ -4218,7 +4218,7 @@ if(is_page("cache_listing")){
     '                    {{if Images.length > 0}}' +
     '                        <table cellspacing="0" cellpadding="3" class="LogImagesTable">';
   if(settings_show_thumbnails) new_tmpl += '<tr><td>';
-  new_tmpl += '              {{tmpl(Images) "tmpl_CacheLogImages"}}';
+  new_tmpl += '              {{tmpl(Images) "tmplCacheLogImages"}}';
   if(settings_show_thumbnails) new_tmpl += '</td></tr>';
   new_tmpl +=  '             </table>' +
     '                    {{/if}}' +
