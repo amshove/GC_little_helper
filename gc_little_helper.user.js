@@ -911,50 +911,56 @@ function is_page(name){
 }
 
 function main(){
- if(browser == "chrome"){
+ if(userToken == null){
     //Get Userdata from site context and add them to the extension context     
+    if(typeof $ == "undefined"){
+        $ = unsafeWindow.$;
+    }
     var userData =  $('#aspnetForm script:not([src])').filter(function(){
         return this.innerHTML.indexOf("ccConversions") != -1;
     }).html();
-    if(typeof userData != "undefined"){
-        userData = userData.replace('{ID: ', '{"ID": ');
-        
-        var regex = /([a-zA-Z0-9]+)( = )([^;]+)(;)/g;
-        
-        var match;
-        while(match = regex.exec(userData)){
-            var data = match[3].trim();
 
-            if(match[1].trim()=="initalLogs"){
-                continue;
-            }
-            
-            if(data.charAt(0) == '"' || data.charAt(0) == "'"){
-                data = data.slice(1,data.length-1);
-            }
-            
-            data = data.trim();
-            
-            if(data.charAt(0) == '{' || data.charAt(0) == '['){
-                data = JSON.parse(data);
-            }
-            
-            chromeUserData[match[1].replace('"','').replace("'","").trim()] = data;   
-        }
-    }
-    
-    if(chromeUserData["userInfo"]){
-        userInfo = chromeUserData["userInfo"];
-    }
-    if(chromeUserData["isLoggedIn"]){
-        isLoggedIn = chromeUserData["isLoggedIn"];
-    }
-    if(chromeUserData["userDefinedCoords"]){
-        userDefinedCoords = chromeUserData["userDefinedCoords"];
-    }
-    if(chromeUserData["userToken"]){
-        userToken = chromeUserData["userToken"];
-    }
+    if(userData != null){
+	    if(typeof userData != "undefined"){
+	        userData = userData.replace('{ID: ', '{"ID": ');
+	        
+	        var regex = /([a-zA-Z0-9]+)( = )([^;]+)(;)/g;
+	        
+	        var match;
+	        while(match = regex.exec(userData)){
+	            var data = match[3].trim();
+	
+	            if(match[1].trim()=="initalLogs"){
+	                continue;
+	            }
+	            
+	            if(data.charAt(0) == '"' || data.charAt(0) == "'"){
+	                data = data.slice(1,data.length-1);
+	            }
+	            
+	            data = data.trim();
+	            
+	            if(data.charAt(0) == '{' || data.charAt(0) == '['){
+	                data = JSON.parse(data);
+	            }
+	            
+	            chromeUserData[match[1].replace('"','').replace("'","").trim()] = data;   
+	        }
+	    }
+	    
+	    if(chromeUserData["userInfo"]){
+	        userInfo = chromeUserData["userInfo"];
+	    }
+	    if(chromeUserData["isLoggedIn"]){
+	        isLoggedIn = chromeUserData["isLoggedIn"];
+	    }
+	    if(chromeUserData["userDefinedCoords"]){
+	        userDefinedCoords = chromeUserData["userDefinedCoords"];
+	    }
+	    if(chromeUserData["userToken"]){
+	        userToken = chromeUserData["userToken"];
+	    }
+	}
 }
 
 // Link on Google Maps
@@ -4017,6 +4023,12 @@ try{
     GM_addStyle(css);
   
     if(is_page("cache_listing")){
+        if(browser == "chrome"){
+            $("#tmpl_CacheLogImagesTitle").template("tmplCacheLogImagesTitle");
+            $("#tmpl_CacheLogImages").template("tmplCacheLogImages");
+            $("#tmpl_CacheLogRow").template("tmplCacheLogRow");
+        }
+        
       var newImageTmpl = "" +
       "          <a class='tb_images lnk gclh_thumb' rel='tb_images[grp${LogID}]' href='http://img.geocaching.com/cache/log/${FileName}' title='${Descr}'>" +
       "              <img title='${Name}' alt='${Name}' src='http://img.geocaching.com/cache/log/thumb/${FileName}'>";
@@ -4206,19 +4218,19 @@ if(is_page("cache_listing")){
     '                    {{if Images.length > 0}}' +
     '                        <table cellspacing="0" cellpadding="3" class="LogImagesTable">';
   if(settings_show_thumbnails) new_tmpl += '<tr><td>';
-  new_tmpl += '              {{tmpl(Images) "tmplCacheLogImages"}}';
+  new_tmpl += '              {{tmpl(Images) "tmpl_CacheLogImages"}}';
   if(settings_show_thumbnails) new_tmpl += '</td></tr>';
   new_tmpl +=  '             </table>' +
     '                    {{/if}}' +
     '                    <div class="AlignRight">' +
     '                        <small><a title="View Log" href="log.aspx?LUID=${LogGuid}" target="_blank">' +
-    '                            {{if (userInfo.ID==AccountID)}}' +
+    '                            {{if ("'+(userInfo==null?0:userInfo.ID)+'"==AccountID)}}' +
     '                               View / Edit Log / Images' +
     '                            {{else}}' +
     '                               View Log' +
     '                            {{/if}}' +
     '                        </a></small>&nbsp;' +
-    '                        {{if (userInfo.ID==AccountID)}}' +
+    '                        {{if ("'+(userInfo==null?0:userInfo.ID)+'"==AccountID)}}' +
     '                        <small><a title="Upload Image" href="upload.aspx?LID=${LogID}" target="_blank">Upload Image</a></small>' +
     '                        {{/if}}' +
     '                    </div>' +
