@@ -468,6 +468,11 @@
 
 var operaHelperInitComplete = false;
 var operaHelperDomLoaded = false;
+var chromeUserData = {};
+var userInfo = userInfo||window.userInfo||null;  
+var isLoggedIn = isLoggedIn||window.isLoggedIn||null;
+var userDefinedCoords = userDefinedCoords||window.userDefinedCoords||null;
+var userToken = userToken||window.userToken||null;
 
 if(typeof opera == "object"){
 	window.addEventListener('DOMContentLoaded',function(){		
@@ -906,6 +911,52 @@ function is_page(name){
 }
 
 function main(){
+ if(browser == "chrome"){
+    //Get Userdata from site context and add them to the extension context     
+    var userData =  $('#aspnetForm script:not([src])').filter(function(){
+        return this.innerHTML.indexOf("ccConversions") != -1;
+    }).html();
+    if(typeof userData != "undefined"){
+        userData = userData.replace('{ID: ', '{"ID": ');
+        
+        var regex = /([a-zA-Z0-9]+)( = )([^;]+)(;)/g;
+        
+        var match;
+        while(match = regex.exec(userData)){
+            var data = match[3].trim();
+
+            if(match[1].trim()=="initalLogs"){
+                continue;
+            }
+            
+            if(data.charAt(0) == '"' || data.charAt(0) == "'"){
+                data = data.slice(1,data.length-1);
+            }
+            
+            data = data.trim();
+            
+            if(data.charAt(0) == '{' || data.charAt(0) == '['){
+                data = JSON.parse(data);
+            }
+            
+            chromeUserData[match[1].replace('"','').replace("'","").trim()] = data;   
+        }
+    }
+    
+    if(chromeUserData["userInfo"]){
+        userInfo = chromeUserData["userInfo"];
+    }
+    if(chromeUserData["isLoggedIn"]){
+        isLoggedIn = chromeUserData["isLoggedIn"];
+    }
+    if(chromeUserData["userDefinedCoords"]){
+        userDefinedCoords = chromeUserData["userDefinedCoords"];
+    }
+    if(chromeUserData["userToken"]){
+        userToken = chromeUserData["userToken"];
+    }
+}
+
 // Link on Google Maps
 if(document.location.href.match(/^(http|https):\/\/maps\.google\./) || document.location.href.match(/^(http|https):\/\/www\.google\.[a-zA-Z.]*\/maps/)){
   if(settings_show_google_maps){
@@ -4203,7 +4254,7 @@ try{
       document.getElementById("cache_logs_table").removeChild(tbodys[i]);
     }
 
-    // get userToken
+    /*// get userToken
     var userToken = unsafeWindow.userToken;
     if(!userToken){ // Umgehung fuer Chrome
       var scripts = document.getElementsByTagName("script");
@@ -4214,6 +4265,7 @@ try{
           break;
         }
       }
+    }*/
     }
   
     // Helper: Add VIP-Icon
