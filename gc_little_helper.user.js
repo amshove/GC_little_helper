@@ -25,6 +25,8 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                                 - Fix: Links in Log doesn't work with new Listing-Design
+//                                 - Fix: HomeZone not displayed under Chrome
 //                                 - Fix: Chrome doesn't load logs correctly
 //                 9.5             - Fix: Issue #276 - log-signature is ignored if there is a comment in fieldnotes
 //                                 - New: GClh now overwrites the layercontrol of GC Map Enhancements (can be disabled in settings)
@@ -4240,7 +4242,7 @@ if(is_page("cache_listing")){
   new_tmpl +=  '             </table>' +
     '                    {{/if}}' +
     '                    <div class="AlignRight">' +
-    '                        <small><a title="View Log" href="log.aspx?LUID=${LogGuid}" target="_blank">' +
+    '                        <small><a title="View Log" href="/seek/log.aspx?LUID=${LogGuid}" target="_blank">' +
     '                            {{if ("'+(userInfo==null?0:userInfo.ID)+'"==AccountID)}}' +
     '                               View / Edit Log / Images' +
     '                            {{else}}' +
@@ -4248,7 +4250,7 @@ if(is_page("cache_listing")){
     '                            {{/if}}' +
     '                        </a></small>&nbsp;' +
     '                        {{if ("'+(userInfo==null?0:userInfo.ID)+'"==AccountID)}}' +
-    '                        <small><a title="Upload Image" href="upload.aspx?LID=${LogID}" target="_blank">Upload Image</a></small>' +
+    '                        <small><a title="Upload Image" href="/seek/upload.aspx?LID=${LogID}" target="_blank">Upload Image</a></small>' +
     '                        {{/if}}' +
     '                    </div>' +
     '                </div>' +
