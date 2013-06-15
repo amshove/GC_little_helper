@@ -1095,7 +1095,21 @@ if(GM_getValue("new_version",scriptVersion) > scriptVersion){
 
 // Helper: from N/S/E/W Deg Min.Sec to Dec
 function toDec(coords){
-  var match = coords.match(/^(N|S) ([0-9][0-9]). ([0-9][0-9])\.([0-9][0-9][0-9]) (E|W) ([0-9][0-9][0-9]). ([0-9][0-9])\.([0-9][0-9][0-9])$/);
+  var match = coords.match(/([0-9]+)°([0-9]+)\.([0-9]+)′(N|S), ([0-9]+)°([0-9]+)\.([0-9]+)′(W|E)/);
+
+  if(match){
+    var dec1 = parseInt(match[1],10) + (parseFloat(match[2]+"."+match[3])/60);
+    if(match[4] == "S") dec1 = dec1 * -1;
+    dec1 = Math.round(dec1*10000000)/10000000;
+
+    var dec2 = parseInt(match[5],10) + (parseFloat(match[6]+"."+match[7])/60);
+    if(match[8] == "W") dec2 = dec2 * -1;
+    dec2 = Math.round(dec2*10000000)/10000000;
+
+    return new Array(dec1,dec2);
+  }
+  else{
+      match = coords.match(/^(N|S) ([0-9][0-9]). ([0-9][0-9])\.([0-9][0-9][0-9]) (E|W) ([0-9][0-9][0-9]). ([0-9][0-9])\.([0-9][0-9][0-9])$/);
 
   if(match){
     var dec1 = parseInt(match[2],10) + (parseFloat(match[3]+"."+match[4])/60);
@@ -1107,7 +1121,10 @@ function toDec(coords){
     dec2 = Math.round(dec2*10000000)/10000000;
 
     return new Array(dec1,dec2);
-  }else return false;
+   }else{
+	  return false;
+   }
+  }
 }
 
 // Helper: from Deg to DMS
@@ -4741,9 +4758,9 @@ try{
 try{
   if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/account\/ManageLocations\.aspx/)){
     function setCoordsHelper(){
-      var search_value = document.getElementById("search").value;
+      var search_value = document.getElementById("LatLng").innerText;
   
-      if(search_value.match(/^(N|S) [0-9][0-9]. [0-9][0-9]\.[0-9][0-9][0-9] (E|W) [0-9][0-9][0-9]. [0-9][0-9]\.[0-9][0-9][0-9]$/)){
+      if(search_value.match(/([0-9]+)°([0-9]+)\.([0-9]+)′(N|S), ([0-9]+)°([0-9]+)\.([0-9]+)′(W|E)/) || search_value.match(/^(N|S) ([0-9][0-9]). ([0-9][0-9])\.([0-9][0-9][0-9]) (E|W) ([0-9][0-9][0-9]). ([0-9][0-9])\.([0-9][0-9][0-9])$/)){
         var latlng = toDec(search_value);
   
         if(GM_getValue("home_lat",0) != parseInt(latlng[0]*10000000)) GM_setValue("home_lat",parseInt(latlng[0]*10000000)); // * 10000000 because GM don't know float
