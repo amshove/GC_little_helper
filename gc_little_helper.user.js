@@ -1798,7 +1798,12 @@ try{
 try{
   if(settings_decrypt_hint && !settings_hide_hint && is_page("cache_listing")){
     if (document.getElementById('ctl00_ContentBody_EncryptionKey')) {
-      unsafeWindow.dht(document.getElementById("ctl00_ContentBody_lnkDH"));
+        if(browser == "chrome"){
+            injectPageScript("(function(){ dht(); })()");                
+        }
+        else{                
+      		unsafeWindow.dht(document.getElementById("ctl00_ContentBody_lnkDH"));
+        }  
   
       // remove hint description
       var decryptKey = document.getElementById('dk');
