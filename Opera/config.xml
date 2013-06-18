@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<widget xmlns="http://www.w3.org/ns/widgets" version="9.4.0">
+<widget xmlns="http://www.w3.org/ns/widgets" version="9.6.0">
     <name>GC Little Helper</name>
     <description>Some little things to make life easy (on www.geocaching.com).</description>
     <author href="http://www.amshove.net/wiki/greasemonkey:gc_little_helper">Torsten Amshove</author>   
