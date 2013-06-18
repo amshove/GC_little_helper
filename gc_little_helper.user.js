@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           GC little helper
 // @namespace      http://www.amshove.net
-// @version        9.5
+// @version        9.6
 // @include        http://www.geocaching.com/*
 // @include        https://www.geocaching.com/*
 // @include        http://maps.google.tld/*
@@ -25,6 +25,8 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                 9.6             - Fix: auto hint decode does not work in chrome
+//                                 - Fix: auto home coord grabbing is broken
 //                                 - New: More space between Smilies on Log-Page
 //                                 - Fix: Links in Log doesn't work with new Listing-Design
 //                                 - Fix: HomeZone not displayed under Chrome
@@ -658,7 +660,7 @@ profileBookmark("My Trackables", "lnk_my_trackables");
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "9.5";
+var scriptVersion = "9.6";
 
 var anzCustom = 10;
 var anzTemplates = 10;
