@@ -25,6 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                                 - Fix: GClh doesn't work on event listings
 //                 9.6             - Fix: auto hint decode does not work in chrome
 //                                 - Fix: auto home coord grabbing is broken
 //                                 - New: More space between Smilies on Log-Page
@@ -933,6 +934,7 @@ function main(){
 	        
 	        var match;
 	        while(match = regex.exec(userData)){
+                    if(match[1] == "eventCacheData") continue;   // Workaround fuer event-Listings (da ist ne Funktion in dem Script-Element)
 	            var data = match[3].trim();
 	
 	            if(match[1].trim()=="initalLogs"){
