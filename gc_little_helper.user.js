@@ -25,6 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                                 - Fix: Some new issues with new listing
 //                                 - Fix: GClh doesn't work on event listings
 //                 9.6             - Fix: auto hint decode does not work in chrome
 //                                 - Fix: auto home coord grabbing is broken
@@ -1567,6 +1568,11 @@ try{
     var disc = getElementsByClass('DisclaimerWidget')[0];
     if(disc){
       disc.parentNode.removeChild(disc);
+    }else{
+      var disc = getElementsByClass('Note Disclaimer')[0]; // New Listing design
+      if(disc){
+        disc.parentNode.removeChild(disc);
+      }
     }
   }
   if(settings_hide_disclaimer && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cdpf\.aspx/)){
@@ -1663,6 +1669,11 @@ try{
     var disc = getElementsByClass('NotesWidget')[0];
     if(disc){
       disc.parentNode.removeChild(disc);
+    }else{
+      var disc = getElementsByClass('Note PersonalCacheNote')[0]; // New Listing design
+      if(disc){
+        disc.parentNode.removeChild(disc);
+      }
     }
   }
 }catch(e){ gclh_error("Hide Cache Notes (COMPLETE)",e); }
@@ -1671,6 +1682,7 @@ try{
 try{
   if(settings_hide_empty_cache_notes && !settings_hide_cache_notes && is_page("cache_listing")){
     var box = getElementsByClass('NotesWidget')[0];
+    if(!box) box = getElementsByClass('Note PersonalCacheNote')[0]; // New Listing design
     if(box){
       var code = 
         "function hide_notes() {" +
@@ -1686,10 +1698,15 @@ try{
       document.getElementsByTagName("body")[0].appendChild(script);
   
       box.setAttribute("id","box_notes");
-      getElementsByClass("UserSuppliedContent")[0].innerHTML = "<font style='font-size: 10px;'><a href='#' onClick='hide_notes();'>Show/Hide Cache Notes</a></font><br><br>"+getElementsByClass("UserSuppliedContent")[0].innerHTML;
+      var link = document.createElement("font");
+      link.innerHTML = "<a href='javascript:void(0);' onClick='hide_notes();'>Show/Hide Cache Notes</a>";
+      link.setAttribute("style","font-size: 10px;");
+      box.parentNode.insertBefore(link,box.nextSibling);
+//      getElementsByClass("UserSuppliedContent")[0].innerHTML = "<font style='font-size: 10px;'><a href='#' onClick='hide_notes();'>Show/Hide Cache Notes</a></font><br><br>"+getElementsByClass("UserSuppliedContent")[0].innerHTML;
     
       function hide_on_load() {
         var notes = getElementsByClass('NotesWidget')[0];
+        if(!notes) notes = getElementsByClass('Note PersonalCacheNote')[0]; // New Listing design
         var notesText = document.getElementById("cache_note").innerHTML;
         if (notesText != null && (notesText == "Click to enter a note" || notesText == "Klicken zum Eingeben einer Notiz")) {
           notes.style.display = "none";
@@ -3201,7 +3218,7 @@ try{
       if(link) link.parentNode.parentNode.insertBefore(li,link.parentNode);
     }
   }
-  if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?(ID|guid|wp)\=[a-zA-Z0-9-]*\&gclh\=small/)){ // Hide everything to be smart for the iframe :)
+  if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?(.*)\&gclh\=small/)){ // Hide everything to be smart for the iframe :)
     if(document.getElementsByTagName('html')[0]) document.getElementsByTagName('html')[0].style.backgroundColor = "#FFFFFF";
   
     if(document.getElementsByTagName("header")[0]) document.getElementsByTagName("header")[0].style.display = "none";
@@ -4633,7 +4650,8 @@ try{
 // Show other Coord-Formats in Listing
 try{
   if(is_page("cache_listing") && document.getElementById('uxLatLon')){
-    var box = document.getElementById('ctl00_ContentBody_LocationSubPanel').childNodes[0];
+    var box = document.getElementById('ctl00_ContentBody_LocationSubPanel'); //.childNodes[0];
+    box.innerHTML = box.innerHTML.replace("<br>","");
     var coords = document.getElementById('uxLatLon').innerHTML;
     var dec = toDec(coords);
     var lat = dec[0];
@@ -4646,6 +4664,8 @@ try{
   
     var dms = DegtoDMS(coords);
     box.innerHTML += " - DMS: "+dms;
+
+    box.innerHTML = "<font style='font-size: 10px;'>"+box.innerHTML+"</font><br>";
   }
   // ... and on print-page
   if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cdpf\.aspx/)){
