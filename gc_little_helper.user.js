@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           GC little helper
 // @namespace      http://www.amshove.net
-// @version        9.6
+// @version        9.7
 // @include        http://www.geocaching.com/*
 // @include        https://www.geocaching.com/*
 // @include        http://maps.google.tld/*
@@ -25,7 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
-//                                 - Fix: Some new issues with new listing
+//                 9.7             - Fix: Some new issues with new listing
 //                                 - Fix: GClh doesn't work on event listings
 //                 9.6             - Fix: auto hint decode does not work in chrome
 //                                 - Fix: auto home coord grabbing is broken
@@ -662,7 +662,7 @@ profileBookmark("My Trackables", "lnk_my_trackables");
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "9.6";
+var scriptVersion = "9.7";
 
 var anzCustom = 10;
 var anzTemplates = 10;
