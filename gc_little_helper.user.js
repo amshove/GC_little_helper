@@ -931,7 +931,7 @@ function main(){
 	    if(typeof userData != "undefined"){
 	        userData = userData.replace('{ID: ', '{"ID": ');
 	        
-	        var regex = /([a-zA-Z0-9]+)( = )([^;]+)(;)/g;
+	        var regex = /([a-zA-Z0-9]+)( = )(((["'][^"']*["'])|([^;]))+)(;)/g;
 	        
 	        var match;
 	        while(match = regex.exec(userData)){
