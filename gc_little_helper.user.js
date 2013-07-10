@@ -491,9 +491,7 @@ if(typeof opera == "object"){
 }
 
 if(typeof(chrome) != "undefined"){		
-	var div = document.createElement("div");
-	div.setAttribute("onclick", "return window;");
-	unsafeWindow = div.onclick();
+	unsafeWindow = window;
 
 	uneval = JSON.stringify;
 	
