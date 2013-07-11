@@ -25,6 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                                 - Fix: Hide TBs/Coins in profile
 //                 9.7             - Fix: Some new issues with new listing
 //                                 - Fix: GClh doesn't work on event listings
 //                 9.6             - Fix: auto hint decode does not work in chrome
@@ -3143,7 +3144,7 @@ try{
     if(tables && tables[0]){
       var trs = tables[0].getElementsByTagName("tr");
       for(var i=0; i<trs.length; i++){
-        if(trs[i].childNodes[1].innerHTML.match(/logtypes\/75\.png/)){
+        if(trs[i].innerHTML.match(/logtypes\/75\.png/)){
           trs[i].parentNode.removeChild(trs[i]);
         }
       }
