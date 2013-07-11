@@ -25,6 +25,7 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                                 - Fix: Google Maps alert displayed every time
 //                                 - Fix: Hide TBs/Coins in profile
 //                 9.7             - Fix: Some new issues with new listing
 //                                 - Fix: GClh doesn't work on event listings
@@ -2915,7 +2916,7 @@ try{
 try{
   if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\//)) {
    if(typeof(L) == "undefined" && typeof(unsafeWindow.L) == "undefined" && $(".leaflet-container").length == 0){
-    if( GM_getValue("gclhWasGoogleAlertShown", false)){
+    if( !GM_getValue("gclhWasGoogleAlertShown", false)){
         function showGMapInfo(){
           if(typeof $  == "undefined"){
             $ = unsafeWindow.$;
