@@ -4554,6 +4554,8 @@ try{
     
     // Load "num" Logs
     function gclh_load_logs(num){
+      var data = new Array(); 
+      var requestCount = 1;
       var logs = new Array();
       var numPages = 1;
       var curIdx = 1;
@@ -4569,8 +4571,7 @@ try{
         document.getElementById("gclh_vip_list_nofound").appendChild(span_loading);
       }
       
-      function gclh_load_helper(){
-        if(numPages >= curIdx){
+      function gclh_load_helper(count){
 
           var url = "http://www.geocaching.com/seek/geocache.logbook?tkn="+userToken+"&idx="+curIdx+"&num=100&decrypt=false";
           if(unsafeWindow.$tfoot) unsafeWindow.$tfoot.show();
@@ -4581,16 +4582,32 @@ try{
             onload: function(response){
               gclh_log("Loading Logs Status: "+response.statusText+" - URL: "+url);
 
-              var json = JSON.parse(response.responseText);
+              requestCount--;
+              data[count] = JSON.parse(response.responseText);
+              
               if(numPages == 1){
-                numPages = json.pageInfo.totalPages;
+                numPages = data[count].pageInfo.totalPages;
+                for(curIdx=2; curIdx<=numPages; curIdx++){
+                    requestCount++;     
+                    gclh_load_helper(curIdx);
+                };
               }
   
+              if(requestCount<=0){
+                gclh_load_dataHelper();
+              }              
+            }
+          });
+      }
+      
+    function gclh_load_dataHelper(){
+  
               if(unsafeWindow.$tfoot) unsafeWindow.$tfoot.hide();
+        for(var z = 1; z <= numPages; z++){
+            var json = data[z];  
               
               logs = logs.concat(json.data);
               
-              curIdx++;
               
               for(var i = 0; i < json.data.length; i++){
                 var user = json.data[i].UserName;
@@ -4614,9 +4631,8 @@ try{
                 }
               }
               
-              if(json.pageInfo.totalRows > logs.length){
-                gclh_load_helper();
-              }else{
+        }
+        
                 // Add Links
                 gclh_load_all_link(logs); // Load all Logs
                 gclh_filter_logs(logs); // Filter Logs
@@ -4645,12 +4661,8 @@ try{
                 gclh_add_vip_icon();
                 }
               }
-            }
-          });
-        }
-      }
       
-      gclh_load_helper();
+    gclh_load_helper(1);
     }
     
     if(settings_show_all_logs) gclh_load_logs(settings_show_all_logs_count);
