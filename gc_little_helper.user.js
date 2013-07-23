@@ -4318,11 +4318,22 @@ try{
     new_tmpl_block.setAttribute("id","tmpl_CacheLogRow_gclh");
     document.getElementsByTagName("body")[0].appendChild(new_tmpl_block);
   
-    // disable Function on Page
+    // disable scroll Function on Page
+    function disablePageAutoScroll(){
+        var unsafeWindow = (typeof(unsafeWindow)=="undefined"?window:unsafeWindow);
     unsafeWindow.currentPageIdx = 2;
     unsafeWindow.totalPages = 1;
     unsafeWindow.isBusy = true;
     unsafeWindow.initalLogs = initalLogs = {"status":"success", "data": [], "pageInfo": { "idx":2, "size": 0, "totalRows": 1, "totalPages": 1, "rows": 1 } };
+    }
+    
+    if(browser == "chrome"){
+        injectPageScriptFunction(disablePageAutoScroll, "()"); 
+    }
+    else{
+        disablePageAutoScroll();
+    }
+    
     // Hide initial Logs
     var tbodys = document.getElementById("cache_logs_table").getElementsByTagName("tbody");
     for(var i=0; i<tbodys.length; i++){
