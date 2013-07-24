@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           GC little helper
 // @namespace      http://www.amshove.net
-// @version        9.7
+// @version        9.8
 // @include        http://www.geocaching.com/*
 // @include        https://www.geocaching.com/*
 // @include        http://maps.google.tld/*
@@ -25,6 +25,8 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                 9.8             - New: parallelisation of the log loading requests
+//                                 - Fix: chrome "log order" wrong (endlessscroll of the page was not disabled)
 //                                 - Fix: Google Maps alert displayed every time
 //                                 - Fix: Hide TBs/Coins in profile
 //                 9.7             - Fix: Some new issues with new listing
@@ -662,7 +664,7 @@ profileBookmark("My Trackables", "lnk_my_trackables");
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "9.7";
+var scriptVersion = "9.8";
 
 var anzCustom = 10;
 var anzTemplates = 10;
