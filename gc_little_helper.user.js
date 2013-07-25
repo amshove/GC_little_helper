@@ -4393,7 +4393,7 @@ try{
         callback: function() {
           if (!isBusy && !document.getElementById("gclh_all_logs_marker")) {
             isBusy = true;
-            if(unsafeWindow.$tfoot) unsafeWindow.$tfoot.show();
+            $("#pnlLazyLoad").show();
             
             for(var i=0; i<10; i++){
               if(logs[num]){
@@ -4408,7 +4408,7 @@ try{
             gclh_add_vip_icon();
             if(!settings_hide_top_button) $("#topScroll").fadeIn();
                   
-            if(unsafeWindow.$tfoot) unsafeWindow.$tfoot.hide();
+            $("#pnlLazyLoad").hide();
             isBusy = false;
           }
         }
@@ -4576,7 +4576,7 @@ try{
       function gclh_load_helper(count){
 
           var url = "http://www.geocaching.com/seek/geocache.logbook?tkn="+userToken+"&idx="+curIdx+"&num=100&decrypt=false";
-          if(unsafeWindow.$tfoot) unsafeWindow.$tfoot.show();
+          $("#pnlLazyLoad").show();
 
           GM_xmlhttpRequest({
             method: "GET",
@@ -4604,7 +4604,7 @@ try{
       
     function gclh_load_dataHelper(){
   
-              if(unsafeWindow.$tfoot) unsafeWindow.$tfoot.hide();
+              $("#pnlLazyLoad").hide();
         for(var z = 1; z <= numPages; z++){
             var json = data[z];  
               
