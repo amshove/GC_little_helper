@@ -940,9 +940,9 @@ function main(){
                     if(match[1] == "eventCacheData") continue;   // Workaround fuer event-Listings (da ist ne Funktion in dem Script-Element)
 	            var data = match[3].trim();
 	
-	            if(match[1].trim()=="initalLogs"){
+	            /*if(match[1].trim()=="initalLogs"){
 	                continue;
-	            }
+	            }*/
 	            
 	            if(data.charAt(0) == '"' || data.charAt(0) == "'"){
 	                data = data.slice(1,data.length-1);
@@ -4319,29 +4319,66 @@ try{
     new_tmpl_block.innerHTML = new_tmpl;
     new_tmpl_block.setAttribute("id","tmpl_CacheLogRow_gclh");
     document.getElementsByTagName("body")[0].appendChild(new_tmpl_block);
-  
-    // disable scroll Function on Page
-    function disablePageAutoScroll(){
-        var unsafeWindow = (typeof(unsafeWindow)=="undefined"?window:unsafeWindow);
-    unsafeWindow.currentPageIdx = 2;
-    unsafeWindow.totalPages = 1;
-    unsafeWindow.isBusy = true;
-    unsafeWindow.initalLogs = initalLogs = {"status":"success", "data": [], "pageInfo": { "idx":2, "size": 0, "totalRows": 1, "totalPages": 1, "rows": 1 } };
-    }
+      
+    //Override the standart templates (for pre-LogLoad use)
+    document.getElementById('tmpl_CacheLogRow').innerHTML = new_tmpl;
+    var elem = unsafeWindow.$('#tmpl_CacheLogRow')[0];
+    unsafeWindow.$.removeData(elem, "tmpl");
+    unsafeWindow.$("#tmpl_CacheLogRow").template("tmplCacheLogRow");
     
     if(browser == "chrome"){
-        injectPageScriptFunction(disablePageAutoScroll, "()"); 
+        injectPageScriptFunction(function(){
+            var elem = window.$('#tmpl_CacheLogRow')[0];
+            window.$.removeData(elem, "tmpl");
+            window.$("#tmpl_CacheLogRow").template("tmplCacheLogRow");
+        }, "()"); 
     }
-    else{
-        disablePageAutoScroll();
+      
+    //Reinit initalLogs
+    var tbody = document.getElementById("cache_logs_table").getElementsByTagName("tbody");
+    if(tbody.length > 0 ){
+        tbody = tbody[0];
+        if(tbody.children.length > 0 ){
+            var initialLogData = chromeUserData.initalLogs || unsafeWindow.initalLogs || initalLogs;
+            var inclAvatars = chromeUserData.includeAvatars ||  unsafeWindow.includeAvatars || includeAvatars;
+            var newInitalLogs = $("#tmpl_CacheLogRow").tmpl(initialLogData.data, {
+                includeAvatars: inclAvatars
+            });
+            
+            unsafeWindow.$(newInitalLogs).find("a.tb_images").each(function() {
+                var $this = unsafeWindow.$(this);
+                $this.fancybox({
+                    'type': 'image',
+                    'titlePosition': 'inside',
+                    'padding': 10,
+                    titleFormat: function() {
+                        return $this.data('title');
+                    }
+                });
+            });
+            
+            for(var j =0; j<newInitalLogs.length && j<tbody.children.length;j++){
+                unsafeWindow.$(tbody.children[j]).replaceWith(newInitalLogs[j]);
+            }
+            
+            gclh_add_vip_icon();
+        }
+    }    
+    
+    function loadListener(e) {       
+        gclh_add_vip_icon();        
     }
     
-    // Hide initial Logs
-    var tbodys = document.getElementById("cache_logs_table").getElementsByTagName("tbody");
-    for(var i=0; i<tbodys.length; i++){
-      document.getElementById("cache_logs_table").removeChild(tbodys[i]);
+    $("#cache_logs_table")[0].addEventListener('DOMNodeInserted', loadListener);
+    
+    function disablePageAutoScroll(){
+        var unsafeWindow = (typeof(unsafeWindow)=="undefined"?window:unsafeWindow);
+        unsafeWindow.currentPageIdx = 2;
+        unsafeWindow.totalPages = 1;
+        unsafeWindow.isBusy = true;
+        unsafeWindow.initalLogs = initalLogs = {"status":"success", "data": [], "pageInfo": { "idx":2, "size": 0, "totalRows": 1, "totalPages": 1, "rows": 1 } };        
     }
-
+    
     /*// get userToken
     var userToken = unsafeWindow.userToken;
     if(!userToken){ // Umgehung fuer Chrome
@@ -4357,9 +4394,10 @@ try{
   
     // Helper: Add VIP-Icon
     function gclh_add_vip_icon(){
-     for(var i = 0; i < document.getElementById("cache_logs_table").getElementsByTagName("a").length; i++){
-        if(document.getElementById("cache_logs_table").getElementsByTagName("a")[i].className == "gclh_vip"){
-          var link = document.getElementById("cache_logs_table").getElementsByTagName("a")[i];
+     var elements = document.getElementById("cache_logs_table").getElementsByTagName("a");
+     for(var i = 0; i < elements.length; i++){
+        if(elements[i].className == "gclh_vip"){
+          var link = elements[i];
           var img = link.childNodes[0];
           var user = link.name;
   
@@ -4576,7 +4614,7 @@ try{
       function gclh_load_helper(count){
 
           var url = "http://www.geocaching.com/seek/geocache.logbook?tkn="+userToken+"&idx="+curIdx+"&num=100&decrypt=false";
-          $("#pnlLazyLoad").show();
+          //$("#pnlLazyLoad").show();
 
           GM_xmlhttpRequest({
             method: "GET",
@@ -4603,8 +4641,29 @@ try{
       }
       
     function gclh_load_dataHelper(){
-  
-              $("#pnlLazyLoad").hide();
+        // disable scroll Function on Page
+        if(browser == "chrome"){
+            injectPageScriptFunction(disablePageAutoScroll, "()"); 
+        }
+        else{
+            disablePageAutoScroll();
+        }
+        
+        $("#cache_logs_table")[0].removeEventListener('DOMNodeInserted', loadListener);
+        
+        // Hide initial Logs
+        var tbodys = document.getElementById("cache_logs_table").getElementsByTagName("tbody");
+        if(tbodys.length > 0){
+            var shownLogs = tbodys[0].children.length;
+            if(shownLogs > 0 && num < shownLogs){
+                num = shownLogs;
+            }
+        }
+        for(var i=0; i<tbodys.length; i++){
+          document.getElementById("cache_logs_table").removeChild(tbodys[i]);
+        }
+    
+        //$("#pnlLazyLoad").hide();
         for(var z = 1; z <= numPages; z++){
             var json = data[z];  
               
@@ -4662,7 +4721,7 @@ try{
                   
                 gclh_add_vip_icon();
                 }
-              }
+        }
       
     gclh_load_helper(1);
     }
