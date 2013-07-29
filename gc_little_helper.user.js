@@ -545,11 +545,25 @@ if(typeof(chrome) != "undefined"){
     if(typeof(GM_xmlhttpRequest) == "undefined" || (GM_xmlhttpRequest.toString && GM_xmlhttpRequest.toString().indexOf("not supported") != -1)) {
         GM_xmlhttpRequest = function(requestData){
             var httpReq = new window.XMLHttpRequest();
-            httpReq.onreadystatechange = function(data) { 	
-                if (requestData["onreadystatechange"]) {
-                    requestData["onreadystatechange"](data);
-                }                
+            if (requestData["onreadystatechange"]) {
+                httpReq.onreadystatechange = function(data) { 	               
+                    requestData["onreadystatechange"](this);
+                }     
             }
+            
+            if (requestData["onload"]) {
+                httpReq.onload = function(data) { 
+                    if (this.status == 200) {
+                        requestData["onload"](this);
+                    }
+                }                     
+            }   
+            
+            if (requestData["onerror"]) {
+                httpReq.onload = function(data) { 	               
+                    requestData["onerror"](this);
+                }                     
+            }   
             
             httpReq.open(requestData.method, requestData.url);
 
