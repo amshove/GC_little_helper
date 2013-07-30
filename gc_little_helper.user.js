@@ -936,6 +936,7 @@ function is_page(name){
 }
 
 function main(){
+try{
  if(userToken == null){
     //Get Userdata from site context and add them to the extension context     
     if(typeof $ == "undefined"){
@@ -949,12 +950,13 @@ function main(){
 	    if(typeof userData != "undefined"){
 	        userData = userData.replace('{ID: ', '{"ID": ');
 	        
-	        var regex = /([a-zA-Z0-9]+)( = )(((["'][^"']*["'])|([^;]))+)(;)/g;
+	        //var regex = /([a-zA-Z0-9]+)( = )(((["'][^"']*["'])|([^;]))+)(;)/g;
+	        var regex = /([a-zA-Z0-9öÖäÄüÜß]+)([ ]?=[ ]?)(((({.+})(;)))|(((\[.+\])(;)))|(((".+")(;)))|((('.+')(;)))|(([^'"{\[].+)(;)))/g;
 	        
 	        var match;
 	        while(match = regex.exec(userData)){
                     if(match[1] == "eventCacheData") continue;   // Workaround fuer event-Listings (da ist ne Funktion in dem Script-Element)
-	            var data = match[3].trim();
+	            var data = (match[6] || match[10] || match[14] || match[18] || match[21]).trim();
 	
 	            /*if(match[1].trim()=="initalLogs"){
 	                continue;
@@ -987,7 +989,8 @@ function main(){
 	        userToken = chromeUserData["userToken"];
 	    }
 	}
-}
+ }
+}catch(e){ gclh_error("Error parsing userdata from page.",e); }
 
 // Link on Google Maps
 if(document.location.href.match(/^(http|https):\/\/maps\.google\./) || document.location.href.match(/^(http|https):\/\/www\.google\.[a-zA-Z.]*\/maps/)){
