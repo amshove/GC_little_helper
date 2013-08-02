@@ -1129,7 +1129,7 @@ function trim(s) {
 }
 
 // Show Update-Banner
-if(GM_getValue("new_version",scriptVersion) > scriptVersion){
+if(parseFloat(GM_getValue("new_version",scriptVersion)) > scriptVersion){
   var banner = "";
   banner = "<div align='center' style='background-color: #FF8888;'>There is an update available for <b>GC little helper</b> - you can update <a href='http://www.amshove.net/greasemonkey/updates.php' target='_blank'>here</a></div>";
   document.getElementsByTagName("body")[0].innerHTML = banner+document.getElementsByTagName("body")[0].innerHTML;
