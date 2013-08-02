@@ -1485,7 +1485,7 @@ try{
     //Chrome hover fix
     if(browser == "chrome"){
         injectPageScriptFunction(function(){        
-			$('ul.Menu li').hover(function () {
+			$('ul.Menu').children().hover(function () {                    
 					$(this).addClass('hover');
 					$('ul:first', this).css('visibility', 'visible');
 				}, 
