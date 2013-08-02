@@ -4326,6 +4326,11 @@ if(is_page("cache_listing")){
     '    </tr>';
 }
 
+//Hide greenToTopButton
+if(settings_hide_top_button){
+    $("#topScroll").attr("id","_topScroll").hide();
+}   
+
 // Overwrite Log-Template and Log-Load-Function
 try{
   if(settings_load_logs_with_gclh && is_page("cache_listing") && !document.getElementById("ctl00_divNotSignedIn")){
