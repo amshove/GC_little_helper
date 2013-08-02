@@ -809,7 +809,13 @@ settings_default_logtype_event = GM_getValue("settings_default_logtype_event",se
 settings_default_tb_logtype = GM_getValue("settings_default_tb_logtype","-1");
 // Settings: Bookmarklist
 settings_bookmarks_list = eval(GM_getValue("settings_bookmarks_list",uneval(bookmarks_def)));
+if(settings_bookmarks_list.length == 0){
+    settings_bookmarks_list = bookmarks_def;
+}
 settings_bookmarks_list_beta = eval(GM_getValue("settings_bookmarks_list_beta",uneval(bookmarks_def)));
+if(settings_bookmarks_list_beta.length == 0){
+    settings_bookmarks_list_beta = bookmarks_def;
+}
 
 // Settinks: Dynamic Map
 settings_hide_advert_link = GM_getValue('settings_hide_advert_link',true);
