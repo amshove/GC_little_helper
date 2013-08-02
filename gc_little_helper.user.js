@@ -728,7 +728,7 @@ function gclh_log(log){
   if(typeof(console) != "undefined"){
     console.info(txt);
   }
-  if(typeof(GM_log) != "undefined"){
+  else if(typeof(GM_log) != "undefined"){
     GM_log(txt);
   }
 }
