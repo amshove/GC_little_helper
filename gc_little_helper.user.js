@@ -1404,7 +1404,7 @@ try{
 // Bookmarks on top
 try{
   if(settings_bookmarks_on_top && document.getElementById('Navigation')){
-    var nav_list = document.getElementById('Navigation').childNodes[1];
+    var nav_list = document.getElementsByClassName("Menu")[0];
     
     var menu = document.createElement("li");
     
