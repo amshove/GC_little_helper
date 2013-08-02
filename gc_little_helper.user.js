@@ -4639,10 +4639,11 @@ try{
             method: "GET",
             url: url,
             onload: function(response){
-              gclh_log("Loading Logs Status: "+response.statusText+" - URL: "+url);
 
               requestCount--;
-              data[count] = JSON.parse(response.responseText);
+              var dataElement = JSON.parse(response.responseText);
+              data[dataElement.pageInfo.idx] = dataElement;
+              gclh_log("Loading Logs Status: "+response.statusText+" - idx: "+dataElement.pageInfo.idx);
               
               if(numPages == 1){
                 numPages = data[count].pageInfo.totalPages;
