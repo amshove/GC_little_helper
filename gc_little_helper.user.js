@@ -1482,7 +1482,7 @@ try{
       nav_list.innerHTML += searchfield;
     }
   
-    //Chrome hover fix
+    //Chrome menu hover fix / Language selector fix
     if(browser == "chrome"){
         injectPageScriptFunction(function(){        
 			$('ul.Menu').children().hover(function () {                    
@@ -1494,6 +1494,9 @@ try{
 					$('ul:first', this).css('visibility', 'hidden');
 				}
 			);
+            
+            //Language selector fix
+            $('.LanguageSelector script').remove().appendTo('.LanguageSelector');
         }, "()");
     }
     
