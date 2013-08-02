@@ -1403,9 +1403,11 @@ try{
 
 // Bookmarks on top
 try{
-  if(settings_bookmarks_on_top && document.getElementById('Navigation')){
+  if(settings_bookmarks_on_top && document.getElementsByClassName("Menu").length > 0){
     var nav_list = document.getElementsByClassName("Menu")[0];
     
+    GM_addStyle('ul.Menu > li{ padding:0 0 0 0.75em !important; }  ');
+      
     var menu = document.createElement("li");
     
     var headline = document.createElement("a");
