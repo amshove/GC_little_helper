@@ -25,6 +25,16 @@
 //
 // Author:         Torsten Amshove <torsten@amshove.net> & Michael Keppler <bananeweizen@gmx.de> & Lars-Olof Krause <mail@lok-soft.de>
 // Changelog:
+//                10.0             - Fix: Users with trailing space couldn't be selected as vip
+//                                 - Fix: languageSelector broken with chrome
+//                                 - Fix: chrome-hover-fix selector selects too many elements
+//                                 - Mod: if linklist is empty use default entries
+//                                 - Fix: remove of gc menu elements fails
+//                                 - Fix: hide green top button is not working
+//                                 - Fix: duplicate logging with chrome
+//                                 - Fix: LinkList menu item is in a second line in some browsers
+//                                 - Fix: Since the last groundspeak update the LinkList is broken
+//                                 - Fix: Not all log pages were loaded (throws a exception)
 //                 9.9             - Fix: Duplicate logs
 //                                 - Fix: Missing vip- and mail-icons for some logs
 //                 9.8             - New: parallelisation of the log loading requests
@@ -3598,7 +3608,8 @@ try{
   
     // Add to VIP - image
     function gclh_add_vip(){
-      var user = trim(this.name);
+//      var user = trim(this.name);     // Es gibt wirklich User mit Leerzeichen am Ende ...
+      var user = this.name;
   
       vips.push(user);
       vips.sort(caseInsensitiveSort);
@@ -3619,7 +3630,8 @@ try{
   
     function gclh_del_vip(){
       var vips_new = new Array();
-      var user = trim(this.name);
+//      var user = trim(this.name);     // Es gibt wirklich User mit Leerzeichen am Ende ...
+      var user = this.name;
   
       for(var i=0; i<vips.length; i++){
         if(vips[i] != user) vips_new.push(vips[i]);
@@ -3661,7 +3673,8 @@ try{
           if(links[i].id) links[i].name = links[i].id; // To be able to jump to this location
     
           var matches = links[i].href.match(/http:\/\/www\.geocaching\.com\/profile\/\?guid=([a-zA-Z0-9]*)/);
-          var user = trim(links[i].innerHTML);
+//          var user = trim(links[i].innerHTML);     // Es gibt wirklich User mit Leerzeichen am Ende ...
+          var user = links[i].innerHTML;
     
           if(links[i].parentNode.id == "ctl00_ContentBody_mcd1"){
             user = owner;
@@ -4000,7 +4013,8 @@ try{
       for(var i=0; i<links.length; i++){
         if(links[i].href.match(/http:\/\/www\.geocaching\.com\/profile\/\?guid=/) && links[i].id){
           // VIP-Link
-          var user = trim(links[i].innerHTML).replace(/&amp;/,'&');
+//          var user = trim(links[i].innerHTML).replace(/&amp;/,'&');     // Es gibt wirklich User mit Leerzeichen am Ende ...
+          var user = links[i].innerHTML.replace(/&amp;/,'&');
           var link = document.createElement("a");
           var img = document.createElement("img");
           img.setAttribute("border","0");
@@ -4027,7 +4041,8 @@ try{
     }else if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/profile\//) && document.getElementById("ctl00_ContentBody_ProfilePanel1_lblMemberName")){
     // Public Profile - VIP-Icon
       gclh_build_vip_list = function(){} // There is no list to show, but ths function will be called from gclh_del_vip/gclh_add_vip
-      var user = trim(document.getElementById("ctl00_ContentBody_ProfilePanel1_lblMemberName").innerHTML).replace(/&amp;/,'&');
+//      var user = trim(document.getElementById("ctl00_ContentBody_ProfilePanel1_lblMemberName").innerHTML).replace(/&amp;/,'&');     // Es gibt wirklich User mit Leerzeichen am Ende ...
+      var user = document.getElementById("ctl00_ContentBody_ProfilePanel1_lblMemberName").innerHTML.replace(/&amp;/,'&');
       var link = document.createElement("a");
       var img = document.createElement("img");
       img.setAttribute("border","0");
