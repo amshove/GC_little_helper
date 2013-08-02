@@ -1540,8 +1540,8 @@ try{
 
 // Remove gc.com Links in Navigation
 try{
-  if(document.getElementById('Navigation')){
-    var liste = document.getElementById('Navigation').childNodes[1];
+  if(document.getElementsByClassName("Menu").length > 0){
+    var liste = document.getElementsByClassName("Menu")[0];
     if(GM_getValue('remove_navi_learn') && document.getElementById('ctl00_hlNavLearn')) liste.removeChild(document.getElementById('ctl00_hlNavLearn').parentNode);
     if(GM_getValue('remove_navi_partnering') && document.getElementById('ctl00_hlNavPartnering')) liste.removeChild(document.getElementById('ctl00_hlNavPartnering').parentNode);
     if(GM_getValue('remove_navi_play') && document.getElementById('ctl00_hlNavPlay')) liste.removeChild(document.getElementById('ctl00_hlNavPlay').parentNode);
