@@ -3372,6 +3372,7 @@ try{
 //    css += ".span-17 { width: "+(width-280)+"px; }";
     css += ".span-17 { width: "+(width-330)+"px; }";
     css += ".span-19 { width: "+(width-200)+"px; }";
+    css += ".home-hero { background: url(\"/images/home/home-hero.jpg\") no-repeat scroll left 0 transparent; color: #FFFFFF; margin: 38px 0 30px; }";
   
     var head = document.getElementsByTagName('head')[0];
     var style = document.createElement('style');
