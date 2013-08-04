@@ -1773,7 +1773,7 @@ try{
 		    $("#cache_note1").append("<pre id='cache_note'>"+content+"</pre>");
         }, "()");
     }
-    else{
+    else if(document.getElementById("cache_note")){
 	    document.getElementById("cache_note").id = "cache_note_old";
 	    document.getElementById("cache_note_old").innerHTML = "<pre id='cache_note'>"+document.getElementById("cache_note_old").innerHTML.replace(/^[\n ]*/,"")+"</pre>";
     }
@@ -2109,7 +2109,7 @@ try{
 
 // Show Eventday beside Date
 try{
-  if(settings_show_eventday && is_page("cache_listing") && document.getElementById('cacheDetails').getElementsByTagName("img")[0].src.match(/.*\/images\/WptTypes\/(6|453|13).gif/)){ //Event, MegaEvent, Cito
+  if(settings_show_eventday && is_page("cache_listing") && document.getElementById('cacheDetails') && document.getElementById('cacheDetails').getElementsByTagName("img")[0].src.match(/.*\/images\/WptTypes\/(6|453|13).gif/)){ //Event, MegaEvent, Cito
     if(document.getElementById('cacheDetails').getElementsByTagName("span")){
       var spanelem = document.getElementById("ctl00_ContentBody_mcd2");
       var datetxt = spanelem.innerHTML.substr(spanelem.innerHTML.indexOf(":") + 2).replace( /^\s+|\s+$/g, '' );
@@ -4360,7 +4360,7 @@ if(settings_hide_top_button){
 
 // Overwrite Log-Template and Log-Load-Function
 try{
-  if(settings_load_logs_with_gclh && is_page("cache_listing") && !document.getElementById("ctl00_divNotSignedIn")){
+  if(settings_load_logs_with_gclh && is_page("cache_listing") && !document.getElementById("ctl00_divNotSignedIn") && document.getElementById('tmpl_CacheLogRow')){
     // to Top Link
     var a = document.createElement("a");
     a.setAttribute("href","#");
