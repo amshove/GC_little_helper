@@ -3264,6 +3264,8 @@ try{
     if(document.getElementsByTagName('html')[0]) document.getElementsByTagName('html')[0].style.backgroundColor = "#FFFFFF";
   
     if(document.getElementsByTagName("header")[0]) document.getElementsByTagName("header")[0].style.display = "none";
+
+    if(document.getElementById("Navigation")) document.getElementById("Navigation").style.display = "none";
      
     if(document.getElementById('ctl00_divBreadcrumbs')) document.getElementById('ctl00_divBreadcrumbs').style.display = "none";
   
