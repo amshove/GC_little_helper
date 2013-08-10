@@ -202,6 +202,7 @@ profileBookmark("Find Player", "lnk_findplayer");
 bookmark("E-Mail", "/email/default.aspx");
 bookmark("Statbar", "/my/statbar.aspx");
 bookmark("Guidelines", "/about/guidelines.aspx");
+bookmark("GClhConfig", "/my/default.aspx#GClhShowConfig");
 externalBookmark("Forum", "http://forums.groundspeak.com/");
 externalBookmark("Blog", "http://blog.geocaching.com/");
 externalBookmark("Feedback", "http://feedback.geocaching.com/");
