@@ -1165,7 +1165,7 @@ try{
         }).hide();
     });
     
-    $($('#ctl00_divContentMain p')[1]).after('<div><a href="#" id="showSouvenirIgnoreList">Show hidden souvenirs</a> <div id="souvenirIgnoreListContainer" style="display:none;"><br><select title="Deselect and reload the page for making an souvenir visible again." id="souvenirIgnoreList" multiple="multiple" /></div></div>');
+    $($('#ctl00_divContentMain p')[1]).after('<div><a href="#" id="showSouvenirIgnoreList">Edit hidden souvenirs</a> <div id="souvenirIgnoreListContainer" style="display:none;"><p>Hidden souvenirs:</p><select style="width:700px;height:68px;" title="Deselect and reload the page for making an souvenir visible again." id="souvenirIgnoreList" multiple="multiple" /></div></div>');
     
     $("#showSouvenirIgnoreList").click(function(){
         $("#souvenirIgnoreListContainer").fadeToggle();
