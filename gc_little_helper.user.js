@@ -2670,15 +2670,19 @@ try{
     //Mark duplicate field notes
     var existingNotes = {};
     var link = null;
+    var date = null;
+    var type = null;
     $('.Table tr').each(function(i, e){
         link = $(e).find('td a[href*="cache_details.aspx?guid"]');
         if(link.length > 0){
-            if(existingNotes[link[0].href]){
-                $(existingNotes[link[0].href]).find('td').css("background-color", "#FE9C9C" );
+            date = $($(e).find('td')[2]).text();
+            type = $($(e).find('td')[3]).text();
+            if(existingNotes[link[0].href + date + type]){
+                $(existingNotes[link[0].href + date + type]).find('td').css("background-color", "#FE9C9C" );
                 $(e).find('td').css("background-color", "#FE9C9C" );
             }
             else{
-                existingNotes[link[0].href] = e;
+                existingNotes[link[0].href + date + type] = e;
             }
         }
     });
