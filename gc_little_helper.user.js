@@ -4251,6 +4251,14 @@ try{
         for(var i=0; i<tbodys.length; i++){
           document.getElementById("cache_logs_table").removeChild(tbodys[i]);
         }
+        
+        setTimeout(function(){
+            $('#cache_logs_table tr').each(function(i,e){
+                if($(e).find('.gclh_vip').length == 0){
+                    $(e).remove();
+                }
+            });
+        },750);
     
         //$("#pnlLazyLoad").hide();
         for(var z = 1; z <= numPages; z++){
