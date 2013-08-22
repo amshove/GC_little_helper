@@ -1622,7 +1622,7 @@ try{
     // Meldung bei ungespeichertem Log
     window.onbeforeunload = function (){
       if(changed){
-        return "This page is asking you to confirm that you want to leave - data you have entered may not be saved."; // Text wird nicht angezeigt bei FF sondern deren default (ist der gleiche weil ich den vorsichtshalber hier reingepackt habe)
+        return "You have changed a log and haven't saved it yet - Do you want to leave this page and lose your changes?"; // Text wird nicht angezeigt bei FF sondern deren default
       }
     }
     document.getElementById("ctl00_ContentBody_LogBookPanel1_btnSubmitLog").addEventListener("click",function(){ changed = false; },false); // Damit die Meldung nicht beim Submit kommt
