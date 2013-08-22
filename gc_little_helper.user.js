@@ -2782,7 +2782,8 @@ try{
       var a = document.createElement("a");
       a.setAttribute("href","#gclhLogIt");
       a.setAttribute("class","lnk");
-      a.innerHTML = "<img src='/images/stockholm/16x16/comment_add.gif'> <span>Log your visit (inline)</span>";
+      a.setAttribute("style","padding:0px;");
+      a.innerHTML = "<img src='/images/stockholm/16x16/comment_add.gif'> <span style='padding-left:4px;'>Log your visit (inline)</span>";
       a.addEventListener("click", hide_iframe, false);
   
       var li = document.createElement('li');
