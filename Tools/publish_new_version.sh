@@ -8,7 +8,7 @@ if [ $? -ne 0 ]; then
 fi
 
 # Get old and new Version
-OLD_VERS=`git tag | head -1`
+OLD_VERS=`git tag | sort -nr | head -1`
 NEW_VERS=`echo "$OLD_VERS + 0.1" | bc -q`
 
 # Update CHANGELOG
