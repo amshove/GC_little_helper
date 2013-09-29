@@ -492,9 +492,6 @@ function main(){
 try{
  if(userToken == null){
     //Get Userdata from site context and add them to the extension context     
-    if(typeof $ == "undefined"){
-        $ = unsafeWindow.$;
-    }
     var userData =  $('#aspnetForm script:not([src])').filter(function(){
         return this.innerHTML.indexOf("ccConversions") != -1;
     }).html();
@@ -582,7 +579,9 @@ if(document.location.href.match(/^(http|https):\/\/maps\.google\./) || document.
   }
 }else{
 //Required for jquery plugins under opera
-$ = unsafeWindow.$;
+if(typeof $ == "undefined"){
+  $ = unsafeWindow.$;
+}
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 // Helper
