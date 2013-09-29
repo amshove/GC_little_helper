@@ -1,3 +1,7 @@
+#### v10.2
+- Fix: Config was broken in v10.1
+
+--
 #### v10.1
 - Fix: Linklist DropDown was broken [gc.com update]
 -Mod: add the "show on geocaching map" button to new google maps (can't decode zoom level yet)
