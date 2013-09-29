@@ -11,6 +11,7 @@
 // @exclude        http://www.geocaching.com/seek/sendtogps.aspx*
 // @resource jscolor http://www.amshove.net/greasemonkey/js/jscolor/jscolor.js
 // @require http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js
+// @require http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js
 // @description    Some little things to make life easy (on www.geocaching.com).
 // @copyright      Torsten Amshove <torsten@amshove.net>
 // @grant          GM_getValue
