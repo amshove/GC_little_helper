@@ -3760,6 +3760,15 @@ try{
 // Show thumbnails
 try{
   if(settings_show_thumbnails && (is_page("cache_listing") || document.location.href.match(/^http:\/\/www\.geocaching\.com\/(seek\/gallery\.aspx?|profile\/)/))){
+    function placeToolTip(element, stop){
+        $('a.gclh_thumb:hover span').position({my:"top left", at:"bottom left", of:"a.gclh_thumb:hover", collision:"flipfit flipfit"});
+        if(! stop){
+            $('a.gclh_thumb:hover span img').load(function() {
+                placeToolTip(element, true);
+            });
+        }
+    }
+    
     var links = document.getElementsByTagName("a");
     
     var css = "a.gclh_thumb:hover { " + 
@@ -3778,7 +3787,8 @@ try{
       "}" +
       "a.gclh_thumb:hover span { " +
       "  visibility: visible;" +
-      "  top: 10px;" + 
+      //"  top: 10px;" + 
+      "  z-index: 100;"+
       "  border: 1px solid #8c9e65;" +
       "  background-color:#dfe1d2;" +
       "}" +
@@ -3797,7 +3807,7 @@ try{
         }
         
       var newImageTmpl = "" +
-      "          <a class='tb_images lnk gclh_thumb' rel='tb_images[grp${LogID}]' href='http://img.geocaching.com/cache/log/${FileName}' title='${Descr}'>" +
+      "          <a class='tb_images lnk gclh_thumb' onmouseover='placeToolTip(this);' rel='tb_images[grp${LogID}]' href='http://img.geocaching.com/cache/log/${FileName}' title='${Descr}'>" +
       "              <img title='${Name}' alt='${Name}' src='http://img.geocaching.com/cache/log/thumb/${FileName}'>";
       if(settings_imgcaption_on_top){
         newImageTmpl += "<span>${Name} <img class='gclh_max' src='http://img.geocaching.com/cache/log/${FileName}'></span>";
@@ -3837,6 +3847,7 @@ try{
         
         links[i].className = links[i].className+" gclh_thumb";
         links[i].href = links[i].href.replace(/cache\/display/,"cache");
+        links[i].onmouseover=placeToolTip;
   
         var big_img = document.createElement("img");
         big_img.src = links[i].href;
@@ -3866,6 +3877,7 @@ try{
         }
         
         links[i].className = links[i].className+" gclh_thumb";
+        links[i].onmouseover=placeToolTip;
   
         links[i].appendChild(span);
       }
