@@ -1,3 +1,19 @@
+#### v10.1
+- Fix: Linklist DropDown was broken [gc.com update]
+-Mod: add the "show on geocaching map" button to new google maps (can't decode zoom level yet)
+-Fix: some page elements are above the image tooltip -Fix: images tooltips may be not completely visible (closes Issue #2)
+-Mod: changed the message of the unsavedLogWaring
+-Fix: closes #23 ("log your visit (inline)" not at the right place in the new design)
+-Fix: duplicate logs (just a try ;))
+-Mod: use cache url, date and logtype for duplication check
+-Fix: some bugs -Mod: enable souvenirHiding on other profile pages
+-Mod: Beautified hideSouvenirs (Issue #17) with chosen (http://harvesthq.github.io/chosen/)
+- Fix: Added some statements to prevent misleading error messages
+- Fix: Start page was not displayed correctly with a custome page width
+- Fix: Saving of home coordinates doesn't work
+- Fix: Removed Header in inline log
+
+--
 #### v10.0
 - Fix: Users with trailing space couldn't be selected as vip
 - Fix: languageSelector broken with chrome
