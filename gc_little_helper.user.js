@@ -577,6 +577,40 @@ if(document.location.href.match(/^(http|https):\/\/maps\.google\./) || document.
       document.getElementById('gc_com_lnk').addEventListener("click", open_gc, false);
     }
   }
+}else if((document.location.href.match(/^(http|https):\/\/maps\.google\./) || document.location.href.match(/^(http|https):\/\/www\.google\.[a-zA-Z.]*\/maps/)) && document.location.href.match(/preview#!/)){
+    if(settings_show_google_maps){        
+        function open_gc(){
+            //new url : /!2d(-?[0-9]+.[0-9]+)/ and /!3d(-?[0-9]+.[0-9]+)/
+            var lat = document.URL.match(/!3d(-?[0-9]+.[0-9]+)/);
+            var lng = document.URL.match(/!2d(-?[0-9]+.[0-9]+)/);
+            var zoom = 12; //don't know how to decode
+            if (lat != null && lng != null && zoom != null) {
+              var gc_map_url = map_url + "?lat=" + lat[1] + "&lng=" + lng[1] + "&z=" + zoom;
+              window.open(gc_map_url);
+            }
+            else {
+              alert("This map has no geographical coordinates in its link.");
+            }
+        }        
+
+        var gcImage = document.createElement("img");
+        gcImage.setAttribute("src","http://www.geocaching.com/images/about/logos/geocaching/Logo_Geocaching_color_notext_32.png");
+        gcImage.setAttribute("title", "Show area at geocaching.com");
+        gcImage.setAttribute("alt", "Show area at geocaching.com");
+
+        var link = document.createElement("a");
+        link.setAttribute("title","Show area at geocaching.com");
+        link.setAttribute("href","#");
+        link.setAttribute("id","gc_com_lnk");
+        link.setAttribute("style", "position:absolute;top:3px;right:-40px;")
+
+        link.appendChild(gcImage);
+        
+        document.getElementsByClassName("searchbutton")[0].appendChild(link);
+
+        document.getElementById('gc_com_lnk').addEventListener("click", open_gc, false);
+        
+    }
 }else{
 //Required for jquery plugins under opera
 if(typeof $ == "undefined"){
