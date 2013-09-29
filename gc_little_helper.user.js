@@ -3806,7 +3806,7 @@ try{
             $("#tmpl_CacheLogRow").template("tmplCacheLogRow");
         }
         
-      var newImageTmpl = "" +
+      var newImageTmpl = "<!-- .gclh_vip -->" +
       "          <a class='tb_images lnk gclh_thumb' onmouseover='placeToolTip(this);' rel='tb_images[grp${LogID}]' href='http://img.geocaching.com/cache/log/${FileName}' title='${Descr}'>" +
       "              <img title='${Name}' alt='${Name}' src='http://img.geocaching.com/cache/log/thumb/${FileName}'>";
       if(settings_imgcaption_on_top){
@@ -3832,34 +3832,65 @@ try{
     var regexp = new RegExp(settings_spoiler_strings,"i");
     for(var i=0; i<links.length; i++){
       if(is_page("cache_listing") && links[i].href.match(/^http:\/\/img\.geocaching\.com\/cache/) && !links[i].innerHTML.match(regexp)){
-        var thumb = links[i].childNodes[0];
-        var span = links[i].childNodes[1];
-        if(!thumb || !span || !thumb.style) continue;
-        if(links[i].href.match(/cache\/log/)){
-          thumb.src = links[i].href.replace(/cache\/log/,"cache/log/thumb");
+        var span = document.createElement("span");
+        var thumb = document.createElement("img");
+        var thumb_link = links[i].href;
+
+        if(thumb_link.match(/cache\/log/)){
+          thumb_link = thumb_link.replace(/cache\/log/,"cache/log/thumb");
         }else{
-          thumb.src = links[i].href;
           thumb.style.height = "100px";
           thumb.style.border = "1px solid black";
         }
-        thumb.title = span.innerHTML;
-        thumb.alt = span.innerHTML;
-        
+        thumb.src = thumb_link;
+        thumb.title = links[i].innerHTML;
+        thumb.alt = links[i].innerHTML;
+
         links[i].className = links[i].className+" gclh_thumb";
-        links[i].href = links[i].href.replace(/cache\/display/,"cache");
         links[i].onmouseover=placeToolTip;
-  
+
         var big_img = document.createElement("img");
         big_img.src = links[i].href;
         big_img.className = "gclh_max";
-  
-        if(settings_imgcaption_on_top){
-          span.appendChild(big_img);
-        }else{
-          span.insertBefore(big_img,span.childNodes[0]);
-        }
-  
-        links[i].parentNode.removeChild(links[i].nextSibling);
+
+        span.appendChild(big_img);
+
+        var name = links[i].innerHTML;
+        links[i].innerHTML = "";
+        links[i].appendChild(thumb);
+        links[i].innerHTML += "<br>"+name;
+
+        links[i].appendChild(span);
+
+//        var thumb = links[i].childNodes[0];
+//        var span = links[i].childNodes[1];
+//        if(!thumb || !span || !thumb.style) continue;
+//alert(links[i].innerHTML);
+//        if(links[i].href.match(/cache\/log/)){
+//          thumb.src = links[i].href.replace(/cache\/log/,"cache/log/thumb");
+//        }else{
+//          thumb.src = links[i].href;
+//          thumb.style.height = "100px";
+//          thumb.style.border = "1px solid black";
+//        }
+//        thumb.title = span.innerHTML;
+//        thumb.alt = span.innerHTML;
+//        
+//        links[i].className = links[i].className+" gclh_thumb";
+//        links[i].href = links[i].href.replace(/cache\/display/,"cache");
+//        links[i].onmouseover=placeToolTip;
+//  
+//        var big_img = document.createElement("img");
+//        big_img.src = links[i].href;
+//        big_img.className = "gclh_max";
+//  
+//        if(settings_imgcaption_on_top){
+//          span.appendChild(big_img);
+//        }else{
+//          span.insertBefore(big_img,span.childNodes[0]);
+//        }
+//  
+//        links[i].parentNode.removeChild(links[i].nextSibling);
       }else if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/(seek\/gallery\.aspx?|profile\/)/) && links[i].href.match(/^http:\/\/img\.geocaching\.com\/(cache|track)\//) && links[i].childNodes[1] && links[i].childNodes[1].tagName == 'IMG'){
         var thumb = links[i].childNodes[1];
         var span = document.createElement('span');
@@ -4383,13 +4414,13 @@ try{
           document.getElementById("cache_logs_table").removeChild(tbodys[i]);
         }
         
-        setTimeout(function(){
-            $('#cache_logs_table tr').each(function(i,e){
-                if($(e).find('.gclh_vip').length == 0){
-                    $(e).remove();
-                }
-            });
-        },750);
+//        setTimeout(function(){
+//            $('#cache_logs_table tr').each(function(i,e){
+//                if($(e).find('.gclh_vip').length == 0){
+//                    $(e).remove();
+//                }
+//            });
+//        },750);
     
         //$("#pnlLazyLoad").hide();
         for(var z = 1; z <= numPages; z++){
