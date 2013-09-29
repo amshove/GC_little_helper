@@ -968,13 +968,14 @@ try{
     if(settings_bookmarks_top_menu){   // Navi vertikal
       headline.setAttribute("href","#");
       headline.setAttribute("title","Linklist");
+      headline.setAttribute("class","Dropdown");
       headline.setAttribute("accesskey","7");
-      headline.innerHTML = "Linklist ▼";
+      headline.innerHTML = "Linklist";
       menu.appendChild(headline);
       
       var submenu = document.createElement("ul");
       submenu.setAttribute("class","SubMenu");
-      submenu.setAttribute("style","visibility: hidden;");
+//      submenu.setAttribute("style","visibility: hidden;");
       menu.appendChild(submenu);
     
       for(var i=0; i < settings_bookmarks_list.length; i++){
