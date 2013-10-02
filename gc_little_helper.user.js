@@ -4086,7 +4086,7 @@ try{
     }
       
     //Reinit initalLogs
-    var tbody = document.getElementById("cache_logs_table").getElementsByTagName("tbody");
+    var tbody = (document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).getElementsByTagName("tbody");
     if(tbody.length > 0 ){
         tbody = tbody[0];
         if(tbody.children.length > 0 ){
@@ -4120,7 +4120,7 @@ try{
         gclh_add_vip_icon();        
     }
     
-    $("#cache_logs_table")[0].addEventListener('DOMNodeInserted', loadListener);
+    (document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).addEventListener('DOMNodeInserted', loadListener);
     
     function disablePageAutoScroll(){
         var unsafeWindow = (typeof(unsafeWindow)=="undefined"?window:unsafeWindow);
@@ -4145,7 +4145,7 @@ try{
   
     // Helper: Add VIP-Icon
     function gclh_add_vip_icon(){
-     var elements = document.getElementById("cache_logs_table").getElementsByTagName("a");
+     var elements = (document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).getElementsByTagName("a");
      for(var i = 0; i < elements.length; i++){
         if(elements[i].className == "gclh_vip"){
           var link = elements[i];
@@ -4189,7 +4189,7 @@ try{
                 var newBody = unsafeWindow.$(document.createElement("TBODY"));
                 unsafeWindow.$("#tmpl_CacheLogRow_gclh").tmpl(logs[num]).appendTo(newBody);
                 newBody.find("a.tb_images").fancybox({'type': 'image', 'titlePosition': 'inside'});
-                unsafeWindow.$("#cache_logs_table").append(newBody.children());
+                unsafeWindow.$(document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).append(newBody.children());
               }
               num++; // num kommt vom vorherigen laden "aller" logs
             }
@@ -4208,9 +4208,9 @@ try{
     function gclh_load_all_link(logs){
       function gclh_load_all_logs(){
         if(logs){
-          var tbodys = document.getElementById("cache_logs_table").getElementsByTagName("tbody");
+          var tbodys = (document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).getElementsByTagName("tbody");
           for(var i=0; i<tbodys.length; i++){
-            document.getElementById("cache_logs_table").removeChild(tbodys[i]);
+            (document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).removeChild(tbodys[i]);
           }
   
           for(var i=0; i<logs.length; i++){
@@ -4218,7 +4218,7 @@ try{
               var newBody = unsafeWindow.$(document.createElement("TBODY"));
               unsafeWindow.$("#tmpl_CacheLogRow_gclh").tmpl(logs[i]).appendTo(newBody);
               newBody.find("a.tb_images").fancybox({'type': 'image', 'titlePosition': 'inside'});
-              unsafeWindow.$("#cache_logs_table").append(newBody.children());
+              unsafeWindow.$(document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).append(newBody.children());
             }
           }
   
@@ -4256,9 +4256,9 @@ try{
         if(!log_type) return false;
         if(!logs) return false;
   
-        var tbodys = document.getElementById("cache_logs_table").getElementsByTagName("tbody");
+        var tbodys = (document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).getElementsByTagName("tbody");
         for(var i=0; i<tbodys.length; i++){
-          document.getElementById("cache_logs_table").removeChild(tbodys[i]);
+          (document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).removeChild(tbodys[i]);
         }
    
         for(var i=0; i<logs.length; i++){
@@ -4266,7 +4266,7 @@ try{
             var newBody = unsafeWindow.$(document.createElement("TBODY"));
             unsafeWindow.$("#tmpl_CacheLogRow_gclh").tmpl(logs[i]).appendTo(newBody);
             newBody.find("a.tb_images").fancybox({'type': 'image', 'titlePosition': 'inside'});
-            unsafeWindow.$("#cache_logs_table").append(newBody.children());
+            unsafeWindow.$(document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).append(newBody.children());
           }
         }
    
@@ -4308,9 +4308,9 @@ try{
   
         var regexp = new RegExp("("+search_text+")","i");
   
-        var tbodys = document.getElementById("cache_logs_table").getElementsByTagName("tbody");
+        var tbodys = (document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).getElementsByTagName("tbody");
         for(var i=0; i<tbodys.length; i++){
-          document.getElementById("cache_logs_table").removeChild(tbodys[i]);
+          (document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).removeChild(tbodys[i]);
         }
   
         for(var i=0; i<logs.length; i++){
@@ -4318,7 +4318,7 @@ try{
             var newBody = unsafeWindow.$(document.createElement("TBODY"));
             unsafeWindow.$("#tmpl_CacheLogRow_gclh").tmpl(logs[i]).appendTo(newBody);
             newBody.find("a.tb_images").fancybox({'type': 'image', 'titlePosition': 'inside'});
-            unsafeWindow.$("#cache_logs_table").append(newBody.children());
+            unsafeWindow.$(document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).append(newBody.children());
           }
         }
   
@@ -4401,7 +4401,7 @@ try{
             disablePageAutoScroll();
         }
         
-        $("#cache_logs_table")[0].removeEventListener('DOMNodeInserted', loadListener);
+        (document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).removeEventListener('DOMNodeInserted', loadListener);
         
         // Hide initial Logs
         var tbodys = document.getElementById("cache_logs_table").getElementsByTagName("tbody");
@@ -4411,17 +4411,10 @@ try{
                 num = shownLogs;
             }
         }
-        for(var i=0; i<tbodys.length; i++){
-          document.getElementById("cache_logs_table").removeChild(tbodys[i]);
-        }
         
-//        setTimeout(function(){
-//            $('#cache_logs_table tr').each(function(i,e){
-//                if($(e).find('.gclh_vip').length == 0){
-//                    $(e).remove();
-//                }
-//            });
-//        },750);
+        var tableContent = unsafeWindow.$("#cache_logs_table").after('<table id="cache_logs_table2" class="LogsTable NoBottomSpacing"> </table>').hide().children().remove()  ; 
+        unsafeWindow.$(tableContent).find('tbody').children().remove();
+        unsafeWindow.$('#cache_logs_table2').append(tableContent);     
     
         //$("#pnlLazyLoad").hide();
         for(var z = 1; z <= numPages; z++){
@@ -4463,14 +4456,14 @@ try{
                   var newBody = unsafeWindow.$(document.createElement("TBODY"));
                   unsafeWindow.$("#tmpl_CacheLogRow_gclh").tmpl(logs).appendTo(newBody);
                   newBody.find("a.tb_images").fancybox({'type': 'image', 'titlePosition': 'inside'});
-                  unsafeWindow.$("#cache_logs_table").append(newBody.children());
+                  unsafeWindow.$(document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).append(newBody.children());
                 }else{
                   for(var i=0; i<num; i++){
                     if(logs[i]){
                       var newBody = unsafeWindow.$(document.createElement("TBODY"));
                       unsafeWindow.$("#tmpl_CacheLogRow_gclh").tmpl(logs[i]).appendTo(newBody);
                       newBody.find("a.tb_images").fancybox({'type': 'image', 'titlePosition': 'inside'});
-                      unsafeWindow.$("#cache_logs_table").append(newBody.children());
+                      unsafeWindow.$(document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).append(newBody.children());
                     }
                   }
                   gclh_dynamic_load(logs,num);
