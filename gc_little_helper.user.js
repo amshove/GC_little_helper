@@ -950,6 +950,60 @@ try{
 }catch(e){ gclh_error("PQ-Name from Bookmark",e); }
 
 
+// Fixed header for PocketQuery
+try{
+  if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/pocket/) && document.getElementById("pqRepeater")){
+    //scrolify based on http://stackoverflow.com/questions/673153/html-table-with-fixed-headers
+    function scrolify(tblAsJQueryObject, height){
+        var oTbl = tblAsJQueryObject;
+
+        // for very large tables you can remove the four lines below
+        // and wrap the table with <div> in the mark-up and assign
+        // height and overflow property  
+        var oTblDiv = unsafeWindow.$("<div/>");
+        oTblDiv.css('height', height);
+        oTblDiv.css('overflow-y','auto');
+        oTblDiv.css("margin-bottom",oTbl.css("margin-bottom"));
+        oTbl.css("margin-bottom","0px")
+        oTbl.wrap(oTblDiv);
+
+        // save original width
+        oTbl.attr("data-item-original-width", oTbl.width());
+        oTbl.find('thead tr td').each(function(){
+            unsafeWindow.$(this).attr("data-item-original-width",unsafeWindow.$(this).width());
+        }); 
+        oTbl.find('tbody tr:eq(0) td').each(function(){
+            unsafeWindow.$(this).attr("data-item-original-width",unsafeWindow.$(this).width());
+        });                 
+
+
+        // clone the original table
+        var newTbl = oTbl.clone();
+
+        // remove table header from original table
+        oTbl.find('thead tr').remove();                 
+        // remove table body from new table
+        newTbl.find('tbody tr').remove();   
+
+        oTbl.parent().before(newTbl);
+        newTbl.wrap("<div/>");
+
+        // replace ORIGINAL COLUMN width                
+        newTbl.width(newTbl.attr('data-item-original-width'));
+        newTbl.find('thead tr td').each(function(){
+            unsafeWindow.$(this).width(unsafeWindow.$(this).attr("data-item-original-width"));
+        });     
+        oTbl.width(oTbl.attr('data-item-original-width'));      
+        oTbl.find('tbody tr:eq(0) td').each(function(){
+            unsafeWindow.$(this).width(unsafeWindow.$(this).attr("data-item-original-width"));
+        });                 
+    }
+    
+    scrolify(unsafeWindow.$('#pqRepeater'), 160);
+    unsafeWindow.$('#ActivePQs').css("padding-right","0px");
+  }
+}catch(e){ gclh_error("Fixed header for PocketQuery",e); }
+
 
 // Bookmark-Liste im Profil
 try{
