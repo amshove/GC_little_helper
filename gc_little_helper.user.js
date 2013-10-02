@@ -722,21 +722,51 @@ function toDec(coords){
     return new Array(dec1,dec2);
   }
   else{
-      match = coords.match(/^(N|S) ([0-9][0-9]). ([0-9][0-9])\.([0-9][0-9][0-9]) (E|W) ([0-9][0-9][0-9]). ([0-9][0-9])\.([0-9][0-9][0-9])$/);
+      match = coords.match(/(N|S) ([0-9]+) ([0-9]+)\.([0-9]+) (E|W) ([0-9]+) ([0-9]+)\.([0-9]+)/);
 
-  if(match){
-    var dec1 = parseInt(match[2],10) + (parseFloat(match[3]+"."+match[4])/60);
-    if(match[1] == "S") dec1 = dec1 * -1;
-    dec1 = Math.round(dec1*10000000)/10000000;
+      if(match){
+        var dec1 = parseInt(match[2],10) + (parseFloat(match[3]+"."+match[4])/60);
+        if(match[1] == "S") dec1 = dec1 * -1;
+        dec1 = Math.round(dec1*10000000)/10000000;
 
-    var dec2 = parseInt(match[6],10) + (parseFloat(match[7]+"."+match[8])/60);
-    if(match[5] == "W") dec2 = dec2 * -1;
-    dec2 = Math.round(dec2*10000000)/10000000;
+        var dec2 = parseInt(match[6],10) + (parseFloat(match[7]+"."+match[8])/60);
+        if(match[5] == "W") dec2 = dec2 * -1;
+        dec2 = Math.round(dec2*10000000)/10000000;
 
-    return new Array(dec1,dec2);
-   }else{
-	  return false;
-   }
+        return new Array(dec1,dec2);
+       }
+        else{
+            match = coords.match(/(N|S) ([0-9]+) ([0-9]+) ([0-9]+)\.([0-9]+) (E|W) ([0-9]+) ([0-9]+) ([0-9]+)\.([0-9]+)/);
+
+            if(match){
+                var dec1 = parseInt(match[2],10) + (parseFloat(match[3])/60) + (parseFloat(match[4]+"."+match[5])/3600);
+                if(match[1] == "S") dec1 = dec1 * -1;
+                dec1 = Math.round(dec1*10000000)/10000000;
+
+                var dec2 = parseInt(match[7],10) + (parseFloat(match[8])/60) + (parseFloat(match[9]+"."+match[10])/3600);
+                if(match[6] == "W") dec2 = dec2 * -1;
+                dec2 = Math.round(dec2*10000000)/10000000;
+
+                return new Array(dec1,dec2);
+            } 
+            else{
+                match = coords.match(/(N|S) ([0-9]+) ([0-9]+) ([0-9]+\..[0-9].) (E|W) ([0-9]+) ([0-9]+) ([0-9]+\..[0-9].)/);
+
+                if(match){
+                    var dec1 = parseInt(match[2],10) + (parseFloat(match[3])/60) + (parseFloat(match[4])/3600);
+                    if(match[1] == "S") dec1 = dec1 * -1;
+                    dec1 = Math.round(dec1*10000000)/10000000;
+
+                    var dec2 = parseInt(match[6],10) + (parseFloat(match[7])/60) + (parseFloat(match[8])/3600);
+                    if(match[5] == "W") dec2 = dec2 * -1;
+                    dec2 = Math.round(dec2*10000000)/10000000;
+
+                    return new Array(dec1,dec2);
+                }else{
+                    return false;
+                }
+        }
+        }        
   }
 }
 
@@ -939,6 +969,42 @@ try{
     window.addEventListener('keydown', keydown, true);
   }
 }catch(e){ gclh_error("F2 save Bookmark",e); }
+
+// Map on create pocketQuery-page
+try{
+  if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/pocket\/gcquery\.aspx/) && document.getElementById("ctl00_ContentBody_rbOriginWpt").checked){  
+    $('.LatLongTable').after('<img style="position:absolute;top: 40px; left: 300px;height:350px;width:450px;" id="gclh_map">').parent().css("style","relative");
+    $('.LatLongTable input').change(function(){
+        var coordType =  document.getElementsByName("ctl00$ContentBody$LatLong")[0].value;
+        var northSouth = $($('#ctl00_ContentBody_LatLong\\:_selectNorthSouth')[0].selectedOptions[0]).text().replace('.','');
+        var westEast = $($('#ctl00_ContentBody_LatLong\\:_selectEastWest')[0].selectedOptions[0]).text().replace('.','');
+        var lat = "";
+        var lng = "";
+        switch(coordType){
+            case "2": //DMS
+                lat = northSouth+ " " + $('#ctl00_ContentBody_LatLong__inputLatDegs')[0].value + " " + $('#ctl00_ContentBody_LatLong__inputLatMins')[0].value + ' ' + $('#ctl00_ContentBody_LatLong__inputLatSecs')[0].value;
+                lng = westEast+ " " + $('#ctl00_ContentBody_LatLong__inputLongDegs')[0].value + " " + $('#ctl00_ContentBody_LatLong__inputLongMins')[0].value + ' ' + $('#ctl00_ContentBody_LatLong__inputLongSecs')[0].value;
+                var converted = toDec(lat +" "+lng);
+                lat = converted[0];
+                lng = converted[1];
+                break;
+            case "1": //MinDec
+                lat = northSouth+ " " + $('#ctl00_ContentBody_LatLong__inputLatDegs')[0].value + " " + $('#ctl00_ContentBody_LatLong__inputLatMins')[0].value;
+                lng = westEast+ " " + $('#ctl00_ContentBody_LatLong__inputLongDegs')[0].value + " " + $('#ctl00_ContentBody_LatLong__inputLongMins')[0].value;
+                var converted = toDec(lat +" "+lng);
+                lat = converted[0];
+                lng = converted[1];
+                break;
+            case "0": //DegDec
+                lat = (northSouth=="S"?"-":"")+$('#ctl00_ContentBody_LatLong__inputLatDegs')[0].value;
+                lng = (westEast=="W"?"-":"")+$('#ctl00_ContentBody_LatLong__inputLongDegs')[0].value;
+                break;
+        }
+        $('#gclh_map').attr("src",'http://staticmap.openstreetmap.de/staticmap.php?center='+lat+','+lng+'&zoom=15&size=450x350&markers='+lat+','+lng+',ol-marker');
+    });
+    $('.LatLongTable input').change();
+  }
+}catch(e){ gclh_error("map on create pocketQuery page",e); }
 
 // Name for PocketQuery from Bookmark
 try{
@@ -4086,7 +4152,7 @@ try{
     }
       
     //Reinit initalLogs
-    var tbody = document.getElementById("cache_logs_table").getElementsByTagName("tbody");
+    var tbody = (document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).getElementsByTagName("tbody");
     if(tbody.length > 0 ){
         tbody = tbody[0];
         if(tbody.children.length > 0 ){
@@ -4120,7 +4186,7 @@ try{
         gclh_add_vip_icon();        
     }
     
-    $("#cache_logs_table")[0].addEventListener('DOMNodeInserted', loadListener);
+    (document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).addEventListener('DOMNodeInserted', loadListener);
     
     function disablePageAutoScroll(){
         var unsafeWindow = (typeof(unsafeWindow)=="undefined"?window:unsafeWindow);
@@ -4145,7 +4211,7 @@ try{
   
     // Helper: Add VIP-Icon
     function gclh_add_vip_icon(){
-     var elements = document.getElementById("cache_logs_table").getElementsByTagName("a");
+     var elements = (document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).getElementsByTagName("a");
      for(var i = 0; i < elements.length; i++){
         if(elements[i].className == "gclh_vip"){
           var link = elements[i];
@@ -4189,7 +4255,7 @@ try{
                 var newBody = unsafeWindow.$(document.createElement("TBODY"));
                 unsafeWindow.$("#tmpl_CacheLogRow_gclh").tmpl(logs[num]).appendTo(newBody);
                 newBody.find("a.tb_images").fancybox({'type': 'image', 'titlePosition': 'inside'});
-                unsafeWindow.$("#cache_logs_table").append(newBody.children());
+                unsafeWindow.$(document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).append(newBody.children());
               }
               num++; // num kommt vom vorherigen laden "aller" logs
             }
@@ -4208,9 +4274,9 @@ try{
     function gclh_load_all_link(logs){
       function gclh_load_all_logs(){
         if(logs){
-          var tbodys = document.getElementById("cache_logs_table").getElementsByTagName("tbody");
+          var tbodys = (document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).getElementsByTagName("tbody");
           for(var i=0; i<tbodys.length; i++){
-            document.getElementById("cache_logs_table").removeChild(tbodys[i]);
+            (document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).removeChild(tbodys[i]);
           }
   
           for(var i=0; i<logs.length; i++){
@@ -4218,7 +4284,7 @@ try{
               var newBody = unsafeWindow.$(document.createElement("TBODY"));
               unsafeWindow.$("#tmpl_CacheLogRow_gclh").tmpl(logs[i]).appendTo(newBody);
               newBody.find("a.tb_images").fancybox({'type': 'image', 'titlePosition': 'inside'});
-              unsafeWindow.$("#cache_logs_table").append(newBody.children());
+              unsafeWindow.$(document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).append(newBody.children());
             }
           }
   
@@ -4256,9 +4322,9 @@ try{
         if(!log_type) return false;
         if(!logs) return false;
   
-        var tbodys = document.getElementById("cache_logs_table").getElementsByTagName("tbody");
+        var tbodys = (document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).getElementsByTagName("tbody");
         for(var i=0; i<tbodys.length; i++){
-          document.getElementById("cache_logs_table").removeChild(tbodys[i]);
+          (document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).removeChild(tbodys[i]);
         }
    
         for(var i=0; i<logs.length; i++){
@@ -4266,7 +4332,7 @@ try{
             var newBody = unsafeWindow.$(document.createElement("TBODY"));
             unsafeWindow.$("#tmpl_CacheLogRow_gclh").tmpl(logs[i]).appendTo(newBody);
             newBody.find("a.tb_images").fancybox({'type': 'image', 'titlePosition': 'inside'});
-            unsafeWindow.$("#cache_logs_table").append(newBody.children());
+            unsafeWindow.$(document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).append(newBody.children());
           }
         }
    
@@ -4308,9 +4374,9 @@ try{
   
         var regexp = new RegExp("("+search_text+")","i");
   
-        var tbodys = document.getElementById("cache_logs_table").getElementsByTagName("tbody");
+        var tbodys = (document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).getElementsByTagName("tbody");
         for(var i=0; i<tbodys.length; i++){
-          document.getElementById("cache_logs_table").removeChild(tbodys[i]);
+          (document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).removeChild(tbodys[i]);
         }
   
         for(var i=0; i<logs.length; i++){
@@ -4318,7 +4384,7 @@ try{
             var newBody = unsafeWindow.$(document.createElement("TBODY"));
             unsafeWindow.$("#tmpl_CacheLogRow_gclh").tmpl(logs[i]).appendTo(newBody);
             newBody.find("a.tb_images").fancybox({'type': 'image', 'titlePosition': 'inside'});
-            unsafeWindow.$("#cache_logs_table").append(newBody.children());
+            unsafeWindow.$(document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).append(newBody.children());
           }
         }
   
@@ -4401,7 +4467,7 @@ try{
             disablePageAutoScroll();
         }
         
-        $("#cache_logs_table")[0].removeEventListener('DOMNodeInserted', loadListener);
+        (document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).removeEventListener('DOMNodeInserted', loadListener);
         
         // Hide initial Logs
         var tbodys = document.getElementById("cache_logs_table").getElementsByTagName("tbody");
@@ -4411,17 +4477,10 @@ try{
                 num = shownLogs;
             }
         }
-        for(var i=0; i<tbodys.length; i++){
-          document.getElementById("cache_logs_table").removeChild(tbodys[i]);
-        }
         
-//        setTimeout(function(){
-//            $('#cache_logs_table tr').each(function(i,e){
-//                if($(e).find('.gclh_vip').length == 0){
-//                    $(e).remove();
-//                }
-//            });
-//        },750);
+        var tableContent = unsafeWindow.$("#cache_logs_table").after('<table id="cache_logs_table2" class="LogsTable NoBottomSpacing"> </table>').hide().children().remove()  ; 
+        unsafeWindow.$(tableContent).find('tbody').children().remove();
+        unsafeWindow.$('#cache_logs_table2').append(tableContent);     
     
         //$("#pnlLazyLoad").hide();
         for(var z = 1; z <= numPages; z++){
@@ -4463,14 +4522,14 @@ try{
                   var newBody = unsafeWindow.$(document.createElement("TBODY"));
                   unsafeWindow.$("#tmpl_CacheLogRow_gclh").tmpl(logs).appendTo(newBody);
                   newBody.find("a.tb_images").fancybox({'type': 'image', 'titlePosition': 'inside'});
-                  unsafeWindow.$("#cache_logs_table").append(newBody.children());
+                  unsafeWindow.$(document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).append(newBody.children());
                 }else{
                   for(var i=0; i<num; i++){
                     if(logs[i]){
                       var newBody = unsafeWindow.$(document.createElement("TBODY"));
                       unsafeWindow.$("#tmpl_CacheLogRow_gclh").tmpl(logs[i]).appendTo(newBody);
                       newBody.find("a.tb_images").fancybox({'type': 'image', 'titlePosition': 'inside'});
-                      unsafeWindow.$("#cache_logs_table").append(newBody.children());
+                      unsafeWindow.$(document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).append(newBody.children());
                     }
                   }
                   gclh_dynamic_load(logs,num);
