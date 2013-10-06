@@ -2958,7 +2958,8 @@ try{
 	      else frame.style.display = "";
 	}
 	
-	var idParameter = document.URL.match(/wp=[a-zA-Z0-9]*|guid=[a-zA-Z0-9-]*|id=[0-9]*/)[0];
+	var idParameter = null;
+        if(document.URL.match(/wp=[a-zA-Z0-9]*|guid=[a-zA-Z0-9-]*|id=[0-9]*/)) idParameter = document.URL.match(/wp=[a-zA-Z0-9]*|guid=[a-zA-Z0-9-]*|id=[0-9]*/)[0];
         if(!idParameter | idParameter == "") idParameter = "wp="+document.URL.match(/\/geocache\/([^_]*)/)[1];
 	
         var iframe = document.createElement("iframe");
