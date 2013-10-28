@@ -4393,6 +4393,7 @@ try{
       }
       
     function gclh_load_dataHelper(){
+		logs = new Array();
         // disable scroll Function on Page
         if(browser == "chrome"){
             injectPageScriptFunction(disablePageAutoScroll, "()"); 
@@ -4415,6 +4416,7 @@ try{
         var tableContent = unsafeWindow.$("#cache_logs_table").after('<table id="cache_logs_table2" class="LogsTable NoBottomSpacing"> </table>').hide().children().remove()  ; 
         unsafeWindow.$(tableContent).find('tbody').children().remove();
         unsafeWindow.$('#cache_logs_table2').append(tableContent);     
+		$(tableContent).find('.log-row').remove();
     
         //$("#pnlLazyLoad").hide();
         for(var z = 1; z <= numPages; z++){
