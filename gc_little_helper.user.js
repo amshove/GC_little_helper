@@ -290,149 +290,168 @@ function gclh_error(modul,err){
   }
 }
 
+var gclhConfigKeys = JSON.parse(GM_getValue( "gclhConfigKeys", '{"settings_hide_advert_link":null,"settings_hide_line_breaks":null,"settings_hide_spoilerwarning":null,"settings_hide_hint":null,"settings_strike_archived":null,"settings_highlight_usercoords":null,"settings_map_hide_found":null,"settings_map_hide_hidden":null,"settings_map_hide_2":null,"settings_map_hide_9":null,"settings_map_hide_5":null,"settings_map_hide_3":null,"settings_map_hide_6":null,"settings_map_hide_453":null,"settings_map_hide_13":null,"settings_map_hide_1304":null,"settings_map_hide_4":null,"settings_map_hide_11":null,"settings_map_hide_137":null,"settings_map_hide_8":null,"settings_map_hide_1858":null,"settings_show_fav_percentage":null,"settings_show_vip_list":null,"settings_show_owner_vip_list":null,"remove_navi_social":null,"settings_map_layers":null,"settings_log_template_name[0]":null,"settings_custom_bookmark_target[0]":null,"settings_log_template[0]":null,"settings_log_template_name[1]":null,"settings_custom_bookmark_target[1]":null,"settings_log_template[1]":null,"settings_log_template_name[2]":null,"settings_custom_bookmark_target[2]":null,"settings_log_template[2]":null,"settings_log_template_name[3]":null,"settings_custom_bookmark_target[3]":null,"settings_log_template[3]":null,"settings_log_template_name[4]":null,"settings_custom_bookmark_target[4]":null,"settings_log_template[4]":null,"settings_log_template_name[5]":null,"settings_custom_bookmark_target[5]":null,"settings_log_template[5]":null,"settings_log_template_name[6]":null,"settings_custom_bookmark_target[6]":null,"settings_log_template[6]":null,"settings_log_template_name[7]":null,"settings_custom_bookmark_target[7]":null,"settings_log_template[7]":null,"settings_log_template_name[8]":null,"settings_custom_bookmark_target[8]":null,"settings_log_template[8]":null,"settings_log_template_name[9]":null,"settings_custom_bookmark_target[9]":null,"settings_log_template[9]":null,"browser":null,"settings_submit_log_button":null,"settings_log_inline":null,"settings_log_inline_tb":null,"settings_log_inline_pmo4basic":null,"settings_bookmarks_show":null,"settings_bookmarks_on_top":null,"settings_bookmarks_top_menu":null,"settings_bookmarks_search":null,"settings_bookmarks_search_default":null,"settings_redirect_to_map":null,"settings_hide_facebook":null,"settings_hide_socialshare":null,"settings_hideable_souvenirs":null,"settings_hide_disclaimer":null,"settings_hide_cache_notes":null,"settings_hide_empty_cache_notes":null,"settings_breaks_in_cache_notes":null,"settings_show_all_logs":null,"settings_show_all_logs_count":null,"settings_decrypt_hint":null,"settings_show_bbcode":null,"settings_show_datepicker":null,"settings_show_mail":null,"settings_show_mail_coordslink":null,"settings_show_eventday":null,"settings_date_format":null,"settings_show_google_maps":null,"settings_show_log_it":null,"settings_show_nearestuser_profil_link":null,"settings_show_homezone":null,"settings_homezone_radius":null,"settings_homezone_color":null,"settings_show_hillshadow":null,"settings_default_logtype":null,"settings_default_logtype_event":null,"settings_default_tb_logtype":null,"settings_bookmarks_list":null,"settings_bookmarks_list_beta":null,"settings_autovisit":null,"settings_show_thumbnails":null,"settings_imgcaption_on_top":null,"settings_hide_avatar":null,"settings_show_big_gallery":null,"settings_automatic_friend_reset":null,"settings_show_long_vip":null,"settings_load_logs_with_gclh":null,"settings_configsync_enabled":null,"settings_map_add_layer":null,"settings_map_default_layer":null,"settings_hide_map_header":null,"settings_spoiler_strings":null,"settings_replace_log_by_last_log":null,"settings_hide_top_button":null,"settings_show_real_owner":null,"settings_hide_visits_in_profile":null,"settings_log_signature_on_fieldnotes":null,"settings_map_hide_sidebar":null,"settings_hover_image_max_size":null,"settings_vip_show_nofound":null,"settings_use_gclh_layercontrol":null,"settings_bookmarks_title[0]":null,"settings_bookmarks_title[1]":null,"settings_bookmarks_title[2]":null,"settings_bookmarks_title[3]":null,"settings_bookmarks_title[4]":null,"settings_bookmarks_title[5]":null,"settings_bookmarks_title[6]":null,"settings_bookmarks_title[7]":null,"settings_bookmarks_title[8]":null,"settings_bookmarks_title[9]":null,"run_after_redirect":null,"new_version":null,"last_logtext":null,"HiddenSouvenirs":null,"email_sendaddress":null,"email_mailcopy":null,"settings_log_signature":null,"settings_tb_signature":null,"friends_founds_last":null,"show_box[0]":null,"gclhWasGoogleAlertShown":null,"vips":null,"last_tracking_nr":null,"home_lat":null,"home_lng":null,"uid":null,"settings_new_width":null,"settings_mail_signature":null,"map_width":null,"token":null,"settings_configsync_configid":null}' ));
+var gclhConfigKeysIgnoreForBackup = {"token": true,  "settings_configsync_configid": true};
+
+function setValue( name, value ){    
+    GM_setValue( name, value );
+    if(!gclhConfigKeys[name] && !gclhConfigKeysIgnoreForBackup[name]){
+        gclhConfigKeys[name] = null; 
+        GM_setValue( "gclhConfigKeys", JSON.stringify(gclhConfigKeys) );
+    }
+}
+
+function getValue( name, defaultValue ){
+    if(!gclhConfigKeys[name] && !gclhConfigKeysIgnoreForBackup[name]){
+        gclhConfigKeys[name] = null; 
+        GM_setValue( "gclhConfigKeys", JSON.stringify(gclhConfigKeys) );
+    }
+    return GM_getValue( name, defaultValue );
+}
+
 
 // Settings: Submit Log on F2
-settings_submit_log_button = GM_getValue("settings_submit_log_button",true);
+settings_submit_log_button = getValue("settings_submit_log_button",true);
 // Settings: Log Inline
-settings_log_inline = GM_getValue("settings_log_inline",true);
-settings_log_inline_tb = GM_getValue("settings_log_inline_tb",false);
-settings_log_inline_pmo4basic = GM_getValue("settings_log_inline_pmo4basic",false);
+settings_log_inline = getValue("settings_log_inline",true);
+settings_log_inline_tb = getValue("settings_log_inline_tb",false);
+settings_log_inline_pmo4basic = getValue("settings_log_inline_pmo4basic",false);
 // Settings: Show Bookmarks
-settings_bookmarks_show = GM_getValue("settings_bookmarks_show",true);
+settings_bookmarks_show = getValue("settings_bookmarks_show",true);
 // Settings: Bookmarks on Top
-settings_bookmarks_on_top = GM_getValue("settings_bookmarks_on_top",true);
-settings_bookmarks_top_menu = GM_getValue("settings_bookmarks_top_menu","true");
-settings_bookmarks_search = GM_getValue("settings_bookmarks_search","true");
-settings_bookmarks_search_default = GM_getValue("settings_bookmarks_search_default","");
+settings_bookmarks_on_top = getValue("settings_bookmarks_on_top",true);
+settings_bookmarks_top_menu = getValue("settings_bookmarks_top_menu","true");
+settings_bookmarks_search = getValue("settings_bookmarks_search","true");
+settings_bookmarks_search_default = getValue("settings_bookmarks_search_default","");
 // Settings: Redirect to Map
-settings_redirect_to_map = GM_getValue("settings_redirect_to_map",false);
+settings_redirect_to_map = getValue("settings_redirect_to_map",false);
 // Settings: Hide Facebook
-settings_hide_facebook = GM_getValue("settings_hide_facebook",false);
+settings_hide_facebook = getValue("settings_hide_facebook",false);
 // Settings: Hide SocialShare
-settings_hide_socialshare = GM_getValue("settings_hide_socialshare",false);
+settings_hide_socialshare = getValue("settings_hide_socialshare",false);
 // Settings: Hideable Souvenirs
-settings_hideable_souvenirs = GM_getValue("settings_hideable_souvenirs",true);
+settings_hideable_souvenirs = getValue("settings_hideable_souvenirs",true);
 // Settings: Hide Disclaimer
-settings_hide_disclaimer = GM_getValue("settings_hide_disclaimer",true);
+settings_hide_disclaimer = getValue("settings_hide_disclaimer",true);
 // Settings: Hide Cache Notes
-settings_hide_cache_notes = GM_getValue("settings_hide_cache_notes",false);
+settings_hide_cache_notes = getValue("settings_hide_cache_notes",false);
 // Settings: Hide Cache Notes if empty
-settings_hide_empty_cache_notes = GM_getValue("settings_hide_empty_cache_notes",true);
-settings_breaks_in_cache_notes = GM_getValue("settings_breaks_in_cache_notes",true);
+settings_hide_empty_cache_notes = getValue("settings_hide_empty_cache_notes",true);
+settings_breaks_in_cache_notes = getValue("settings_breaks_in_cache_notes",true);
 // Settings: Show all Logs
-settings_show_all_logs = GM_getValue("settings_show_all_logs",true);
-settings_show_all_logs_count = GM_getValue("settings_show_all_logs_count","5");
+settings_show_all_logs = getValue("settings_show_all_logs",true);
+settings_show_all_logs_count = getValue("settings_show_all_logs_count","5");
 // Settings: Decrypt Hint
-settings_decrypt_hint = GM_getValue("settings_decrypt_hint",false);
+settings_decrypt_hint = getValue("settings_decrypt_hint",false);
 // Settings: Show Smilies & BBCode
-settings_show_bbcode = GM_getValue("settings_show_bbcode",true);
+settings_show_bbcode = getValue("settings_show_bbcode",true);
 // Settings: Show datepicker
-settings_show_datepicker = GM_getValue("settings_show_datepicker",true);
+settings_show_datepicker = getValue("settings_show_datepicker",true);
 // Settings: Show mail-Link
-settings_show_mail = GM_getValue("settings_show_mail",true);
+settings_show_mail = getValue("settings_show_mail",true);
 // Settings: Show Coord-Link in Mail
-settings_show_mail_coordslink = GM_getValue("settings_show_mail_coordslink",false);
+settings_show_mail_coordslink = getValue("settings_show_mail_coordslink",false);
 // Settings: Show EventDay
-settings_show_eventday = GM_getValue("settings_show_eventday",true);
-settings_date_format = GM_getValue("settings_date_format","MM/dd/yyyy");
+settings_show_eventday = getValue("settings_show_eventday",true);
+settings_date_format = getValue("settings_date_format","MM/dd/yyyy");
 // Settings: Show google-maps Link
-settings_show_google_maps = GM_getValue("settings_show_google_maps",true);
+settings_show_google_maps = getValue("settings_show_google_maps",true);
 // Settings: Show Log It Icon
-settings_show_log_it = GM_getValue("settings_show_log_it",true);
+settings_show_log_it = getValue("settings_show_log_it",true);
 // Settings: Show Profile-Link on display of Caches found or created by user
-settings_show_nearestuser_profil_link = GM_getValue("settings_show_nearestuser_profil_link",true);
+settings_show_nearestuser_profil_link = getValue("settings_show_nearestuser_profil_link",true);
 // Settings: Show Homezone
-settings_show_homezone = GM_getValue("settings_show_homezone",true);
-settings_homezone_radius = GM_getValue("settings_homezone_radius","10");
-settings_homezone_color = GM_getValue("settings_homezone_color","#0000FF");
+settings_show_homezone = getValue("settings_show_homezone",true);
+settings_homezone_radius = getValue("settings_homezone_radius","10");
+settings_homezone_color = getValue("settings_homezone_color","#0000FF");
 // Settings: Hill Shadow
-settings_show_hillshadow = GM_getValue("settings_show_hillshadow",false);
-settings_map_layers = GM_getValue("settings_map_layers","").split("###");
+settings_show_hillshadow = getValue("settings_show_hillshadow",false);
+settings_map_layers = getValue("settings_map_layers","").split("###");
 // Settings: default Map
 map_url = "http://www.geocaching.com/map/default.aspx";
 // Settings: default Log Type
-settings_default_logtype = GM_getValue("settings_default_logtype","-1");
-settings_default_logtype_event = GM_getValue("settings_default_logtype_event",settings_default_logtype);
+settings_default_logtype = getValue("settings_default_logtype","-1");
+settings_default_logtype_event = getValue("settings_default_logtype_event",settings_default_logtype);
 // Settings: default TB-Log Type
-settings_default_tb_logtype = GM_getValue("settings_default_tb_logtype","-1");
+settings_default_tb_logtype = getValue("settings_default_tb_logtype","-1");
 // Settings: Bookmarklist
-settings_bookmarks_list = eval(GM_getValue("settings_bookmarks_list",uneval(bookmarks_def)));
+settings_bookmarks_list = eval(getValue("settings_bookmarks_list",uneval(bookmarks_def)));
 if(settings_bookmarks_list.length == 0){
     settings_bookmarks_list = bookmarks_def;
 }
-settings_bookmarks_list_beta = eval(GM_getValue("settings_bookmarks_list_beta",uneval(bookmarks_def)));
+settings_bookmarks_list_beta = eval(getValue("settings_bookmarks_list_beta",uneval(bookmarks_def)));
 if(settings_bookmarks_list_beta.length == 0){
     settings_bookmarks_list_beta = bookmarks_def;
 }
 
 // Settinks: Dynamic Map
-settings_hide_advert_link = GM_getValue('settings_hide_advert_link',true);
-settings_hide_line_breaks = GM_getValue('settings_hide_line_breaks',true);
-settings_hide_spoilerwarning = GM_getValue('settings_hide_spoilerwarning',true);
-settings_hide_hint = GM_getValue('settings_hide_hint',true);
-settings_strike_archived = GM_getValue('settings_strike_archived',true);
-settings_highlight_usercoords = GM_getValue('settings_highlight_usercoords',true);
-settings_map_hide_found = GM_getValue('settings_map_hide_found', false);
-settings_map_hide_hidden = GM_getValue('settings_map_hide_hidden', false);
-settings_map_hide_2 = GM_getValue('settings_map_hide_2', false);
-settings_map_hide_9 = GM_getValue('settings_map_hide_9', false);
-settings_map_hide_5 = GM_getValue('settings_map_hide_5', false);
-settings_map_hide_3 = GM_getValue('settings_map_hide_3', false);
-settings_map_hide_6 = GM_getValue('settings_map_hide_6', false);
-settings_map_hide_453 = GM_getValue('settings_map_hide_453', false);
-settings_map_hide_13 = GM_getValue('settings_map_hide_13', false);
-settings_map_hide_1304 = GM_getValue('settings_map_hide_1304', false);
-settings_map_hide_4 = GM_getValue('settings_map_hide_4', false);
-settings_map_hide_11 = GM_getValue('settings_map_hide_11', false);
-settings_map_hide_137 = GM_getValue('settings_map_hide_137', false);
-settings_map_hide_8 = GM_getValue('settings_map_hide_8', false);
-settings_map_hide_1858 = GM_getValue('settings_map_hide_1858', false);
-settings_show_fav_percentage = GM_getValue('settings_show_fav_percentage', false);
-settings_show_vip_list = GM_getValue('settings_show_vip_list', true);
-settings_show_owner_vip_list = GM_getValue('settings_show_owner_vip_list', true);
-settings_autovisit = GM_getValue("settings_autovisit","true");
-settings_show_thumbnails = GM_getValue("settings_show_thumbnails",true);
-settings_imgcaption_on_top = GM_getValue("settings_imgcaption_on_top",false);
-settings_hide_avatar = GM_getValue("settings_hide_avatar",false);
-settings_show_big_gallery = GM_getValue("settings_show_big_gallery",false);
-settings_automatic_friend_reset = GM_getValue("settings_automatic_friend_reset",true);
-settings_show_long_vip = GM_getValue("settings_show_long_vip",false);
-settings_load_logs_with_gclh = GM_getValue("settings_load_logs_with_gclh",true);
-settings_configsync_enabled = GM_getValue("settings_configsync_enabled",false);
-settings_map_add_layer = GM_getValue("settings_map_add_layer",true);
-settings_map_default_layer = GM_getValue("settings_map_default_layer","MapQuest OSM");
-settings_hide_map_header = GM_getValue("settings_hide_map_header",false);
-settings_spoiler_strings = GM_getValue("settings_spoiler_strings","spoiler|hinweis|hint");
-settings_replace_log_by_last_log = GM_getValue("settings_replace_log_by_last_log",false);
-settings_hide_top_button = GM_getValue("settings_hide_top_button",false);
-settings_show_real_owner = GM_getValue("settings_show_real_owner",false);
-settings_hide_visits_in_profile = GM_getValue("settings_hide_visits_in_profile",false);
-settings_log_signature_on_fieldnotes = GM_getValue("settings_log_signature_on_fieldnotes",true);
-settings_map_hide_sidebar = GM_getValue("settings_map_hide_sidebar",false);
-settings_hover_image_max_size = GM_getValue("settings_hover_image_max_size",600);
-settings_vip_show_nofound = GM_getValue("settings_vip_show_nofound",false);
-settings_use_gclh_layercontrol = GM_getValue("settings_use_gclh_layercontrol",true);
+settings_hide_advert_link = getValue('settings_hide_advert_link',true);
+settings_hide_line_breaks = getValue('settings_hide_line_breaks',true);
+settings_hide_spoilerwarning = getValue('settings_hide_spoilerwarning',true);
+settings_hide_hint = getValue('settings_hide_hint',true);
+settings_strike_archived = getValue('settings_strike_archived',true);
+settings_highlight_usercoords = getValue('settings_highlight_usercoords',true);
+settings_map_hide_found = getValue('settings_map_hide_found', false);
+settings_map_hide_hidden = getValue('settings_map_hide_hidden', false);
+settings_map_hide_2 = getValue('settings_map_hide_2', false);
+settings_map_hide_9 = getValue('settings_map_hide_9', false);
+settings_map_hide_5 = getValue('settings_map_hide_5', false);
+settings_map_hide_3 = getValue('settings_map_hide_3', false);
+settings_map_hide_6 = getValue('settings_map_hide_6', false);
+settings_map_hide_453 = getValue('settings_map_hide_453', false);
+settings_map_hide_13 = getValue('settings_map_hide_13', false);
+settings_map_hide_1304 = getValue('settings_map_hide_1304', false);
+settings_map_hide_4 = getValue('settings_map_hide_4', false);
+settings_map_hide_11 = getValue('settings_map_hide_11', false);
+settings_map_hide_137 = getValue('settings_map_hide_137', false);
+settings_map_hide_8 = getValue('settings_map_hide_8', false);
+settings_map_hide_1858 = getValue('settings_map_hide_1858', false);
+settings_show_fav_percentage = getValue('settings_show_fav_percentage', false);
+settings_show_vip_list = getValue('settings_show_vip_list', true);
+settings_show_owner_vip_list = getValue('settings_show_owner_vip_list', true);
+settings_autovisit = getValue("settings_autovisit","true");
+settings_show_thumbnails = getValue("settings_show_thumbnails",true);
+settings_imgcaption_on_top = getValue("settings_imgcaption_on_top",false);
+settings_hide_avatar = getValue("settings_hide_avatar",false);
+settings_show_big_gallery = getValue("settings_show_big_gallery",false);
+settings_automatic_friend_reset = getValue("settings_automatic_friend_reset",true);
+settings_show_long_vip = getValue("settings_show_long_vip",false);
+settings_load_logs_with_gclh = getValue("settings_load_logs_with_gclh",true);
+settings_configsync_enabled = getValue("settings_configsync_enabled",false);
+settings_map_add_layer = getValue("settings_map_add_layer",true);
+settings_map_default_layer = getValue("settings_map_default_layer","MapQuest OSM");
+settings_hide_map_header = getValue("settings_hide_map_header",false);
+settings_spoiler_strings = getValue("settings_spoiler_strings","spoiler|hinweis|hint");
+settings_replace_log_by_last_log = getValue("settings_replace_log_by_last_log",false);
+settings_hide_top_button = getValue("settings_hide_top_button",false);
+settings_show_real_owner = getValue("settings_show_real_owner",false);
+settings_hide_visits_in_profile = getValue("settings_hide_visits_in_profile",false);
+settings_log_signature_on_fieldnotes = getValue("settings_log_signature_on_fieldnotes",true);
+settings_map_hide_sidebar = getValue("settings_map_hide_sidebar",false);
+settings_hover_image_max_size = getValue("settings_hover_image_max_size",600);
+settings_vip_show_nofound = getValue("settings_vip_show_nofound",false);
+settings_use_gclh_layercontrol = getValue("settings_use_gclh_layercontrol",true);
 
 // Settings: Custom Bookmarks
 var num = bookmarks.length;
 for(var i=0; i<anzCustom; i++){
   bookmarks[num] = Object();
   
-  if(typeof(GM_getValue("settings_custom_bookmark["+i+"]")) != "undefined" && GM_getValue("settings_custom_bookmark["+i+"]") != ""){
-    bookmarks[num]['href'] = GM_getValue("settings_custom_bookmark["+i+"]");
+  if(typeof(getValue("settings_custom_bookmark["+i+"]")) != "undefined" && getValue("settings_custom_bookmark["+i+"]") != ""){
+    bookmarks[num]['href'] = getValue("settings_custom_bookmark["+i+"]");
   }else{
     bookmarks[num]['href'] = "#";
   }
   
-  if(typeof(GM_getValue("settings_bookmarks_title["+num+"]")) != "undefined" && GM_getValue("settings_bookmarks_title["+num+"]") != ""){
-    bookmarks[num]['title'] = GM_getValue("settings_bookmarks_title["+num+"]");
+  if(typeof(getValue("settings_bookmarks_title["+num+"]")) != "undefined" && getValue("settings_bookmarks_title["+num+"]") != ""){
+    bookmarks[num]['title'] = getValue("settings_bookmarks_title["+num+"]");
   }else{
     bookmarks[num]['title'] = "Custom"+i;
-    GM_setValue("settings_bookmarks_title["+num+"]",bookmarks[num]['title']);
+    setValue("settings_bookmarks_title["+num+"]",bookmarks[num]['title']);
   }
   
-  if(typeof(GM_getValue("settings_custom_bookmark_target["+i+"]")) != "undefined" && GM_getValue("settings_custom_bookmark_target["+i+"]") != ""){
-    bookmarks[num]['target'] = GM_getValue("settings_custom_bookmark_target["+i+"]");
+  if(typeof(getValue("settings_custom_bookmark_target["+i+"]")) != "undefined" && getValue("settings_custom_bookmark_target["+i+"]") != ""){
+    bookmarks[num]['target'] = getValue("settings_custom_bookmark_target["+i+"]");
     bookmarks[num]['rel'] = "external";
   }else{
     bookmarks[num]['target'] = "";
@@ -450,9 +469,9 @@ bookmark("Field Notes", "/my/fieldnotes.aspx");
 // Settings: Custom Bookmark-title
 var bookmarks_orig_title = new Array();
 for(var i=0; i<bookmarks.length; i++){
-  if(typeof(GM_getValue("settings_bookmarks_title["+i+"]")) != "undefined" && GM_getValue("settings_bookmarks_title["+i+"]") != ""){
+  if(typeof(getValue("settings_bookmarks_title["+i+"]")) != "undefined" && getValue("settings_bookmarks_title["+i+"]") != ""){
     bookmarks_orig_title[i] = bookmarks[i]['title']; // Needed for configuration
-    bookmarks[i]['title'] = GM_getValue("settings_bookmarks_title["+i+"]");
+    bookmarks[i]['title'] = getValue("settings_bookmarks_title["+i+"]");
   }
 }
 
@@ -623,11 +642,11 @@ if(typeof $ == "undefined"){
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 // Run after Redirect
-if(GM_getValue("run_after_redirect") != ""){
+if(getValue("run_after_redirect") != ""){
   try{
-    eval("unsafeWindow."+GM_getValue("run_after_redirect"));
+    eval("unsafeWindow."+getValue("run_after_redirect"));
   }catch(e){ gclh_error("Run after Redirect",e); }
-  GM_setValue("run_after_redirect","");
+  setValue("run_after_redirect","");
 }
 
 function getElementsByClass(classname){
@@ -700,7 +719,7 @@ function trim(s) {
 }
 
 // Show Update-Banner
-if(parseFloat(GM_getValue("new_version",scriptVersion)) > scriptVersion){
+if(parseFloat(getValue("new_version",scriptVersion)) > scriptVersion){
   var banner = "";
   banner = "<div align='center' style='background-color: #FF8888;'>There is an update available for <b>GC little helper</b> - you can update <a href='http://www.amshove.net/greasemonkey/updates.php' target='_blank'>here</a></div>";
   document.getElementsByTagName("body")[0].innerHTML = banner+document.getElementsByTagName("body")[0].innerHTML;
@@ -799,7 +818,7 @@ function DectoDeg(lat,lng){
  * @returns {Boolean}
  */
 function homeCoordinatesSet() {
-  if(typeof(GM_getValue("home_lat")) == "undefined" || typeof(GM_getValue("home_lng")) == "undefined"){
+  if(typeof(getValue("home_lat")) == "undefined" || typeof(getValue("home_lng")) == "undefined"){
     if (window.confirm("To use this link, you have to set your home coordinates.")) {
       document.location.href = "http://www.geocaching.com/account/ManageLocations.aspx";
     }
@@ -893,7 +912,7 @@ function hide_map_header(){
 try{
   if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx/) && document.getElementById("ctl00_ContentBody_LogBookPanel1_btnSubmitLog")){
     function send_log(e){
-      GM_setValue("last_logtext",document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').value);
+      setValue("last_logtext",document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').value);
     }
     document.getElementById("ctl00_ContentBody_LogBookPanel1_btnSubmitLog").addEventListener('click', send_log, true);
   }
@@ -1133,17 +1152,17 @@ try{
 try{
   if(document.getElementsByClassName("Menu").length > 0){
     var liste = document.getElementsByClassName("Menu")[0];
-    if(GM_getValue('remove_navi_learn') && document.getElementById('ctl00_hlNavLearn')) liste.removeChild(document.getElementById('ctl00_hlNavLearn').parentNode);
-    if(GM_getValue('remove_navi_partnering') && document.getElementById('ctl00_hlNavPartnering')) liste.removeChild(document.getElementById('ctl00_hlNavPartnering').parentNode);
-    if(GM_getValue('remove_navi_play') && document.getElementById('ctl00_hlNavPlay')) liste.removeChild(document.getElementById('ctl00_hlNavPlay').parentNode);
-    if(GM_getValue('remove_navi_profile') && document.getElementById('ctl00_hlNavProfile')) liste.removeChild(document.getElementById('ctl00_hlNavProfile').parentNode);
-//    if(GM_getValue('remove_navi_join') && document.getElementById('ctl00_hlNavJoin')) liste.removeChild(document.getElementById('ctl00_hlNavJoin').parentNode);
-    if(GM_getValue('remove_navi_community') && document.getElementById('ctl00_hlNavCommunity')) liste.removeChild(document.getElementById('ctl00_hlNavCommunity').parentNode);
-    if(GM_getValue('remove_navi_videos') && document.getElementById('ctl00_hlNavVideos')) liste.removeChild(document.getElementById('ctl00_hlNavVideos').parentNode);
-//    if(GM_getValue('remove_navi_resources') && document.getElementById('ctl00_hlNavResources')) liste.removeChild(document.getElementById('ctl00_hlNavResources').parentNode);
-    if(GM_getValue('remove_navi_shop') && document.getElementById('ctl00_hlNavShop')) liste.removeChild(document.getElementById('ctl00_hlNavShop').parentNode);
-    if(GM_getValue('remove_navi_social') && document.getElementById('ctl00_hlNavFollowUs')) liste.removeChild(document.getElementById('ctl00_hlNavFollowUs').parentNode);
-//    if(GM_getValue('remove_navi_social', true)) document.getElementById("Navigation").removeChild(document.getElementById("Navigation").childNodes[3]);
+    if(getValue('remove_navi_learn') && document.getElementById('ctl00_hlNavLearn')) liste.removeChild(document.getElementById('ctl00_hlNavLearn').parentNode);
+    if(getValue('remove_navi_partnering') && document.getElementById('ctl00_hlNavPartnering')) liste.removeChild(document.getElementById('ctl00_hlNavPartnering').parentNode);
+    if(getValue('remove_navi_play') && document.getElementById('ctl00_hlNavPlay')) liste.removeChild(document.getElementById('ctl00_hlNavPlay').parentNode);
+    if(getValue('remove_navi_profile') && document.getElementById('ctl00_hlNavProfile')) liste.removeChild(document.getElementById('ctl00_hlNavProfile').parentNode);
+//    if(getValue('remove_navi_join') && document.getElementById('ctl00_hlNavJoin')) liste.removeChild(document.getElementById('ctl00_hlNavJoin').parentNode);
+    if(getValue('remove_navi_community') && document.getElementById('ctl00_hlNavCommunity')) liste.removeChild(document.getElementById('ctl00_hlNavCommunity').parentNode);
+    if(getValue('remove_navi_videos') && document.getElementById('ctl00_hlNavVideos')) liste.removeChild(document.getElementById('ctl00_hlNavVideos').parentNode);
+//    if(getValue('remove_navi_resources') && document.getElementById('ctl00_hlNavResources')) liste.removeChild(document.getElementById('ctl00_hlNavResources').parentNode);
+    if(getValue('remove_navi_shop') && document.getElementById('ctl00_hlNavShop')) liste.removeChild(document.getElementById('ctl00_hlNavShop').parentNode);
+    if(getValue('remove_navi_social') && document.getElementById('ctl00_hlNavFollowUs')) liste.removeChild(document.getElementById('ctl00_hlNavFollowUs').parentNode);
+//    if(getValue('remove_navi_social', true)) document.getElementById("Navigation").removeChild(document.getElementById("Navigation").childNodes[3]);
   }
 }catch(e){ gclh_error("Remove gc.com links",e); }
 
@@ -1189,7 +1208,7 @@ function addChosenPlugin(){
 //Hideable souvenirs
 try{
   if(settings_hideable_souvenirs && (document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/souvenirs\.aspx/) || (document.location.href.match(/^http:\/\/www\.geocaching\.com\/profile\//) && $('.ProfileSouvenirsList').length > 0) ) ){
-    var souvenirIgnoreList = JSON.parse(GM_getValue("HiddenSouvenirs", "{ }"));
+    var souvenirIgnoreList = JSON.parse(getValue("HiddenSouvenirs", "{ }"));
     $('.ProfileSouvenirsList').children().css("position", "relative").append("<a title='Remove this souvenir' href='#' class='souvenirHideButton' style='position:absolute;top:0px;right:5px;height:22px;width:22px;'> <img style='height:22px;' src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAAEgBckRAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAADZBpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+Cjx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDQuMi4yLWMwNjMgNTMuMzUyNjI0LCAyMDA4LzA3LzMwLTE4OjA1OjQxICAgICAgICAiPgogPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4KICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgeG1sbnM6ZGM9Imh0dHA6Ly9wdXJsLm9yZy9kYy9lbGVtZW50cy8xLjEvIgogICAgeG1sbnM6eG1wUmlnaHRzPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvcmlnaHRzLyIKICAgIHhtbG5zOnBob3Rvc2hvcD0iaHR0cDovL25zLmFkb2JlLmNvbS9waG90b3Nob3AvMS4wLyIKICAgIHhtbG5zOklwdGM0eG1wQ29yZT0iaHR0cDovL2lwdGMub3JnL3N0ZC9JcHRjNHhtcENvcmUvMS4wL3htbG5zLyIKICAgeG1wUmlnaHRzOldlYlN0YXRlbWVudD0iaHR0cDovL2Jsb2cuYWRkaWN0ZWR0b2NvZmZlZS5kZSIKICAgcGhvdG9zaG9wOkF1dGhvcnNQb3NpdGlvbj0iIj4KICAgPGRjOnJpZ2h0cz4KICAgIDxyZGY6QWx0PgogICAgIDxyZGY6bGkgeG1sOmxhbmc9IngtZGVmYXVsdCI+wqkgICAgICAgICAgICYjeEE7IDIwMDkgYnkgT2xpdmVyIFR3YXJkb3dza2k8L3JkZjpsaT4KICAgIDwvcmRmOkFsdD4KICAgPC9kYzpyaWdodHM+CiAgIDxkYzpjcmVhdG9yPgogICAgPHJkZjpTZXE+CiAgICAgPHJkZjpsaT5PbGl2ZXIgVHdhcmRvd3NraTwvcmRmOmxpPgogICAgPC9yZGY6U2VxPgogICA8L2RjOmNyZWF0b3I+CiAgIDxkYzp0aXRsZT4KICAgIDxyZGY6QWx0PgogICAgIDxyZGY6bGkgeG1sOmxhbmc9IngtZGVmYXVsdCIvPgogICAgPC9yZGY6QWx0PgogICA8L2RjOnRpdGxlPgogICA8eG1wUmlnaHRzOlVzYWdlVGVybXM+CiAgICA8cmRmOkFsdD4KICAgICA8cmRmOmxpIHhtbDpsYW5nPSJ4LWRlZmF1bHQiLz4KICAgIDwvcmRmOkFsdD4KICAgPC94bXBSaWdodHM6VXNhZ2VUZXJtcz4KICAgPElwdGM0eG1wQ29yZTpDcmVhdG9yQ29udGFjdEluZm8KICAgIElwdGM0eG1wQ29yZTpDaUFkckV4dGFkcj0iIgogICAgSXB0YzR4bXBDb3JlOkNpQWRyQ2l0eT0iIgogICAgSXB0YzR4bXBDb3JlOkNpQWRyUmVnaW9uPSIiCiAgICBJcHRjNHhtcENvcmU6Q2lBZHJQY29kZT0iIgogICAgSXB0YzR4bXBDb3JlOkNpQWRyQ3RyeT0iIgogICAgSXB0YzR4bXBDb3JlOkNpVGVsV29yaz0iIgogICAgSXB0YzR4bXBDb3JlOkNpRW1haWxXb3JrPSIiCiAgICBJcHRjNHhtcENvcmU6Q2lVcmxXb3JrPSIiLz4KICA8L3JkZjpEZXNjcmlwdGlvbj4KIDwvcmRmOlJERj4KPC94OnhtcG1ldGE+CiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAKPD94cGFja2V0IGVuZD0idyI/PgiL5zQAABAwSURBVHjaYvz//z8DNsACYzz18fzPyMbK8P/XbwbpLdsZGUE6QIJcIiIM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' /> </a>").hover(
         function () {
             $(this).find('.souvenirHideButton').show();
@@ -1206,7 +1225,7 @@ try{
         $(e).find('.souvenirHideButton').click(function(){
             $(e).hide();
             souvenirIgnoreList[text] = true;            
-            GM_setValue("HiddenSouvenirs", JSON.stringify(souvenirIgnoreList));
+            setValue("HiddenSouvenirs", JSON.stringify(souvenirIgnoreList));
             $("#souvenirIgnoreList").append('<option selected value="'+text+'">'+text+'</option>').trigger("chosen:updated");
         }).hide();
     });
@@ -1226,7 +1245,7 @@ try{
         $( "#souvenirIgnoreList option:selected" ).each(function() {
             souvenirIgnoreList[$(this).text()] = true;
         });  
-        GM_setValue("HiddenSouvenirs", JSON.stringify(souvenirIgnoreList));
+        setValue("HiddenSouvenirs", JSON.stringify(souvenirIgnoreList));
     })    
     
     addChosenPlugin();
@@ -1662,13 +1681,13 @@ try{
     liste += "</p><br>";
     liste += "Templates:<br>";
     for(var i = 0; i < anzTemplates; i++){
-      if(GM_getValue("settings_log_template_name["+i+"]","") != ""){
-        liste += "<div id='gclh_template["+i+"]' style='display: none;'>"+GM_getValue("settings_log_template["+i+"]","")+"</div>";
-        liste += "<a href='#' onClick='gclh_insert_from_div(\"gclh_template["+i+"]\"); return false;' style='color: #000000; text-decoration: none; font-weight: normal;'> - "+GM_getValue("settings_log_template_name["+i+"]","")+"</a><br>";
+      if(getValue("settings_log_template_name["+i+"]","") != ""){
+        liste += "<div id='gclh_template["+i+"]' style='display: none;'>"+getValue("settings_log_template["+i+"]","")+"</div>";
+        liste += "<a href='#' onClick='gclh_insert_from_div(\"gclh_template["+i+"]\"); return false;' style='color: #000000; text-decoration: none; font-weight: normal;'> - "+getValue("settings_log_template_name["+i+"]","")+"</a><br>";
       }
     }
-    if(GM_getValue("last_logtext","") != ""){
-      liste += "<div id='gclh_template[last_log]' style='display: none;'>"+GM_getValue("last_logtext","")+"</div>";
+    if(getValue("last_logtext","") != ""){
+      liste += "<div id='gclh_template[last_log]' style='display: none;'>"+getValue("last_logtext","")+"</div>";
       liste += "<a href='#' onClick='gclh_insert_from_div(\"gclh_template[last_log]\"); return false;' style='color: #000000; text-decoration: none; font-weight: normal;'> - [Last Cache-Log]</a><br>";
     }
     box.innerHTML = liste;
@@ -1988,15 +2007,15 @@ try{
     document.getElementById("ctl00_ContentBody_SendMessagePanel1_tbMessage").setAttribute("onfocus","");
   
     // Default settings
-    document.getElementById("ctl00_ContentBody_SendMessagePanel1_chkSendAddress").checked = GM_getValue("email_sendaddress","checked");
-    document.getElementById("ctl00_ContentBody_SendMessagePanel1_chkEmailCopy").checked = GM_getValue("email_mailcopy","checked");
+    document.getElementById("ctl00_ContentBody_SendMessagePanel1_chkSendAddress").checked = getValue("email_sendaddress","checked");
+    document.getElementById("ctl00_ContentBody_SendMessagePanel1_chkEmailCopy").checked = getValue("email_mailcopy","checked");
   
     function chgDefaultSendaddress(){
-      GM_setValue("email_sendaddress",document.getElementById("ctl00_ContentBody_SendMessagePanel1_chkSendAddress").checked);
+      setValue("email_sendaddress",document.getElementById("ctl00_ContentBody_SendMessagePanel1_chkSendAddress").checked);
     }
   
     function chgDefaultMailcopy(){
-      GM_setValue("email_mailcopy",document.getElementById("ctl00_ContentBody_SendMessagePanel1_chkEmailCopy").checked);
+      setValue("email_mailcopy",document.getElementById("ctl00_ContentBody_SendMessagePanel1_chkEmailCopy").checked);
     }
   
     document.getElementById('ctl00_ContentBody_SendMessagePanel1_chkSendAddress').addEventListener("click", chgDefaultSendaddress, false);
@@ -2007,10 +2026,10 @@ try{
     if(matches) document.getElementById("ctl00_ContentBody_SendMessagePanel1_tbMessage").innerHTML = decodeURIComponent(matches[1]);
     
     // Add Mail-Signature
-    if(typeof(GM_getValue("settings_mail_signature")) != "undefined" && GM_getValue("settings_mail_signature") != ""){
+    if(typeof(getValue("settings_mail_signature")) != "undefined" && getValue("settings_mail_signature") != ""){
       var me = "#me#";
       if(getElementsByClass("SignedInProfileLink")[0]) me = getElementsByClass("SignedInProfileLink")[0].innerHTML;
-      document.getElementById("ctl00_ContentBody_SendMessagePanel1_tbMessage").innerHTML += "\n\n"+GM_getValue("settings_mail_signature").replace(/#me#/g,me);
+      document.getElementById("ctl00_ContentBody_SendMessagePanel1_tbMessage").innerHTML += "\n\n"+getValue("settings_mail_signature").replace(/#me#/g,me);
     }
   }
 }catch(e){ gclh_error("Improve E-Mail-Site",e); }
@@ -2040,9 +2059,9 @@ try{
     // Signature
 //    if(document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML == ""){
     if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/log\.aspx\?PLogGuid\=/)){
-      if(settings_log_signature_on_fieldnotes) document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML += GM_getValue("settings_log_signature","");
+      if(settings_log_signature_on_fieldnotes) document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML += getValue("settings_log_signature","");
     }else{
-      document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML += GM_getValue("settings_log_signature","");
+      document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML += getValue("settings_log_signature","");
     }
 //    }
   
@@ -2092,7 +2111,7 @@ try{
     }
   
     // Signature
-    if(document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo') && document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML == "") document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML = GM_getValue("settings_tb_signature","");
+    if(document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo') && document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML == "") document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML = getValue("settings_tb_signature","");
   
     // Set Cursor to Pos1
     function gclh_setFocus(){
@@ -2142,7 +2161,7 @@ try{
   if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/myfriends\.aspx/)){
     var friends = getElementsByClass("FriendText");
     var day = new Date().getDate();
-    var last_check = parseInt(GM_getValue("friends_founds_last","0"),10);
+    var last_check = parseInt(getValue("friends_founds_last","0"),10);
   
     if(settings_automatic_friend_reset && last_check != day){
       for(var i=0; i<friends.length; i++){
@@ -2150,16 +2169,16 @@ try{
         var name = friend.getElementsByTagName("a")[0];
   
        //Founds
-        if(GM_getValue("friends_founds_new_"+name.innerHTML)){
-          GM_setValue("friends_founds_"+name.innerHTML,GM_getValue("friends_founds_new_"+name.innerHTML));
+        if(getValue("friends_founds_new_"+name.innerHTML)){
+          setValue("friends_founds_"+name.innerHTML,getValue("friends_founds_new_"+name.innerHTML));
         }
         
         //Hides
-        if(GM_getValue("friends_hides_new_"+name.innerHTML)){
-          GM_setValue("friends_hides_"+name.innerHTML,GM_getValue("friends_hides_new_"+name.innerHTML));
+        if(getValue("friends_hides_new_"+name.innerHTML)){
+          setValue("friends_hides_"+name.innerHTML,getValue("friends_hides_new_"+name.innerHTML));
         }
       }  
-      GM_setValue("friends_founds_last",day);
+      setValue("friends_founds_last",day);
     }
     
     for(var i=0; i<friends.length; i++){
@@ -2170,11 +2189,11 @@ try{
       //founds
       var founds = parseInt(trim(friend.getElementsByTagName("dd")[4].innerHTML).replace(/[,.]*/g,""));
       if(isNaN(founds))founds = 0;
-      var last_founds = GM_getValue("friends_founds_"+name.innerHTML);
+      var last_founds = getValue("friends_founds_"+name.innerHTML);
   
       if(typeof(last_founds) == "undefined") last_founds = founds;
       if((founds - last_founds) > 0) add = " <font color='#00AA00'><b>(+"+(founds - last_founds)+")</b></font>";
-      GM_setValue("friends_founds_new_"+name.innerHTML,""+founds);
+      setValue("friends_founds_new_"+name.innerHTML,""+founds);
       if(founds == 0){
         friend.getElementsByTagName("dd")[4].innerHTML = founds+"&nbsp;";
       }else{
@@ -2186,11 +2205,11 @@ try{
       add = "";
       var hides = parseInt(trim(friend.getElementsByTagName("dd")[5].innerHTML).replace(/[,.]*/g,""));
       if(isNaN(hides))hides = 0;
-      var last_hides = GM_getValue("friends_hides_"+name.innerHTML);
+      var last_hides = getValue("friends_hides_"+name.innerHTML);
       
       if(typeof(last_hides) == "undefined") last_hides = hides;
       if((hides - last_hides) > 0) add = " <font color='#00AA00'><b>(+"+(hides - last_hides)+")</b></font>";
-      GM_setValue("friends_hides_new_"+name.innerHTML,""+hides);
+      setValue("friends_hides_new_"+name.innerHTML,""+hides);
       if(hides == 0){
         friend.getElementsByTagName("dd")[5].innerHTML = hides+"&nbsp;";
       }else{
@@ -2218,13 +2237,13 @@ try{
         var founds = 0;
         var hides = 0;
   
-        founds = GM_getValue("friends_founds_new_"+name.innerHTML,0);
-        GM_setValue("friends_founds_"+name.innerHTML,founds);
+        founds = getValue("friends_founds_new_"+name.innerHTML,0);
+        setValue("friends_founds_"+name.innerHTML,founds);
         if(founds == 0) friend.getElementsByTagName("dd")[4].innerHTML = "0&nbsp;";
         else friend.getElementsByTagName("dd")[4].innerHTML = "<a href='/seek/nearest.aspx?ul="+urlencode(name.innerHTML)+"&disable_redirect'>"+founds+"</a>";
   
-        hides = GM_getValue("friends_hides_new_"+name.innerHTML,0);
-        GM_setValue("friends_hides_"+name.innerHTML,hides);
+        hides = getValue("friends_hides_new_"+name.innerHTML,0);
+        setValue("friends_hides_"+name.innerHTML,hides);
         if(hides == 0) friend.getElementsByTagName("dd")[5].innerHTML = "0&nbsp;";
         else friend.getElementsByTagName("dd")[5].innerHTML = "<a href='/seek/nearest.aspx?u="+urlencode(name.innerHTML)+"&disable_redirect'>"+hides+"</a>&nbsp;";
       }
@@ -2336,7 +2355,7 @@ try{
     code += "  }";
     code += "}";
   
-    if(GM_getValue("show_box[0]","" == "none")) GM_setValue("show_box[0]","block"); // Bugfix: First Box was hidden because of the temporary "+" beside Linklist
+    if(getValue("show_box[0]","" == "none")) setValue("show_box[0]","block"); // Bugfix: First Box was hidden because of the temporary "+" beside Linklist
     
     var script = document.createElement("script");
     script.innerHTML = code;
@@ -2354,7 +2373,7 @@ try{
         var show = box.style.display;
         if(typeof(show) == "undefined" || show != "none") show = "block";
         
-        GM_setValue("show_box["+i+"]",show);
+        setValue("  ["+i+"]",show);
       }
     }
     
@@ -2365,7 +2384,7 @@ try{
       
         box.setAttribute("id","box_"+i);
        
-        if(typeof(GM_getValue("show_box["+i+"]")) != "undefined") box.style.display = GM_getValue("show_box["+i+"]");
+        if(typeof(getValue("show_box["+i+"]")) != "undefined") box.style.display = getValue("show_box["+i+"]");
       
         if(box.style.display == "none")
           boxes[i].innerHTML = "<img id='lnk_"+i+"' src='http://www.geocaching.com/images/plus.gif' onClick='hide_box(\""+i+"\");' title='show'> "+boxes[i].innerHTML;
@@ -2534,10 +2553,10 @@ try{
         // Show Homezone-Circle on Map
         if(settings_show_homezone){
             if(browser == "chrome"){
-                injectPageScriptFunction(addHomeZoneMap, "('"+ "none" + "', " + GM_getValue("home_lat") + ", " + GM_getValue("home_lng") + ", " + settings_homezone_radius + ", '" + settings_homezone_color+"')");                
+                injectPageScriptFunction(addHomeZoneMap, "('"+ "none" + "', " + getValue("home_lat") + ", " + getValue("home_lng") + ", " + settings_homezone_radius + ", '" + settings_homezone_color+"')");                
             }
             else{                
-                addHomeZoneMap(unsafeWindow, GM_getValue("home_lat"), GM_getValue("home_lng"), settings_homezone_radius, settings_homezone_color);
+                addHomeZoneMap(unsafeWindow, getValue("home_lat"), getValue("home_lng"), settings_homezone_radius, settings_homezone_color);
             }
         }
     }
@@ -2592,7 +2611,7 @@ try{
 try{
   if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\//)) {
    if(typeof(L) == "undefined" && typeof(unsafeWindow.L) == "undefined" && $(".leaflet-container").length == 0){
-    if( !GM_getValue("gclhWasGoogleAlertShown", false)){
+    if( !getValue("gclhWasGoogleAlertShown", false)){
         function showGMapInfo(){
           if(typeof $  == "undefined"){
             $ = unsafeWindow.$;
@@ -2619,7 +2638,7 @@ try{
             else{
                 showGMapInfo();
             }
-            GM_setValue("gclhWasGoogleAlertShown", true);
+            setValue("gclhWasGoogleAlertShown", true);
         },750);
       }			
     }
@@ -3017,8 +3036,8 @@ try{
 
 // New Width
 try{
-  if(GM_getValue("settings_new_width") > 0 && GM_getValue("settings_new_width") != 950){
-    var width = GM_getValue("settings_new_width");
+  if(getValue("settings_new_width") > 0 && getValue("settings_new_width") != 950){
+    var width = getValue("settings_new_width");
     var css = ".container { width: "+width+"px; }";
     css += "#Content .container { width: "+width+"px; }";
     css += ".span-24 { width: "+width+"px; }";
@@ -3161,9 +3180,9 @@ try{
     function gclh_autovisit_save(){
       var match = this.value.match(/([0-9]*)/);
       if(!this.checked){
-        GM_setValue("autovisit_"+match[1],false);
+        setValue("autovisit_"+match[1],false);
       }else{
-        GM_setValue("autovisit_"+match[1],true);
+        setValue("autovisit_"+match[1],true);
       }
     }
   
@@ -3176,7 +3195,7 @@ try{
         autovisit.setAttribute("type","checkbox");
         autovisit.setAttribute("id",selects[i].id+"_auto");
         autovisit.setAttribute("value",val);
-        if(GM_getValue("autovisit_"+val,false)){
+        if(getValue("autovisit_"+val,false)){
           autovisit.setAttribute("checked","checked");
           selects[i].selectedIndex = 2;
         }
@@ -3195,7 +3214,7 @@ try{
         for (var i=0; i < selects.length; i++){
           if(selects[i].id.match(/ctl00_ContentBody_LogBookPanel1_uxTrackables_repTravelBugs_ctl[0-9]*_ddlAction/)){
             var val = selects[i].childNodes[1].value;
-            if(GM_getValue("autovisit_"+val,false)){
+            if(getValue("autovisit_"+val,false)){
               var logoptions = selects[i].getElementsByTagName("option");
               for(var k = 0; k < logoptions.length; k++){
                 if(logoptions[k].value == val + "_Visited"){
@@ -3258,7 +3277,7 @@ try{
   if(settings_show_vip_list && getElementsByClass("SignedInProfileLink")[0] && (is_page("cache_listing") || document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\//) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/myfriends\.aspx/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/profile\//))){
     var img_vip_off = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAKCAYAAAC9vt6cAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9sHDhEzBX83tZcAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAsElEQVQoz6WSsQ2DUAxEz4gdfkdBQQUlDAU9E0ALHQWLsMAfA8o/BNVLkYCS0ETkGstn6+kk2yShPxRLEtxjmJmio8nzXN57SZL3XkVRnEtHNTNlWaZ5nj9AAHRdR9M0ANR1Td/38Iz2UZdlIUmS0zsB67rinGPfd5xzbNt2AUgiTVOmaboCAMqypG1bqqo6ve8E77oAhmEgiiLGcbwHCCEQxzEhhJ8B9hrcPqP9+0gPbh/tf/c8szwAAAAASUVORK5CYII=";
     var img_vip_on = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAKCAYAAAC9vt6cAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9sHDhE0Aq4StvMAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAzklEQVQoz6WSwQvBcBTHP7/lanFT3DdzV9yw+RNc8E/s6A/YSa6KUrs4u4omB6KUKJoc5a+Q5rRlOCz7Xl7feu/zXu89AXjEUAKgszb/KrbKPSTfDJo2t8MdgNvhzrBlB0l+tMo9+o0R+8kxgASAgqFynrsAnGYumqF+deysTepmhZW9/QZouoLrXHk+nlwWVzRd+TnytOtQahfDOwBI51LImSTLwQo5I5POpn5O8Cnp3WiGyma8o1BXIi8yDKgpCEmQr0YHCMCLc0YR95Fe0bc6eQ97MqYAAAAASUVORK5CYII=";
-    var vips = GM_getValue("vips",false);
+    var vips = getValue("vips",false);
     if(!vips) vips = new Array();
     else vips = eval(vips);
     var myself = getElementsByClass("SignedInProfileLink")[0].innerHTML;
@@ -3271,7 +3290,7 @@ try{
   
       vips.push(user);
       vips.sort(caseInsensitiveSort);
-      GM_setValue("vips",uneval(vips));
+      setValue("vips",uneval(vips));
   
       var icons = document.getElementsByName(user);
       for(var i=0; i<icons.length; i++){
@@ -3295,7 +3314,7 @@ try{
         if(vips[i] != user) vips_new.push(vips[i]);
       }
       vips = vips_new;
-      GM_setValue("vips",uneval(vips));
+      setValue("vips",uneval(vips));
   
       var icons = document.getElementsByName(user);
       for(var i=0; i<icons.length; i++){
@@ -4558,7 +4577,7 @@ try{
 
 //// Show Route-It button at Listing
 //try{
-//  if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/) && document.getElementById('uxLatLon') && GM_getValue("home_lat")){
+//  if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/) && document.getElementById('uxLatLon') && getValue("home_lat")){
 //    var coords = toDec(document.getElementById("uxLatLon").innerHTML);
 //    var link;
 //     if(document.getElementById("uxLatLonLink") != null){ //If server deliver userDefinedCoords.status="fail", then link will be null
@@ -4571,7 +4590,7 @@ try{
 //    var small = document.createElement("small");
 //    var name = "";
 //    if(document.getElementById("ctl00_ContentBody_CacheName")) name = "+("+trim(document.getElementById("ctl00_ContentBody_CacheName").innerHTML)+")";
-//    a.setAttribute("href","http://maps.google.com/?saddr="+(GM_getValue("home_lat")/10000000)+","+(GM_getValue("home_lng")/10000000)+"+(HomeCoords)&daddr="+coords[0]+","+coords[1]+name);
+//    a.setAttribute("href","http://maps.google.com/?saddr="+(getValue("home_lat")/10000000)+","+(getValue("home_lng")/10000000)+"+(HomeCoords)&daddr="+coords[0]+","+coords[1]+name);
 //    a.setAttribute("target","_blank");
 //    a.appendChild(document.createTextNode("Route to this Location"));
 //    small.appendChild(document.createTextNode(" - "));
@@ -4584,12 +4603,12 @@ try{
 try{
   if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/track\/details\.aspx\?tracker=/)){
     var matches = document.location.href.match(/tracker=([a-zA-Z0-9]*)/);
-    if(matches && !matches[1].match(/^TB/i)) GM_setValue("last_tracking_nr",matches[1]);
+    if(matches && !matches[1].match(/^TB/i)) setValue("last_tracking_nr",matches[1]);
   }
   if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/track\/log\.aspx/) && document.getElementById('ctl00_ContentBody_LogBookPanel1_tbCode')){
-    if(GM_getValue("last_tracking_nr","") != ""){
-      document.getElementById('ctl00_ContentBody_LogBookPanel1_tbCode').value = GM_getValue("last_tracking_nr");
-      GM_setValue("last_tracking_nr","");
+    if(getValue("last_tracking_nr","") != ""){
+      document.getElementById('ctl00_ContentBody_LogBookPanel1_tbCode').value = getValue("last_tracking_nr");
+      setValue("last_tracking_nr","");
     }
   }
 }catch(e){ gclh_error("Transfer Tracking-Nr",e); }
@@ -4637,8 +4656,8 @@ try{
         if(search_value.match(/([0-9]+)°([0-9]+)\.([0-9]+)′(N|S), ([0-9]+)°([0-9]+)\.([0-9]+)′(W|E)/) || search_value.match(/^(N|S) ([0-9][0-9]). ([0-9][0-9])\.([0-9][0-9][0-9]) (E|W) ([0-9][0-9][0-9]). ([0-9][0-9])\.([0-9][0-9][0-9])$/)){
           var latlng = toDec(search_value);
     
-          if(GM_getValue("home_lat",0) != parseInt(latlng[0]*10000000)) GM_setValue("home_lat",parseInt(latlng[0]*10000000)); // * 10000000 because GM don't know float
-          if(GM_getValue("home_lng",0) != parseInt(latlng[1]*10000000)) GM_setValue("home_lng",parseInt(latlng[1]*10000000));
+          if(getValue("home_lat",0) != parseInt(latlng[0]*10000000)) setValue("home_lat",parseInt(latlng[0]*10000000)); // * 10000000 because GM don't know float
+          if(getValue("home_lng",0) != parseInt(latlng[1]*10000000)) setValue("home_lng",parseInt(latlng[1]*10000000));
         }
       }
     }
@@ -4655,8 +4674,8 @@ try{
       if(match[1]){
         var latlng = toDec(match[1]);
   
-        if(GM_getValue("home_lat",0) != parseInt(latlng[0]*10000000)) GM_setValue("home_lat",parseInt(latlng[0]*10000000)); // * 10000000 because GM don't know float
-        if(GM_getValue("home_lng",0) != parseInt(latlng[1]*10000000)) GM_setValue("home_lng",parseInt(latlng[1]*10000000));
+        if(getValue("home_lat",0) != parseInt(latlng[0]*10000000)) setValue("home_lat",parseInt(latlng[0]*10000000)); // * 10000000 because GM don't know float
+        if(getValue("home_lng",0) != parseInt(latlng[1]*10000000)) setValue("home_lng",parseInt(latlng[1]*10000000));
       }
     }
   }
@@ -4672,7 +4691,7 @@ try{
         var uid = links[i].href.match(/\/track\/search\.aspx\?o=1\&uid=(.*)/);
         uid = uid[1];
   
-        if(GM_getValue["uid"] != uid) GM_setValue("uid",uid);
+        if(getValue["uid"] != uid) setValue("uid",uid);
       }
     }
   }
@@ -4729,14 +4748,14 @@ try{
   // Redirect to Neares List/Map
   function linkToNearesList(){
     if (homeCoordinatesSet()) {
-      document.location.href = "http://www.geocaching.com/seek/nearest.aspx?lat="+(GM_getValue("home_lat")/10000000)+"&lng="+(GM_getValue("home_lng")/10000000)+"&dist=25&disable_redirect";
+      document.location.href = "http://www.geocaching.com/seek/nearest.aspx?lat="+(getValue("home_lat")/10000000)+"&lng="+(getValue("home_lng")/10000000)+"&dist=25&disable_redirect";
     }
   }
   addLinkEvent('lnk_nearestlist',linkToNearesList);
   
   function linkToNearesMap(){
     if (homeCoordinatesSet()) {
-      document.location.href = map_url+"?lat="+(GM_getValue("home_lat")/10000000)+"&lng="+(GM_getValue("home_lng")/10000000);
+      document.location.href = map_url+"?lat="+(getValue("home_lat")/10000000)+"&lng="+(getValue("home_lng")/10000000);
     }
   }
   addLinkEvent('lnk_nearestmap',linkToNearesMap);
@@ -4744,55 +4763,55 @@ try{
   // Redirect to Neares List without Founds
   function linkToNearesListWo(){
     if (homeCoordinatesSet()) {
-      document.location.href = "http://www.geocaching.com/seek/nearest.aspx?lat="+(GM_getValue("home_lat")/10000000)+"&lng="+(GM_getValue("home_lng")/10000000)+"&dist=25&f=1&disable_redirect";
+      document.location.href = "http://www.geocaching.com/seek/nearest.aspx?lat="+(getValue("home_lat")/10000000)+"&lng="+(getValue("home_lng")/10000000)+"&dist=25&f=1&disable_redirect";
     }
   }
   addLinkEvent('lnk_nearestlist_wo',linkToNearesListWo);
   
   // Redirect to My Trackables
   function linkToMyTrackables(){
-    if(typeof(GM_getValue("uid")) == "undefined"){
+    if(typeof(getValue("uid")) == "undefined"){
       if(window.confirm("To use this Link, the script has to know your uid. Just load the \"My Profile\" site and the script will save it automatically.")) document.location.href = "http://www.geocaching.com/my/";
     }else{
-      document.location.href = "http://www.geocaching.com/track/search.aspx?o=1&uid="+GM_getValue("uid");
+      document.location.href = "http://www.geocaching.com/track/search.aspx?o=1&uid="+getValue("uid");
     }
   }
   addLinkEvent('lnk_my_trackables',linkToMyTrackables);
   
   // Redirect + JS-Exec
   function linkToGeocaches(){
-    GM_setValue("run_after_redirect","__doPostBack('ctl00$ContentBody$ProfilePanel1$lnkUserStats','')");
+    setValue("run_after_redirect","__doPostBack('ctl00$ContentBody$ProfilePanel1$lnkUserStats','')");
     document.location.href = "/profile/default.aspx";
   }
   addLinkEvent('lnk_profilegeocaches',linkToGeocaches);
   
   function linkToTrackables(){
-    GM_setValue("run_after_redirect","__doPostBack('ctl00$ContentBody$ProfilePanel1$lnkCollectibles','')");
+    setValue("run_after_redirect","__doPostBack('ctl00$ContentBody$ProfilePanel1$lnkCollectibles','')");
     document.location.href = "/profile/default.aspx";
   }
   addLinkEvent('lnk_profiletrackables',linkToTrackables);
   
   function linkToGallery(){
-    GM_setValue("run_after_redirect","__doPostBack('ctl00$ContentBody$ProfilePanel1$lnkGallery','')");
+    setValue("run_after_redirect","__doPostBack('ctl00$ContentBody$ProfilePanel1$lnkGallery','')");
     document.location.href = "/profile/default.aspx";
   }
   addLinkEvent('lnk_profilegallery',linkToGallery);
   addLinkEvent('lnk_profilegallery2',linkToGallery);
   
   function linkToBookmarks(){
-    GM_setValue("run_after_redirect","__doPostBack('ctl00$ContentBody$ProfilePanel1$lnkLists','')");
+    setValue("run_after_redirect","__doPostBack('ctl00$ContentBody$ProfilePanel1$lnkLists','')");
     document.location.href = "/profile/default.aspx";
   }
   addLinkEvent('lnk_profilebookmarks',linkToBookmarks);
   
   function linkToSouvenirs(){
-    GM_setValue("run_after_redirect","__doPostBack('ctl00$ContentBody$ProfilePanel1$lnkSouvenirs','')");
+    setValue("run_after_redirect","__doPostBack('ctl00$ContentBody$ProfilePanel1$lnkSouvenirs','')");
     document.location.href = "/profile/default.aspx";
   }
   addLinkEvent('lnk_profilesouvenirs',linkToSouvenirs);
   
   function linkToStatistics(){
-    GM_setValue("run_after_redirect","__doPostBack('ctl00$ContentBody$ProfilePanel1$lnkStatistics','')");
+    setValue("run_after_redirect","__doPostBack('ctl00$ContentBody$ProfilePanel1$lnkStatistics','')");
     document.location.href = "/profile/default.aspx";
   }
   addLinkEvent('lnk_profilestatistics',linkToStatistics);
@@ -5003,12 +5022,12 @@ function gclh_showConfig(){
     html += "<font class='gclh_small'><a href='http://www.amshove.net/bugtracker/wiki/gclittlehelper%3AGermanHelp' target='_blank'>Hier</a> gibt es eine deutsche Anleitung zu den Einstellungen.</font>";
     html += "<br><br>";
     html += "<h4 class='gclh_headline2'>Global</h4>";
-    html += "Home-Coords: <input class='gclh_form' type='text' id='settings_home_lat_lng' value='"+DectoDeg(GM_getValue("home_lat"),GM_getValue("home_lng"))+"'>"+show_help("The Home-Coords are filled automatically if you update your Home-Coords on gc.com. If it doesn\'t work you can insert them here. These Coords are used for some special Links (Nearest List, Nearest Map, ..) and for the homezone-circle on the map.")+"<br>";
+    html += "Home-Coords: <input class='gclh_form' type='text' id='settings_home_lat_lng' value='"+DectoDeg(getValue("home_lat"),getValue("home_lng"))+"'>"+show_help("The Home-Coords are filled automatically if you update your Home-Coords on gc.com. If it doesn\'t work you can insert them here. These Coords are used for some special Links (Nearest List, Nearest Map, ..) and for the homezone-circle on the map.")+"<br>";
     html += checkbox('settings_bookmarks_on_top', "Show <a class='gclh_ref' href='#gclh_linklist' id='gclh_linklist_link_1'>Linklist</a> on top") + show_help("Show the Linklist on the top of the page - beside the other Links of gc.com. You can configure the Links at the end of this configuration-page.") + "<br/>";
     html += checkbox('settings_bookmarks_show', "Show <a class='gclh_ref' href='#gclh_linklist' id='gclh_linklist_link_2'>Linklist</a> in profile") + show_help("Show the Linklist at the side in your profile. You can configure the Links at the end of this configuration-page.") + "<br/>";
     html += checkbox('settings_hide_advert_link', 'Hide link to advertisement instructions') + "<br/>";
     html += checkbox('settings_hide_line_breaks', 'Hide superfluous line breaks') + "<br/>";
-    html += "Page-Width: <input class='gclh_form' type='text' size='3' id='settings_new_width' value='"+GM_getValue("settings_new_width",950)+"'> px" + show_help("With this option you can expand the small layout. The default-value of gc.com is 950 px.") + "<br>";
+    html += "Page-Width: <input class='gclh_form' type='text' size='3' id='settings_new_width' value='"+getValue("settings_new_width",950)+"'> px" + show_help("With this option you can expand the small layout. The default-value of gc.com is 950 px.") + "<br>";
     html += checkbox('settings_automatic_friend_reset', 'Reset Difference-Counter on Friendlist automatically') + show_help("If you enable this option, the difference-counter at Friendlist will automatically reset if you have seen the difference and if the day changed.") + "<br/>";
     html += checkbox('settings_show_big_gallery', 'Show bigger Images in Gallery') + "<br/>";
     html += checkbox('settings_hide_facebook', 'Hide Facebook-Login') + "<br/>";
@@ -5099,9 +5118,9 @@ function gclh_showConfig(){
     html += checkbox('settings_replace_log_by_last_log', 'Replace Log by Last-Log Template') + show_help("If you enable this option, the \"Last-Log\"-Template will replace the whole Log. If you disable it, it will be appended to the log.") + "<br/>";
     html += "Log-Templates: <font class='gclh_small'>(BBCodes have to be enabled - #found# will be replaced with founds+1 - #found_no# will be replaced with founds - #me# with your username - #owner# with the name of the owner)</font>"+show_help("Log-Templates are pre-defined texts like \"!!! I got the FTF !!!\". All your templates are shown beside the log-form. You just have to click to a Template and it will be placed in your log. Also you are able to use variables. #found# will be replaced with your amount of found caches and will be added with 1 - #found_no# is the same without the +1 and #me# with your username (useful for different accounts at one computer) - #owner# with the name of the owner. The BBCode-Option has to be enabled. Note: You have to set a title and a text - click to the edit-icon beside the template to edit the text.")+"<br>";
     for(var i = 0; i < anzTemplates; i++){
-      html += "&nbsp;&nbsp;<input class='gclh_form' type='text' size='15' id='settings_log_template_name["+i+"]' value='"+GM_getValue('settings_log_template_name['+i+']','')+"'> ";
+      html += "&nbsp;&nbsp;<input class='gclh_form' type='text' size='15' id='settings_log_template_name["+i+"]' value='"+getValue('settings_log_template_name['+i+']','')+"'> ";
       html += "<a onClick=\"if(document.getElementById(\'settings_log_template_div["+i+"]\').style.display == \'\') document.getElementById(\'settings_log_template_div["+i+"]\').style.display = \'none\'; else document.getElementById(\'settings_log_template_div["+i+"]\').style.display = \'\'; return false;\" href='#'><img src='http://www.geocaching.com/images/stockholm/16x16/page_white_edit.gif' border='0'></a><br>";
-      html += "<div id='settings_log_template_div["+i+"]' style='display: none;'>&nbsp;&nbsp;&nbsp;&nbsp;<textarea class='gclh_form' rows='6' cols='30' id='settings_log_template["+i+"]'>&zwnj;"+GM_getValue("settings_log_template["+i+"]","")+"</textarea></div>";
+      html += "<div id='settings_log_template_div["+i+"]' style='display: none;'>&nbsp;&nbsp;&nbsp;&nbsp;<textarea class='gclh_form' rows='6' cols='30' id='settings_log_template["+i+"]'>&zwnj;"+getValue("settings_log_template["+i+"]","")+"</textarea></div>";
     }
     html += "Default Log-Type: &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <select class='gclh_form' id='settings_default_logtype'>";
     html += "  <option value=\"-1\" "+(settings_default_logtype == "-1" ? "selected=\"selected\"" : "")+">- Select Type of Log -</option>";
@@ -5126,30 +5145,30 @@ function gclh_showConfig(){
     html += "  <option value=\"48\" "+(settings_default_tb_logtype == "48" ? "selected=\"selected\"" : "")+">Discovered It</option>";
     html += "</select>"+show_help("If you set this option, the selected value will be selected automatically, if you open a log-page.")+"<br>";
     html += "Cache-Signature:"+show_help("The Signature will automatically be inserted into your logs. Also you are able to use variables. #found# will be replaced with your amount of found caches and will be added with 1 - #found_no# is the same without the +1 and #me# with your username (useful for different accounts at one computer) - #owner# with the name of the owner.")+" <font class='gclh_small'>(#found# will be replaced with founds+1 - #found_no# will be replaced with founds - #me# with your username - #owner# with the name of the owner)</font><br>";
-    html += "<textarea class='gclh_form' rows='8' cols='40' id='settings_log_signature'>&zwnj;"+GM_getValue("settings_log_signature","")+"</textarea><br>";
+    html += "<textarea class='gclh_form' rows='8' cols='40' id='settings_log_signature'>&zwnj;"+getValue("settings_log_signature","")+"</textarea><br>";
     html += checkbox('settings_log_signature_on_fieldnotes', 'Add Log-Signature on FieldNotes-Logs') + show_help('If this option is disabled, the Log-Signature will not be used by Logs out of FieldNotes - you can use it, if you already have an signature in your FieldNotes.')+"<br>";
     html += "TB-Signature:"+show_help("The Signature will automatically be inserted into your TB-logs. Also you are able to use variables. #found# will be replaced with your amount of found caches and will be added with 1 - #found_no# is the same without the +1 and #me# with your username (useful for different accounts at one computer) - #owner# with the name of the owner.")+" <font class='gclh_small'>(#found# will be replaced with founds+1 - #found_no# will be replaced with founds - #me# with your username - #owner# with the name of the owner)</font><br>";
-    html += "<textarea class='gclh_form' rows='8' cols='40' id='settings_tb_signature'>&zwnj;"+GM_getValue("settings_tb_signature","")+"</textarea><br>";
+    html += "<textarea class='gclh_form' rows='8' cols='40' id='settings_tb_signature'>&zwnj;"+getValue("settings_tb_signature","")+"</textarea><br>";
     html += "<br>";
     html += "";
     html += "<h4 class='gclh_headline2'>Mail-Form</h4>";
     html += "Signature: &nbsp; &nbsp; &nbsp; "+show_help("The Signature will automatically be inserted into your mails. #me# will be replaced with your username.")+"<br>";
-    html += "<textarea class='gclh_form' rows='8' cols='40' id='settings_mail_signature'>&zwnj;"+GM_getValue("settings_mail_signature","")+"</textarea><br>";
+    html += "<textarea class='gclh_form' rows='8' cols='40' id='settings_mail_signature'>&zwnj;"+getValue("settings_mail_signature","")+"</textarea><br>";
     html += "<br>";
     html += "";
     html += "<h4 class='gclh_headline2'><a name='gclh_linklist'></a>Linklist / Navigation"+show_help("In this section you can configure your personal linklist which is shown on the top of the page and/or in your profile - you can activate it on top of this configuration-page.")+" <a class='gclh_small' href='#gclh_linklist' id='gclh_show_linklist_btn'>show</a></h4>";
     html += "<div id='gclh_settings_linklist' style='display: none;'>";
     html += "Remove from Navigation:"+show_help("Here you can select, which of the original gc.com links should be removed to make room for your linklist.")+"<br>";
-    html += "<input type='checkbox' "+(GM_getValue('remove_navi_learn') ? "checked='checked'" : "" )+" id='remove_navi_learn'> Learn<br>";
-    html += "<input type='checkbox' "+(GM_getValue('remove_navi_partnering') ? "checked='checked'" : "" )+" id='remove_navi_partnering'> Partnering<br>";
-    html += "<input type='checkbox' "+(GM_getValue('remove_navi_play') ? "checked='checked'" : "" )+" id='remove_navi_play'> Play<br>";
-    html += "<input type='checkbox' "+(GM_getValue('remove_navi_profile') ? "checked='checked'" : "" )+" id='remove_navi_profile'> Your Profile<br>";
-//    html += "<input type='checkbox' "+(GM_getValue('remove_navi_join') ? "checked='checked'" : "" )+" id='remove_navi_join'> Join<br>";
-    html += "<input type='checkbox' "+(GM_getValue('remove_navi_community') ? "checked='checked'" : "" )+" id='remove_navi_community'> Community<br>";
-    html += "<input type='checkbox' "+(GM_getValue('remove_navi_videos') ? "checked='checked'" : "" )+" id='remove_navi_videos'> Videos<br>";
-//    html += "<input type='checkbox' "+(GM_getValue('remove_navi_resources') ? "checked='checked'" : "" )+" id='remove_navi_resources'> Resources<br>";
-    html += "<input type='checkbox' "+(GM_getValue('remove_navi_shop') ? "checked='checked'" : "" )+" id='remove_navi_shop'> Shop<br>";
-    html += "<input type='checkbox' "+(GM_getValue('remove_navi_social',true) ? "checked='checked'" : "" )+" id='remove_navi_social'> Follow Us<br>";
+    html += "<input type='checkbox' "+(getValue('remove_navi_learn') ? "checked='checked'" : "" )+" id='remove_navi_learn'> Learn<br>";
+    html += "<input type='checkbox' "+(getValue('remove_navi_partnering') ? "checked='checked'" : "" )+" id='remove_navi_partnering'> Partnering<br>";
+    html += "<input type='checkbox' "+(getValue('remove_navi_play') ? "checked='checked'" : "" )+" id='remove_navi_play'> Play<br>";
+    html += "<input type='checkbox' "+(getValue('remove_navi_profile') ? "checked='checked'" : "" )+" id='remove_navi_profile'> Your Profile<br>";
+//    html += "<input type='checkbox' "+(getValue('remove_navi_join') ? "checked='checked'" : "" )+" id='remove_navi_join'> Join<br>";
+    html += "<input type='checkbox' "+(getValue('remove_navi_community') ? "checked='checked'" : "" )+" id='remove_navi_community'> Community<br>";
+    html += "<input type='checkbox' "+(getValue('remove_navi_videos') ? "checked='checked'" : "" )+" id='remove_navi_videos'> Videos<br>";
+//    html += "<input type='checkbox' "+(getValue('remove_navi_resources') ? "checked='checked'" : "" )+" id='remove_navi_resources'> Resources<br>";
+    html += "<input type='checkbox' "+(getValue('remove_navi_shop') ? "checked='checked'" : "" )+" id='remove_navi_shop'> Shop<br>";
+    html += "<input type='checkbox' "+(getValue('remove_navi_social',true) ? "checked='checked'" : "" )+" id='remove_navi_social'> Follow Us<br>";
     html += "<br>";
     html += "<input type='checkbox' "+(settings_bookmarks_search ? "checked='checked'" : "" )+" id='settings_bookmarks_search'> Show Searchfield - Default Value: <input class='gclh_form' type='text' id='settings_bookmarks_search_default' value='"+settings_bookmarks_search_default+"' size='4'>"+show_help("If you enable this option, then there will be a searchfield on the top of the page beside the links. In this field you can search for GCIDs, TBIDs, Tracking-Numbers, Coordinates, ... - also you can define a default-value if you want (like GC...).")+"<br>";
     html += "<input type='checkbox' "+(settings_bookmarks_top_menu ? "checked='checked'" : "" )+" id='settings_bookmarks_top_menu'> Show Linklist as Drop-Down"+show_help("If you enable this option, your linklist will be shown as a drop-down list beside the other links. If you disable it, the linklist will be shown like all other links on the top of the page - side by side.")+"<br>";
@@ -5168,7 +5187,7 @@ function gclh_showConfig(){
     html += "   <table class='gclh_form' style='width:100%;'>";
     html += "     <tbody id='gclh_LinkListTop'>";   
     
-    var order = eval(GM_getValue("settings_bookmarks_list","[]"));
+    var order = eval(getValue("settings_bookmarks_list","[]"));
     if(order.length == 0){    
 	html += "        <tr class='gclh_LinkListPlaceHolder'>";    
 	html += "          <td style='padding: 4px 2px;' >Drop here...</td>";
@@ -5193,7 +5212,7 @@ function gclh_showConfig(){
     html += "   <table class='gclh_form' style='width:100%;'>";
     html += "     <tbody id='gclh_LinkListMap'>";   
     
-    var order = eval(GM_getValue("settings_bookmarks_list_beta","[]"));
+    var order = eval(getValue("settings_bookmarks_list_beta","[]"));
     if(order.length == 0){    
 	html += "        <tr class='gclh_LinkListPlaceHolder'>";    
 	html += "          <td style='padding: 4px 2px;' >Drop here...</td>";
@@ -5257,7 +5276,7 @@ function gclh_showConfig(){
         html += ">"+(typeof(bookmarks_orig_title[i]) != "undefined" && bookmarks_orig_title[i] != "" ? bookmarks_orig_title[i] : bookmarks[i]['title'])+"</a>";
       }
       html += "</td>";
-      html += "    <td align='left' style='padding: 4px 2px;'>  <input style='padding-left: 2px; padding-right: 2px;'  class='gclh_form' id='bookmarks_name["+i+"]' type='text' size='15' value='"+(typeof(GM_getValue("settings_bookmarks_title["+i+"]")) != "undefined" ? GM_getValue("settings_bookmarks_title["+i+"]") : "")+"'></td>"; 
+      html += "    <td align='left' style='padding: 4px 2px;'>  <input style='padding-left: 2px; padding-right: 2px;'  class='gclh_form' id='bookmarks_name["+i+"]' type='text' size='15' value='"+(typeof(getValue("settings_bookmarks_title["+i+"]")) != "undefined" ? getValue("settings_bookmarks_title["+i+"]") : "")+"'></td>"; 
       html += "  </tr>";
     } 
     html += " </tbody>";
@@ -5395,25 +5414,25 @@ function gclh_showConfig(){
     var value = document.getElementById("settings_home_lat_lng").value;
     if(value.match(/^(N|S) [0-9][0-9]. [0-9][0-9]\.[0-9][0-9][0-9] (E|W) [0-9][0-9][0-9]. [0-9][0-9]\.[0-9][0-9][0-9]$/)){
       var latlng = toDec(value);
-      if(GM_getValue("home_lat",0) != parseInt(latlng[0]*10000000)) GM_setValue("home_lat",parseInt(latlng[0]*10000000)); // * 10000000 because GM don't know float
-      if(GM_getValue("home_lng",0) != parseInt(latlng[1]*10000000)) GM_setValue("home_lng",parseInt(latlng[1]*10000000));
+      if(getValue("home_lat",0) != parseInt(latlng[0]*10000000)) setValue("home_lat",parseInt(latlng[0]*10000000)); // * 10000000 because GM don't know float
+      if(getValue("home_lng",0) != parseInt(latlng[1]*10000000)) setValue("home_lng",parseInt(latlng[1]*10000000));
     }
-    GM_setValue("settings_bookmarks_search_default",document.getElementById('settings_bookmarks_search_default').value);
-    GM_setValue("settings_show_all_logs_count",document.getElementById('settings_show_all_logs_count').value);
-    GM_setValue("settings_homezone_radius",document.getElementById('settings_homezone_radius').value);
-    GM_setValue("settings_homezone_color",document.getElementById('settings_homezone_color').value);
-//    GM_setValue("map_width",document.getElementById('map_width').value);
-    GM_setValue("settings_new_width",document.getElementById('settings_new_width').value);
-    GM_setValue("settings_date_format",document.getElementById('settings_date_format').value);
-    GM_setValue("settings_default_logtype",document.getElementById('settings_default_logtype').value);
-    GM_setValue("settings_default_logtype_event",document.getElementById('settings_default_logtype_event').value);
-    GM_setValue("settings_default_tb_logtype",document.getElementById('settings_default_tb_logtype').value);
-    GM_setValue("settings_mail_signature",document.getElementById('settings_mail_signature').value.replace(/‌/g,"")); // Fix: Entfernt das Steuerzeichen
-    GM_setValue("settings_log_signature",document.getElementById('settings_log_signature').value.replace(/‌/g,""));
-    GM_setValue("settings_tb_signature",document.getElementById('settings_tb_signature').value.replace(/‌/g,""));
-    GM_setValue("settings_map_default_layer",document.getElementById('settings_map_default_layer').value);
-    GM_setValue("settings_hover_image_max_size",document.getElementById('settings_hover_image_max_size').value);
-    GM_setValue("settings_spoiler_strings",document.getElementById('settings_spoiler_strings').value);
+    setValue("settings_bookmarks_search_default",document.getElementById('settings_bookmarks_search_default').value);
+    setValue("settings_show_all_logs_count",document.getElementById('settings_show_all_logs_count').value);
+    setValue("settings_homezone_radius",document.getElementById('settings_homezone_radius').value);
+    setValue("settings_homezone_color",document.getElementById('settings_homezone_color').value);
+//    setValue("map_width",document.getElementById('map_width').value);
+    setValue("settings_new_width",document.getElementById('settings_new_width').value);
+    setValue("settings_date_format",document.getElementById('settings_date_format').value);
+    setValue("settings_default_logtype",document.getElementById('settings_default_logtype').value);
+    setValue("settings_default_logtype_event",document.getElementById('settings_default_logtype_event').value);
+    setValue("settings_default_tb_logtype",document.getElementById('settings_default_tb_logtype').value);
+    setValue("settings_mail_signature",document.getElementById('settings_mail_signature').value.replace(/‌/g,"")); // Fix: Entfernt das Steuerzeichen
+    setValue("settings_log_signature",document.getElementById('settings_log_signature').value.replace(/‌/g,""));
+    setValue("settings_tb_signature",document.getElementById('settings_tb_signature').value.replace(/‌/g,""));
+    setValue("settings_map_default_layer",document.getElementById('settings_map_default_layer').value);
+    setValue("settings_hover_image_max_size",document.getElementById('settings_hover_image_max_size').value);
+    setValue("settings_spoiler_strings",document.getElementById('settings_spoiler_strings').value);
 
     
     var new_map_layers = document.getElementById('settings_map_layers');
@@ -5421,7 +5440,7 @@ function gclh_showConfig(){
     for(var i=0; i<new_map_layers.options.length; i++){
       if(new_map_layers.options[i].selected) new_settings_map_layers.push(new_map_layers.options[i].value);
     }
-    GM_setValue('settings_map_layers',new_settings_map_layers.join("###"));
+    setValue('settings_map_layers',new_settings_map_layers.join("###"));
 
     var checkboxes = new Array(
       'settings_submit_log_button',
@@ -5510,7 +5529,7 @@ function gclh_showConfig(){
 //      'settings_hide_recentlyviewed'
     );
     for (var i = 0; i < checkboxes.length; i++) {
-      GM_setValue(checkboxes[i], document.getElementById(checkboxes[i]).checked);
+      setValue(checkboxes[i], document.getElementById(checkboxes[i]).checked);
     }
 
     // Save Log-Templates
@@ -5518,8 +5537,8 @@ function gclh_showConfig(){
       var name = document.getElementById('settings_log_template_name['+i+']');
       var text = document.getElementById('settings_log_template['+i+']');
       if(name && text){
-        GM_setValue('settings_log_template_name['+i+']',name.value);
-        GM_setValue('settings_log_template['+i+']',text.value.replace(/‌/g,"")); // Fix: Entfernt das Steuerzeichen
+        setValue('settings_log_template_name['+i+']',name.value);
+        setValue('settings_log_template['+i+']',text.value.replace(/‌/g,"")); // Fix: Entfernt das Steuerzeichen
       }
     }
 
@@ -5529,7 +5548,7 @@ function gclh_showConfig(){
     for(var i=0; i<queue.length; i++){
 	tmp[i] = queue[i].id.replace("gclh_LinkListTop_", "");
     }
-    GM_setValue("settings_bookmarks_list",uneval(tmp));
+    setValue("settings_bookmarks_list",uneval(tmp));
     
     // Create the settings_bookmarks_list_beta Array (gclh_LinkListMap)
     var queue = $("#gclh_LinkListMap tr:not(.gclh_LinkListPlaceHolder)");
@@ -5537,19 +5556,19 @@ function gclh_showConfig(){
     for(var i=0; i<queue.length; i++){
 	tmp[i] = queue[i].id.replace("gclh_LinkListMap_", "");
     }
-    GM_setValue("settings_bookmarks_list_beta",uneval(tmp));
+    setValue("settings_bookmarks_list_beta",uneval(tmp));
     
     for(var i=0; i<bookmarks.length; i++){
 	if(document.getElementById('bookmarks_name['+i+']') && document.getElementById('bookmarks_name['+i+']') != ""){ // Set custom name
-          GM_setValue("settings_bookmarks_title["+i+"]",document.getElementById('bookmarks_name['+i+']').value);
+          setValue("settings_bookmarks_title["+i+"]",document.getElementById('bookmarks_name['+i+']').value);
         }
     }
     
     // Save custom-Link URLs
     for(var i=0; i<anzCustom; i++){
-      GM_setValue("settings_custom_bookmark["+i+"]",document.getElementById("settings_custom_bookmark["+i+"]").value);
-      if(document.getElementById('settings_custom_bookmark_target['+i+']').checked) GM_setValue('settings_custom_bookmark_target['+i+']',"_blank");
-      else GM_setValue('settings_custom_bookmark_target['+i+']',"");
+      setValue("settings_custom_bookmark["+i+"]",document.getElementById("settings_custom_bookmark["+i+"]").value);
+      if(document.getElementById('settings_custom_bookmark_target['+i+']').checked) setValue('settings_custom_bookmark_target['+i+']',"_blank");
+      else setValue('settings_custom_bookmark_target['+i+']',"");
     }
 	if(document.location.href.indexOf("#")==-1 || document.location.href.indexOf("#") == document.location.href.length -1){
 		$('html, body').animate({ scrollTop: 0 }, 0);
@@ -5599,9 +5618,9 @@ function checkVersion(){
   var url = "http://www.amshove.net/greasemonkey/updates.php";
   var time = new Date().getTime();
   var next_check = 24 * 60 * 60 * 1000; // Milliseconds
-  var last_check = parseInt(GM_getValue("update_last_check"),10);
-  var token = GM_getValue("token","");
-  if(token == "") GM_setValue("token",""+Math.random());
+  var last_check = parseInt(getValue("update_last_check"),10);
+  var token = getValue("token","");
+  if(token == "") setValue("token",""+Math.random());
 
   if(!last_check) last_check = 0;
 
@@ -5614,7 +5633,7 @@ function checkVersion(){
         var version = result.responseText.match(/^([a-zA-Z0-9-_.]*)=([0-9.]*)/);
         var changelog = result.responseText.match(/changelog=((.*\n*)*)/);
 
-        GM_setValue("new_version",version[2]);
+        setValue("new_version",version[2]);
 
         if(version[1] == scriptName && version[2] != scriptVersion){
           var text = "Version "+version[2]+" of "+scriptName+" greasemonkey script is available.\n"+
@@ -5625,7 +5644,7 @@ function checkVersion(){
         }
       }
     });
-    GM_setValue('update_last_check', time.toString());
+    setValue('update_last_check', time.toString());
   }
 }
 
@@ -5638,21 +5657,21 @@ try{
 // Config Sync
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
-if(settings_configsync_enabled){
+if(settings_configsync_enabled || true){
   var sync_url = "http://localhost/GClh_web/";
-  var browserID = GM_getValue("token");
-  var configID = GM_getValue("settings_configsync_configid",0);
+  var browserID = getValue("token");
+  var configID = getValue("settings_configsync_configid",0);
 
   // Sync: Helper
   function sync_changeConfigID(new_ConfigID){
     configID = new_ConfigID;
-//    GM_setValue("settings_configsync_configid",ConfigID);
+//    setValue("settings_configsync_configid",ConfigID);
     if(document.getElementById('configID_text')) document.getElementById('configID_text').innerHTML = configID;
     if(document.getElementById('work_with_text')) document.getElementById('work_with_text').style.color = '';
     if(document.getElementById('btn_uploadConfig')) document.getElementById('btn_uploadConfig').disabled = '';
     if(document.getElementById('btn_downloadConfig')) document.getElementById('btn_downloadConfig').disabled = '';
   }
-  function encode64(inp){ // http://mrfoo.de/archiv/434-Base64-in-Javascript.html
+  /*function encode64(inp){ // http://mrfoo.de/archiv/434-Base64-in-Javascript.html
     var key="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
     var chr1,chr2,chr3,enc3,enc4,i=0,out="";
     while(i<inp.length){
@@ -5666,7 +5685,7 @@ if(settings_configsync_enabled){
 //    return encodeURIComponent(out);
     return out;
   }
-
+*/
   // Sync: Create new Config
   function sync_createConfig(){
 
@@ -5677,48 +5696,43 @@ if(settings_configsync_enabled){
     if(document.getElementById('assign_configID')) sync_changeConfigID(document.getElementById('assign_configID').value);
   }
 
+  // Sync: get config data
+  function sync_getConfigData(){
+    var data = {};
+    var value = null;
+    for(key in gclhConfigKeys){
+        value = getValue(key, null);
+        if(value != null){
+            data[key] = value;
+        }
+    }
+    
+    return JSON.stringify(data, undefined, 2);
+  }
+  
+  // Sync: Set config data
+  function sync_setConfigData(data){
+    var parsedData = JSON.parse(data);
+
+    for(key in parsedData){
+        setValue(key, parsedData[key]);        
+    }  
+  }
+  
   // Sync: Upload Config
   function sync_uploadConfig(){
-    if(!configID) return false;
-
-    var vals = new Array;
-    var allVals = GM_listValues();
-    var val;
-    for (var valName in allVals) {
-      val=allVals[valName];
-      var value = GM_getValue(val);
-
-      if(typeof(value) != "boolean"){
-        if(!value.substr || value.substr(0,1) != "[") value = "\""+encode64(value)+"\"";
-        else{
-          var arr = eval(value);
-          var new_arr = new Array();
-          for(var i=0; i<arr.length; i++){
-            if(arr[i]) new_arr.push(encode64(arr[i]));
-          }
-          value = uneval(new_arr);
-        }
-      }else{
-        if(value) value = "true";
-        else value = "false";
-        value = "\""+encode64(value)+"\"";
-      }
-
-      vals.push("\""+encode64(val)+"\" : "+value);
-    }
-
-//alert(uneval(vals));
-//alert(encode64("{"+vals.join(",")+"}"));
+    if(!configID) return false;  
+      
     GM_xmlhttpRequest({
       method: "POST",
       headers: {'User-Agent' : 'GM ' + scriptName + ' v' + scriptVersion + ' ' + browserID},
       url: sync_url+"uploadConfig.php",
-      data: "configID="+configID+"&json="+encode64("{"+vals.join(",")+"}"),
+      data: "configID="+configID+"&json="+sync_getConfigData(),
       headers: {
         "Content-Type": "application/x-www-form-urlencoded"
       },
       onload: function(response) {
-        alert("uploaded: "+uneval(response)); // TODO
+        alert("uploaded: "+response.responseText);
       }
     });
   }
@@ -5726,7 +5740,18 @@ if(settings_configsync_enabled){
   // Sync: Download Config
   function sync_downloadConfig(){
     if(!configID) return false;
-
+    GM_xmlhttpRequest({
+      method: "GET",
+      headers: {'User-Agent' : 'GM ' + scriptName + ' v' + scriptVersion + ' ' + browserID},
+      url: sync_url+"dowloadConfig.php",
+      data: "configID="+configID,
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      onload: function(response) {
+        sync_setConfigData(response.responseText);
+      }      
+    });
   }
 
   // Sync: Configuration Menu
@@ -5769,7 +5794,7 @@ if(settings_configsync_enabled){
       html += "  </td></tr>";
       html += "</table>";
 
-      html += "<h4 class='gclh_headline2'>Configure Config-Sync</h4>";
+     /* html += "<h4 class='gclh_headline2'>Configure Config-Sync</h4>";
       html += "<font class='gclh_small'>For syncing the configuration you have to know, there is a local copy of your configuration on every browser/PC you use. Also there is a configuration on the server. With this sync-Process you are able to upload your local config to the server and download it with another browser/pc to the local settings. With this function you are able to use the same configuration on multiple PCs.<br>";
       html += "Every configuration on the Server has a <b>ConfigID</b>. If the ConfigID above is empty, there is no Server-Configuration assigned to this browser. Then you have to create one or use an existing one. If you create a new config, all your settings will be uploaded to the server and you get an ConfigID for this Server-Configuration. On the second (or third, or ..) browser/PC you have to use the <b>\"Use existing ConfigID\"</b>-Option. You just have to type the ConfigID of your first browser to the text-field and apply with the button <b>assign Config</b>.<br></font>";
       html += "<br>";
@@ -5785,6 +5810,12 @@ if(settings_configsync_enabled){
       html += "<br>";
       html += "<input class='gclh_form' type='button' value='upload Config' id='btn_uploadConfig' "+(configID ? "" : "disabled")+"> ";
       html += "<input class='gclh_form' type='button' value='download Config' id='btn_downloadConfig' "+(configID ? "" : "disabled")+">";
+*/
+      html += "<pre class='gclh_form' style='width: 550px; height: 300px; overflow: auto;' type='text' value='' id='configData' size='20'> </pre>";
+      html += "<br>";
+      html += "<br>";
+      html += "<input class='gclh_form' type='button' value='Export' id='btn_ExportConfig' > ";
+      html += "<input class='gclh_form' type='button' value='Import' id='btn_ImportConfig' >";
 
       html += "<br>";
       html += "";
@@ -5794,16 +5825,46 @@ if(settings_configsync_enabled){
 //      html += " <div width='400px' align='right' class='gclh_small' style='float: right;'>GC little helper by <a href='http://www.amshove.net/' target='_blank'>Torsten Amshove</a></div>";
       html += "</div>";
       div.innerHTML = html;
-  
+    
       document.getElementsByTagName('body')[0].appendChild(div);
-      document.getElementById('btn_createConfig').addEventListener("click", sync_createConfig, false);
+       document.getElementById('btn_close3').addEventListener("click", btnClose, false);
+      /*document.getElementById('btn_createConfig').addEventListener("click", sync_createConfig, false);
       document.getElementById('btn_assignConfig').addEventListener("click", sync_assignConfig, false);
       document.getElementById('btn_uploadConfig').addEventListener("click", sync_uploadConfig, false);
-      document.getElementById('btn_downloadConfig').addEventListener("click", sync_downloadConfig, false);
-      document.getElementById('btn_close3').addEventListener("click", btnClose, false);
+      document.getElementById('btn_downloadConfig').addEventListener("click", sync_downloadConfig, false);*/
+      document.getElementById('btn_ExportConfig').addEventListener("click", function(){
+          document.getElementById('configData').innerText = sync_getConfigData();
+      }, false);
+      document.getElementById('btn_ImportConfig').addEventListener("click", function(){
+          var data = document.getElementById('configData').innerText;
+          if(data == null || data ==""){
+              alert("No data");
+              return;
+          }
+          try{
+            sync_getConfigData(data);
+            alert("Successful");
+          }catch(e){
+               alert("Invalid format");
+          }
+      }, false);
     }
   }
-  if(this.GM_registerMenuCommand && !document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\//)) GM_registerMenuCommand("little helper config sync", gclh_sync_showConfig); // Hide on Beta-Map
+  
+ 
+  
+  if(this.GM_registerMenuCommand && !document.location.href.match(/^http:\/\/www\.geocaching\.com\/map\//)){
+      GM_registerMenuCommand("little helper config sync", gclh_sync_showConfig); // Hide on Beta-Map
+  }
+  if((document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/[#a-zA-Z-_]*$/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/my\/default\.aspx/)) && document.getElementById('ctl00_ContentBody_WidgetMiniProfile1_logOutLink')){
+    var lnk = document.createElement("a");
+    lnk.id = "gclh_sync_lnk";
+    lnk.href = "#";
+    lnk.innerText = "GClh Sync";  
+    document.getElementById('ctl00_ContentBody_WidgetMiniProfile1_logOutLink').parentNode.appendChild(document.createTextNode(" | "));
+    document.getElementById('ctl00_ContentBody_WidgetMiniProfile1_logOutLink').parentNode.appendChild(lnk);
+    document.getElementById('gclh_sync_lnk').addEventListener("click", gclh_sync_showConfig, false);
+  }
 } // Config Sync
 
 ////////////////////////////////////////////////////////////////////////////
