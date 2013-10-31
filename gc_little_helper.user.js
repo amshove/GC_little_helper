@@ -3924,7 +3924,7 @@ try{
     var tds = new Array();
     // Make images bigger
     for(var i=0; i<links.length; i++){
-      if(links[i].href.match(/^http:\/\/img\.geocaching\.com\/(cache|track)\//) && links[i].childNodes[1] && links[i].childNodes[1].tagName == 'IMG'){
+      if(links[i].href.match(/^http:\/\/imgcdn\.geocaching\.com\/(cache|track)\//) && links[i].childNodes[1] && links[i].childNodes[1].tagName == 'IMG'){
         var thumb = links[i].childNodes[1];
         thumb.style.width = "300px";
         thumb.style.height = "auto";
