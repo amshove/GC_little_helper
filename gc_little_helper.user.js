@@ -5829,10 +5829,10 @@ if(settings_configsync_enabled || true){
       document.getElementById('btn_uploadConfig').addEventListener("click", sync_uploadConfig, false);
       document.getElementById('btn_downloadConfig').addEventListener("click", sync_downloadConfig, false);*/
       document.getElementById('btn_ExportConfig').addEventListener("click", function(){
-          document.getElementById('configData').innerText = sync_getConfigData();
+          document.getElementById('configData').innerHTML = sync_getConfigData();
       }, false);
       document.getElementById('btn_ImportConfig').addEventListener("click", function(){
-          var data = document.getElementById('configData').innerText;
+          var data = document.getElementById('configData').innerHTML;
           if(data == null || data ==""){
               alert("No data");
               return;
@@ -5856,7 +5856,7 @@ if(settings_configsync_enabled || true){
     var lnk = document.createElement("a");
     lnk.id = "gclh_sync_lnk";
     lnk.href = "#";
-    lnk.innerText = "GClh Sync";  
+    lnk.innerHTML = "GClh Sync";  
     document.getElementById('ctl00_ContentBody_WidgetMiniProfile1_logOutLink').parentNode.appendChild(document.createTextNode(" | "));
     document.getElementById('ctl00_ContentBody_WidgetMiniProfile1_logOutLink').parentNode.appendChild(lnk);
     document.getElementById('gclh_sync_lnk').addEventListener("click", gclh_sync_showConfig, false);
