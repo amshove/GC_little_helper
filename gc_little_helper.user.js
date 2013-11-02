@@ -3727,7 +3727,8 @@ try{
 
 // Show Bookmark-It Icon
 try{
-  if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/nearest\.aspx?/)){
+  // Deactivated: Bookmark-Page needs guid of cache - this is not available anymore in nearest-List ...
+  if(false && document.location.href.match(/^http:\/\/www\.geocaching\.com\/seek\/nearest\.aspx?/)){
     var links = document.getElementsByTagName("a");
   
     for(var i=0; i<links.length; i++){
