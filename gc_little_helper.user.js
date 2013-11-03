@@ -972,12 +972,15 @@ try{
 
 // Map on create pocketQuery-page
 try{
-  if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/pocket\/gcquery\.aspx/) && document.getElementById("ctl00_ContentBody_rbOriginWpt").checked){  
-    $('.LatLongTable').after('<img style="position:absolute;top: 40px; left: 300px;height:350px;width:450px;" id="gclh_map">').parent().css("style","relative");
+  if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/pocket\/gcquery\.aspx/)){  
+    $('.LatLongTable').after('<img style="position:absolute;top: 30px; left: 300px;height:350px;width:450px;" id="gclh_map">').parent().css("style","relative");
     $('.LatLongTable input').change(function(){
-        var coordType =  document.getElementsByName("ctl00$ContentBody$LatLong")[0].value;
-        var northSouth = $($('#ctl00_ContentBody_LatLong\\:_selectNorthSouth')[0].selectedOptions[0]).text().replace('.','');
-        var westEast = $($('#ctl00_ContentBody_LatLong\\:_selectEastWest')[0].selectedOptions[0]).text().replace('.','');
+        var coordType =  document.getElementsByName("ctl00$ContentBody$LatLong")[0].value;    
+        var northField = $('#ctl00_ContentBody_LatLong\\:_selectNorthSouth')[0];        
+        var northSouth = $(northField.options[northField.selectedIndex]).text().replace('.','');
+        var westField = $('#ctl00_ContentBody_LatLong\\:_selectEastWest')[0];
+        var westEast = $(westField.options[westField.selectedIndex]).text().replace('.','');
+        
         var lat = "";
         var lng = "";
         switch(coordType){
