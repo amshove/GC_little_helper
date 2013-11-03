@@ -5849,9 +5849,10 @@ if(settings_configsync_enabled || true){
       html += "<input class='gclh_form' type='button' value='Save to DropBox' id='btn_DBSave' > ";
       html += "<input class='gclh_form' type='button' value='Load from DropBox' id='btn_DBLoad' >";
       html += "</div>";
+      html += "<br>";
       html += "<h3 id='syncManualLabel'>Manual:</h3>";
       html += "<div style='display:none;'  id='syncManual' >";
-      html += "<pre class='gclh_form' style='width: 550px; height: 300px; overflow: auto;' type='text' value='' id='configData' size='20'> </pre>";
+      html += "<pre class='gclh_form' style='width: 550px; height: 300px; overflow: auto;' type='text' value='' id='configData' size='20' contenteditable='true'> </pre>";
       html += "<br>";
       html += "<br>";
       html += "<input class='gclh_form' type='button' value='Export' id='btn_ExportConfig' > ";
@@ -5881,7 +5882,7 @@ if(settings_configsync_enabled || true){
               return;
           }
           try{
-            sync_getConfigData(data);
+            sync_setConfigData(data);
             alert("Successful");
           }catch(e){
                alert("Invalid format");
