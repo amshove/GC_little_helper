@@ -738,21 +738,51 @@ function toDec(coords){
     return new Array(dec1,dec2);
   }
   else{
-      match = coords.match(/^(N|S) ([0-9][0-9]). ([0-9][0-9])\.([0-9][0-9][0-9]) (E|W) ([0-9][0-9][0-9]). ([0-9][0-9])\.([0-9][0-9][0-9])$/);
+      match = coords.match(/(N|S) ([0-9]+) ([0-9]+)\.([0-9]+) (E|W) ([0-9]+) ([0-9]+)\.([0-9]+)/);
 
-  if(match){
-    var dec1 = parseInt(match[2],10) + (parseFloat(match[3]+"."+match[4])/60);
-    if(match[1] == "S") dec1 = dec1 * -1;
-    dec1 = Math.round(dec1*10000000)/10000000;
+      if(match){
+        var dec1 = parseInt(match[2],10) + (parseFloat(match[3]+"."+match[4])/60);
+        if(match[1] == "S") dec1 = dec1 * -1;
+        dec1 = Math.round(dec1*10000000)/10000000;
 
-    var dec2 = parseInt(match[6],10) + (parseFloat(match[7]+"."+match[8])/60);
-    if(match[5] == "W") dec2 = dec2 * -1;
-    dec2 = Math.round(dec2*10000000)/10000000;
+        var dec2 = parseInt(match[6],10) + (parseFloat(match[7]+"."+match[8])/60);
+        if(match[5] == "W") dec2 = dec2 * -1;
+        dec2 = Math.round(dec2*10000000)/10000000;
 
-    return new Array(dec1,dec2);
-   }else{
-	  return false;
-   }
+        return new Array(dec1,dec2);
+       }
+        else{
+            match = coords.match(/(N|S) ([0-9]+) ([0-9]+) ([0-9]+)\.([0-9]+) (E|W) ([0-9]+) ([0-9]+) ([0-9]+)\.([0-9]+)/);
+
+            if(match){
+                var dec1 = parseInt(match[2],10) + (parseFloat(match[3])/60) + (parseFloat(match[4]+"."+match[5])/3600);
+                if(match[1] == "S") dec1 = dec1 * -1;
+                dec1 = Math.round(dec1*10000000)/10000000;
+
+                var dec2 = parseInt(match[7],10) + (parseFloat(match[8])/60) + (parseFloat(match[9]+"."+match[10])/3600);
+                if(match[6] == "W") dec2 = dec2 * -1;
+                dec2 = Math.round(dec2*10000000)/10000000;
+
+                return new Array(dec1,dec2);
+            } 
+            else{
+                match = coords.match(/(N|S) ([0-9]+) ([0-9]+) ([0-9]+\..[0-9].) (E|W) ([0-9]+) ([0-9]+) ([0-9]+\..[0-9].)/);
+
+                if(match){
+                    var dec1 = parseInt(match[2],10) + (parseFloat(match[3])/60) + (parseFloat(match[4])/3600);
+                    if(match[1] == "S") dec1 = dec1 * -1;
+                    dec1 = Math.round(dec1*10000000)/10000000;
+
+                    var dec2 = parseInt(match[6],10) + (parseFloat(match[7])/60) + (parseFloat(match[8])/3600);
+                    if(match[5] == "W") dec2 = dec2 * -1;
+                    dec2 = Math.round(dec2*10000000)/10000000;
+
+                    return new Array(dec1,dec2);
+                }else{
+                    return false;
+                }
+        }
+        }        
   }
 }
 
@@ -955,6 +985,45 @@ try{
     window.addEventListener('keydown', keydown, true);
   }
 }catch(e){ gclh_error("F2 save Bookmark",e); }
+
+// Map on create pocketQuery-page
+try{
+  if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/pocket\/gcquery\.aspx/)){  
+    $('.LatLongTable').after('<img style="position:absolute;top: 30px; left: 300px;height:350px;width:450px;" id="gclh_map">').parent().css("style","relative");
+    $('.LatLongTable input').change(function(){
+        var coordType =  document.getElementsByName("ctl00$ContentBody$LatLong")[0].value;    
+        var northField = $('#ctl00_ContentBody_LatLong\\:_selectNorthSouth')[0];        
+        var northSouth = $(northField.options[northField.selectedIndex]).text().replace('.','');
+        var westField = $('#ctl00_ContentBody_LatLong\\:_selectEastWest')[0];
+        var westEast = $(westField.options[westField.selectedIndex]).text().replace('.','');
+        
+        var lat = "";
+        var lng = "";
+        switch(coordType){
+            case "2": //DMS
+                lat = northSouth+ " " + $('#ctl00_ContentBody_LatLong__inputLatDegs')[0].value + " " + $('#ctl00_ContentBody_LatLong__inputLatMins')[0].value + ' ' + $('#ctl00_ContentBody_LatLong__inputLatSecs')[0].value;
+                lng = westEast+ " " + $('#ctl00_ContentBody_LatLong__inputLongDegs')[0].value + " " + $('#ctl00_ContentBody_LatLong__inputLongMins')[0].value + ' ' + $('#ctl00_ContentBody_LatLong__inputLongSecs')[0].value;
+                var converted = toDec(lat +" "+lng);
+                lat = converted[0];
+                lng = converted[1];
+                break;
+            case "1": //MinDec
+                lat = northSouth+ " " + $('#ctl00_ContentBody_LatLong__inputLatDegs')[0].value + " " + $('#ctl00_ContentBody_LatLong__inputLatMins')[0].value;
+                lng = westEast+ " " + $('#ctl00_ContentBody_LatLong__inputLongDegs')[0].value + " " + $('#ctl00_ContentBody_LatLong__inputLongMins')[0].value;
+                var converted = toDec(lat +" "+lng);
+                lat = converted[0];
+                lng = converted[1];
+                break;
+            case "0": //DegDec
+                lat = (northSouth=="S"?"-":"")+$('#ctl00_ContentBody_LatLong__inputLatDegs')[0].value;
+                lng = (westEast=="W"?"-":"")+$('#ctl00_ContentBody_LatLong__inputLongDegs')[0].value;
+                break;
+        }
+        $('#gclh_map').attr("src",'http://staticmap.openstreetmap.de/staticmap.php?center='+lat+','+lng+'&zoom=15&size=450x350&markers='+lat+','+lng+',ol-marker');
+    });
+    $('.LatLongTable input').change();
+  }
+}catch(e){ gclh_error("map on create pocketQuery page",e); }
 
 // Name for PocketQuery from Bookmark
 try{
