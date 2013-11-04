@@ -1015,7 +1015,7 @@ try{
         });                 
     }
     
-    scrolify(unsafeWindow.$('#pqRepeater'), 160);
+    scrolify(unsafeWindow.$('#pqRepeater'), 300);
     unsafeWindow.$('#ActivePQs').css("padding-right","0px");
   }
 }catch(e){ gclh_error("Fixed header for PocketQuery",e); }
