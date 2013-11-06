@@ -9,7 +9,8 @@
       "run_at": "document_idle"
    } ],
    "permissions": [
-        "http://*.amshove.net/*"
+        "http://*.amshove.net/*",
+        "storage"
    ],
    "converted_from_user_script": true,
    "icons": { "128": "icon128.png" },
