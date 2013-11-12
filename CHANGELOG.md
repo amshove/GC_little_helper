@@ -1,3 +1,13 @@
+#### v10.3
+- Fix: FireFox bug with the pocketquery map
+- Fix: LogInline button for PMO-Caches was not displayed
+- Deactivated BookmarkIt-Function - this function needs an information, gc.com removed from nearest list :-/
+- Add: make the header of the PQ table fixed to increase the readability (closes #13)
+- Add: a map of the coordinates entered on the createPocketQuery-Page (closes #24)
+- Fix: Sometimes logs were displayed twice (fix #22)
+- Import/Export Settings by hand or by dropbox
+
+--
 #### v10.2
 - Fix: Config was broken in v10.1
 
