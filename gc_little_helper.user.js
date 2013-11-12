@@ -5529,7 +5529,7 @@ function gclh_showConfig(){
   // Save Button
   function btnSave(){
     var value = document.getElementById("settings_home_lat_lng").value;
-    if(value.match(/^(N|S) [0-9][0-9]. [0-9][0-9]\.[0-9][0-9][0-9] (E|W) [0-9][0-9][0-9]. [0-9][0-9]\.[0-9][0-9][0-9]$/)){
+    if(value.match(/^(N|S) [0-9][0-9].[0-9][0-9]\.[0-9][0-9][0-9] (E|W) [0-9][0-9][0-9].[0-9][0-9]\.[0-9][0-9][0-9]$/)){
       var latlng = toDec(value);
       if(getValue("home_lat",0) != parseInt(latlng[0]*10000000)) setValue("home_lat",parseInt(latlng[0]*10000000)); // * 10000000 because GM don't know float
       if(getValue("home_lng",0) != parseInt(latlng[1]*10000000)) setValue("home_lng",parseInt(latlng[1]*10000000));
