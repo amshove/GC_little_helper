@@ -1106,7 +1106,7 @@ try{
   
     for(var i=0; i < settings_bookmarks_list.length; i++){
       var x = settings_bookmarks_list[i];
-      if(typeof(x) == "undefined" || x=="") continue;
+      if(typeof(x) == "undefined" || x=="" || typeof(x)=="object") continue;
       var a = document.createElement("a");
   
       for(attr in bookmarks[x]){
@@ -1153,7 +1153,7 @@ try{
     
       for(var i=0; i < settings_bookmarks_list.length; i++){
         var x = settings_bookmarks_list[i];
-        if(typeof(x) == "undefined"  || x=="") continue;
+        if(typeof(x) == "undefined"  || x=="" || typeof(x)=="object") continue;
     
         var sublink = document.createElement("li");
         var hyperlink = document.createElement("a");
@@ -1170,7 +1170,7 @@ try{
     }else{                             // Navi horizontal
       for(var i=0; i < settings_bookmarks_list.length; i++){
         var x = settings_bookmarks_list[i];
-        if(typeof(x) == "undefined"  || x=="") continue;
+        if(typeof(x) == "undefined"  || x=="" || typeof(x)=="object") continue;
   
         var sublink = document.createElement("li");
         var hyperlink = document.createElement("a");
@@ -1245,7 +1245,7 @@ try{
   
       for(var i=0; i < settings_bookmarks_list_beta.length; i++){
         var x = settings_bookmarks_list_beta[i];
-        if(typeof(x) == "undefined") continue;
+        if(typeof(x) == "undefined" || typeof(x) == "object") continue;
     
         var hyperlink = document.createElement("a");
         hyperlink.style.color = '#000000';
@@ -5313,6 +5313,7 @@ function gclh_showConfig(){
     else{
 	for(var i=0;i<order.length;i++){
                 if(typeof(order[i]) == "undefined") continue;
+                if(typeof(order[i]) == "object") continue;
                 if(typeof(bookmarks[order[i]]) == "undefined") continue;
 		var  text = (typeof(bookmarks_orig_title[order[i]]) != "undefined" && bookmarks_orig_title[order[i]] != "" ? bookmarks_orig_title[order[i]] : bookmarks[order[i]]['title']);
 		if(bookmarks[order[i]].custom){
@@ -5339,6 +5340,7 @@ function gclh_showConfig(){
 	
 	for(var i=0;i<order.length;i++){
                 if(typeof(order[i]) == "undefined") continue;
+                if(typeof(order[i]) == "object") continue;
                 if(typeof(bookmarks[order[i]]) == "undefined") continue;
 		var  text = (typeof(bookmarks_orig_title[order[i]]) != "undefined" && bookmarks_orig_title[order[i]] != "" ? bookmarks_orig_title[order[i]] : bookmarks[order[i]]['title']);
 		if(bookmarks[order[i]].custom){
