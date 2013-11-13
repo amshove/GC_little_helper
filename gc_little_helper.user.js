@@ -425,6 +425,7 @@ settings_map_hide_sidebar = getValue("settings_map_hide_sidebar",false);
 settings_hover_image_max_size = getValue("settings_hover_image_max_size",600);
 settings_vip_show_nofound = getValue("settings_vip_show_nofound",false);
 settings_use_gclh_layercontrol = getValue("settings_use_gclh_layercontrol",true);
+settings_fixed_pq_header = getValue("settings_fixed_pq_header",false);
 
 // Settings: Custom Bookmarks
 var num = bookmarks.length;
@@ -1037,7 +1038,7 @@ try{
 
 // Fixed header for PocketQuery
 try{
-  if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/pocket/) && document.getElementById("pqRepeater")){
+  if(settings_fixed_pq_header && document.location.href.match(/^http:\/\/www\.geocaching\.com\/pocket/) && document.getElementById("pqRepeater")){
     //scrolify based on http://stackoverflow.com/questions/673153/html-table-with-fixed-headers
     function scrolify(tblAsJQueryObject, height){
         var oTbl = tblAsJQueryObject;
@@ -5160,6 +5161,7 @@ function gclh_showConfig(){
     html += checkbox('settings_hide_socialshare', 'Hide SocialShare-Box after Log') + "<br/>";
     html += checkbox('settings_hideable_souvenirs', 'Make Souvenirs hideable') + "<br/>";
     html += checkbox('settings_hide_visits_in_profile', 'Hide TB/Coin-Visits in Profile') + "<br/>";
+    html += checkbox('settings_fixed_pq_header', 'Show fixed header in PQ-List') + "<br/>";
     html += "";
     html += "<br>";
     html += "";
@@ -5653,6 +5655,7 @@ function gclh_showConfig(){
       'settings_log_signature_on_fieldnotes',
       'settings_vip_show_nofound',
       'settings_use_gclh_layercontrol',
+      'settings_fixed_pq_header',
       'settings_map_hide_sidebar'
 //      'settings_hide_recentlyviewed'
     );
