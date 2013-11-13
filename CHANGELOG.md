@@ -1,3 +1,8 @@
+#### v10.5
+- New: Added option to disable the new feature "Show fixed header in PQ-List"
+- Fix: VIP-Function was broken with some VIP-Names
+
+--
 #### v10.4
 - Fix: crash on parsing old FF settings
 - Fix: Save button does not work
