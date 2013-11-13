@@ -1,3 +1,8 @@
+#### v10.4
+- Fix: crash on parsing old FF settings
+- Fix: Save button does not work
+
+--
 #### v10.3
 - Fix: FireFox bug with the pocketquery map
 - Fix: LogInline button for PMO-Caches was not displayed
