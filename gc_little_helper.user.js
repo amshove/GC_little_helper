@@ -1030,7 +1030,7 @@ try{
 try{
   if((document.location.href.match(/^http:\/\/www\.geocaching\.com\/pocket\/bmquery\.aspx/)) && document.getElementById("ctl00_ContentBody_lnkListName")){
     document.getElementById('ctl00_ContentBody_tbName').value = document.getElementById("ctl00_ContentBody_lnkListName").innerHTML;
-    document.getElementById('ctl00_ContentBody_rbRunOption_2').checked = true;
+//    document.getElementById('ctl00_ContentBody_rbRunOption_2').checked = true;
     document.getElementById('ctl00_ContentBody_cbIncludePQNameInFileName').checked = true;
   }
 }catch(e){ gclh_error("PQ-Name from Bookmark",e); }
