@@ -358,6 +358,7 @@ settings_show_nearestuser_profil_link = getValue("settings_show_nearestuser_prof
 settings_show_homezone = getValue("settings_show_homezone",true);
 settings_homezone_radius = getValue("settings_homezone_radius","10");
 settings_homezone_color = getValue("settings_homezone_color","#0000FF");
+settings_homezone_opacity = getValue("settings_homezone_opacity",10);
 // Settings: Hill Shadow
 settings_show_hillshadow = getValue("settings_show_hillshadow",false);
 settings_map_layers = getValue("settings_map_layers","").split("###");
@@ -2666,13 +2667,16 @@ try{
             if(typeof home_lat == "undefined" || typeof home_lng == "undefined" || home_lat == null || home_lng == null){
                 return;
             }
+
+            var opacity = settings_homezone_opacity/100;
+            var opacity2 = opacity+0.1;
             
             var latlng = new unsafeWindow.L.LatLng((home_lat/10000000), (home_lng/10000000));
         var options = {
                        color:       settings_homezone_color,
                        weight:       1,
-                       opacity:     0.2,
-                       fillOpacity: 0.1,
+                       opacity:     opacity2,
+                       fillOpacity: opacity,
                        clickable:   false
                       };
         var circle = new unsafeWindow.L.Circle(latlng, settings_homezone_radius*1000,options);
@@ -5318,6 +5322,7 @@ function gclh_showConfig(){
     html += "<h4 class='gclh_headline2'>Maps</h4>";
     html += checkbox('settings_show_homezone', 'Show Homezone') + " - Radius: <input class='gclh_form' type='text' size='2' id='settings_homezone_radius' value='"+settings_homezone_radius+"'> km"+show_help("This option draws a circle of X kilometers around your home-coordinates on the map.")+"<br>";
     html += "Homezone-Color: <input class='gclh_form' type='text' size='5' id='settings_homezone_color' value='"+settings_homezone_color+"'>"+show_help("Here you can change the color of your homezone-circle.")+"<br>";
+    html += "Homezone-Opacity: <input class='gclh_form' type='text' size='2' id='settings_homezone_opacity' value='"+settings_homezone_opacity+"'> %"+show_help("Here you can change the opacity of your homezone-circle.")+"<br>";
     html += checkbox('settings_map_hide_found', 'Hide found caches by default') + show_help("This is a Premium-Feature - it enables automatically the option to hide your found caches on map.") + "<br/>";
     html += checkbox('settings_map_hide_hidden', 'Hide own caches by default') + show_help("This is a Premium-Feature - it enables automatically the option to hide your caches on map.") + "<br/>";
     html += "Hide Cache Types by default: "+show_help("This is a Premium-Feature - it enables automatically the option to hide the specific cache type.")+"<br/>";
@@ -5695,6 +5700,7 @@ function gclh_showConfig(){
     setValue("settings_show_all_logs_count",document.getElementById('settings_show_all_logs_count').value);
     setValue("settings_homezone_radius",document.getElementById('settings_homezone_radius').value);
     setValue("settings_homezone_color",document.getElementById('settings_homezone_color').value);
+    if(document.getElementById('settings_homezone_opacity').value <= 100 && document.getElementById('settings_homezone_opacity').value >= 0) setValue("settings_homezone_opacity",document.getElementById('settings_homezone_opacity').value);
 //    setValue("map_width",document.getElementById('map_width').value);
     setValue("settings_new_width",document.getElementById('settings_new_width').value);
     setValue("settings_date_format",document.getElementById('settings_date_format').value);
