@@ -1044,6 +1044,12 @@ try{
   }
 }catch(e){ gclh_error("PQ-Name from Bookmark",e); }
 
+// Show refresh button for PocketQuery Page
+try{
+  if((document.location.href.match(/^http:\/\/www\.geocaching\.com\/pocket/)) && document.getElementById("uxCreateNewPQ")){
+    document.getElementById('uxCreateNewPQ').parentNode.parentNode.parentNode.innerHTML += "<p><a href='http://www.geocaching.com/pocket/default.aspx' title='Refresh Page'>Refresh Page</a></p>";
+  }
+}catch(e){ gclh_error("Refresh button on PQ-Page",e); }
 
 // Fixed header for PocketQuery
 try{
