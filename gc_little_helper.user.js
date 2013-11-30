@@ -3190,11 +3190,25 @@ try{
           var score = document.getElementById('uxFavoriteScore').innerHTML.match(/<strong>(.*)<\/strong>/);
           if(score && score[1]){
             var val = getElementsByClass("favorite-value");
+
+            // new stuff for displaying if I have given favorite point
+            var myfav = document.getElementById("pnlFavoriteCache");
+            var myfavHTML = ""
+            if (myfav){
+              if (myfav.className.match("hideMe")) {
+                // remove from favorites is hidden -> I have not given a favorite
+                myfavHTML = '&nbsp;<img src="http://www.geocaching.com/images/icons/reg_user.gif" />';
+              } else {
+                myfavHTML = '&nbsp;<img src="http://www.geocaching.com/images/icons/prem_user.gif" />';
+              }
+            }
+
             if(val[0] && document.location.href.match("cache_details")){
               fav.innerHTML = "<span class='favorite-value'> "+val[0].innerHTML+"</span><br>&nbsp;&nbsp;&nbsp;&nbsp;"+score[1]+" &nbsp;&nbsp;&nbsp;&nbsp;<img id='imgFavoriteArrow' src='/images/arrow-down.png' alt='Expand' title='Expand'>";
             }else if(val[0] && document.location.href.match(/\/geocache\//)){ // New Listing-Design
               fav.innerHTML = fav.innerHTML.replace(/Favorites/,"");
               fav.innerHTML += score[1];
+              fav.innerHTML += myfavHTML;
             }
           }
         }
