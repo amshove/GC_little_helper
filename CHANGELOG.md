@@ -1,3 +1,12 @@
+#### v10.6
+- New: Highlight column of the actual day on PQ-Page (closes #34)
+- New: Add refresh-button to PQ-Page (closes #33)
+- New: Option to change opacity of homezone circle (closes #26)
+- New: Icon to indicate, if you've already given a Fav-Point (Code from nah&fern - closes #29)
+- Fix: "Run this query once then delete it" was selected by default, if you created a PQ from a bookmark list
+-Fix: saving coords does not work
+
+--
 #### v10.5
 - New: Added option to disable the new feature "Show fixed header in PQ-List"
 - Fix: VIP-Function was broken with some VIP-Names
