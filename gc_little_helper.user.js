@@ -1051,6 +1051,34 @@ try{
   }
 }catch(e){ gclh_error("Refresh button on PQ-Page",e); }
 
+// Highlight column of current day on PocketQuery Page
+try{
+  if((document.location.href.match(/^http:\/\/www\.geocaching\.com\/pocket/)) && document.getElementById("ActivePQs")){
+    var matches = document.getElementById('ActivePQs').childNodes[1].innerHTML.match(/([A-Za-z]*),/);
+    if(matches){
+      var highlight = 0;
+      switch(matches[1]){
+        case "Sunday": highlight = 11; break;
+        case "Monday": highlight = 13; break;
+        case "Tuesday": highlight = 15; break;
+        case "Wednesday": highlight = 17; break;
+        case "Thursday": highlight = 19; break;
+        case "Friday": highlight = 21; break;
+        case "Saturday": highlight = 23; break;
+      }
+
+      if(highlight > 0){
+        var trs = document.getElementById("pqRepeater").getElementsByTagName("tr");
+
+        for(var i=0; i<trs.length; i++){
+          if(i == (trs.length-1)) highlight -= 4;
+          trs[i].childNodes[highlight].style.backgroundColor = "#E3DDC2";
+        }
+      }
+    }
+  }
+}catch(e){ gclh_error("Highlight column on PQ-Page",e); }
+
 // Fixed header for PocketQuery
 try{
   if(settings_fixed_pq_header && document.location.href.match(/^http:\/\/www\.geocaching\.com\/pocket/) && document.getElementById("pqRepeater")){
