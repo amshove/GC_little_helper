@@ -1144,7 +1144,7 @@ try{
     header.appendChild(document.createTextNode(" Linklist"));
   
     var div = document.createElement("div");
-    div.setAttribute("class","WidgetBody ProfileWidget");
+    div.setAttribute("class","WidgetBody");
   
     var ul = document.createElement("ul");
   
