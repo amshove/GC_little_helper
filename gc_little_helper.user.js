@@ -561,72 +561,96 @@ try{
 // Link on Google Maps
 if(document.location.href.match(/^(http|https):\/\/maps\.google\./) || document.location.href.match(/^(http|https):\/\/www\.google\.[a-zA-Z.]*\/maps/)){
   if(settings_show_google_maps){
-    var ref_link = document.getElementById("link");
-    if(ref_link){
-      function open_gc(){
-        var matches = ref_link.href.match(/&ll=([-0-9]*\.[0-9]*),([-0-9]*\.[0-9]*)/);
-        var zoom = ref_link.href.match(/z=([0-9]*)/);
-        if (matches != null && zoom != null) {
-          var gc_map_url = map_url + "?lat=" + matches[1] + "&lng=" + matches[2] + "&z=" + zoom[1];
-          window.open(gc_map_url);
-        }
-        else {
-          alert("This map has no geographical coordinates in its link. Just zoom or drag the map, afterwards this will work fine.");
-        }
-      }
-    
-      var box = ref_link.parentNode;
-      
-      var gcImage = document.createElement("img");
-      gcImage.setAttribute("src","http://www.geocaching.com/images/about/logos/geocaching/Logo_Geocaching_color_notext_32.png");
-      gcImage.setAttribute("title", "Show area at geocaching.com");
-      gcImage.setAttribute("alt", "Show area at geocaching.com");
+    var gear = document.getElementById("gear");
+    // Neues google maps
+    if(gear){
+      var script = "function open_gc(){";
+      script += "  var matches = document.location.href.match(/\\@([0-9.]*),([0-9.]*),([0-9]*)z/);";
+      script += "  if(matches != null){";
+      script += "    window.open('"+map_url+"?lat='+matches[1]+'&lng='+matches[2]+'&z='+matches[3]);";
+      script += "  }else{";
+      script += "    alert('This map has no geographical coordinates in its link. Just zoom or drag the map, afterwards this will work fine.');";
+      script += "  }";
+      script += "}";
+      var script_ = document.createElement("script");
+      script_.innerHTML = script;
 
-      var link = document.createElement("a");
-      link.setAttribute("title","Show area at geocaching.com");
-      link.setAttribute("href","#");
-      link.setAttribute("id","gc_com_lnk");
+      var button = document.createElement("button");
+      button.setAttribute("class","widget-gear-settings-icon");
+      button.style.backgroundImage = "url('http://www.geocaching.com/images/about/logos/geocaching/Logo_Geocaching_color_notext_32.png')";
+      button.setAttribute("onClick","open_gc();");
 
-      link.appendChild(gcImage);
-      box.appendChild(link);
-      
-      document.getElementById('gc_com_lnk').addEventListener("click", open_gc, false);
-    }
-  }
-}else if((document.location.href.match(/^(http|https):\/\/maps\.google\./) || document.location.href.match(/^(http|https):\/\/www\.google\.[a-zA-Z.]*\/maps/)) && document.location.href.match(/preview#!/)){
-    if(settings_show_google_maps){        
+      gear.childNodes[0].appendChild(script_);
+      gear.childNodes[0].appendChild(button);
+    }else{
+    // Altes google maps
+      var ref_link = document.getElementById("link");
+      if(ref_link){
         function open_gc(){
-            //new url : /!2d(-?[0-9]+.[0-9]+)/ and /!3d(-?[0-9]+.[0-9]+)/
-            var lat = document.URL.match(/!3d(-?[0-9]+.[0-9]+)/);
-            var lng = document.URL.match(/!2d(-?[0-9]+.[0-9]+)/);
-            var zoom = 12; //don't know how to decode
-            if (lat != null && lng != null && zoom != null) {
-              var gc_map_url = map_url + "?lat=" + lat[1] + "&lng=" + lng[1] + "&z=" + zoom;
-              window.open(gc_map_url);
-            }
-            else {
-              alert("This map has no geographical coordinates in its link.");
-            }
-        }        
-
+          var matches = ref_link.href.match(/&ll=([-0-9]*\.[0-9]*),([-0-9]*\.[0-9]*)/);
+          var zoom = ref_link.href.match(/z=([0-9]*)/);
+          if (matches != null && zoom != null) {
+            var gc_map_url = map_url + "?lat=" + matches[1] + "&lng=" + matches[2] + "&z=" + zoom[1];
+            window.open(gc_map_url);
+          }
+          else {
+            alert("This map has no geographical coordinates in its link. Just zoom or drag the map, afterwards this will work fine.");
+          }
+        }
+      
+        var box = ref_link.parentNode;
+        
         var gcImage = document.createElement("img");
         gcImage.setAttribute("src","http://www.geocaching.com/images/about/logos/geocaching/Logo_Geocaching_color_notext_32.png");
         gcImage.setAttribute("title", "Show area at geocaching.com");
         gcImage.setAttribute("alt", "Show area at geocaching.com");
-
+  
         var link = document.createElement("a");
         link.setAttribute("title","Show area at geocaching.com");
         link.setAttribute("href","#");
         link.setAttribute("id","gc_com_lnk");
-        link.setAttribute("style", "position:absolute;top:3px;right:-40px;")
-
+  
         link.appendChild(gcImage);
+        box.appendChild(link);
         
-        document.getElementsByClassName("searchbutton")[0].appendChild(link);
-
         document.getElementById('gc_com_lnk').addEventListener("click", open_gc, false);
-        
+      }
     }
+  }
+//}else if((document.location.href.match(/^(http|https):\/\/maps\.google\./) || document.location.href.match(/^(http|https):\/\/www\.google\.[a-zA-Z.]*\/maps/)) && document.location.href.match(/preview#!/)){
+//    if(settings_show_google_maps){        
+//        function open_gc(){
+//            //new url : /!2d(-?[0-9]+.[0-9]+)/ and /!3d(-?[0-9]+.[0-9]+)/
+//            var lat = document.URL.match(/!3d(-?[0-9]+.[0-9]+)/);
+//            var lng = document.URL.match(/!2d(-?[0-9]+.[0-9]+)/);
+//            var zoom = 12; //don't know how to decode
+//            if (lat != null && lng != null && zoom != null) {
+//              var gc_map_url = map_url + "?lat=" + lat[1] + "&lng=" + lng[1] + "&z=" + zoom;
+//              window.open(gc_map_url);
+//            }
+//            else {
+//              alert("This map has no geographical coordinates in its link.");
+//            }
+//        }        
+//
+//        var gcImage = document.createElement("img");
+//        gcImage.setAttribute("src","http://www.geocaching.com/images/about/logos/geocaching/Logo_Geocaching_color_notext_32.png");
+//        gcImage.setAttribute("title", "Show area at geocaching.com");
+//        gcImage.setAttribute("alt", "Show area at geocaching.com");
+//
+//        var link = document.createElement("a");
+//        link.setAttribute("title","Show area at geocaching.com");
+//        link.setAttribute("href","#");
+//        link.setAttribute("id","gc_com_lnk");
+//        link.setAttribute("style", "position:absolute;top:3px;right:-40px;")
+//
+//        link.appendChild(gcImage);
+//        
+//        document.getElementsByClassName("searchbutton")[0].appendChild(link);
+//
+//        document.getElementById('gc_com_lnk').addEventListener("click", open_gc, false);
+//        
+//    }
 }else{
 //Required for jquery plugins under opera
 if(typeof $ == "undefined"){
