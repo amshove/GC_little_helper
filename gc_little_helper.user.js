@@ -936,32 +936,10 @@ function hide_map_header(){
   var header = document.getElementsByTagName("header");
   if(header[0].style.display != "none"){  // Header verstecken
     header[0].style.display = "none";
-    // Move Map to Top
-    document.getElementById("map_canvas").style.top = 0;
-    // Move Sidebar to Top
-    document.getElementById("searchtabs").parentNode.style.top = 0;
-    // Move "Leaflet About" to Bottom
-    var map = document.getElementById("map_canvas");
-    var divs = map.getElementsByTagName("div");
-    for(var i=0; i<divs.length; i++){
-      if(divs[i].className.match(/leaflet-bottom/)){
-        divs[i].setAttribute("style","bottom: 0px !important;");
-      }
-    }
+    document.getElementById("Content").style.top = 0;
   }else{ // Header zeigen
     header[0].style.display = "block";
-    // Move Map to Top
-    document.getElementById("map_canvas").style.top = "56px";
-    // Move Sidebar to Top
-    document.getElementById("searchtabs").parentNode.style.top = "56px";
-    // Move "Leaflet About" to Bottom
-    var map = document.getElementById("map_canvas");
-    var divs = map.getElementsByTagName("div");
-    for(var i=0; i<divs.length; i++){
-      if(divs[i].className.match(/leaflet-bottom/)){
-        divs[i].setAttribute("style","bottom: 56px !important;");
-      }
-    }
+    document.getElementById("Content").style.top = "63px";
   }
 }
 
