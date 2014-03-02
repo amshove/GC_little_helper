@@ -2461,7 +2461,7 @@ try{
     link.setAttribute("class","lnk");
     link.setAttribute("target","_blank");
     link.setAttribute("title","Show area at Google Maps");
-    link.setAttribute("href","https?://maps.google.com/maps?q="+document.getElementById("uxLatLon").innerHTML+" ("+document.getElementById("ctl00_ContentBody_CoordInfoLinkControl1_uxCoordInfoCode").innerHTML+")");
+    link.setAttribute("href","http://maps.google.com/maps?q="+document.getElementById("uxLatLon").innerHTML+" ("+document.getElementById("ctl00_ContentBody_CoordInfoLinkControl1_uxCoordInfoCode").innerHTML+")");
     
     var img = document.createElement("img");
     img.setAttribute("src","/images/silk/map_go.png");
