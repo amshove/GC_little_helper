@@ -25,7 +25,7 @@
 // @grant          GM_registerMenuCommand
 // ==/UserScript==
 
-if(window.name == '' || window.name == 'gclhFrame') {  // don't run on advertisement iframes
+if(window.name.substring(0, 18) != 'google_ads_iframe_') {  // don't run on advertisement iframes
 
 var operaHelperInitComplete = false;
 var operaHelperDomLoaded = false;
