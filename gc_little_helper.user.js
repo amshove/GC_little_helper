@@ -25,6 +25,8 @@
 // @grant          GM_registerMenuCommand
 // ==/UserScript==
 
+if(window.top == window.self) {  // run once only (on main frame only)
+
 var operaHelperInitComplete = false;
 var operaHelperDomLoaded = false;
 var chromeUserData = {};
@@ -486,6 +488,8 @@ if(typeof opera == "object"){
 else{
   main();
 }
+
+} // ENDIF run once only (on main frame only)
 
 // Wrapper, um zu pruefen auf welche Seite der Link zeigt - um zu vermeiden, die URL-Abfrage mehrfach im Quelltext wiederholen zu muessen
 function is_link(name,url){
