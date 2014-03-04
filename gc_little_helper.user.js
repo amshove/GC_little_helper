@@ -292,7 +292,7 @@ var CONFIG = JSON.parse(GM_getValue( "CONFIG", '{}' ));
 
 function setValue( name, value ){
   CONFIG[name] = value;
-  if(!gclhConfigKeys[name] && !gclhConfigKeysIgnoreForBackup[name]){
+  if(gclhConfigKeys[name] === undefined && !gclhConfigKeysIgnoreForBackup[name]){
     gclhConfigKeys[name] = null;
     CONFIG["gclhConfigKeys"] = JSON.stringify(gclhConfigKeys);
   }
@@ -304,7 +304,7 @@ function getValue( name, defaultValue ){
     CONFIG[name] = GM_getValue(name,defaultValue); 
     setValue(name,CONFIG[name]);
   }
-  if(!gclhConfigKeys[name] && !gclhConfigKeysIgnoreForBackup[name]){
+  if(gclhConfigKeys[name] === undefined && !gclhConfigKeysIgnoreForBackup[name]){
     gclhConfigKeys[name] = null;
     CONFIG["gclhConfigKeys"] = JSON.stringify(gclhConfigKeys);
     GM_setValue("CONFIG",JSON.stringify(CONFIG));
