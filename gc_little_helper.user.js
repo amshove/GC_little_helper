@@ -458,20 +458,20 @@ var num = bookmarks.length;
 for(var i=0; i<anzCustom; i++){
   bookmarks[num] = Object();
   
-  if(typeof(getValue("settings_custom_bookmark["+i+"]")) != "undefined" && getValue("settings_custom_bookmark["+i+"]") != ""){
+  if(getValue("settings_custom_bookmark["+i+"]", "") != ""){
     bookmarks[num]['href'] = getValue("settings_custom_bookmark["+i+"]");
   }else{
     bookmarks[num]['href'] = "#";
   }
   
-  if(typeof(getValue("settings_bookmarks_title["+num+"]")) != "undefined" && getValue("settings_bookmarks_title["+num+"]") != ""){
+  if(getValue("settings_bookmarks_title["+num+"]", "") != ""){
     bookmarks[num]['title'] = getValue("settings_bookmarks_title["+num+"]");
   }else{
     bookmarks[num]['title'] = "Custom"+i;
     setValue("settings_bookmarks_title["+num+"]",bookmarks[num]['title']);
   }
   
-  if(typeof(getValue("settings_custom_bookmark_target["+i+"]")) != "undefined" && getValue("settings_custom_bookmark_target["+i+"]") != ""){
+  if(getValue("settings_custom_bookmark_target["+i+"]", "") != ""){
     bookmarks[num]['target'] = getValue("settings_custom_bookmark_target["+i+"]");
     bookmarks[num]['rel'] = "external";
   }else{
@@ -490,7 +490,7 @@ bookmark("Field Notes", "/my/fieldnotes.aspx");
 // Settings: Custom Bookmark-title
 var bookmarks_orig_title = new Array();
 for(var i=0; i<bookmarks.length; i++){
-  if(typeof(getValue("settings_bookmarks_title["+i+"]")) != "undefined" && getValue("settings_bookmarks_title["+i+"]") != ""){
+  if(getValue("settings_bookmarks_title["+i+"]", "") != ""){
     bookmarks_orig_title[i] = bookmarks[i]['title']; // Needed for configuration
     bookmarks[i]['title'] = getValue("settings_bookmarks_title["+i+"]");
   }
@@ -904,7 +904,7 @@ function DectoDeg(lat,lng){
  * @returns {Boolean}
  */
 function homeCoordinatesSet() {
-  if(typeof(getValue("home_lat")) == "undefined" || typeof(getValue("home_lng")) == "undefined"){
+  if(getValue("home_lat", 0) != 0 && getValue("home_lng") != 0){
     if (window.confirm("To use this link, you have to set your home coordinates.")) {
       document.location.href = "http://www.geocaching.com/account/ManageLocations.aspx";
     }
@@ -2239,7 +2239,7 @@ try{
     if(matches) document.getElementById("ctl00_ContentBody_SendMessagePanel1_tbMessage").innerHTML = decodeURIComponent(matches[1]);
     
     // Add Mail-Signature
-    if(typeof(getValue("settings_mail_signature")) != "undefined" && getValue("settings_mail_signature") != ""){
+    if(getValue("settings_mail_signature", "") != ""){
       var me = "#me#";
       if(getElementsByClass("SignedInProfileLink")[0]) me = getElementsByClass("SignedInProfileLink")[0].innerHTML;
       document.getElementById("ctl00_ContentBody_SendMessagePanel1_tbMessage").innerHTML += "\n\n"+getValue("settings_mail_signature").replace(/#me#/g,me);
@@ -5034,7 +5034,7 @@ try{
         var uid = links[i].href.match(/\/track\/search\.aspx\?o=1\&uid=(.*)/);
         uid = uid[1];
   
-        if(getValue["uid"] != uid) setValue("uid",uid);
+        if(getValue("uid", "") != uid) setValue("uid",uid);
       }
     }
   }
@@ -5113,7 +5113,7 @@ try{
   
   // Redirect to My Trackables
   function linkToMyTrackables(){
-    if(typeof(getValue("uid")) == "undefined"){
+    if(getValue("uid", "") == ""){
       if(window.confirm("To use this Link, the script has to know your uid. Just load the \"My Profile\" site and the script will save it automatically.")) document.location.href = "http://www.geocaching.com/my/";
     }else{
       document.location.href = "http://www.geocaching.com/track/search.aspx?o=1&uid="+getValue("uid");
@@ -5624,7 +5624,7 @@ function gclh_showConfig(){
         html += ">"+(typeof(bookmarks_orig_title[i]) != "undefined" && bookmarks_orig_title[i] != "" ? bookmarks_orig_title[i] : bookmarks[i]['title'])+"</a>";
       }
       html += "</td>";
-      html += "    <td align='left' style='padding: 4px 2px;'>  <input style='padding-left: 2px; padding-right: 2px;'  class='gclh_form' id='bookmarks_name["+i+"]' type='text' size='15' value='"+(typeof(getValue("settings_bookmarks_title["+i+"]")) != "undefined" ? getValue("settings_bookmarks_title["+i+"]") : "")+"'></td>"; 
+      html += "    <td align='left' style='padding: 4px 2px;'>  <input style='padding-left: 2px; padding-right: 2px;'  class='gclh_form' id='bookmarks_name["+i+"]' type='text' size='15' value='"+getValue("settings_bookmarks_title["+i+"]", "")+"'></td>"; 
       html += "  </tr>";
     } 
     html += " </tbody>";
