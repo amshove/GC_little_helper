@@ -4931,6 +4931,35 @@ try{
   head.appendChild(style);
 }catch(e){ gclh_error("Improve Search List colors",e); }
 
+// Improve Trackable Log Lists Color
+try{
+  if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/track\/details\.aspx\?/)){
+    // css code copied from feature "Improve Search Lists color"
+    var css = "table.Table tr.QuaternaryRow td, .QuaternaryRow, table.Table tr td.QuaternaryRow { background-color: #e0e0c3; }";
+    var head = document.getElementsByTagName('head')[0];
+    var style = document.createElement('style');
+    style.type = 'text/css';
+    style.innerHTML = css;
+    head.appendChild(style);
+
+    if(getElementsByClass('SignedInProfileLink')[0])
+      var me = getElementsByClass('SignedInProfileLink')[0].innerHTML;
+    var owner = document.getElementById("ctl00_ContentBody_BugDetails_BugOwner").innerHTML;
+    var trLogs = document.getElementsByClassName("Data");
+	for (var i=0; i<trLogs.length; i+=2) {
+	  var aLog = trLogs[i].getElementsByTagName("a");
+	  if(aLog.length == 0) break;
+	  var logger = aLog[0].innerHTML;
+	  if(logger === me)
+		for(var j=0; j<2; j++)
+		  trLogs[i+j].className += " TertiaryRow";
+      else if(logger === owner)
+		for(var j=0; j<2; j++)
+		  trLogs[i+j].className += " QuaternaryRow";
+	}
+  }
+}catch(e){ gclh_error("Improve Trackable Log Lists Color",e); }
+
 // Hide Navi on SignIn-Overlay
 try{
   function hide_navi(){
