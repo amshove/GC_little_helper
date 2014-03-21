@@ -4994,7 +4994,7 @@ try{
 
 // Improve Trackable Log Lists Color
 try{
-  if(document.location.href.match(/^http:\/\/www\.geocaching\.com\/track\/details\.aspx\?/)){
+  if(document.location.href.match(/^https?:\/\/www\.geocaching\.com\/track\/details\.aspx\?/)){
     // css code copied from feature "Improve Search Lists color"
     var css = "table.Table tr.QuaternaryRow td, .QuaternaryRow, table.Table tr td.QuaternaryRow { background-color: #e0e0c3; }";
     var head = document.getElementsByTagName('head')[0];
