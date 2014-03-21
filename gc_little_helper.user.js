@@ -289,24 +289,54 @@ function gclh_error(modul,err){
   }
 }
 
-var gclhConfigKeys = JSON.parse(GM_getValue( "gclhConfigKeys", '{"settings_hide_advert_link":null,"settings_hide_line_breaks":null,"settings_hide_spoilerwarning":null,"settings_hide_hint":null,"settings_strike_archived":null,"settings_highlight_usercoords":null,"settings_map_hide_found":null,"settings_map_hide_hidden":null,"settings_map_hide_2":null,"settings_map_hide_9":null,"settings_map_hide_5":null,"settings_map_hide_3":null,"settings_map_hide_6":null,"settings_map_hide_453":null,"settings_map_hide_13":null,"settings_map_hide_1304":null,"settings_map_hide_4":null,"settings_map_hide_11":null,"settings_map_hide_137":null,"settings_map_hide_8":null,"settings_map_hide_1858":null,"settings_show_fav_percentage":null,"settings_show_vip_list":null,"settings_show_owner_vip_list":null,"remove_navi_social":null,"settings_map_layers":null,"settings_log_template_name[0]":null,"settings_custom_bookmark_target[0]":null,"settings_log_template[0]":null,"settings_log_template_name[1]":null,"settings_custom_bookmark_target[1]":null,"settings_log_template[1]":null,"settings_log_template_name[2]":null,"settings_custom_bookmark_target[2]":null,"settings_log_template[2]":null,"settings_log_template_name[3]":null,"settings_custom_bookmark_target[3]":null,"settings_log_template[3]":null,"settings_log_template_name[4]":null,"settings_custom_bookmark_target[4]":null,"settings_log_template[4]":null,"settings_log_template_name[5]":null,"settings_custom_bookmark_target[5]":null,"settings_log_template[5]":null,"settings_log_template_name[6]":null,"settings_custom_bookmark_target[6]":null,"settings_log_template[6]":null,"settings_log_template_name[7]":null,"settings_custom_bookmark_target[7]":null,"settings_log_template[7]":null,"settings_log_template_name[8]":null,"settings_custom_bookmark_target[8]":null,"settings_log_template[8]":null,"settings_log_template_name[9]":null,"settings_custom_bookmark_target[9]":null,"settings_log_template[9]":null,"browser":null,"settings_submit_log_button":null,"settings_log_inline":null,"settings_log_inline_tb":null,"settings_log_inline_pmo4basic":null,"settings_bookmarks_show":null,"settings_bookmarks_on_top":null,"settings_bookmarks_top_menu":null,"settings_bookmarks_search":null,"settings_bookmarks_search_default":null,"settings_redirect_to_map":null,"settings_hide_facebook":null,"settings_hide_socialshare":null,"settings_hideable_souvenirs":null,"settings_hide_disclaimer":null,"settings_hide_cache_notes":null,"settings_hide_empty_cache_notes":null,"settings_breaks_in_cache_notes":null,"settings_show_all_logs":null,"settings_show_all_logs_count":null,"settings_decrypt_hint":null,"settings_show_bbcode":null,"settings_show_datepicker":null,"settings_show_mail":null,"settings_show_mail_coordslink":null,"settings_show_eventday":null,"settings_date_format":null,"settings_show_google_maps":null,"settings_show_log_it":null,"settings_show_nearestuser_profil_link":null,"settings_show_homezone":null,"settings_homezone_radius":null,"settings_homezone_color":null,"settings_show_hillshadow":null,"settings_default_logtype":null,"settings_default_logtype_event":null,"settings_default_logtype_owner":null,"settings_default_tb_logtype":null,"settings_bookmarks_list":null,"settings_bookmarks_list_beta":null,"settings_autovisit":null,"settings_show_thumbnails":null,"settings_imgcaption_on_top":null,"settings_hide_avatar":null,"settings_show_big_gallery":null,"settings_automatic_friend_reset":null,"settings_show_long_vip":null,"settings_load_logs_with_gclh":null,"settings_configsync_enabled":null,"settings_map_add_layer":null,"settings_map_default_layer":null,"settings_hide_map_header":null,"settings_spoiler_strings":null,"settings_replace_log_by_last_log":null,"settings_hide_top_button":null,"settings_show_real_owner":null,"settings_hide_visits_in_profile":null,"settings_log_signature_on_fieldnotes":null,"settings_map_hide_sidebar":null,"settings_hover_image_max_size":null,"settings_vip_show_nofound":null,"settings_use_gclh_layercontrol":null,"settings_bookmarks_title[0]":null,"settings_bookmarks_title[1]":null,"settings_bookmarks_title[2]":null,"settings_bookmarks_title[3]":null,"settings_bookmarks_title[4]":null,"settings_bookmarks_title[5]":null,"settings_bookmarks_title[6]":null,"settings_bookmarks_title[7]":null,"settings_bookmarks_title[8]":null,"settings_bookmarks_title[9]":null,"new_version":null,"last_logtext":null,"HiddenSouvenirs":null,"email_sendaddress":null,"email_mailcopy":null,"settings_log_signature":null,"settings_tb_signature":null,"friends_founds_last":null,"show_box[0]":null,"gclhWasGoogleAlertShown":null,"vips":null,"home_lat":null,"home_lng":null,"uid":null,"settings_new_width":null,"settings_mail_signature":null,"map_width":null,"token":null,"settings_configsync_configid":null}' ));
+// Neues Speicherformat: Alles in einem Element - macht die Verarbeitung schneller (https://github.com/amshove/GC_little_helper/issues/39)
+var CONFIG = JSON.parse(GM_getValue( "CONFIG", '{}' ));
+
+//var gclhConfigKeys = JSON.parse((CONFIG["gclhConfigKeys"] === undefined?'{"settings_hide_advert_link":null,"settings_hide_line_breaks":null,"settings_hide_spoilerwarning":null,"settings_hide_hint":null,"settings_strike_archived":null,"settings_highlight_usercoords":null,"settings_map_hide_found":null,"settings_map_hide_hidden":null,"settings_map_hide_2":null,"settings_map_hide_9":null,"settings_map_hide_5":null,"settings_map_hide_3":null,"settings_map_hide_6":null,"settings_map_hide_453":null,"settings_map_hide_13":null,"settings_map_hide_1304":null,"settings_map_hide_4":null,"settings_map_hide_11":null,"settings_map_hide_137":null,"settings_map_hide_8":null,"settings_map_hide_1858":null,"settings_show_fav_percentage":null,"settings_show_vip_list":null,"settings_show_owner_vip_list":null,"remove_navi_social":null,"settings_map_layers":null,"settings_log_template_name[0]":null,"settings_custom_bookmark_target[0]":null,"settings_log_template[0]":null,"settings_log_template_name[1]":null,"settings_custom_bookmark_target[1]":null,"settings_log_template[1]":null,"settings_log_template_name[2]":null,"settings_custom_bookmark_target[2]":null,"settings_log_template[2]":null,"settings_log_template_name[3]":null,"settings_custom_bookmark_target[3]":null,"settings_log_template[3]":null,"settings_log_template_name[4]":null,"settings_custom_bookmark_target[4]":null,"settings_log_template[4]":null,"settings_log_template_name[5]":null,"settings_custom_bookmark_target[5]":null,"settings_log_template[5]":null,"settings_log_template_name[6]":null,"settings_custom_bookmark_target[6]":null,"settings_log_template[6]":null,"settings_log_template_name[7]":null,"settings_custom_bookmark_target[7]":null,"settings_log_template[7]":null,"settings_log_template_name[8]":null,"settings_custom_bookmark_target[8]":null,"settings_log_template[8]":null,"settings_log_template_name[9]":null,"settings_custom_bookmark_target[9]":null,"settings_log_template[9]":null,"browser":null,"settings_submit_log_button":null,"settings_log_inline":null,"settings_log_inline_tb":null,"settings_log_inline_pmo4basic":null,"settings_bookmarks_show":null,"settings_bookmarks_on_top":null,"settings_bookmarks_top_menu":null,"settings_bookmarks_search":null,"settings_bookmarks_search_default":null,"settings_redirect_to_map":null,"settings_hide_facebook":null,"settings_hide_socialshare":null,"settings_hideable_souvenirs":null,"settings_hide_disclaimer":null,"settings_hide_cache_notes":null,"settings_hide_empty_cache_notes":null,"settings_breaks_in_cache_notes":null,"settings_show_all_logs":null,"settings_show_all_logs_count":null,"settings_decrypt_hint":null,"settings_show_bbcode":null,"settings_show_datepicker":null,"settings_show_mail":null,"settings_show_mail_coordslink":null,"settings_show_eventday":null,"settings_date_format":null,"settings_show_google_maps":null,"settings_show_log_it":null,"settings_show_nearestuser_profil_link":null,"settings_show_homezone":null,"settings_homezone_radius":null,"settings_homezone_color":null,"settings_show_hillshadow":null,"settings_default_logtype":null,"settings_default_logtype_event":null,"settings_default_tb_logtype":null,"settings_bookmarks_list":null,"settings_bookmarks_list_beta":null,"settings_autovisit":null,"settings_show_thumbnails":null,"settings_imgcaption_on_top":null,"settings_hide_avatar":null,"settings_show_big_gallery":null,"settings_automatic_friend_reset":null,"settings_show_long_vip":null,"settings_load_logs_with_gclh":null,"settings_configsync_enabled":null,"settings_map_add_layer":null,"settings_map_default_layer":null,"settings_hide_map_header":null,"settings_spoiler_strings":null,"settings_replace_log_by_last_log":null,"settings_hide_top_button":null,"settings_show_real_owner":null,"settings_hide_visits_in_profile":null,"settings_log_signature_on_fieldnotes":null,"settings_map_hide_sidebar":null,"settings_hover_image_max_size":null,"settings_vip_show_nofound":null,"settings_use_gclh_layercontrol":null,"settings_bookmarks_title[0]":null,"settings_bookmarks_title[1]":null,"settings_bookmarks_title[2]":null,"settings_bookmarks_title[3]":null,"settings_bookmarks_title[4]":null,"settings_bookmarks_title[5]":null,"settings_bookmarks_title[6]":null,"settings_bookmarks_title[7]":null,"settings_bookmarks_title[8]":null,"settings_bookmarks_title[9]":null,"new_version":null,"last_logtext":null,"HiddenSouvenirs":null,"email_sendaddress":null,"email_mailcopy":null,"settings_log_signature":null,"settings_tb_signature":null,"friends_founds_last":null,"show_box[0]":null,"gclhWasGoogleAlertShown":null,"vips":null,"home_lat":null,"home_lng":null,"uid":null,"settings_new_width":null,"settings_mail_signature":null,"map_width":null,"token":null,"settings_configsync_configid":null}':CONFIG["gclhConfigKeys"]));
 var gclhConfigKeysIgnoreForBackup = {"token": true,  "settings_configsync_configid": true, "doPostBack_after_redirect": true, "dbToken": true, "hide_contribute": true};
 
 function setValue( name, value ){
-    GM_setValue( name, value );
-    if(!gclhConfigKeys[name] && !gclhConfigKeysIgnoreForBackup[name]){
-        gclhConfigKeys[name] = null; 
-        GM_setValue( "gclhConfigKeys", JSON.stringify(gclhConfigKeys) );
-    }
+  CONFIG[name] = value;
+  /*if(gclhConfigKeys[name] === undefined && !gclhConfigKeysIgnoreForBackup[name]){
+    gclhConfigKeys[name] = null;
+    CONFIG["gclhConfigKeys"] = JSON.stringify(gclhConfigKeys);
+  }*/
+  GM_setValue("CONFIG",JSON.stringify(CONFIG));
 }
 
 function getValue( name, defaultValue ){
-    if(!gclhConfigKeys[name] && !gclhConfigKeysIgnoreForBackup[name]){
-        gclhConfigKeys[name] = null; 
-        GM_setValue( "gclhConfigKeys", JSON.stringify(gclhConfigKeys) );
+  if(CONFIG[name] === undefined) { // Zum Migrieren aus dem alten Speicherformat
+      
+    if(defaultValue === undefined){
+        return undefined;
     }
-    return GM_getValue( name, defaultValue );
+    
+    CONFIG[name] = GM_getValue(name,defaultValue); 
+    setValue(name,CONFIG[name]);
+  }
+  /*if(gclhConfigKeys[name] === undefined && !gclhConfigKeysIgnoreForBackup[name]){
+    gclhConfigKeys[name] = null;
+    CONFIG["gclhConfigKeys"] = JSON.stringify(gclhConfigKeys);
+    GM_setValue("CONFIG",JSON.stringify(CONFIG));
+  }*/
+  return CONFIG[name];
 }
+
+//function setValue( name, value ){
+//    GM_setValue( name, value );
+//    if(!gclhConfigKeys[name] && !gclhConfigKeysIgnoreForBackup[name]){
+//        gclhConfigKeys[name] = null; 
+//        GM_setValue( "gclhConfigKeys", JSON.stringify(gclhConfigKeys) );
+//    }
+//}
+//
+//function getValue( name, defaultValue ){
+//    if(!gclhConfigKeys[name] && !gclhConfigKeysIgnoreForBackup[name]){
+//        gclhConfigKeys[name] = null; 
+//        GM_setValue( "gclhConfigKeys", JSON.stringify(gclhConfigKeys) );
+//    }
+//    return GM_getValue( name, defaultValue );
+//}
 
 
 // Settings: Submit Log on F2
@@ -439,20 +469,20 @@ var num = bookmarks.length;
 for(var i=0; i<anzCustom; i++){
   bookmarks[num] = Object();
   
-  if(typeof(getValue("settings_custom_bookmark["+i+"]")) != "undefined" && getValue("settings_custom_bookmark["+i+"]") != ""){
+  if(getValue("settings_custom_bookmark["+i+"]", "") != ""){
     bookmarks[num]['href'] = getValue("settings_custom_bookmark["+i+"]");
   }else{
     bookmarks[num]['href'] = "#";
   }
   
-  if(typeof(getValue("settings_bookmarks_title["+num+"]")) != "undefined" && getValue("settings_bookmarks_title["+num+"]") != ""){
+  if(getValue("settings_bookmarks_title["+num+"]", "") != ""){
     bookmarks[num]['title'] = getValue("settings_bookmarks_title["+num+"]");
   }else{
     bookmarks[num]['title'] = "Custom"+i;
     setValue("settings_bookmarks_title["+num+"]",bookmarks[num]['title']);
   }
   
-  if(typeof(getValue("settings_custom_bookmark_target["+i+"]")) != "undefined" && getValue("settings_custom_bookmark_target["+i+"]") != ""){
+  if(getValue("settings_custom_bookmark_target["+i+"]", "") != ""){
     bookmarks[num]['target'] = getValue("settings_custom_bookmark_target["+i+"]");
     bookmarks[num]['rel'] = "external";
   }else{
@@ -471,7 +501,7 @@ bookmark("Field Notes", "/my/fieldnotes.aspx");
 // Settings: Custom Bookmark-title
 var bookmarks_orig_title = new Array();
 for(var i=0; i<bookmarks.length; i++){
-  if(typeof(getValue("settings_bookmarks_title["+i+"]")) != "undefined" && getValue("settings_bookmarks_title["+i+"]") != ""){
+  if(getValue("settings_bookmarks_title["+i+"]", "") != ""){
     bookmarks_orig_title[i] = bookmarks[i]['title']; // Needed for configuration
     bookmarks[i]['title'] = getValue("settings_bookmarks_title["+i+"]");
   }
@@ -887,7 +917,7 @@ function DectoDeg(lat,lng){
  * @returns {Boolean}
  */
 function homeCoordinatesSet() {
-  if(typeof(getValue("home_lat")) == "undefined" || typeof(getValue("home_lng")) == "undefined"){
+  if(getValue("home_lat", 0) != 0 && getValue("home_lng") != 0){
     if (window.confirm("To use this link, you have to set your home coordinates.")) {
       document.location.href = https+"://www.geocaching.com/account/ManageLocations.aspx";
     }
@@ -2200,7 +2230,7 @@ try{
     if(matches) document.getElementById("ctl00_ContentBody_SendMessagePanel1_tbMessage").innerHTML = decodeURIComponent(matches[1]);
     
     // Add Mail-Signature
-    if(typeof(getValue("settings_mail_signature")) != "undefined" && getValue("settings_mail_signature") != ""){
+    if(getValue("settings_mail_signature", "") != ""){
       var me = "#me#";
       if(getElementsByClass("SignedInProfileLink")[0]) me = getElementsByClass("SignedInProfileLink")[0].innerHTML;
       document.getElementById("ctl00_ContentBody_SendMessagePanel1_tbMessage").innerHTML += "\n\n"+getValue("settings_mail_signature").replace(/#me#/g,me);
@@ -5004,7 +5034,7 @@ try{
         var uid = links[i].href.match(/\/track\/search\.aspx\?o=1\&uid=(.*)/);
         uid = uid[1];
   
-        if(getValue["uid"] != uid) setValue("uid",uid);
+        if(getValue("uid", "") != uid) setValue("uid",uid);
       }
     }
   }
@@ -5083,7 +5113,7 @@ try{
   
   // Redirect to My Trackables
   function linkToMyTrackables(){
-    if(typeof(getValue("uid")) == "undefined"){
+    if(getValue("uid", "") == ""){
       if(window.confirm("To use this Link, the script has to know your uid. Just load the \"My Profile\" site and the script will save it automatically.")) document.location.href = http+"://www.geocaching.com/my/";
     }else{
       document.location.href = http+"://www.geocaching.com/track/search.aspx?o=1&uid="+getValue("uid");
@@ -5603,7 +5633,7 @@ function gclh_showConfig(){
         html += ">"+(typeof(bookmarks_orig_title[i]) != "undefined" && bookmarks_orig_title[i] != "" ? bookmarks_orig_title[i] : bookmarks[i]['title'])+"</a>";
       }
       html += "</td>";
-      html += "    <td align='left' style='padding: 4px 2px;'>  <input style='padding-left: 2px; padding-right: 2px;'  class='gclh_form' id='bookmarks_name["+i+"]' type='text' size='15' value='"+(typeof(getValue("settings_bookmarks_title["+i+"]")) != "undefined" ? getValue("settings_bookmarks_title["+i+"]") : "")+"'></td>"; 
+      html += "    <td align='left' style='padding: 4px 2px;'>  <input style='padding-left: 2px; padding-right: 2px;'  class='gclh_form' id='bookmarks_name["+i+"]' type='text' size='15' value='"+getValue("settings_bookmarks_title["+i+"]", "")+"'></td>"; 
       html += "  </tr>";
     } 
     html += " </tbody>";
@@ -6030,11 +6060,13 @@ if(settings_configsync_enabled || true){
   function sync_getConfigData(){
     var data = {};
     var value = null;
-    for(key in gclhConfigKeys){
-        value = getValue(key, null);
-        if(value != null){
-            data[key] = value;
-        }
+    for(key in CONFIG){
+		if(!gclhConfigKeysIgnoreForBackup[key]){
+			value = getValue(key, null);
+			if(value != null){
+				data[key] = value;
+			}
+		}
     }
     
     return JSON.stringify(data, undefined, 2);
@@ -6045,7 +6077,9 @@ if(settings_configsync_enabled || true){
     var parsedData = JSON.parse(data);
 
     for(key in parsedData){
-        setValue(key, parsedData[key]);        
+		if(!gclhConfigKeysIgnoreForBackup[key]){
+			setValue(key, parsedData[key]);
+		}
     }  
   }
   
