@@ -366,7 +366,7 @@ settings_homezone_opacity = getValue("settings_homezone_opacity",10);
 settings_show_hillshadow = getValue("settings_show_hillshadow",false);
 settings_map_layers = getValue("settings_map_layers","").split("###");
 // Settings: default Map
-map_url = http+"://www.geocaching.com/map/default.aspx";
+map_url = "http://www.geocaching.com/map/default.aspx";
 // Settings: default Log Type
 settings_default_logtype = getValue("settings_default_logtype","-1");
 settings_default_logtype_event = getValue("settings_default_logtype_event",settings_default_logtype);
