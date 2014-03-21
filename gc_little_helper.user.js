@@ -372,6 +372,8 @@ settings_show_all_logs = getValue("settings_show_all_logs",true);
 settings_show_all_logs_count = getValue("settings_show_all_logs_count","5");
 // Settings: Decrypt Hint
 settings_decrypt_hint = getValue("settings_decrypt_hint",false);
+// Settings: Add visitCount to geochecker.com  links
+settings_visitCount_geocheckerCom = getValue("settings_visitCount_geocheckerCom",false);
 // Settings: Show Smilies & BBCode
 settings_show_bbcode = getValue("settings_show_bbcode",true);
 // Settings: Show datepicker
@@ -3251,6 +3253,15 @@ try{
     
 }catch(e){ gclh_error("Inline PMO Logging",e); }
 
+// Append '&visitcount=1' to all geochecker.com links (on listing pages)
+try{
+  if(settings_visitCount_geocheckerCom && is_page("cache_listing")){
+    $('a[href^="http://www.geochecker.com/index.php?code="]').filter(':not([href*="visitcount=1"])').attr('href',function(i,str) {
+		return (browser != "chrome"?"http://anonym.to/?/":"") + str + '&visitcount=1';
+	}).attr('rel','noreferrer');
+  }
+}catch(e){ gclh_error("Append '&visitcount=1' to all geochecker.com links (on listing pages)",e); }
+
 // New Width
 try{
   if(getValue("settings_new_width") > 0 && getValue("settings_new_width") != 950){
@@ -5429,6 +5440,7 @@ function gclh_showConfig(){
     html += checkbox('settings_show_all_logs', 'Show ') + " <input class='gclh_form' type='text' size='2' id='settings_show_all_logs_count' value='"+settings_show_all_logs_count+"'> logs (0 = all)"+show_help("With this option you can choose how many logs should be shown if you load the listing - if you type 0, all logs are shown by default.")+"<br>";
     html += checkbox('settings_hide_hint', 'Hide hint behind a link') + show_help("This option hides the hint behind a link - you have to click it to display the hints (already decrypted).")+ "<br/>";
     html += checkbox('settings_decrypt_hint', 'Decrypt Hint') + "<br/>";
+	html += checkbox('settings_visitCount_geocheckerCom', 'Modify geochecker.com links') + show_help("This option adds '&visitCount=1' to all geochecker.com-links (This will show some statistics on this site). FireFox and all browser besides Chrome will use the redirector service anonym.to !")+ "<br/>";
     html += checkbox('settings_show_eventday', 'Show weekday of an event') + show_help("With this option the day of the week will be displayed next to the date.") + " Date Format: <select class='gclh_form' id='settings_date_format'>";
     html += "  <option "+(settings_date_format == "yyyy-MM-dd" ? "selected='selected'" : "")+" value='yyyy-MM-dd'> 2012-01-21</option>";
     html += "  <option "+(settings_date_format == "yyyy/MM/dd" ? "selected='selected'" : "")+" value='yyyy/MM/dd'> 2012/01/21</option>";
@@ -5820,6 +5832,7 @@ function gclh_showConfig(){
       'settings_breaks_in_cache_notes',
       'settings_show_all_logs',
       'settings_decrypt_hint',
+	  'settings_visitCount_geocheckerCom',
       'settings_show_bbcode',
       'settings_show_eventday',
       'settings_show_datepicker',
