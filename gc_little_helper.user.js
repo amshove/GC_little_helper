@@ -25,6 +25,8 @@
 // @grant          GM_registerMenuCommand
 // ==/UserScript==
 
+if(window.name.substring(0, 18) != 'google_ads_iframe_') {  // don't run on advertisement iframes
+
 var operaHelperInitComplete = false;
 var operaHelperDomLoaded = false;
 var chromeUserData = {};
@@ -489,6 +491,8 @@ if(typeof opera == "object"){
 else{
   main();
 }
+
+} // ENDIF don't run on advertisement iframes
 
 // Wrapper, um zu pruefen auf welche Seite der Link zeigt - um zu vermeiden, die URL-Abfrage mehrfach im Quelltext wiederholen zu muessen
 function is_link(name,url){
