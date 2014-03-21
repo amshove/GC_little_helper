@@ -301,6 +301,11 @@ function setValue( name, value ){
 
 function getValue( name, defaultValue ){
   if(CONFIG[name] === undefined) { // Zum Migrieren aus dem alten Speicherformat
+      
+    if(defaultValue === undefined){
+        return undefined;
+    }
+    
     CONFIG[name] = GM_getValue(name,defaultValue); 
     setValue(name,CONFIG[name]);
   }
