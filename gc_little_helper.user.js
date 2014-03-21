@@ -2698,7 +2698,7 @@ try{
           }
       }
       
-        function addHomeZoneMap(unsafeWindow, home_lat, home_lng, settings_homezone_radius, settings_homezone_color){
+        function addHomeZoneMap(unsafeWindow, home_lat, home_lng, settings_homezone_radius, settings_homezone_color, settings_homezone_opacity){
             if(unsafeWindow=="none"){
                 unsafeWindow = window;
             }
@@ -2725,10 +2725,10 @@ try{
         // Show Homezone-Circle on Map
         if(settings_show_homezone){
             if(browser == "chrome"){
-                injectPageScriptFunction(addHomeZoneMap, "('"+ "none" + "', " + getValue("home_lat") + ", " + getValue("home_lng") + ", " + settings_homezone_radius + ", '" + settings_homezone_color+"')");                
+                injectPageScriptFunction(addHomeZoneMap, "('"+ "none" + "', " + getValue("home_lat") + ", " + getValue("home_lng") + ", " + settings_homezone_radius + ", '" + settings_homezone_color+"', "+settings_homezone_opacity+")");                
             }
             else{                
-                addHomeZoneMap(unsafeWindow, getValue("home_lat"), getValue("home_lng"), settings_homezone_radius, settings_homezone_color);
+                addHomeZoneMap(unsafeWindow, getValue("home_lat"), getValue("home_lng"), settings_homezone_radius, settings_homezone_color, settings_homezone_opacity);
             }
         }
     }
