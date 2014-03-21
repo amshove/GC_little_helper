@@ -5446,13 +5446,14 @@ function gclh_showConfig(){
     html += "  <option value=\"9\" "+(settings_default_logtype_event == "9" ? "selected=\"selected\"" : "")+">Will Attend</option>";
     html += "  <option value=\"10\" "+(settings_default_logtype_event == "10" ? "selected=\"selected\"" : "")+">Attended</option>";
     html += "</select>"+show_help("If you set this option, the selected value will be selected automatically, if you open a log-page of an event.")+"<br>";	
-	html += "Default Owner-Log-Type: <select class='gclh_form' id='settings_default_logtype_owner'>";
+	
+    html += "Default Owner-Log-Type: <select class='gclh_form' id='settings_default_logtype_owner'>";
     html += "  <option value=\"-1\" "+(settings_default_logtype_owner == "-1" ? "selected=\"selected\"" : "")+">- Select Type of Log -</option>";
-    html += "  <option value=\"2\" "+(settings_default_logtype == "2" ? "selected=\"selected\"" : "")+">Found it</option>";
-    html += "  <option value=\"3\" "+(settings_default_logtype == "3" ? "selected=\"selected\"" : "")+">Didn't find it</option>";
-    html += "  <option value=\"4\" "+(settings_default_logtype == "4" ? "selected=\"selected\"" : "")+">Write note</option>";
-    html += "  <option value=\"7\" "+(settings_default_logtype == "7" ? "selected=\"selected\"" : "")+">Needs Archived</option>";
-    html += "  <option value=\"45\" "+(settings_default_logtype == "45" ? "selected=\"selected\"" : "")+">Needs Maintenance</option>";
+    html += "  <option value=\"4\" "+(settings_default_logtype_owner == "4" ? "selected=\"selected\"" : "")+">Write note</option>";
+    html += "  <option value=\"5\" "+(settings_default_logtype_owner == "5" ? "selected=\"selected\"" : "")+">Archive</option>";
+    html += "  <option value=\"23\" "+(settings_default_logtype_owner == "23" ? "selected=\"selected\"" : "")+">Enable Listing</option>";
+    html += "  <option value=\"18\" "+(settings_default_logtype_owner == "18" ? "selected=\"selected\"" : "")+">Post Reviewer Note</option>";
+   
     html += "</select>"+show_help("If you set this option, the selected value will be selected automatically, if you open a log-page of one of your own caches.")+"<br>";
     html += "Default TB-Log-Type: &nbsp; &nbsp; &nbsp;<select class='gclh_form' id='settings_default_tb_logtype'>";
     html += "  <option value=\"-1\" "+(settings_default_tb_logtype == "-1" ? "selected=\"selected\"" : "")+">- Select Type of Log -</option>";
