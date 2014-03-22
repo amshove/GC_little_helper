@@ -1,3 +1,28 @@
+#### v10.7
+-Add: "Save&Upload" button in settings (#48)
+-Mod: Linklist on map color is now white
+-Mod: Treat safari like chrome
+-Fix: no images in logs if thumbs are enabled 
+-Fix: no thumbs displayed on images 
+-Fix: no popup/sideshow on click 
+-Mod: use large thum img instead of the original image (could be very large) (closes #45)
+- New: Highlight own logs and owner's logs in trackable page
+-Fix: Sync code is loaded on every page 
+-Fix: no reload after sync import (not applied) 
+-Mod: Removed unused code
+-Fix: signature is inserted on confirm again (closes #61)
+-Add: option to add "&visitcount=1" to geochekcer.com-links (we must hide the referrer: non-chrome whith anonym.to) (closes #28)
+-Mod: Protect getValue againt defaultValue === undefinded (cause a setValue on each call)
+-mod: removed gclhConfigKeys (use CONFIG now)
+-Fix: The wrong gclhConfigKeys was loaded (broke the learing of new variable names)
+-add: prototype of default log owner (need more info)
+- Fix: Hide Header in gc.com maps was not working correctly
+- Fix: support also https-urls from geocaching.com
+- Fix: Firefox got very slow in some setups - changed the way the settings are saved (closes #39)
+- Fix: Link to geocaching maps from Google maps missing (new google maps design) (closes #51)
+- Fix: Links of linklist in profile are not visible (fixes #47)
+
+--
 #### v10.6
 - New: Highlight column of the actual day on PQ-Page (closes #34)
 - New: Add refresh-button to PQ-Page (closes #33)
