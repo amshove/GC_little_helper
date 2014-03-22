@@ -47,7 +47,7 @@ if(typeof opera == "object"){
 	}, true);
 }
 
-if(typeof(chrome) != "undefined"){		
+if(typeof(chrome) != "undefined" || (navigator.userAgent.indexOf('Safari') != -1 && navigator.userAgent.indexOf('Chrome') == -1)){		
 	unsafeWindow = window;
 	
 	if (typeof(GM_getValue) == "undefined" || (GM_getValue.toString && GM_getValue.toString().indexOf("not supported") != -1) ) {
