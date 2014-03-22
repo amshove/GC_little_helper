@@ -4195,30 +4195,32 @@ try{
   
     GM_addStyle(css);
   
-    if(is_page("cache_listing")){
-        if(browser == "chrome"){
-            $("#tmpl_CacheLogImagesTitle").template("tmplCacheLogImagesTitle");
-            $("#tmpl_CacheLogImages").template("tmplCacheLogImages");
-            $("#tmpl_CacheLogRow").template("tmplCacheLogRow");
-        }
-        
+    if(is_page("cache_listing")){   
       var newImageTmpl = "<!-- .gclh_vip -->" +
-      "          <a class='tb_images lnk gclh_thumb' onmouseover='placeToolTip(this);' rel='tb_images[grp${LogID}]' href='"+http+"://img.geocaching.com/cache/log/${FileName}' title='${Descr}'>" +
-      "              <img title='${Name}' alt='${Name}' src='"+http+"://img.geocaching.com/cache/log/thumb/${FileName}'>";
+      "          <a class='tb_images lnk gclh_thumb' onmouseover='placeToolTip(this);' rel='fb_images_${LogID}' href='"+http+"://img.geocaching.com/cache/log/${FileName}' title='${Descr}'>" +
+      "              <img title='${Name}' alt='${Name}' src='"+http+"://img.geocaching.com/cache/log/thumb/${FileName}'/>";
       if(settings_imgcaption_on_top){
-        newImageTmpl += "<span>${Name} <img class='gclh_max' src='"+http+"://img.geocaching.com/cache/log/${FileName}'></span>";
+        newImageTmpl += "<span>${Name}<img class='gclh_max' src='"+http+"://img.geocaching.com/cache/log/thumb/large/${FileName}'></span>";
       }else{
-        newImageTmpl += "<span><img class='gclh_max' src='"+http+"://img.geocaching.com/cache/log/${FileName}'> ${Name}</span>";
+        newImageTmpl += "<span><img class='gclh_max' src='"+http+"://img.geocaching.com/cache/log/thumb/large/${FileName}'>${Name}</span>";
       }
-      newImageTmpl += "          </a>&nbsp;&nbsp;" +
+      newImageTmpl += "</a>&nbsp;&nbsp;" +
       "";
+  
+	  if(browser == "chrome"){
+            $("#tmpl_CacheLogImagesTitle").template("tmplCacheLogImagesTitle");
+            $("#tmpl_CacheLogImages").html(newImageTmpl).template("tmplCacheLogImages");
+            $("#tmpl_CacheLogRow").template("tmplCacheLogRow");
+      }	
   
       var code = "function gclh_updateTmpl() { " +
       "  delete $.template['tmplCacheLogImages'];" +
       "  $.template(\"tmplCacheLogImages\",\""+newImageTmpl+"\");" +
       "}"+
-      "gclh_updateTmpl();";
-  
+      "gclh_updateTmpl();"; 
+	  
+	  code += placeToolTip.toString();
+	  
       var script = document.createElement("script");
       script.innerHTML = code;
       document.getElementsByTagName("body")[0].appendChild(script);
@@ -4491,22 +4493,12 @@ try{
                 includeAvatars: inclAvatars
             });
             
-            unsafeWindow.$(newInitalLogs).find("a.tb_images").each(function() {
-                var $this = unsafeWindow.$(this);
-                $this.fancybox({
-                    'type': 'image',
-                    'titlePosition': 'inside',
-                    'padding': 10,
-                    titleFormat: function() {
-                        return $this.data('title');
-                    }
-                });
-            });
-            
             for(var j =0; j<newInitalLogs.length && j<tbody.children.length;j++){
                 unsafeWindow.$(tbody.children[j]).replaceWith(newInitalLogs[j]);
             }
-            
+			
+			injectPageScript("$('a.tb_images').fancybox({'type': 'image', 'titlePosition': 'inside'});");
+			
             gclh_add_vip_icon();
         }
     }    
@@ -4583,7 +4575,7 @@ try{
               if(logs[num]){
                 var newBody = unsafeWindow.$(document.createElement("TBODY"));
                 unsafeWindow.$("#tmpl_CacheLogRow_gclh").tmpl(logs[num]).appendTo(newBody);
-                newBody.find("a.tb_images").fancybox({'type': 'image', 'titlePosition': 'inside'});
+                injectPageScript("$('a.tb_images').fancybox({'type': 'image', 'titlePosition': 'inside'});");
                 unsafeWindow.$(document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).append(newBody.children());
               }
               num++; // num kommt vom vorherigen laden "aller" logs
@@ -4612,7 +4604,7 @@ try{
             if(logs[i]){
               var newBody = unsafeWindow.$(document.createElement("TBODY"));
               unsafeWindow.$("#tmpl_CacheLogRow_gclh").tmpl(logs[i]).appendTo(newBody);
-              newBody.find("a.tb_images").fancybox({'type': 'image', 'titlePosition': 'inside'});
+			  injectPageScript("$('a.tb_images').fancybox({'type': 'image', 'titlePosition': 'inside'});");
               unsafeWindow.$(document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).append(newBody.children());
             }
           }
@@ -4660,7 +4652,7 @@ try{
           if(logs[i] && logs[i].LogType == log_type){
             var newBody = unsafeWindow.$(document.createElement("TBODY"));
             unsafeWindow.$("#tmpl_CacheLogRow_gclh").tmpl(logs[i]).appendTo(newBody);
-            newBody.find("a.tb_images").fancybox({'type': 'image', 'titlePosition': 'inside'});
+            injectPageScript("$('a.tb_images').fancybox({'type': 'image', 'titlePosition': 'inside'});");
             unsafeWindow.$(document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).append(newBody.children());
           }
         }
@@ -4712,7 +4704,7 @@ try{
           if(logs[i] && (logs[i].UserName.match(regexp) || logs[i].LogText.match(regexp))){
             var newBody = unsafeWindow.$(document.createElement("TBODY"));
             unsafeWindow.$("#tmpl_CacheLogRow_gclh").tmpl(logs[i]).appendTo(newBody);
-            newBody.find("a.tb_images").fancybox({'type': 'image', 'titlePosition': 'inside'});
+            injectPageScript("$('a.tb_images').fancybox({'type': 'image', 'titlePosition': 'inside'});");
             unsafeWindow.$(document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).append(newBody.children());
           }
         }
@@ -4852,14 +4844,14 @@ try{
                 if(num == 0){
                   var newBody = unsafeWindow.$(document.createElement("TBODY"));
                   unsafeWindow.$("#tmpl_CacheLogRow_gclh").tmpl(logs).appendTo(newBody);
-                  newBody.find("a.tb_images").fancybox({'type': 'image', 'titlePosition': 'inside'});
+                  injectPageScript("$('a.tb_images').fancybox({'type': 'image', 'titlePosition': 'inside'});");
                   unsafeWindow.$(document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).append(newBody.children());
                 }else{
                   for(var i=0; i<num; i++){
                     if(logs[i]){
                       var newBody = unsafeWindow.$(document.createElement("TBODY"));
                       unsafeWindow.$("#tmpl_CacheLogRow_gclh").tmpl(logs[i]).appendTo(newBody);
-                      newBody.find("a.tb_images").fancybox({'type': 'image', 'titlePosition': 'inside'});
+                      injectPageScript("$('a.tb_images').fancybox({'type': 'image', 'titlePosition': 'inside'});");
                       unsafeWindow.$(document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).append(newBody.children());
                     }
                   }
