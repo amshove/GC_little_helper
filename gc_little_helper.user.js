@@ -5686,7 +5686,8 @@ function gclh_showConfig(){
     html += "<br>";
     html += "";
     html += "<br>";
-    html += "<input style='padding-left: 2px; padding-right: 2px;' class='gclh_form' type='button' value='save' id='btn_save'> <input class='gclh_form' type='button' value='close' id='btn_close2'> <div width='400px' align='right' class='gclh_small' style='float: right;'>GC little helper by <a href='http://www.amshove.net/' target='_blank'>Torsten Amshove</a></div>";    html += "</div>";
+    html += "<input style='padding-left: 2px; padding-right: 2px;' class='gclh_form' type='button' value='save' id='btn_save'> <input style='padding-left: 2px; padding-right: 2px;' class='gclh_form' type='button' value='save&upload' id='btn_saveAndUpload'> <input class='gclh_form' type='button' value='close' id='btn_close2'> <div width='400px' align='right' class='gclh_small' style='float: right;'>GC little helper by <a href='http://www.amshove.net/' target='_blank'>Torsten Amshove</a></div>";    
+	html += "</div>";
     div.innerHTML = html;
 
     document.getElementsByTagName('body')[0].appendChild(div);
@@ -5807,11 +5808,12 @@ function gclh_showConfig(){
 
     // Give the buttons an function
     document.getElementById('btn_close2').addEventListener("click", btnClose, false);
-    document.getElementById('btn_save').addEventListener("click", btnSave, false);
+    document.getElementById('btn_save').addEventListener("click", function(){btnSave("normal");}, false);
+	document.getElementById('btn_saveAndUpload').addEventListener("click", function(){btnSave("upload");}, false);
   }
 
   // Save Button
-  function btnSave(){
+  function btnSave(type){
     var value = document.getElementById("settings_home_lat_lng").value;
 	var latlng = toDec(value);
     if(latlng){      
@@ -5975,12 +5977,25 @@ function gclh_showConfig(){
       if(document.getElementById('settings_custom_bookmark_target['+i+']').checked) setValue('settings_custom_bookmark_target['+i+']',"_blank");
       else setValue('settings_custom_bookmark_target['+i+']',"");
     }
-	if(document.location.href.indexOf("#")==-1 || document.location.href.indexOf("#") == document.location.href.length -1){
-		$('html, body').animate({ scrollTop: 0 }, 0);
-		document.location.reload(true);
+	if(type === "upload"){
+		gclh_sync_DBSave().done(function(){
+			if(document.location.href.indexOf("#")==-1 || document.location.href.indexOf("#") == document.location.href.length -1){
+				$('html, body').animate({ scrollTop: 0 }, 0);
+				document.location.reload(true);
+			}
+			else{
+				document.location.replace(document.location.href.slice(0,document.location.href.indexOf("#")));
+			}
+		});
 	}
 	else{
-		document.location.replace(document.location.href.slice(0,document.location.href.indexOf("#")));
+		if(document.location.href.indexOf("#")==-1 || document.location.href.indexOf("#") == document.location.href.length -1){
+			$('html, body').animate({ scrollTop: 0 }, 0);
+			document.location.reload(true);
+		}
+		else{
+			document.location.replace(document.location.href.slice(0,document.location.href.indexOf("#")));
+		}
 	}
   }
 }
@@ -6100,7 +6115,6 @@ if(is_page("profile")){
   }
   
   var gclh_sync_DB_Client = null; 
-  var waitForDBTokenIntervalId = -1;
   
   function gclh_sync_DB_CheckAndCreateClient(userToken){
     if(gclh_sync_DB_Client != null && gclh_sync_DB_Client.isAuthenticated()){
@@ -6109,8 +6123,10 @@ if(is_page("profile")){
     $('#syncDBLoader').show();
     setValue("dbToken", "");
     gclh_sync_DB_Client = null; 
-    document.getElementById('btn_DBSave').disabled  = true;
-    document.getElementById('btn_DBLoad').disabled  = true;
+	if(document.getElementById('btn_DBSave') && document.getElementById('btn_DBLoad')){
+		document.getElementById('btn_DBSave').disabled  = true;
+		document.getElementById('btn_DBLoad').disabled  = true;
+	}
     
     var client = new Dropbox.Client({ key: "b992jnfyidj32v3" , sandbox: true, token: userToken});
     
@@ -6123,23 +6139,30 @@ if(is_page("profile")){
             return;
         }
        gclh_sync_DB_Client = client;
-       document.getElementById('btn_DBSave').disabled  = false;
-       document.getElementById('btn_DBLoad').disabled  = false;
+	   if(document.getElementById('btn_DBSave') && document.getElementById('btn_DBLoad')){
+		   document.getElementById('btn_DBSave').disabled  = false;
+		   document.getElementById('btn_DBLoad').disabled  = false;
+	   }
     }); 
     
   }
   
   function gclh_sync_DBSave(){
+	var deferred = $.Deferred();
     gclh_sync_DB_CheckAndCreateClient();
       
     $('#syncDBLoader').show();
       
     gclh_sync_DB_Client.writeFile("GCLittleHelperSettings.json", sync_getConfigData(), {}, function(){
         $('#syncDBLoader').hide();
-    });       
+		deferred.resolve();
+    });  
+
+	return deferred.promise();
   }
 
   function gclh_sync_DBLoad(){
+	var deferred = $.Deferred();
     gclh_sync_DB_CheckAndCreateClient();
       
     $('#syncDBLoader').show();
@@ -6148,8 +6171,11 @@ if(is_page("profile")){
         if(data != null && data != ""){
             sync_setConfigData(data);
             $('#syncDBLoader').hide();
+			deferred.resolve();
         }
-    });   
+    });
+	
+	return deferred.promise();
   } 
 
   // Sync: Configuration Menu
