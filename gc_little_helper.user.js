@@ -1337,7 +1337,7 @@ try{
         if(typeof(x) == "undefined" || typeof(x) == "object") continue;
     
         var hyperlink = document.createElement("a");
-        hyperlink.style.color = '#000000';
+        hyperlink.style.color = '#FFFFFF';
         hyperlink.style.fontWeight = 'normal';
     
         for(attr in bookmarks[x]){
