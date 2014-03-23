@@ -922,7 +922,7 @@ function DectoDeg(lat,lng){
  * @returns {Boolean}
  */
 function homeCoordinatesSet() {
-  if(getValue("home_lat", 0) != 0 && getValue("home_lng") != 0){
+  if(getValue("home_lat", 0) == 0 || getValue("home_lng") == 0){
     if (window.confirm("To use this link, you have to set your home coordinates.")) {
       document.location.href = https+"://www.geocaching.com/account/ManageLocations.aspx";
     }
