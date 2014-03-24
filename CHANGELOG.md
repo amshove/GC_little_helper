@@ -1,3 +1,7 @@
+#### v10.8
+-Fix: homeCoordinatesSet does return wrong results (closes #67)
+
+--
 #### v10.7
 -Add: "Save&Upload" button in settings (#48)
 -Mod: Linklist on map color is now white

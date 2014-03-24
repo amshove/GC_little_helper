@@ -1,7 +1,7 @@
-// ==UserScript==
+﻿// ==UserScript==
 // @name           GC little helper
 // @namespace      http://www.amshove.net
-// @version        10.7
+// @version        10.8
 // @include        http://www.geocaching.com/*
 // @include        https://www.geocaching.com/*
 // @include        http://maps.google.tld/*
@@ -230,7 +230,7 @@ profileBookmark("My Trackables", "lnk_my_trackables");
 
 // Set defaults
 var scriptName = "gc_little_helper";
-var scriptVersion = "10.7";
+var scriptVersion = "10.8";
 
 var anzCustom = 10;
 var anzTemplates = 10;
@@ -927,7 +927,7 @@ function DectoDeg(lat,lng){
  * @returns {Boolean}
  */
 function homeCoordinatesSet() {
-  if(getValue("home_lat", 0) != 0 && getValue("home_lng") != 0){
+  if(getValue("home_lat", 0) == 0 || getValue("home_lng") == 0){
     if (window.confirm("To use this link, you have to set your home coordinates.")) {
       document.location.href = https+"://www.geocaching.com/account/ManageLocations.aspx";
     }
