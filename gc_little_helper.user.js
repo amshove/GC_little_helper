@@ -416,6 +416,11 @@ settings_bookmarks_list_beta = JSON.parse(getValue("settings_bookmarks_list_beta
 if(settings_bookmarks_list_beta.length == 0){
     settings_bookmarks_list_beta = bookmarks_def;
 }
+// Settings: Sync
+settings_sync_last =  new Date(getValue("settings_sync_last","Thu Jan 01 1970 01:00:00 GMT+0100 (Mitteleuropäische Zeit)"));
+settings_sync_hash =  getValue("settings_sync_hash", "");
+settings_sync_time =  getValue("settings_sync_time", 36000000);
+settings_sync_autoImport = getValue("settings_sync_autoImport", false);
 
 // Settinks: Dynamic Map
 settings_hide_advert_link = getValue('settings_hide_advert_link',true);
@@ -5414,6 +5419,7 @@ function gclh_showConfig(){
     html += checkbox('settings_hideable_souvenirs', 'Make Souvenirs hideable') + "<br/>";
     html += checkbox('settings_hide_visits_in_profile', 'Hide TB/Coin-Visits in Profile') + "<br/>";
     html += checkbox('settings_fixed_pq_header', 'Show fixed header in PQ-List') + "<br/>";
+    html += checkbox('settings_sync_autoImport', 'Auto apply DB-config') + show_help("If you enable this option, settings from dropbox will be applied automatically.") + "<br/>";
     html += "";
     html += "<br>";
     html += "";
@@ -5924,6 +5930,7 @@ function gclh_showConfig(){
       'settings_vip_show_nofound',
       'settings_use_gclh_layercontrol',
       'settings_fixed_pq_header',
+	  'settings_sync_autoImport',
       'settings_map_hide_sidebar'
 //      'settings_hide_recentlyviewed'
     );
@@ -6069,7 +6076,7 @@ try{
 // Config Sync
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
-if(is_page("profile")){
+if(is_page("profile") || (settings_sync_autoImport && (new Date() - settings_sync_last) > settings_sync_time)){
   // Sync: get config data
   function sync_getConfigData(){
     var data = {};
@@ -6096,15 +6103,7 @@ if(is_page("profile")){
 		}
     }  
     
-    //Reload page
-    if(document.location.href.indexOf("#")==-1 || document.location.href.indexOf("#") == document.location.href.length -1){
-    $('html, body').animate({ scrollTop: 0 }, 0);
-        document.location.reload(true);
     }
-    else{
-        document.location.replace(document.location.href.slice(0,document.location.href.indexOf("#")));
-    }
-  }
   
   var gclh_sync_DB_Client = null; 
   
@@ -6164,6 +6163,21 @@ if(is_page("profile")){
             sync_setConfigData(data);
             $('#syncDBLoader').hide();
 			deferred.resolve();
+        }
+    });
+	
+	return deferred.promise();
+  } 
+
+  function gclh_sync_DBHash(){
+	var deferred = $.Deferred();
+    gclh_sync_DB_CheckAndCreateClient();
+      
+    $('#syncDBLoader').show();
+      
+    gclh_sync_DB_Client.stat("GCLittleHelperSettings.json", {}, function(error, data){
+        if(data != null && data != ""){
+			deferred.resolve(data.versionTag);
         }
     });
 	
@@ -6238,6 +6252,14 @@ if(is_page("profile")){
           try{
             sync_setConfigData(data);
             alert("Successful");
+            //Reload page
+            if(document.location.href.indexOf("#")==-1 || document.location.href.indexOf("#") == document.location.href.length -1){
+            $('html, body').animate({ scrollTop: 0 }, 0);
+                document.location.reload(true);
+            }
+            else{
+                document.location.replace(document.location.href.slice(0,document.location.href.indexOf("#")));
+            }
           }catch(e){
                alert("Invalid format");
           }
@@ -6248,7 +6270,16 @@ if(is_page("profile")){
         }, false);
       
         document.getElementById('btn_DBLoad').addEventListener("click", function(){
-            gclh_sync_DBLoad();            
+            gclh_sync_DBLoad().done(function(){
+                    //Reload page
+                    if(document.location.href.indexOf("#")==-1 || document.location.href.indexOf("#") == document.location.href.length -1){
+                    $('html, body').animate({ scrollTop: 0 }, 0);
+                        document.location.reload(true);
+                    }
+                    else{
+                        document.location.replace(document.location.href.slice(0,document.location.href.indexOf("#")));
+                    }
+            });            
         }, false);
 
         $('#syncDBLabel').click(function(){             
@@ -6264,7 +6295,7 @@ if(is_page("profile")){
         $("body").hide();
         Dropbox.AuthDriver.Popup.oauthReceiver();        
     }
-    else{
+    else if(is_page("profile")){
       if(this.GM_registerMenuCommand && !document.location.href.match(/^https?:\/\/www\.geocaching\.com\/map\//)){
           GM_registerMenuCommand("little helper config sync", gclh_sync_showConfig); // Hide on Beta-Map
       }
@@ -6277,6 +6308,30 @@ if(is_page("profile")){
         document.getElementById('ctl00_ContentBody_WidgetMiniProfile1_logOutLink').parentNode.appendChild(lnk);
         document.getElementById('gclh_sync_lnk').addEventListener("click", gclh_sync_showConfig, false);
       }
+    }
+    
+    if(settings_sync_autoImport && (new Date() - settings_sync_last) > settings_sync_time){
+		gclh_sync_DBHash().done(function(hash){
+			if(hash != settings_sync_hash){
+				gclh_sync_DBLoad().done(function(){
+					settings_sync_last = new Date();
+					settings_sync_hash = hash;
+					setValue("settings_sync_last", settings_sync_last);
+					setValue("settings_sync_hash", settings_sync_hash);
+					
+					if(is_page("profile")){
+						//Reload page
+						if(document.location.href.indexOf("#")==-1 || document.location.href.indexOf("#") == document.location.href.length -1){
+						$('html, body').animate({ scrollTop: 0 }, 0);
+							document.location.reload(true);
+						}
+						else{
+							document.location.replace(document.location.href.slice(0,document.location.href.indexOf("#")));
+						}
+					}
+				});
+			}
+		});
     }
 } // Config Sync
 
