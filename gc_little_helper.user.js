@@ -608,7 +608,7 @@ if(document.location.href.match(/^(http|https):\/\/maps\.google\./) || document.
     // Neues google maps
     if(gear){
       var script = "function open_gc(){";
-      script += "  var matches = document.location.href.match(/\\@([0-9.]*),([0-9.]*),([0-9]*)z/);";
+      script += "  var matches = document.location.href.match(/\\@(-?[0-9.]*),(-?[0-9.]*),([0-9]*)z/);";
       script += "  if(matches != null){";
       script += "    window.open('"+map_url+"?lat='+matches[1]+'&lng='+matches[2]+'&z='+matches[3]);";
       script += "  }else{";
