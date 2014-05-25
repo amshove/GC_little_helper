@@ -5458,7 +5458,8 @@ function gclh_showConfig(){
     multi_hz_el += "- Coords: <input class='gclh_form coords' type='text' value='"+DectoDeg(getValue("home_lat"),getValue("home_lng"))+"'>"+"<br>";
     multi_hz_el += "- Radius: <input class='gclh_form radius' type='text' size='2' value='1'> km"+show_help("This option draws a circle of X kilometers around your home-coordinates on the map.")+"<br>";
     multi_hz_el += "- Color: <input class='gclh_form color' type='text' size='5' value='#0000FF'>"+show_help("Here you can change the color of your homezone-circle.")+"<br>";
-    multi_hz_el += "- Opacity: <input class='gclh_form opacity' type='text' size='2' value='10'> %"+show_help("Here you can change the opacity of your homezone-circle.");
+    multi_hz_el += "- Opacity: <input class='gclh_form opacity' type='text' size='2' value='10'> %"+show_help("Here you can change the opacity of your homezone-circle.")+"<br>";
+    multi_hz_el += "<button class='remove' type='button'>remove</button>";
     multi_hz_el += "</div>"
     for(var i in settings_multi_homezone){
     	var hzel = settings_multi_homezone[i];
@@ -5827,8 +5828,20 @@ function gclh_showConfig(){
 	}
 	
 	//Multi-Homezone
+	function gclh_init_multi_homecoord_remove_listener($el){	
+		$el.find('.remove').click(function(){
+			$(this).closest('.multi_homezone_element').remove()
+		});
+	}
+	//initialize remove listener for present elements
+	gclh_init_multi_homecoord_remove_listener($('.multi_homezone_settings'));
+	//initialize add listener for multi homecoord entries
 	$('.multi_homezone_settings .addentry').click(function(){
-		$('.multi_homezone_settings .wrapper').append(multi_hz_el);
+		var $newEl = $(multi_hz_el);
+		$('.multi_homezone_settings .wrapper').append($newEl);
+		//initialize remove listener for new element
+		gclh_init_multi_homecoord_remove_listener($newEl);
+		//reinit jscolor
 		if(typeof opera == "object" || typeof(chrome) != "undefined")
 	    {
 		    new jscolor.init();
@@ -5840,7 +5853,6 @@ function gclh_showConfig(){
 		    document.getElementsByTagName("body")[0].appendChild(script);
 		}
 	});
-
 
     function gclh_show_linklist(){
       var linklist = document.getElementById('gclh_settings_linklist');
