@@ -3076,16 +3076,10 @@ try{
 
 // Hide TBs/Coins in Profile
 try{
-  if(settings_hide_visits_in_profile && document.location.href.match(/^https?:\/\/www\.geocaching\.com\/my\//)){
-    var tables = getElementsByClass("Table WordWrap");
-    if(tables && tables[0]){
-      var trs = tables[0].getElementsByTagName("tr");
-      for(var i=0; i<trs.length; i++){
-        if(trs[i].innerHTML.match(/logtypes\/75\.png/)){
-          trs[i].parentNode.removeChild(trs[i]);
-        }
-      }
-    }
+  if(settings_hide_visits_in_profile && document.location.href.match(/^https?:\/\/www\.geocaching\.com\/my\//)){    
+	  $(".Table.WordWrap tr").filter(function(index){
+		return $(this).find("img[src$='logtypes/75.png']").length !== 0;
+	  }).remove();
   }
 }catch(e){ gclh_error("Hide TBs/Coins in Profile",e); }
 
