@@ -396,6 +396,8 @@ settings_show_homezone = getValue("settings_show_homezone",true);
 settings_homezone_radius = getValue("settings_homezone_radius","10");
 settings_homezone_color = getValue("settings_homezone_color","#0000FF");
 settings_homezone_opacity = getValue("settings_homezone_opacity",10);
+// Settings: Multi Homezone
+settings_multi_homezone = JSON.parse(getValue("settings_multi_homezone","{}"));
 // Settings: Hill Shadow
 settings_show_hillshadow = getValue("settings_show_hillshadow",false);
 settings_map_layers = getValue("settings_map_layers","").split("###");
@@ -2747,39 +2749,51 @@ try{
           }
       }
       
-        function addHomeZoneMap(unsafeWindow, home_lat, home_lng, settings_homezone_radius, settings_homezone_color, settings_homezone_opacity){
-            if(unsafeWindow=="none"){
-                unsafeWindow = window;
-            }
+      function addHomeZoneMap(unsafeWindow, home_lat, home_lng, settings_homezone_radius, settings_homezone_color, settings_homezone_opacity){
+          if(unsafeWindow=="none"){
+              unsafeWindow = window;
+          }
             
-            if(typeof home_lat == "undefined" || typeof home_lng == "undefined" || home_lat == null || home_lng == null){
-                return;
-            }
+          if(typeof home_lat == "undefined" || typeof home_lng == "undefined" || home_lat == null || home_lng == null){
+              return;
+          }
 
-            var opacity = settings_homezone_opacity/100;
-            var opacity2 = opacity+0.1;
+          var opacity = settings_homezone_opacity/100;
+          var opacity2 = opacity+0.1;
             
-            var latlng = new unsafeWindow.L.LatLng((home_lat/10000000), (home_lng/10000000));
-        var options = {
-                       color:       settings_homezone_color,
-                       weight:       1,
-                       opacity:     opacity2,
-                       fillOpacity: opacity,
-                       clickable:   false
-                      };
-        var circle = new unsafeWindow.L.Circle(latlng, settings_homezone_radius*1000,options);
-        unsafeWindow.MapSettings.Map.addLayer(circle);
+          var latlng = new unsafeWindow.L.LatLng((home_lat/10000000), (home_lng/10000000));
+	      var options = {
+	                     color:       settings_homezone_color,
+	                     weight:       1,
+	                     opacity:     opacity2,
+	                     fillOpacity: opacity,
+	                     clickable:   false
+	                    };
+	      var circle = new unsafeWindow.L.Circle(latlng, settings_homezone_radius*1000,options);
+	      unsafeWindow.MapSettings.Map.addLayer(circle);
       }
       
         // Show Homezone-Circle on Map
         if(settings_show_homezone){
             if(browser == "chrome"){
-                injectPageScriptFunction(addHomeZoneMap, "('"+ "none" + "', " + getValue("home_lat") + ", " + getValue("home_lng") + ", " + settings_homezone_radius + ", '" + settings_homezone_color+"', "+settings_homezone_opacity+")");                
+                injectPageScriptFunction(addHomeZoneMap, "('"+ "none" + "', " + getValue("home_lat") + ", " + getValue("home_lng") + ", " + settings_homezone_radius + ", '#" + settings_homezone_color+"', "+settings_homezone_opacity+")");                
             }
             else{                
-                addHomeZoneMap(unsafeWindow, getValue("home_lat"), getValue("home_lng"), settings_homezone_radius, settings_homezone_color, settings_homezone_opacity);
+                addHomeZoneMap(unsafeWindow, getValue("home_lat"), getValue("home_lng"), settings_homezone_radius, "#" + settings_homezone_color, settings_homezone_opacity);
             }
         }
+        
+        // Show Multi-Homezone-Circle on Map
+       	for(var i in settings_multi_homezone){
+       		var curHz = settings_multi_homezone[i];
+       		if(browser == "chrome"){
+               	injectPageScriptFunction(addHomeZoneMap, "('"+ "none" + "', " + curHz.lat + ", " + curHz.lng + ", " + curHz.radius + ", '#" + curHz.color+"', "+curHz.opacity+")");                
+            }
+            else{                
+                addHomeZoneMap(unsafeWindow, curHz.lat, curHz.lng, curHz.radius, "#" + curHz.color, curHz.opacity);
+            }
+
+       	}
     }
     window.addEventListener("load",gclh_map_loaded,false);
   }
@@ -5362,6 +5376,17 @@ function create_config_css(){
   html += "  border: 1px solid #000000;";
   html += "  background-color: #d8cd9d;";
   html += "}";
+  html += "";
+  html += ".multi_homezone_settings {";
+  html += "  width: 50%;";
+  html += "  padding: 10px 0;";
+  html += "  margin: 10px 0 10px 10px;";
+  html += "  border: 1px solid #CFC0B8;";
+  html += "  border-width: 1px 0;";
+  html += "}";
+  html += ".multi_homezone_element {";
+  html += "  margin-bottom: 10px;";
+  html += "}";
   css.innerHTML = html;
   document.getElementsByTagName('body')[0].appendChild(css);
 }
@@ -5425,8 +5450,27 @@ function gclh_showConfig(){
     html += "";
     html += "<h4 class='gclh_headline2'>Maps</h4>";
     html += checkbox('settings_show_homezone', 'Show Homezone') + " - Radius: <input class='gclh_form' type='text' size='2' id='settings_homezone_radius' value='"+settings_homezone_radius+"'> km"+show_help("This option draws a circle of X kilometers around your home-coordinates on the map.")+"<br>";
-    html += "Homezone-Color: <input class='gclh_form' type='text' size='5' id='settings_homezone_color' value='"+settings_homezone_color+"'>"+show_help("Here you can change the color of your homezone-circle.")+"<br>";
+    html += "Homezone-Color: <input class='gclh_form color' type='text' size='5' id='settings_homezone_color' value='"+settings_homezone_color+"'>"+show_help("Here you can change the color of your homezone-circle.")+"<br>";
     html += "Homezone-Opacity: <input class='gclh_form' type='text' size='2' id='settings_homezone_opacity' value='"+settings_homezone_opacity+"'> %"+show_help("Here you can change the opacity of your homezone-circle.")+"<br>";
+    //Multi-Homezone
+    html += "<div class='multi_homezone_settings'><b>Multi-Homezone</b>"
+    var multi_hz_el = "<div class='multi_homezone_element'>"
+    multi_hz_el += "- Coords: <input class='gclh_form coords' type='text' value='"+DectoDeg(getValue("home_lat"),getValue("home_lng"))+"'>"+"<br>";
+    multi_hz_el += "- Radius: <input class='gclh_form radius' type='text' size='2' value='1'> km"+show_help("This option draws a circle of X kilometers around your home-coordinates on the map.")+"<br>";
+    multi_hz_el += "- Color: <input class='gclh_form color' type='text' size='5' value='#0000FF'>"+show_help("Here you can change the color of your homezone-circle.")+"<br>";
+    multi_hz_el += "- Opacity: <input class='gclh_form opacity' type='text' size='2' value='10'> %"+show_help("Here you can change the opacity of your homezone-circle.");
+    multi_hz_el += "</div>"
+    for(var i in settings_multi_homezone){
+    	var hzel = settings_multi_homezone[i];
+    	var newHzEl = $('<div>').append($(multi_hz_el));
+  	    newHzEl.find('.coords').attr('value', DectoDeg(hzel.lat,hzel.lng));
+    	newHzEl.find('.radius').attr('value',hzel.radius);
+    	newHzEl.find('.color').attr('value', hzel.color);
+    	newHzEl.find('.opacity').attr('value', hzel.opacity);
+    	html += newHzEl.html();
+    }
+    html += "<div class='wrapper'></div><button type='button' class='addentry'>weitere Homezone hinzufügen</button></div>"
+
     html += checkbox('settings_map_hide_found', 'Hide found caches by default') + show_help("This is a Premium-Feature - it enables automatically the option to hide your found caches on map.") + "<br/>";
     html += checkbox('settings_map_hide_hidden', 'Hide own caches by default') + show_help("This is a Premium-Feature - it enables automatically the option to hide your caches on map.") + "<br/>";
     html += "Hide Cache Types by default: "+show_help("This is a Premium-Feature - it enables automatically the option to hide the specific cache type.")+"<br/>";
@@ -5768,18 +5812,34 @@ function gclh_showConfig(){
             items: "tr:not(.gclh_LinkListPlaceHolder)"           
         });
     
+    //Colorpicker
     if(typeof opera == "object" || typeof(chrome) != "undefined")
     {
-	    var homezonepic = new jscolor.color(document.getElementById("settings_homezone_color"), {required:true, adjust:true, hash:true, caps:true, pickerMode:'HSV', pickerPosition:'right'});
+	   new jscolor.init();
     }
     else
     {
 	    var code = GM_getResourceText("jscolor");
-	    code += 'var homezonepic = new jscolor.color(document.getElementById("settings_homezone_color"), {required:true, adjust:true, hash:true, caps:true, pickerMode:\'HSV\', pickerPosition:\'right\'});'
+	    code += 'new jscolor.init();'
 	    var script = document.createElement("script");
 	    script.innerHTML = code;
 	    document.getElementsByTagName("body")[0].appendChild(script);
 	}
+	
+	//Multi-Homezone
+	$('.multi_homezone_settings .addentry').click(function(){
+		$('.multi_homezone_settings .wrapper').append(multi_hz_el);
+		if(typeof opera == "object" || typeof(chrome) != "undefined")
+	    {
+		    new jscolor.init();
+	    }
+	    else
+	    {
+		    var script = document.createElement("script");
+		    script.innerHTML = 'new jscolor.init();';
+		    document.getElementsByTagName("body")[0].appendChild(script);
+		}
+	});
 
 
     function gclh_show_linklist(){
@@ -5814,9 +5874,26 @@ function gclh_showConfig(){
     }
     setValue("settings_bookmarks_search_default",document.getElementById('settings_bookmarks_search_default').value);
     setValue("settings_show_all_logs_count",document.getElementById('settings_show_all_logs_count').value);
+    //Homezone
     setValue("settings_homezone_radius",document.getElementById('settings_homezone_radius').value);
     setValue("settings_homezone_color",document.getElementById('settings_homezone_color').value);
     if(document.getElementById('settings_homezone_opacity').value <= 100 && document.getElementById('settings_homezone_opacity').value >= 0) setValue("settings_homezone_opacity",document.getElementById('settings_homezone_opacity').value);
+    //Multi-Homezone
+
+    var settings_multi_homezone = {};
+    var $hzelements = $('.multi_homezone_element');
+    for(var i = 0; i < $hzelements.length; i++){
+    	var $curEl = $hzelements.eq(i);
+    	settings_multi_homezone[i] = {};
+    	var latlng = toDec($curEl.find('.coords:eq(0)').val());
+    	settings_multi_homezone[i].lat = parseInt(latlng[0]*10000000);// * 10000000 because GM don't know float
+    	settings_multi_homezone[i].lng = parseInt(latlng[1]*10000000);
+    	settings_multi_homezone[i].radius = $curEl.find('.radius:eq(0)').val();
+    	settings_multi_homezone[i].color = $curEl.find('.color:eq(0)').val();
+    	settings_multi_homezone[i].opacity = $curEl.find('.opacity:eq(0)').val();
+    }
+    setValue("settings_multi_homezone", JSON.stringify(settings_multi_homezone));
+
 //    setValue("map_width",document.getElementById('map_width').value);
     setValue("settings_new_width",document.getElementById('settings_new_width').value);
     setValue("settings_date_format",document.getElementById('settings_date_format').value);
