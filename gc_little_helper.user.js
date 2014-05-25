@@ -5260,6 +5260,45 @@ try{
   addLinkEvent('lnk_findplayer',createFindPlayerForm);
 }catch(e){ gclh_error("Apply Special Links",e); }
 
+//Function to copy all settings to copy all settings to the https context an reload the page
+function httpsConfigSync(){
+	if(browser === "chrome"){
+		var iFrameWindow = null;
+		window.addEventListener("message", function(ev){
+			if (event.origin !== "https://www.geocaching.com")
+			{
+				return;
+			}
+			
+			if(ev.data === "httpsConfigSyncStep1"){
+				iFrameWindow.postMessage(GM_getValue("CONFIG","{ }"), "https://www.geocaching.com");
+			}
+			else if(ev.data === "httpsConfigSyncStep2"){
+				$('#httpsConfigSyncIframe').remove();
+				
+				if(document.location.href.indexOf("#")==-1 || document.location.href.indexOf("#") == document.location.href.length -1){
+					$('html, body').animate({ scrollTop: 0 }, 0);
+					document.location.reload(true);
+				}
+				else{
+					document.location.replace(document.location.href.slice(0,document.location.href.indexOf("#")));
+				}
+			}
+		}, false);
+		
+		iFrameWindow = $('<iframe id="httpsConfigSyncIframe" src="https://geocaching.com/dummy#httpsConfigSync" height=1 width=1 style="display:hidden"></iframe>').appendTo('body')[0].contentWindow;
+	}
+	else{
+		if(document.location.href.indexOf("#")==-1 || document.location.href.indexOf("#") == document.location.href.length -1){
+			$('html, body').animate({ scrollTop: 0 }, 0);
+			document.location.reload(true);
+		}
+		else{
+			document.location.replace(document.location.href.slice(0,document.location.href.indexOf("#")));
+		}
+	}
+  }
+
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 // Config-Page
@@ -5971,26 +6010,32 @@ function gclh_showConfig(){
     }
 	if(type === "upload"){
 		gclh_sync_DBSave().done(function(){
-			if(document.location.href.indexOf("#")==-1 || document.location.href.indexOf("#") == document.location.href.length -1){
-				$('html, body').animate({ scrollTop: 0 }, 0);
-				document.location.reload(true);
-			}
-			else{
-				document.location.replace(document.location.href.slice(0,document.location.href.indexOf("#")));
-			}
+			httpsConfigSync();
 		});
 	}
 	else{
-		if(document.location.href.indexOf("#")==-1 || document.location.href.indexOf("#") == document.location.href.length -1){
-			$('html, body').animate({ scrollTop: 0 }, 0);
-			document.location.reload(true);
-		}
-		else{
-			document.location.replace(document.location.href.slice(0,document.location.href.indexOf("#")));
-		}
+		httpsConfigSync();
 	}
-  }
+  }  
 }
+
+//Part2 of httpsConfigSync
+try{
+	if(document.location.href.match(/#httpsConfigSync/)){
+		window.addEventListener("message", function(ev){
+			if (event.origin !== "http://www.geocaching.com")
+			{
+				return;
+			}		
+			
+			GM_setValue("CONFIG",ev.data);
+			
+			window.parent.postMessage("httpsConfigSyncStep2", "http://www.geocaching.com");
+		}, false);
+		
+		window.parent.postMessage("httpsConfigSyncStep1", "http://www.geocaching.com");
+	}
+}catch(e){ gclh_error("httpsConfigSync",e); }
 
 // Show Config-Links
 try{
@@ -6097,13 +6142,7 @@ try{
     }  
     
     //Reload page
-    if(document.location.href.indexOf("#")==-1 || document.location.href.indexOf("#") == document.location.href.length -1){
-    $('html, body').animate({ scrollTop: 0 }, 0);
-        document.location.reload(true);
-    }
-    else{
-        document.location.replace(document.location.href.slice(0,document.location.href.indexOf("#")));
-    }
+    httpsConfigSync();
   }
   
   var gclh_sync_DB_Client = null; 
