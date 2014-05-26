@@ -2607,7 +2607,7 @@ try{
         var show = box.style.display;
         if(typeof(show) == "undefined" || show != "none") show = "block";
         
-        setValue("  ["+i+"]",show);
+        setValue("show_box["+i+"]",show);
       }
     }
     
