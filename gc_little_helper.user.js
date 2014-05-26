@@ -2427,7 +2427,7 @@ try{
   
       if(typeof(last_founds) == "undefined") last_founds = founds;
       if((founds - last_founds) > 0) add = " <font color='#00AA00'><b>(+"+(founds - last_founds)+")</b></font>";
-      setValue("friends_founds_new_"+name.innerHTML,""+founds);
+      setValue("friends_founds_new_"+name.innerHTML,founds);
       if(founds == 0){
         friend.getElementsByTagName("dd")[4].innerHTML = founds+"&nbsp;";
       }else{
@@ -2443,7 +2443,7 @@ try{
       
       if(typeof(last_hides) == "undefined") last_hides = hides;
       if((hides - last_hides) > 0) add = " <font color='#00AA00'><b>(+"+(hides - last_hides)+")</b></font>";
-      setValue("friends_hides_new_"+name.innerHTML,""+hides);
+      setValue("friends_hides_new_"+name.innerHTML,hides);
       if(hides == 0){
         friend.getElementsByTagName("dd")[5].innerHTML = hides+"&nbsp;";
       }else{
