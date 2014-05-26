@@ -1,3 +1,15 @@
+#### v10.9
+- Add: More than one Neares List / HomeCoord
+- Add: Insert sum of items in the list title on public profile list pages [Second try] (closes #69)
+- Add: Load the dropbox config automatically (check intervall=10h) (closes #48)
+- Add: Insert sum of items in the list title on public profile list pages...
+- Fix: Findcounter at friendlist is lost (fixes #83)
+- Fix: State of sidebar widgets (show/hide) gets lost (Profile page) (fixes #73)
+- Fix: Not all TB-visits are hidden on the profile page (fixes #77)
+- Fix: The insertion method of the GClh banners breaks the map under chrome (fixes #80)
+- Fix: https sites cant reach the http config of GCLH under chrome (now the config is copied during the settings save on the options site) (fixes #78)
+
+--
 #### v10.8
 -Fix: homeCoordinatesSet does return wrong results (closes #67)
 
