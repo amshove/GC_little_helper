@@ -534,11 +534,15 @@ function is_link(name,url){
     case "cache_listing":
       if(url.match(/^https?:\/\/www\.geocaching\.com\/seek\/cache_details\.aspx/) || document.location.href.match(/^https?:\/\/www\.geocaching\.com\/geocache\//)) return true;
       else return false;
-     break;
-      case "profile":
+      break;
+    case "profile":
       if(url.match(/^http:\/\/www\.geocaching\.com\/my\/default\.aspx/) || document.location.href.match(/^http:\/\/www\.geocaching\.com\/my/)  || url.match(/^https:\/\/www\.geocaching\.com\/my\/default\.aspx/) || document.location.href.match(/^https:\/\/www\.geocaching\.com\/my/)) return true;
       else return false;
-     break;
+      break;
+    case "publicProfile":
+      if(url.match(/^http:\/\/www\.geocaching\.com\/profile/) || url.match(/^https:\/\/www\.geocaching\.com\/profile/)) return true;
+      else return false;
+      break;
     default:
       return false;
   }
@@ -1180,6 +1184,14 @@ try{
   }
 }catch(e){ gclh_error("Fixed header for PocketQuery",e); }
 
+// Sum up all FP and BM entries on public profile pages
+try{
+  if(is_page("publicProfile")){
+	$('#ctl00_ContentBody_ProfilePanel1_pnlBookmarks h3').each(function(i,e){
+		$(e).text($(e).text() + ' (' + $(e).next().find('tbody tr').length + ')' );
+	});
+  }  
+}catch(e){ gclh_error("Sum up all FP and BM entries on public profile pages",e); }
 
 // Bookmark-Liste im Profil
 try{
