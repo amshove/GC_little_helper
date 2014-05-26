@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Chec for uncommitted changes
-git status | grep "nothing to commit (working directory clean)" > /dev/null 2>&1
+git status | grep "nothing to commit, working directory clean" > /dev/null 2>&1
 if [ $? -ne 0 ]; then
   echo "There are uncommited changes - commit first!"
   exit 1
