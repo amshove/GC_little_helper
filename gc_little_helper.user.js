@@ -797,16 +797,13 @@ function trim(s) {
 
 // Show Update-Banner
 if(parseFloat(getValue("new_version",scriptVersion)) > scriptVersion){
-  var banner = "";
-  banner = "<div align='center' style='background-color: #FF8888;'>There is an update available for <b>GC little helper</b> - you can update <a href='http://www.amshove.net/greasemonkey/updates.php' target='_blank'>here</a></div>";
-  document.getElementsByTagName("body")[0].innerHTML = banner+document.getElementsByTagName("body")[0].innerHTML;
+ $("body").prepend("<div align='center' style='background-color: #FF8888;'>There is an update available for <b>GC little helper</b> - you can update <a href='http://www.amshove.net/greasemonkey/updates.php' target='_blank'>here</a></div>");
 }
 
 // Show Contribute-Banner
 if(!getValue("hide_contribute",false)){
-  var contribute = "<div align='center' style='background-color: #88FFFF;'><b>Be a part of GC little helper:</b> GClh is available on <a href='https://github.com/amshove/GC_little_helper' target='_blank'>github.com</a>. If you are familiar with javascript, just clone the repository and try to improve GClh yourself. After testing, do a pull request on github and I will merge your code to the main GClh stream. <a href='#' id='hide_contribute'>(hide)</a></div>";
-  document.getElementsByTagName("body")[0].innerHTML = contribute+document.getElementsByTagName("body")[0].innerHTML;
-
+  $("body").prepend("<div align='center' style='background-color: #88FFFF;'><b>Be a part of GC little helper:</b> GClh is available on <a href='https://github.com/amshove/GC_little_helper' target='_blank'>github.com</a>. If you are familiar with javascript, just clone the repository and try to improve GClh yourself. After testing, do a pull request on github and I will merge your code to the main GClh stream. <a href='#' id='hide_contribute'>(hide)</a></div>");
+  
   if(document.getElementById("hide_contribute")) document.getElementById("hide_contribute").addEventListener("click",function (){ setValue("hide_contribute",true); document.location.reload(true); }, false);
 }
 
