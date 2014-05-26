@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export LANG=en_US.UTF-8 
+
 # Chec for uncommitted changes
 git status | grep "nothing to commit, working directory clean" > /dev/null 2>&1
 if [ $? -ne 0 ]; then
