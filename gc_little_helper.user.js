@@ -5864,8 +5864,11 @@ function gclh_showConfig(){
     //Colorpicker
     if(typeof opera == "object" || typeof(chrome) != "undefined")
     {
-	    var homezonepic = new jscolor.color(document.getElementById("settings_homezone_color"), {required:true, adjust:true, hash:true, caps:true, pickerMode:'HSV', pickerPosition:'right'});
-    }
+		$('.gclh_form.color:not(.withPicker)').each(function( i, e ){
+			var homezonepic = new jscolor.color(e, {required:true, adjust:true, hash:true, caps:true, pickerMode:'HSV', pickerPosition:'right'});
+			$(e).addClass("withPicker");
+		} );
+	}
     else
     {
 	    var code = GM_getResourceText("jscolor");
@@ -5892,7 +5895,10 @@ function gclh_showConfig(){
 		//reinit jscolor
 		if(typeof opera == "object" || typeof(chrome) != "undefined")
 	    {
-		    var homezonepic = new jscolor.color(document.getElementById("settings_homezone_color"), {required:true, adjust:true, hash:true, caps:true, pickerMode:'HSV', pickerPosition:'right'});
+		    $('.gclh_form.color:not(.withPicker)').each(function( i, e ){
+				var homezonepic = new jscolor.color(e, {required:true, adjust:true, hash:true, caps:true, pickerMode:'HSV', pickerPosition:'right'});
+				$(e).addClass("withPicker");
+			} );
 	    }
 	    else
 	    {
