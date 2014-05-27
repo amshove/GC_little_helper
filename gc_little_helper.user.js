@@ -5864,7 +5864,7 @@ function gclh_showConfig(){
     //Colorpicker
     if(typeof opera == "object" || typeof(chrome) != "undefined")
     {
-	   new jscolor.init();
+	    var homezonepic = new jscolor.color(document.getElementById("settings_homezone_color"), {required:true, adjust:true, hash:true, caps:true, pickerMode:'HSV', pickerPosition:'right'});
     }
     else
     {
@@ -5892,7 +5892,7 @@ function gclh_showConfig(){
 		//reinit jscolor
 		if(typeof opera == "object" || typeof(chrome) != "undefined")
 	    {
-		    new jscolor.init();
+		    var homezonepic = new jscolor.color(document.getElementById("settings_homezone_color"), {required:true, adjust:true, hash:true, caps:true, pickerMode:'HSV', pickerPosition:'right'});
 	    }
 	    else
 	    {
