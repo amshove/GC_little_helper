@@ -1,3 +1,10 @@
+#### v11.0
+- Fix: after saving all line breaks disappear in cache notes
+- Fix: import settings from clipboard fails 
+- Fix: could not change map layers
+- Fix: Chrome no config buttons
+
+--
 #### v10.9
 - Add: More than one Neares List / HomeCoord
 - Add: Insert sum of items in the list title on public profile list pages [Second try] (closes #69)
