@@ -1641,20 +1641,64 @@ try{
 // Show breaks in Cache Notes
 try{
   if(settings_breaks_in_cache_notes && !settings_hide_cache_notes && is_page("cache_listing")){
-    if(browser == "chrome"){
-	    //Chrome selects an other element as FireFox and so the inline editor deletes the wrong element.
-	    //NOT a nice hack - but it fixes the savenote bug (but no breaks after saving)	   
-        injectPageScriptFunction(function(){   
-		    $("#cache_note").attr("id","cache_note1"); 
-		    var content = $("#cache_note1")[0].innerHTML.replace(/^[\n ]*/,"");
-		    $("#cache_note1")[0].innerHTML = "";
-		    $("#cache_note1").append("<pre id='cache_note'>"+content+"</pre>");
-        }, "()");
+	$("#cache_note").replaceWith('<pre id="cache_note" class="" style="background-color: rgb(218, 215, 203);">'+$("#cache_note").text().trim()+'</pre>');
+	
+	var defaultNoteText = "Click to enter a note";
+	var errorNoteText = "There was an error saving page.  Please refresh the page and try again.";
+	var savingNoteText = "Please wait, saving your note...";
+	
+	function notesEditInplace(defaultNoteText, errorNoteText, savingNoteText){
+		var unsafeWindow = unsafeWindow||window;
+		$("#cache_note").editInPlace({
+			callback: function (unused, enteredText) {
+				var me = $(this);
+
+				var newText = $.trim(enteredText);
+				if (newText.length > 500) {
+					newText = newText.substr(0, 500);
+				}
+				$.pageMethod("/seek/cache_details.aspx/SetUserCacheNote",
+					JSON.stringify({
+						dto: {
+							et: newText,
+							ut: unsafeWindow.userToken
+						}
+					}),
+					function (r) {
+						var r = JSON.parse(r.d);
+						if (r.success == true) {
+							if ($.trim(r.note) == "") {
+								$("#cache_note").text(defaultNoteText);
+							} else {
+								$("#cache_note").text(r.note);
+							}
+
+							me.effect('highlight', {
+								color: '#ffb84c'
+							}, 'slow');
+						} else {
+							alert(errorNoteText);
+							$("#cache_note").text(defaultNoteText);
+						}
+					});
+
+				return savingNoteText;
+			},
+			default_text: defaultNoteText,
+			field_type: "textarea",
+			textarea_rows: "7",
+			textarea_cols: "65",
+			show_buttons: true,
+			bg_over: "#dad7cb"
+		});
+	}
+  
+	if(browser == "chrome"){	    
+        injectPageScriptFunction(notesEditInplace, "('"+defaultNoteText+"','"+errorNoteText+"','"+savingNoteText+"')");
     }
-    else if(document.getElementById("cache_note")){
-	    document.getElementById("cache_note").id = "cache_note_old";
-	    document.getElementById("cache_note_old").innerHTML = "<pre id='cache_note'>"+document.getElementById("cache_note_old").innerHTML.replace(/^[\n ]*/,"")+"</pre>";
-    }
+	else{
+		notesEditInplace(defaultNoteText, errorNoteText, savingNoteText);
+	}
   }
 }catch(e){ gclh_error("Show breaks in Cache Notes",e); }
 
