@@ -14,7 +14,7 @@ OLD_VERS=`git tag | sort -nr | head -1`
 NEW_VERS=`echo "$OLD_VERS + 0.1" | bc -q`
 
 # Update CHANGELOG
-CHANGELOG=`git log $OLD_VERS... --pretty=format:'%s' | grep ^-`
+CHANGELOG=`Tools/show_new_changelog.sh`
 echo "Updating Changelog ..."
 mv CHANGELOG.md CHANGELOG.bak
 echo "#### v$NEW_VERS" > CHANGELOG.md
