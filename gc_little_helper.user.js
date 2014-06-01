@@ -2731,8 +2731,10 @@ try{
                     $(".leaflet-control-layers-base").first().find("input").attr('checked', false);
                     $(".leaflet-control-layers").first().remove(); 
                     for(layerId in window.MapSettings.Map._layers){
-                        if(window.MapSettings.Map._layers[layerId]._url.indexOf("http://otile{s}.mqcdn.com/tiles/")!= -1){
-                            window.MapSettings.Map.removeLayer(window.MapSettings.Map._layers[layerId]);
+                        if(window.MapSettings.Map._layers[layerId]._url 
+							&& window.MapSettings.Map._layers[layerId]._url.indexOf("https://otile{s}-s.mqcdn.com/tiles/")!== -1){
+                            
+							window.MapSettings.Map.removeLayer(window.MapSettings.Map._layers[layerId]);
                             break;
                         }
                     }
