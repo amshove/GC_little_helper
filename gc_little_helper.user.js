@@ -6388,10 +6388,10 @@ if(is_page("profile") || (settings_sync_autoImport && (new Date() - settings_syn
       document.getElementById('btn_close3').addEventListener("click", btnClose, false);
   
       document.getElementById('btn_ExportConfig').addEventListener("click", function(){
-          document.getElementById('configData').innerHTML = sync_getConfigData();
+          document.getElementById('configData').innerText = sync_getConfigData();
       }, false);
       document.getElementById('btn_ImportConfig').addEventListener("click", function(){
-          var data = document.getElementById('configData').innerHTML;
+          var data = document.getElementById('configData').innerText;
           if(data == null || data ==""){
               alert("No data");
               return;
