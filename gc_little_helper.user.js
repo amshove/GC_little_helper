@@ -2724,7 +2724,7 @@ all_map_layers["Esri NatGeoWorldMap"] = {tileUrl:"http://services.arcgisonline.c
 // GClh additional Layers
 all_map_layers["OpenStreetMap Hike and Bike"] = {tileUrl:"http://toolserver.org/tiles/hikebike/{z}/{x}/{y}.png",attribution:'Map and map data \u00a9 2012 <a href="http://www.openstreetmap.org" target=\'_blank\'>OpenStreetMap</a> and contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.',tileSize:256,minZoom:0,maxZoom:20};
 all_map_layers["Google Maps"] = {tileUrl:"http://mt.google.com/vt?x={x}&y={y}&z={z}",attribution:"Google Maps",tileSize:256,minZoom:0,maxZoom:20};
-all_map_layers["Google Maps Satellite"] = {tileUrl:"http://mt0.google.com/vt/lyrs=s@130&hl=en&x={x}&y={y}&z={z}",attribution:"Google Maps",tileSize:256,minZoom:0,maxZoom:20};
+all_map_layers["Google Maps Satellite"] = {tileUrl:"http://mt.google.com/vt?lyrs=s&x={x}&y={y}&z={z}",attribution:"Google Maps",tileSize:256,minZoom:3,maxZoom:20};
 all_map_layers["Google Maps Hybrid"] = {tileUrl:"http://mt0.google.com/vt/lyrs=s,m@110&hl=en&x={x}&y={y}&z={z}",attribution:"Google Maps",tileSize:256,minZoom:0,maxZoom:20};
 
 // Map-Overlays
