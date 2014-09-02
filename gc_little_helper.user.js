@@ -4591,7 +4591,7 @@ try{
 
 	if(browser === "firefox"){
 		window.addEventListener("message", function(ev){		
-			if (event.origin !== "https://www.geocaching.com" && event.origin !== "http://www.geocaching.com")
+			if (ev.origin !== "https://www.geocaching.com" && ev.origin !== "http://www.geocaching.com")
 			{
 				return;
 			}
