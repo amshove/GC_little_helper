@@ -2810,6 +2810,9 @@ try{
       }
       
       function addHomeZoneMap(unsafeWindow, home_lat, home_lng, settings_homezone_radius, settings_homezone_color, settings_homezone_opacity){
+		  //remove duplicate # if exists
+		  settings_homezone_color = settings_homezone_color.replace("##","#");
+		  
           if(unsafeWindow=="none"){
               unsafeWindow = window;
           }
