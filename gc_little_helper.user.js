@@ -2847,7 +2847,7 @@ try{
       
         // Show Homezone-Circle on Map
         if(settings_show_homezone){
-            if(browser == "chrome"){
+            if(browser === "chrome" || browser==="firefox"){
                 injectPageScriptFunction(addHomeZoneMap, "('"+ "none" + "', " + getValue("home_lat") + ", " + getValue("home_lng") + ", " + settings_homezone_radius + ", '#" + settings_homezone_color+"', "+settings_homezone_opacity+")");                
             }
             else{                
@@ -2858,7 +2858,7 @@ try{
         // Show Multi-Homezone-Circle on Map
        	for(var i in settings_multi_homezone){
        		var curHz = settings_multi_homezone[i];
-       		if(browser == "chrome"){
+       		if(browser === "chrome" || browser==="firefox"){
                	injectPageScriptFunction(addHomeZoneMap, "('"+ "none" + "', " + curHz.lat + ", " + curHz.lng + ", " + curHz.radius + ", '#" + curHz.color+"', "+curHz.opacity+")");                
             }
             else{                
