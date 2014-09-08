@@ -1137,12 +1137,13 @@ try{
   if(settings_fixed_pq_header && document.location.href.match(/^https?:\/\/www\.geocaching\.com\/pocket/) && document.getElementById("pqRepeater")){
     //scrolify based on http://stackoverflow.com/questions/673153/html-table-with-fixed-headers
     function scrolify(tblAsJQueryObject, height){
-        var oTbl = tblAsJQueryObject;
+        var oTbl = window.$(tblAsJQueryObject);
 
         // for very large tables you can remove the four lines below
         // and wrap the table with <div> in the mark-up and assign
         // height and overflow property  
-        var oTblDiv = unsafeWindow.$("<div/>");
+        
+        var oTblDiv = window.$("<div/>");
         oTblDiv.css('height', height);
         oTblDiv.css('overflow-y','auto');
         oTblDiv.css("margin-bottom",oTbl.css("margin-bottom"));
@@ -1152,10 +1153,10 @@ try{
         // save original width
         oTbl.attr("data-item-original-width", oTbl.width());
         oTbl.find('thead tr td').each(function(){
-            unsafeWindow.$(this).attr("data-item-original-width",unsafeWindow.$(this).width());
+            window.$(this).attr("data-item-original-width",(unsafeWindow||window).$(this).width());
         }); 
         oTbl.find('tbody tr:eq(0) td').each(function(){
-            unsafeWindow.$(this).attr("data-item-original-width",unsafeWindow.$(this).width());
+            window.$(this).attr("data-item-original-width",(unsafeWindow||window).$(this).width());
         });                 
 
 
@@ -1173,15 +1174,23 @@ try{
         // replace ORIGINAL COLUMN width                
         newTbl.width(newTbl.attr('data-item-original-width'));
         newTbl.find('thead tr td').each(function(){
-            unsafeWindow.$(this).width(unsafeWindow.$(this).attr("data-item-original-width"));
+           window.$(this).width(window.$(this).attr("data-item-original-width"));
         });     
         oTbl.width(oTbl.attr('data-item-original-width'));      
         oTbl.find('tbody tr:eq(0) td').each(function(){
-            unsafeWindow.$(this).width(unsafeWindow.$(this).attr("data-item-original-width"));
+            window.$(this).width(window.$(this).attr("data-item-original-width"));
         });                 
     }
     
+	if(browser === "firefox"){
+	    exportFunction(scrolify, unsafeWindow, {defineAs: "scrolify"});	      
+	    unsafeWindow.scrolify(unsafeWindow.$('#pqRepeater'), 300);	  
+	}
+	else{
+    
     scrolify(unsafeWindow.$('#pqRepeater'), 300);
+	}
+
     unsafeWindow.$('#ActivePQs').css("padding-right","0px");
   }
 }catch(e){ gclh_error("Fixed header for PocketQuery",e); }
@@ -1643,6 +1652,8 @@ try{
   if(settings_breaks_in_cache_notes && !settings_hide_cache_notes && is_page("cache_listing")){
 	$("#cache_note").replaceWith('<pre id="cache_note" class="" style="background-color: rgb(218, 215, 203);">'+$("#cache_note").text().trim()+'</pre>');
 	
+	if(browser !== "firefox"){ 
+	
 	var defaultNoteText = "Click to enter a note";
 	var errorNoteText = "There was an error saving page.  Please refresh the page and try again.";
 	var savingNoteText = "Please wait, saving your note...";
@@ -1699,6 +1710,7 @@ try{
 	else{
 		notesEditInplace(defaultNoteText, errorNoteText, savingNoteText);
 	}
+  }
   }
 }catch(e){ gclh_error("Show breaks in Cache Notes",e); }
 
@@ -2838,7 +2850,7 @@ try{
       
         // Show Homezone-Circle on Map
         if(settings_show_homezone){
-            if(browser == "chrome"){
+            if(browser === "chrome" || browser==="firefox"){
                 injectPageScriptFunction(addHomeZoneMap, "('"+ "none" + "', " + getValue("home_lat") + ", " + getValue("home_lng") + ", " + settings_homezone_radius + ", '#" + settings_homezone_color+"', "+settings_homezone_opacity+")");                
             }
             else{                
@@ -2849,7 +2861,7 @@ try{
         // Show Multi-Homezone-Circle on Map
        	for(var i in settings_multi_homezone){
        		var curHz = settings_multi_homezone[i];
-       		if(browser == "chrome"){
+       		if(browser === "chrome" || browser==="firefox"){
                	injectPageScriptFunction(addHomeZoneMap, "('"+ "none" + "', " + curHz.lat + ", " + curHz.lng + ", " + curHz.radius + ", '#" + curHz.color+"', "+curHz.opacity+")");                
             }
             else{                
@@ -4081,7 +4093,7 @@ try{
           }
         }
       }
-//      gclh_build_vip_list();
+      gclh_build_vip_list();
     // Listing (All-VIP-List)
     }else if(document.location.href.match(/^https?:\/\/www\.geocaching\.com\/my\//) && document.getElementById("ctl00_ContentBody_uxBanManWidget")){
       var widget = document.createElement("div");
@@ -4545,7 +4557,7 @@ try{
     unsafeWindow.$.removeData(elem, "tmpl");
     unsafeWindow.$("#tmpl_CacheLogRow").template("tmplCacheLogRow");
     
-    if(browser == "chrome"){
+    if(browser === "chrome" || browser === "firefox"){
         injectPageScriptFunction(function(){
             var elem = window.$('#tmpl_CacheLogRow')[0];
             window.$.removeData(elem, "tmpl");
@@ -4579,7 +4591,29 @@ try{
     }
     
     (document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).addEventListener('DOMNodeInserted', loadListener);
-    
+
+	if(browser === "firefox"){
+		window.addEventListener("message", function(ev){		
+			if (ev.origin !== "https://www.geocaching.com" && ev.origin !== "http://www.geocaching.com")
+			{
+				return;
+			}
+			
+			if(ev.data === "gclh_add_vip_icon"){
+				gclh_add_vip_icon(); 			
+			}
+		});
+	    
+		function addNewLogLines(escapedLogLines){
+			var unsafeWindow = unsafeWindow||window;
+			var logs = JSON.parse(decodeURIComponent(escapedLogLines));	
+			var newBody = unsafeWindow.$(document.createElement("TBODY"));
+			unsafeWindow.$("#tmpl_CacheLogRow_gclh").tmpl(logs).appendTo(newBody);                  
+			unsafeWindow.$(document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).append(newBody.children());
+			$('a.tb_images').fancybox({'type': 'image', 'titlePosition': 'inside'});
+		}
+    }
+
     function disablePageAutoScroll(){
         var unsafeWindow = (typeof(unsafeWindow)=="undefined"?window:unsafeWindow);
         unsafeWindow.currentPageIdx = 2;
@@ -4603,9 +4637,9 @@ try{
   
     // Helper: Add VIP-Icon
     function gclh_add_vip_icon(){
-     var elements = (document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).getElementsByTagName("a");
+     var elements = unsafeWindow.$(document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).find("a.gclh_vip").not(".gclh_vip_hasIcon");	 
+
      for(var i = 0; i < elements.length; i++){
-        if(elements[i].className == "gclh_vip"){
           var link = elements[i];
           var img = link.childNodes[0];
           var user = link.name;
@@ -4619,16 +4653,19 @@ try{
             img.title = "Add User "+user+" to VIP-List";
             link.addEventListener("click",gclh_add_vip,false);
           }
+		  
+		  unsafeWindow.$(link).addClass("gclh_vip_hasIcon"); 
+
         }
       }
-    }
     
     // Rebuild function - but with full control :)
     function gclh_dynamic_load(logs,num){
       var isBusy = false;
       var gclh_currentPageIdx = 1, gclh_totalPages = 1;
       var logInitialLoaded = false;
-	    
+	  var browser = (typeof(chrome)!=="undefined")?"chrome":"firefox";
+	  
       unsafeWindow.$(window).endlessScroll({
         fireOnce: true,
         fireDelay: 500,
@@ -4642,17 +4679,29 @@ try{
             isBusy = true;
             $("#pnlLazyLoad").show();
             
-            for(var i=0; i<10; i++){
-              if(logs[num]){
-                var newBody = unsafeWindow.$(document.createElement("TBODY"));
-                unsafeWindow.$("#tmpl_CacheLogRow_gclh").tmpl(logs[num]).appendTo(newBody);
-                injectPageScript("$('a.tb_images').fancybox({'type': 'image', 'titlePosition': 'inside'});");
-                unsafeWindow.$(document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).append(newBody.children());
-              }
-              num++; // num kommt vom vorherigen laden "aller" logs
-            }
-  
-            gclh_add_vip_icon();
+			if(browser === "firefox"){
+				var logsToAdd = logs.slice(num,num+10);		
+				//injectPageScript("var unsafeWindow = unsafeWindow||window; "+gclh_dynamic_load.toString()+" var settings_hide_top_button="+settings_hide_top_button+"; ");
+				//injectPageScript("("+addNewLogLines.toString()+")(\""+encodeURIComponent(JSON.stringify(logsToAdd))+"\");");	
+				addNewLogLines(encodeURIComponent(JSON.stringify(logsToAdd)));
+				num += logsToAdd.length;
+				
+	            //gclh_add_vip_icon();
+				window.postMessage("gclh_add_vip_icon", "http://www.geocaching.com");
+			}
+			else{
+	            for(var i=0; i<10; i++){
+	              if(logs[num]){
+	                var newBody = unsafeWindow.$(document.createElement("TBODY"));
+	                unsafeWindow.$("#tmpl_CacheLogRow_gclh").tmpl(logs[num]).appendTo(newBody);
+	                injectPageScript("$('a.tb_images').fancybox({'type': 'image', 'titlePosition': 'inside'});");
+	                unsafeWindow.$(document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).append(newBody.children());
+	              }
+	              num++; // num kommt vom vorherigen laden "aller" logs
+	            }
+	  
+	            gclh_add_vip_icon();
+			}
             if(!settings_hide_top_button) $("#topScroll").fadeIn();
                   
             $("#pnlLazyLoad").hide();
@@ -4670,18 +4719,26 @@ try{
           for(var i=0; i<tbodys.length; i++){
             (document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).removeChild(tbodys[i]);
           }
+
+		  if(browser === "firefox"){
+			  injectPageScript("var unsafeWindow = unsafeWindow||window; "+gclh_dynamic_load.toString()+" var settings_hide_top_button="+settings_hide_top_button+"; ");
+		  	  injectPageScript("("+addNewLogLines.toString()+")(\""+encodeURIComponent(JSON.stringify(logs))+"\");");
   
-          for(var i=0; i<logs.length; i++){
-            if(logs[i]){
-              var newBody = unsafeWindow.$(document.createElement("TBODY"));
-              unsafeWindow.$("#tmpl_CacheLogRow_gclh").tmpl(logs[i]).appendTo(newBody);
-			  injectPageScript("$('a.tb_images').fancybox({'type': 'image', 'titlePosition': 'inside'});");
-              unsafeWindow.$(document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).append(newBody.children());
-            }
-          }
-  
-          gclh_add_vip_icon();
-  
+			  window.postMessage("gclh_add_vip_icon", "http://www.geocaching.com");
+
+		  }
+		  else{  
+	          for(var i=0; i<logs.length; i++){
+	            if(logs[i]){
+	              var newBody = unsafeWindow.$(document.createElement("TBODY"));
+	              unsafeWindow.$("#tmpl_CacheLogRow_gclh").tmpl(logs[i]).appendTo(newBody);
+				  injectPageScript("$('a.tb_images').fancybox({'type': 'image', 'titlePosition': 'inside'});");
+	              unsafeWindow.$(document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).append(newBody.children());
+	            }
+	          }
+	  
+	          gclh_add_vip_icon();
+		  }
           // Marker to disable dynamic log-load
           var marker = document.createElement("a");
           marker.setAttribute("id","gclh_all_logs_marker");
@@ -4718,17 +4775,32 @@ try{
         for(var i=0; i<tbodys.length; i++){
           (document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).removeChild(tbodys[i]);
         }
+		if(browser === "firefox"){
+			var logsToAdd = [];
    
-        for(var i=0; i<logs.length; i++){
-          if(logs[i] && logs[i].LogType == log_type){
-            var newBody = unsafeWindow.$(document.createElement("TBODY"));
-            unsafeWindow.$("#tmpl_CacheLogRow_gclh").tmpl(logs[i]).appendTo(newBody);
-            injectPageScript("$('a.tb_images').fancybox({'type': 'image', 'titlePosition': 'inside'});");
-            unsafeWindow.$(document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).append(newBody.children());
-          }
-        }
-   
-        gclh_add_vip_icon();
+	        for(var i=0; i<logs.length; i++){
+	          if(logs[i] && logs[i].LogType == log_type){
+				logsToAdd.push(logs[i]);
+	          }
+	        }
+			
+			injectPageScript("var unsafeWindow = unsafeWindow||window; "+gclh_dynamic_load.toString()+" var settings_hide_top_button="+settings_hide_top_button+"; ");
+			injectPageScript("("+addNewLogLines.toString()+")(\""+encodeURIComponent(JSON.stringify(logsToAdd))+"\");");				  
+	   
+			window.postMessage("gclh_add_vip_icon", "http://www.geocaching.com");
+		}
+   		else{
+	        for(var i=0; i<logs.length; i++){
+	          if(logs[i] && logs[i].LogType == log_type){
+	            var newBody = unsafeWindow.$(document.createElement("TBODY"));
+	            unsafeWindow.$("#tmpl_CacheLogRow_gclh").tmpl(logs[i]).appendTo(newBody);
+	            injectPageScript("$('a.tb_images').fancybox({'type': 'image', 'titlePosition': 'inside'});");
+	            unsafeWindow.$(document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).append(newBody.children());
+	          }
+	        }
+	   
+	        gclh_add_vip_icon();
+		}
    
         // Marker to disable dynamic log-load
         var marker = document.createElement("a");
@@ -4770,17 +4842,33 @@ try{
         for(var i=0; i<tbodys.length; i++){
           (document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).removeChild(tbodys[i]);
         }
+		if(browser === "firefox"){
+			var logsToAdd = [];
   
-        for(var i=0; i<logs.length; i++){
-          if(logs[i] && (logs[i].UserName.match(regexp) || logs[i].LogText.match(regexp))){
-            var newBody = unsafeWindow.$(document.createElement("TBODY"));
-            unsafeWindow.$("#tmpl_CacheLogRow_gclh").tmpl(logs[i]).appendTo(newBody);
-            injectPageScript("$('a.tb_images').fancybox({'type': 'image', 'titlePosition': 'inside'});");
-            unsafeWindow.$(document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).append(newBody.children());
-          }
-        }
-  
-        gclh_add_vip_icon();
+	        for(var i=0; i<logs.length; i++){
+	          if(logs[i] && (logs[i].UserName.match(regexp) || logs[i].LogText.match(regexp))){
+	            logsToAdd.push(logs[i]);
+	          }
+	        }
+	  
+			injectPageScript("var unsafeWindow = unsafeWindow||window; "+gclh_dynamic_load.toString()+" var settings_hide_top_button="+settings_hide_top_button+"; ");
+			injectPageScript("("+addNewLogLines.toString()+")(\""+encodeURIComponent(JSON.stringify(logsToAdd))+"\");");				  
+	  
+	        window.postMessage("gclh_add_vip_icon", "http://www.geocaching.com");
+
+		}
+  		else{
+	        for(var i=0; i<logs.length; i++){
+	          if(logs[i] && (logs[i].UserName.match(regexp) || logs[i].LogText.match(regexp))){
+	            var newBody = unsafeWindow.$(document.createElement("TBODY"));
+	            unsafeWindow.$("#tmpl_CacheLogRow_gclh").tmpl(logs[i]).appendTo(newBody);
+	            injectPageScript("$('a.tb_images').fancybox({'type': 'image', 'titlePosition': 'inside'});");
+	            unsafeWindow.$(document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).append(newBody.children());
+	          }
+	        }
+	  
+	        gclh_add_vip_icon();
+		}
   
         // Marker to disable dynamic log-load
         var marker = document.createElement("a");
@@ -4853,15 +4941,17 @@ try{
     function gclh_load_dataHelper(){
 		logs = new Array();
         // disable scroll Function on Page
-        if(browser == "chrome"){
+        if(browser === "chrome" || browser==="firefox"){
             injectPageScriptFunction(disablePageAutoScroll, "()"); 
         }
         else{
             disablePageAutoScroll();
         }
         
-        (document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).removeEventListener('DOMNodeInserted', loadListener);
-        
+		if(browser !== "firefox"){
+        	(document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).removeEventListener('DOMNodeInserted', loadListener);
+		}        
+
         // Hide initial Logs
         var tbodys = document.getElementById("cache_logs_table").getElementsByTagName("tbody");
         if(tbodys.length > 0){
@@ -4912,28 +5002,53 @@ try{
                 gclh_filter_logs(logs); // Filter Logs
                 gclh_search_logs(logs); // Search Field
   
-                if(num == 0){
-                  var newBody = unsafeWindow.$(document.createElement("TBODY"));
-                  unsafeWindow.$("#tmpl_CacheLogRow_gclh").tmpl(logs).appendTo(newBody);
-                  injectPageScript("$('a.tb_images').fancybox({'type': 'image', 'titlePosition': 'inside'});");
-                  unsafeWindow.$(document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).append(newBody.children());
-                }else{
-                  for(var i=0; i<num; i++){
-                    if(logs[i]){
-                      var newBody = unsafeWindow.$(document.createElement("TBODY"));
-                      unsafeWindow.$("#tmpl_CacheLogRow_gclh").tmpl(logs[i]).appendTo(newBody);
-                      injectPageScript("$('a.tb_images').fancybox({'type': 'image', 'titlePosition': 'inside'});");
-                      unsafeWindow.$(document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).append(newBody.children());
-                    }
-                  }
-                  gclh_dynamic_load(logs,num);
-                }
-  
-                if(settings_show_vip_list){
-                  gclh_build_vip_list();
-                  
-                gclh_add_vip_icon();
-                }
+				if(browser === "firefox"){
+					if(num == 0){
+					  injectPageScript("var unsafeWindow = unsafeWindow||window; "+gclh_dynamic_load.toString()+" var settings_hide_top_button="+settings_hide_top_button+"; ");
+					  injectPageScript("("+addNewLogLines.toString()+")(\""+encodeURIComponent(JSON.stringify(logs))+"\");");
+	                }else{
+					  var logsToAdd = logs.slice(0,num-1);  
+					  if(browser === "firefox"){
+						  //injectPageScript("var unsafeWindow = unsafeWindow||window; "+gclh_dynamic_load.toString()+" "+gclh_add_vip_icon.toString()+ " " +in_array.toString()+" var vips=\""+encodeURIComponent(JSON.stringify(vips))+"\";"+" var img_vip_off=\""+encodeURIComponent(JSON.stringify(img_vip_off))+"\";"+" var img_vip_on=\""+encodeURIComponent(JSON.stringify(img_vip_on))+"\";");
+						  injectPageScript("var unsafeWindow = unsafeWindow||window; "+gclh_dynamic_load.toString()+" var settings_hide_top_button="+settings_hide_top_button+"; ");
+						  injectPageScript(addNewLogLines.toString());
+						  injectPageScript("("+addNewLogLines.toString()+")(\""+encodeURIComponent(JSON.stringify(logsToAdd))+"\"); gclh_dynamic_load(JSON.parse(decodeURIComponent(\""+encodeURIComponent(JSON.stringify(logs))+"\")),"+num+");"); 
+					  }
+					  else{				  
+						gclh_dynamic_load(logs,num);
+					  }
+	                }
+	                if(settings_show_vip_list){
+						gclh_build_vip_list();
+	                  
+						window.postMessage("gclh_add_vip_icon", "http://www.geocaching.com");
+						//(document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).addEventListener('DOMNodeInserted', loadListener);
+	                }
+				}
+				else{
+	                if(num == 0){
+	                  var newBody = unsafeWindow.$(document.createElement("TBODY"));
+	                  unsafeWindow.$("#tmpl_CacheLogRow_gclh").tmpl(logs).appendTo(newBody);
+	                  injectPageScript("$('a.tb_images').fancybox({'type': 'image', 'titlePosition': 'inside'});");
+	                  unsafeWindow.$(document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).append(newBody.children());
+	                }else{
+	                  for(var i=0; i<num; i++){
+	                    if(logs[i]){
+	                      var newBody = unsafeWindow.$(document.createElement("TBODY"));
+	                      unsafeWindow.$("#tmpl_CacheLogRow_gclh").tmpl(logs[i]).appendTo(newBody);
+	                      injectPageScript("$('a.tb_images').fancybox({'type': 'image', 'titlePosition': 'inside'});");
+	                      unsafeWindow.$(document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).append(newBody.children());
+	                    }
+	                  }
+	                  gclh_dynamic_load(logs,num);
+	                }
+	  
+	                if(settings_show_vip_list){
+	                  gclh_build_vip_list();
+	                  
+	                gclh_add_vip_icon();
+	                }
+				}
         }
       
     gclh_load_helper(1);
