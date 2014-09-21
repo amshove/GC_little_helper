@@ -1,3 +1,11 @@
+#### v11.1
+-Fix: homezone broken with FF32 (fixes #106)
+-Fix: homezone color is ignored (fixes #105)
+-Fix: VIP-icon not visible in Logs for FF
+-Fix: Logs and VIP-List broken with GM > 2
+-Fix: GMap Satellite Layer not working
+
+--
 #### v11.0
 - Fix: after saving all line breaks disappear in cache notes
 - Fix: import settings from clipboard fails 
