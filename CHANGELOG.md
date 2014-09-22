@@ -1,3 +1,7 @@
+#### v11.2
+- Fix: VIP-Icons in Logs is out of function (solved #108)
+
+--
 #### v11.1
 -Fix: homezone broken with FF32 (fixes #106)
 -Fix: homezone color is ignored (fixes #105)
