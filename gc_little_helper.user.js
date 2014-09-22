@@ -4637,7 +4637,7 @@ try{
   
     // Helper: Add VIP-Icon
     function gclh_add_vip_icon(){
-     var elements = unsafeWindow.$(document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).find("a.gclh_vip").not(".gclh_vip_hasIcon");	 
+     var elements = $(document.getElementById("cache_logs_table2")||document.getElementById("cache_logs_table")).find("a.gclh_vip").not(".gclh_vip_hasIcon");	 
 
      for(var i = 0; i < elements.length; i++){
           var link = elements[i];
