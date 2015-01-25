@@ -710,6 +710,10 @@ if(document.location.href.match(/^(http|https):\/\/maps\.google\./) || document.
 if(typeof $ == "undefined"){
   $ = unsafeWindow.$;
 }
+
+// Activate fancybox for pictures in the description
+$('a[rel="lightbox"]').fancybox();
+
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 // Helper
