@@ -2630,6 +2630,56 @@ try{
   }
 }catch(e){ gclh_error("Improve Bookmark-List",e); }
 
+// Add buttons to bookmarks-list to select caches
+try{
+  var current_page;
+
+  if(document.location.href.match(/^https?:\/\/www\.geocaching\.com\/bookmarks/)) current_page = "bookmark"
+  else if(document.location.href.match(/^https?:\/\/www\.geocaching\.com\/my\/watchlist/)) current_page = "watch"
+
+  if(!!current_page){
+    var checkbox_selector = 'input[type=checkbox]';
+    var table = $('table.Table').first(); //On watchlist, ignore the trackable-table so use only first table here
+    var rows = table.find('tbody tr');
+    var checkboxes = table.find(checkbox_selector);
+
+    if(table.length > 0 && rows.length > 0 && checkboxes.length > 0){
+      //Add section to table
+      var button_wrapper = $('<td colspan="10">Select caches: </td>');
+      var button_template = $('<a style="cursor:pointer; margin-right: 10px;" />');
+
+      button_wrapper.append(button_template.clone().text('All').click(function(){
+        checkboxes.prop('checked', 'true');
+      }));
+      button_wrapper.append(button_template.clone().text('None').click(function(){
+        checkboxes.removeProp('checked');
+      }));
+      button_wrapper.append(button_template.clone().text('Invert').click(function(){
+        checkboxes.each(function(){
+          this.checked = !this.checked;
+        });
+      }));
+
+      button_wrapper.append($('<span style="margin-right:10px">|</span>'));
+
+      if(current_page !== "watch"){ // Hide on watchlist
+        button_wrapper.append(button_template.clone().text('Found').click(function(){
+          table.find('img[src*="found"]').closest('tr').find(checkbox_selector).prop('checked', 'true');
+        }));
+      }
+      button_wrapper.append(button_template.clone().text('Archived').click(function(){
+        table.find('span.Strike.OldWarning,span.Strike.Warning').closest('tr').find(checkbox_selector).prop('checked', 'true');
+      }));
+      button_wrapper.append(button_template.clone().text('Deactivated').click(function(){
+        table.find('span.Strike:not(.OldWarning,.Warning)').closest('tr').find(checkbox_selector).prop('checked', 'true');
+      }));
+
+      var tfoot = $('<tfoot />').append($('<tr />').append(button_wrapper));
+      table.append(tfoot);
+    }
+  }
+}catch(e){ gclh_error("Add buttons to bookmark list",e); }
+
 // Improve "My Profile"
 try{
   if(document.location.href.match(/^https?:\/\/www\.geocaching\.com\/my/)){
