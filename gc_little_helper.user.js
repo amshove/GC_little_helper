@@ -2652,7 +2652,7 @@ try{
         checkboxes.prop('checked', 'true');
       }));
       button_wrapper.append(button_template.clone().text('None').click(function(){
-        checkboxes.removeProp('checked');
+        checkboxes.prop('checked', false);
       }));
       button_wrapper.append(button_template.clone().text('Invert').click(function(){
         checkboxes.each(function(){
