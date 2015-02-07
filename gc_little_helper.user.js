@@ -715,6 +715,7 @@ if(document.location.href.match(/^(http|https):\/\/maps\.google\./) || document.
 if(typeof $ == "undefined"){
   $ = unsafeWindow.$;
 }
+
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 // Helper
@@ -1495,6 +1496,13 @@ try{
     $('.search-field').hide();
   }
 }catch(e){ gclh_error("Hide souvenirs",e); }
+
+// Activate fancybox for pictures in the description
+try{
+  if(is_page("cache_listing") && typeof unsafeWindow.$.fancybox != "undefined"){
+    unsafeWindow.$('a[rel="lightbox"]').fancybox();
+  }
+}catch(e){ gclh_error("Activate fancybox",e); }
 
 // Hide Disclaimer
 try{
