@@ -1248,10 +1248,12 @@ try{
 
 // Bookmarks on top
 try{
-  if(settings_bookmarks_on_top && document.getElementsByClassName("Menu").length > 0){
-    var nav_list = document.getElementsByClassName("Menu")[0];
+  if(settings_bookmarks_on_top && (document.getElementsByClassName("Menu").length > 0 || document.getElementsByClassName("menu").length > 0)){
+    if(document.getElementsByClassName("Menu").length > 0) var nav_list = document.getElementsByClassName("Menu")[0];
+    else var nav_list = document.getElementsByClassName("menu")[0];
     
     GM_addStyle('ul.Menu > li{ padding:0 0 0 0.75em !important; }  ');
+    GM_addStyle('ul.menu > li{ padding:0 0 0 0.75em !important; }  ');
       
     var menu = document.createElement("li");
     
@@ -1318,26 +1320,31 @@ try{
       document.getElementsByTagName("body")[0].appendChild(script);
   
       var searchfield = "<input onKeyDown='if(event.keyCode==13) { gclh_search(); return false; }' type='text' size='6' name='navi_search' id='navi_search' style='margin-top: 2px; padding: 1px; font-weight: bold; font-family: sans-serif; border: 2px solid #778555; border-radius: 7px 7px 7px 7px; -moz-border-radius: 7px; -khtml-border-radius: 7px; background-color:#d8cd9d' value='"+settings_bookmarks_search_default+"'>";
-      var nav_list = document.getElementById('Navigation').childNodes[1];
-      nav_list.innerHTML += searchfield;
+      if(document.getElementsByClassName("menu").length > 0){
+        var menu = document.getElementsByClassName("menu")[0];
+        menu.innerHTML += searchfield;
+      }else{
+        var nav_list = document.getElementById('Navigation').childNodes[1];
+        nav_list.innerHTML += searchfield;
+      }
     }
   
     //Chrome menu hover fix / Language selector fix
     if(browser == "chrome"){
-        injectPageScriptFunction(function(){        
-			$('ul.Menu').children().hover(function () {                    
-					$(this).addClass('hover');
-					$('ul:first', this).css('visibility', 'visible');
-				}, 
-				function () {
-					$(this).removeClass('hover');
-					$('ul:first', this).css('visibility', 'hidden');
-				}
-			);
-            
-            //Language selector fix
-            $('.LanguageSelector script').remove().appendTo('.LanguageSelector');
-        }, "()");
+      injectPageScriptFunction(function(){        
+        $('ul.Menu, ul.menu').children().hover(function () {                    
+            $(this).addClass('hover');
+            $('ul:first', this).css('visibility', 'visible');
+          }, 
+          function () {
+            $(this).removeClass('hover');
+            $('ul:first', this).css('visibility', 'hidden');
+          }
+        );
+
+        //Language selector fix
+        $('.LanguageSelector script').remove().appendTo('.LanguageSelector');
+      }, "()");
     }
     
   // menu      - <li class="">
@@ -1391,17 +1398,30 @@ try{
 try{
   if(document.getElementsByClassName("Menu").length > 0){
     var liste = document.getElementsByClassName("Menu")[0];
+
     if(getValue('remove_navi_learn') && document.getElementById('ctl00_hlNavLearn')) liste.removeChild(document.getElementById('ctl00_hlNavLearn').parentNode);
     if(getValue('remove_navi_partnering') && document.getElementById('ctl00_hlNavPartnering')) liste.removeChild(document.getElementById('ctl00_hlNavPartnering').parentNode);
     if(getValue('remove_navi_play') && document.getElementById('ctl00_hlNavPlay')) liste.removeChild(document.getElementById('ctl00_hlNavPlay').parentNode);
     if(getValue('remove_navi_profile') && document.getElementById('ctl00_hlNavProfile')) liste.removeChild(document.getElementById('ctl00_hlNavProfile').parentNode);
-//    if(getValue('remove_navi_join') && document.getElementById('ctl00_hlNavJoin')) liste.removeChild(document.getElementById('ctl00_hlNavJoin').parentNode);
     if(getValue('remove_navi_community') && document.getElementById('ctl00_hlNavCommunity')) liste.removeChild(document.getElementById('ctl00_hlNavCommunity').parentNode);
     if(getValue('remove_navi_videos') && document.getElementById('ctl00_hlNavVideos')) liste.removeChild(document.getElementById('ctl00_hlNavVideos').parentNode);
-//    if(getValue('remove_navi_resources') && document.getElementById('ctl00_hlNavResources')) liste.removeChild(document.getElementById('ctl00_hlNavResources').parentNode);
     if(getValue('remove_navi_shop') && document.getElementById('ctl00_hlNavShop')) liste.removeChild(document.getElementById('ctl00_hlNavShop').parentNode);
     if(getValue('remove_navi_social') && document.getElementById('ctl00_hlNavFollowUs')) liste.removeChild(document.getElementById('ctl00_hlNavFollowUs').parentNode);
-//    if(getValue('remove_navi_social', true)) document.getElementById("Navigation").removeChild(document.getElementById("Navigation").childNodes[3]);
+  }else if(document.getElementsByClassName("menu").length > 0){
+    var liste = document.getElementsByClassName("menu")[0];
+//    var links = liste.getElementsByTagName("a");
+    var links = $('ul.menu a');
+
+    for(var i=0; i<links.length; i++){
+      if(     links[i].className == "dropdown" && links[i].href.match(/\/guide\/$/)          && getValue('remove_navi_learn'))      liste.removeChild(links[i].parentNode);
+      else if(links[i].className == "dropdown" && links[i].href.match(/\/travel\/$/)         && getValue('remove_navi_partnering')) liste.removeChild(links[i].parentNode);
+      else if(links[i].className == "dropdown" && links[i].href.match(/\/seek\/$/)           && getValue('remove_navi_play'))       liste.removeChild(links[i].parentNode);
+      else if(links[i].className == "dropdown" && links[i].href.match(/\/my\/$/)             && getValue('remove_navi_profile'))    liste.removeChild(links[i].parentNode);
+      else if(links[i].className == "dropdown" && links[i].href.match(/\/forums\/$/)         && getValue('remove_navi_community'))  liste.removeChild(links[i].parentNode);
+      else if(links[i].accessKey != ""         && links[i].href.match(/\/videos\/$/)         && getValue('remove_navi_videos'))     liste.removeChild(links[i].parentNode);
+      else if(links[i].className == "dropdown" && links[i].href.match(/shop.geocaching.com/) && getValue('remove_navi_shop'))       liste.removeChild(links[i].parentNode);
+      else if(links[i].className == "dropdown" && links[i].href.match(/facebook.com/)        && getValue('remove_navi_social'))     liste.removeChild(links[i].parentNode);
+    }
   }
 }catch(e){ gclh_error("Remove gc.com links",e); }
 
@@ -3408,6 +3428,7 @@ try{
   if(getValue("settings_new_width") > 0 && getValue("settings_new_width") != 950){
     var width = getValue("settings_new_width");
     var css = ".container { width: "+width+"px; }";
+    css += ".wrapper, nav .wrapper { width: "+width+"px; }";
     css += "#Content .container { width: "+width+"px; }";
     css += ".span-24 { width: "+width+"px; }";
     css += ".span-20 { width: "+(width-160)+"px; }";
