@@ -3406,7 +3406,7 @@ try{
 try{
   if(settings_visitCount_geocheckerCom && is_page("cache_listing")){
     $('a[href^="http://www.geochecker.com/index.php?code="]').filter(':not([href*="visitcount=1"])').attr('href',function(i,str) {
-		return (browser != "chrome"?"http://anonym.to/?/":"") + str + '&visitcount=1';
+		return str + '&visitcount=1';
 	}).attr('rel','noreferrer');
   }
 }catch(e){ gclh_error("Append '&visitcount=1' to all geochecker.com links (on listing pages)",e); }
