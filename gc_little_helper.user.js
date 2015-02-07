@@ -6421,7 +6421,7 @@ function checkVersion(){
                   "You are currently using version "+scriptVersion+".\n\n"+
                   "Click OK to upgrade.\n";
           if(changelog) text += "\n\nChangelog:\n"+changelog[1];
-          if(window.confirm(text)) GM_openInTab(url);
+          if(window.confirm(text)) window.open(url,'_blank');
         }
       }
     });
