@@ -618,24 +618,29 @@ if(document.location.href.match(/^(http|https):\/\/maps\.google\./) || document.
     var gear = document.getElementById("gear");
     // Neues google maps
     if(gear){
-      var script = "function open_gc(){";
-      script += "  var matches = document.location.href.match(/\\@(-?[0-9.]*),(-?[0-9.]*),([0-9]*)z/);";
-      script += "  if(matches != null){";
-      script += "    window.open('"+map_url+"?lat='+matches[1]+'&lng='+matches[2]+'&z='+matches[3]);";
-      script += "  }else{";
-      script += "    alert('This map has no geographical coordinates in its link. Just zoom or drag the map, afterwards this will work fine.');";
-      script += "  }";
-      script += "}";
-      var script_ = document.createElement("script");
-      script_.innerHTML = script;
-
-      var button = document.createElement("button");
-      button.setAttribute("class","widget-gear-settings-icon");
-      button.style.backgroundImage = "url('"+http+"://www.geocaching.com/images/about/logos/geocaching/Logo_Geocaching_color_notext_32.png')";
-      button.setAttribute("onClick","open_gc();");
-
-      gear.childNodes[0].appendChild(script_);
-      gear.childNodes[0].appendChild(button);
+      function add_gclh_to_gear(){
+        if(gear.childNodes[0]){
+          var script = "function open_gc(){";
+          script += "  var matches = document.location.href.match(/\\@(-?[0-9.]*),(-?[0-9.]*),([0-9]*)z/);";
+          script += "  if(matches != null){";
+          script += "    window.open('"+map_url+"?lat='+matches[1]+'&lng='+matches[2]+'&z='+matches[3]);";
+          script += "  }else{";
+          script += "    alert('This map has no geographical coordinates in its link. Just zoom or drag the map, afterwards this will work fine.');";
+          script += "  }";
+          script += "}";
+          var script_ = document.createElement("script");
+          script_.innerHTML = script;
+    
+          var button = document.createElement("button");
+          button.setAttribute("class","widget-gear-settings-icon");
+          button.style.backgroundImage = "url('"+http+"://www.geocaching.com/images/about/logos/geocaching/Logo_Geocaching_color_notext_32.png')";
+          button.setAttribute("onClick","open_gc();");
+    
+          gear.childNodes[0].appendChild(script_);
+          gear.childNodes[0].appendChild(button);
+        }else setTimeout(add_gclh_to_gear, 1000); // The Gear-Box is filled after loading the page. Keep looking at it every 1 second
+      }
+      add_gclh_to_gear();
     }else{
     // Altes google maps
       var ref_link = document.getElementById("link");
