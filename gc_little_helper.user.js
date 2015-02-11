@@ -25,7 +25,28 @@
 // @grant          GM_registerMenuCommand
 // ==/UserScript==
 
-if(window.name.substring(0, 18) != 'google_ads_iframe_') {  // don't run on advertisement iframes
+var CONFIG = {};
+
+if(window.name.substring(0, 18) !== 'google_ads_iframe_'){
+	if(typeof(chrome) != "undefined"){
+		chrome.runtime.sendMessage({"getGclhConfig": ""}, function(data){
+			if(typeof(data["GclhConfig"]) !== "undefined")
+			{			
+				CONFIG = JSON.parse(data["GclhConfig"]);
+			}
+			else{
+				CONFIG = {};
+			}
+			
+			all();
+		});
+	}
+	else{
+		all();
+	}
+}
+
+var all = function() {  
 
 var operaHelperInitComplete = false;
 var operaHelperDomLoaded = false;
@@ -50,7 +71,8 @@ if(typeof opera == "object"){
 if(typeof(chrome) != "undefined" || (navigator.userAgent.indexOf('Safari') != -1 && navigator.userAgent.indexOf('Chrome') == -1)){		
 	unsafeWindow = window;
 	
-	if (typeof(GM_getValue) == "undefined" || (GM_getValue.toString && GM_getValue.toString().indexOf("not supported") != -1) ) {
+	//Only for migration
+	if((typeof(GM_getValue) === "undefined"|| (GM_getValue.toString && GM_getValue.toString().indexOf("not supported") !== -1)) && typeof(localStorage) !== "undefined"){	
 		GM_getValue = function(key, defaultValue){
 			var result = localStorage.getItem(key);
 			if (!result || result == "undefined"){
@@ -72,24 +94,18 @@ if(typeof(chrome) != "undefined" || (navigator.userAgent.indexOf('Safari') != -1
 					return result;
 				}
 			}			
-		}
-	}
+		};
+	}	
 	
 	if (typeof(GM_setValue) == "undefined" || (GM_setValue.toString && GM_setValue.toString().indexOf("not supported") != -1)) {
-		GM_setValue = function(key, value){
-			var type = (typeof value)[0];
-			var data = ((type == 'b' || type == 'n' || type == 's')?type:"") + value;
-			localStorage.setItem(key, data);
-		}
+		GM_setValue = function(key, defaultValue){ console.log("Dummy GM_setValue");}
 	}
-    
-        if (typeof(GM_addStyle) == "undefined" || (GM_addStyle.toString && GM_addStyle.toString().indexOf("not supported") != -1)) {
-		GM_addStyle = function(style){
-            var sheet = document.createElement('style');
-            sheet.innerHTML = style;
-            document.body.appendChild(sheet);
-}
-	}
+	
+	if((typeof(GM_listValues) === "undefined" || (GM_listValues.toString && GM_listValues.toString().indexOf("not supported") !== -1)) && typeof(localStorage) !== "undefined"){
+		GM_listValues = function(){			
+			return Object.keys(localStorageCache);
+		};
+	}	
     
     if(typeof(GM_xmlhttpRequest) == "undefined" || (GM_xmlhttpRequest.toString && GM_xmlhttpRequest.toString().indexOf("not supported") != -1)) {
         GM_xmlhttpRequest = function(requestData){
@@ -239,14 +255,6 @@ var bookmarks_def = new Array(16,18,13,14,17,12);
 
 // Compatibility to Google Chrome - http://devign.me/greasemonkey-gm_getvaluegm_setvalue-functions-for-google-chrome/
 var browser = "firefox";
-if (!this.GM_getValue || (this.GM_getValue.toString && this.GM_getValue.toString().indexOf("not supported")>-1)) {
-  this.GM_getValue=function (key,def) {
-    return localStorage[key] || def;
-  };
-  this.GM_setValue=function (key,value) {
-    return localStorage[key]=value;
-  };
-}
 
 if(typeof(chrome) != "undefined"){
 	browser = "chrome";
@@ -256,15 +264,17 @@ if(typeof(opera) != "undefined"){
   browser = "opera";
 }
 
-// Check for Scriptish bug in Fennec browser (http://www.geoclub.de/viewtopic.php?f=117&t=62130&p=983614#p983614)
-this.GM_setValue("browser", browser);
-var test_browser = this.GM_getValue("browser");
-if (!test_browser) {
-  //console.log("Scriptish GM_getValue bug detected");
-  var GM_getValue_Orig = this.GM_getValue;
-  this.GM_getValue=function (key,def) {
-    return GM_getValue_Orig("scriptvals.GClittlehelper@httpwww.amshove.net."+key,def);
-  }
+if(browser !== "chrome"){
+	// Check for Scriptish bug in Fennec browser (http://www.geoclub.de/viewtopic.php?f=117&t=62130&p=983614#p983614)
+	this.GM_setValue("browser", browser);
+	var test_browser = this.GM_getValue("browser");
+	if (!test_browser) {
+	  //console.log("Scriptish GM_getValue bug detected");
+	  var GM_getValue_Orig = this.GM_getValue;
+	  this.GM_getValue=function (key,def) {
+		return GM_getValue_Orig("scriptvals.GClittlehelper@httpwww.amshove.net."+key,def);
+	  }
+	}
 }
 
 // Logging function
@@ -289,29 +299,59 @@ function gclh_error(modul,err){
   }
 }
 
-// Neues Speicherformat: Alles in einem Element - macht die Verarbeitung schneller (https://github.com/amshove/GC_little_helper/issues/39)
-var CONFIG = JSON.parse(GM_getValue( "CONFIG", '{}' ));
 
 //var gclhConfigKeys = JSON.parse((CONFIG["gclhConfigKeys"] === undefined?'{"settings_hide_advert_link":null,"settings_hide_line_breaks":null,"settings_hide_spoilerwarning":null,"settings_hide_hint":null,"settings_strike_archived":null,"settings_highlight_usercoords":null,"settings_map_hide_found":null,"settings_map_hide_hidden":null,"settings_map_hide_2":null,"settings_map_hide_9":null,"settings_map_hide_5":null,"settings_map_hide_3":null,"settings_map_hide_6":null,"settings_map_hide_453":null,"settings_map_hide_13":null,"settings_map_hide_1304":null,"settings_map_hide_4":null,"settings_map_hide_11":null,"settings_map_hide_137":null,"settings_map_hide_8":null,"settings_map_hide_1858":null,"settings_show_fav_percentage":null,"settings_show_vip_list":null,"settings_show_owner_vip_list":null,"remove_navi_social":null,"settings_map_layers":null,"settings_log_template_name[0]":null,"settings_custom_bookmark_target[0]":null,"settings_log_template[0]":null,"settings_log_template_name[1]":null,"settings_custom_bookmark_target[1]":null,"settings_log_template[1]":null,"settings_log_template_name[2]":null,"settings_custom_bookmark_target[2]":null,"settings_log_template[2]":null,"settings_log_template_name[3]":null,"settings_custom_bookmark_target[3]":null,"settings_log_template[3]":null,"settings_log_template_name[4]":null,"settings_custom_bookmark_target[4]":null,"settings_log_template[4]":null,"settings_log_template_name[5]":null,"settings_custom_bookmark_target[5]":null,"settings_log_template[5]":null,"settings_log_template_name[6]":null,"settings_custom_bookmark_target[6]":null,"settings_log_template[6]":null,"settings_log_template_name[7]":null,"settings_custom_bookmark_target[7]":null,"settings_log_template[7]":null,"settings_log_template_name[8]":null,"settings_custom_bookmark_target[8]":null,"settings_log_template[8]":null,"settings_log_template_name[9]":null,"settings_custom_bookmark_target[9]":null,"settings_log_template[9]":null,"browser":null,"settings_submit_log_button":null,"settings_log_inline":null,"settings_log_inline_tb":null,"settings_log_inline_pmo4basic":null,"settings_bookmarks_show":null,"settings_bookmarks_on_top":null,"settings_bookmarks_top_menu":null,"settings_bookmarks_search":null,"settings_bookmarks_search_default":null,"settings_redirect_to_map":null,"settings_hide_facebook":null,"settings_hide_socialshare":null,"settings_hideable_souvenirs":null,"settings_hide_disclaimer":null,"settings_hide_cache_notes":null,"settings_hide_empty_cache_notes":null,"settings_breaks_in_cache_notes":null,"settings_show_all_logs":null,"settings_show_all_logs_count":null,"settings_decrypt_hint":null,"settings_show_bbcode":null,"settings_show_datepicker":null,"settings_show_mail":null,"settings_show_mail_coordslink":null,"settings_show_eventday":null,"settings_date_format":null,"settings_show_google_maps":null,"settings_show_log_it":null,"settings_show_nearestuser_profil_link":null,"settings_show_homezone":null,"settings_homezone_radius":null,"settings_homezone_color":null,"settings_show_hillshadow":null,"settings_default_logtype":null,"settings_default_logtype_event":null,"settings_default_tb_logtype":null,"settings_bookmarks_list":null,"settings_bookmarks_list_beta":null,"settings_autovisit":null,"settings_show_thumbnails":null,"settings_imgcaption_on_top":null,"settings_hide_avatar":null,"settings_show_big_gallery":null,"settings_automatic_friend_reset":null,"settings_show_long_vip":null,"settings_load_logs_with_gclh":null,"settings_configsync_enabled":null,"settings_map_add_layer":null,"settings_map_default_layer":null,"settings_hide_map_header":null,"settings_spoiler_strings":null,"settings_replace_log_by_last_log":null,"settings_hide_top_button":null,"settings_show_real_owner":null,"settings_hide_visits_in_profile":null,"settings_log_signature_on_fieldnotes":null,"settings_map_hide_sidebar":null,"settings_hover_image_max_size":null,"settings_vip_show_nofound":null,"settings_use_gclh_layercontrol":null,"settings_bookmarks_title[0]":null,"settings_bookmarks_title[1]":null,"settings_bookmarks_title[2]":null,"settings_bookmarks_title[3]":null,"settings_bookmarks_title[4]":null,"settings_bookmarks_title[5]":null,"settings_bookmarks_title[6]":null,"settings_bookmarks_title[7]":null,"settings_bookmarks_title[8]":null,"settings_bookmarks_title[9]":null,"new_version":null,"last_logtext":null,"HiddenSouvenirs":null,"email_sendaddress":null,"email_mailcopy":null,"settings_log_signature":null,"settings_tb_signature":null,"friends_founds_last":null,"show_box[0]":null,"gclhWasGoogleAlertShown":null,"vips":null,"home_lat":null,"home_lng":null,"uid":null,"settings_new_width":null,"settings_mail_signature":null,"map_width":null,"token":null,"settings_configsync_configid":null}':CONFIG["gclhConfigKeys"]));
 var gclhConfigKeysIgnoreForBackup = {"token": true,  "settings_configsync_configid": true, "doPostBack_after_redirect": true, "dbToken": true, "hide_contribute": true};
 
 function setValue( name, value ){
+  var defer = $.Deferred();
   CONFIG[name] = value;
   /*if(gclhConfigKeys[name] === undefined && !gclhConfigKeysIgnoreForBackup[name]){
     gclhConfigKeys[name] = null;
     CONFIG["gclhConfigKeys"] = JSON.stringify(gclhConfigKeys);
   }*/
-  GM_setValue("CONFIG",JSON.stringify(CONFIG));
+  if(browser === "chrome"){
+	chrome.runtime.sendMessage({setGclhConfig: JSON.stringify(CONFIG)}, function(){ 
+		defer.resolve();
+	});
+  }
+  else{
+	GM_setValue("CONFIG",JSON.stringify(CONFIG));
+	defer.resolve();
+  }
+  
+  return defer.promise();
+}
+
+function setValueSet( data ){
+  var defer = $.Deferred();
+  
+  for(key in data){
+	CONFIG[key] = data[key]; 
+  }
+  
+  if(browser === "chrome"){
+	chrome.runtime.sendMessage({setGclhConfig: JSON.stringify(CONFIG)}, function(e){ 
+		defer.resolve();
+	});
+  }
+  else{
+	GM_setValue("CONFIG",JSON.stringify(CONFIG));
+	defer.resolve();
+  }
+  
+  return defer.promise();
 }
 
 function getValue( name, defaultValue ){
   if(CONFIG[name] === undefined) { // Zum Migrieren aus dem alten Speicherformat
-      
+    
+	CONFIG[name] = GM_getValue(name,defaultValue); 
+    	
     if(defaultValue === undefined){
         return undefined;
-    }
-    
-    CONFIG[name] = GM_getValue(name,defaultValue); 
+    }    
+	
     setValue(name,CONFIG[name]);
   }
   /*if(gclhConfigKeys[name] === undefined && !gclhConfigKeysIgnoreForBackup[name]){
@@ -527,11 +567,15 @@ if(typeof opera == "object"){
 		main();
 	}
 }
+else if(browser === "chrome"){		
+	main();		
+}
 else{
+  CONFIG = JSON.parse(GM_getValue( "CONFIG", '{}' ))
   main();
 }
 
-} // ENDIF don't run on advertisement iframes
+
 
 // Wrapper, um zu pruefen auf welche Seite der Link zeigt - um zu vermeiden, die URL-Abfrage mehrfach im Quelltext wiederholen zu muessen
 function is_link(name,url){
@@ -797,7 +841,7 @@ function trim(s) {
 
 // Show Update-Banner
 if(parseFloat(getValue("new_version",scriptVersion)) > scriptVersion){
- $("body").prepend("<div align='center' style='background-color: #FF8888;'>There is an update available for <b>GC little helper</b> - you can update <a href='http://www.amshove.net/greasemonkey/updates.php' target='_blank'>here</a></div>");
+ $("body").prepend("<div align='center' style='background-color: #FF8888;'>There is an update available for <b>GC little helper</b> - you can update <a href='https://www.amshove.net/greasemonkey/updates.php' target='_blank'>here</a></div>");
 }
 
 // Show Contribute-Banner
@@ -5446,45 +5490,6 @@ try{
   addLinkEvent('lnk_findplayer',createFindPlayerForm);
 }catch(e){ gclh_error("Apply Special Links",e); }
 
-//Function to copy all settings to copy all settings to the https context an reload the page
-function httpsConfigSync(){
-	if(browser === "chrome"){
-		var iFrameWindow = null;
-		window.addEventListener("message", function(ev){
-			if (event.origin !== "https://www.geocaching.com")
-			{
-				return;
-			}
-			
-			if(ev.data === "httpsConfigSyncStep1"){
-				iFrameWindow.postMessage(GM_getValue("CONFIG","{ }"), "https://www.geocaching.com");
-			}
-			else if(ev.data === "httpsConfigSyncStep2"){
-				$('#httpsConfigSyncIframe').remove();
-				
-				if(document.location.href.indexOf("#")==-1 || document.location.href.indexOf("#") == document.location.href.length -1){
-					$('html, body').animate({ scrollTop: 0 }, 0);
-					document.location.reload(true);
-				}
-				else{
-					document.location.replace(document.location.href.slice(0,document.location.href.indexOf("#")));
-				}
-			}
-		}, false);
-		
-		iFrameWindow = $('<iframe id="httpsConfigSyncIframe" src="https://geocaching.com/dummy#httpsConfigSync" height=1 width=1 style="display:hidden"></iframe>').appendTo('body')[0].contentWindow;
-	}
-	else{
-		if(document.location.href.indexOf("#")==-1 || document.location.href.indexOf("#") == document.location.href.length -1){
-			$('html, body').animate({ scrollTop: 0 }, 0);
-			document.location.reload(true);
-		}
-		else{
-			document.location.replace(document.location.href.slice(0,document.location.href.indexOf("#")));
-		}
-	}
-  }
-
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 // Config-Page
@@ -6096,6 +6101,11 @@ function gclh_showConfig(){
 
   // Save Button
   function btnSave(type){
+    var settings = {};
+    function setValue(key, value){
+		settings[key] = value;
+	}
+	
     var value = document.getElementById("settings_home_lat_lng").value;
 	var latlng = toDec(value);
     if(latlng){      
@@ -6277,34 +6287,19 @@ function gclh_showConfig(){
       if(document.getElementById('settings_custom_bookmark_target['+i+']').checked) setValue('settings_custom_bookmark_target['+i+']',"_blank");
       else setValue('settings_custom_bookmark_target['+i+']',"");
     }
-	if(type === "upload"){
-		gclh_sync_DBSave().done(function(){
-			httpsConfigSync();
-		});
-	}
-	else{
-		httpsConfigSync();
-	}
+	
+	setValueSet(settings).done(function(){ 
+		if(type === "upload"){
+			gclh_sync_DBSave().done(function(){
+				window.location.reload(false); 
+			});
+		}
+		else{
+			window.location.reload(false); 
+		}
+	});	
   }  
 }
-
-//Part2 of httpsConfigSync
-try{
-	if(document.location.href.match(/#httpsConfigSync/)){
-		window.addEventListener("message", function(ev){
-			if (event.origin !== "http://www.geocaching.com")
-			{
-				return;
-			}		
-			
-			GM_setValue("CONFIG",ev.data);
-			
-			window.parent.postMessage("httpsConfigSyncStep2", "http://www.geocaching.com");
-		}, false);
-		
-		window.parent.postMessage("httpsConfigSyncStep1", "http://www.geocaching.com");
-	}
-}catch(e){ gclh_error("httpsConfigSync",e); }
 
 // Show Config-Links
 try{
@@ -6341,7 +6336,7 @@ try{
 
 // Check for Updates
 function checkVersion(){
-  var url = "http://www.amshove.net/greasemonkey/updates.php";
+  var url = "https://www.amshove.net/greasemonkey/updates.php";
   var time = new Date().getTime();
   var next_check = 24 * 60 * 60 * 1000; // Milliseconds
   var last_check = parseInt(getValue("update_last_check"),10);
@@ -6411,7 +6406,7 @@ if(is_page("profile") || (settings_sync_autoImport && (new Date() - settings_syn
     }  
     
     //Reload page
-    httpsConfigSync();
+    window.location.reload(false); 
   }
   
   var gclh_sync_DB_Client = null; 
@@ -6650,7 +6645,7 @@ if(is_page("profile") || (settings_sync_autoImport && (new Date() - settings_syn
 
 } // Google Maps site
 } // Function "main" 
-
+}
 //Helperfunctions to inject functions into site context
 function injectPageScript(scriptContent){
     var script = document.createElement("script");
