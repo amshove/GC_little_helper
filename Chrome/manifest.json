@@ -13,7 +13,7 @@
    },
    "permissions": [
         "http://*.amshove.net/*",
-		"https://*.amshove.net/*"
+		"https://*.amshove.net/*",
         "storage"
    ],
    "converted_from_user_script": true,
