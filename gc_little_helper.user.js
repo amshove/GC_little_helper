@@ -6461,15 +6461,18 @@ if(is_page("profile") || (settings_sync_autoImport && (new Date() - settings_syn
   // Sync: Set config data
   function sync_setConfigData(data){
     var parsedData = JSON.parse(data);
-
+	var settings = {};
+	
     for(key in parsedData){
 		if(!gclhConfigKeysIgnoreForBackup[key]){
-			setValue(key, parsedData[key]);
+			settings[key] = parsedData[key];
 		}
     }  
     
-    //Reload page
-    window.location.reload(false); 
+	setValueSet(settings).done(function (){
+		//Reload page
+		window.location.reload(false);
+	});
   }
   
   var gclh_sync_DB_Client = null; 
