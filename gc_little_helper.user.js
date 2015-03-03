@@ -2611,6 +2611,15 @@ var mainGC = function () {
     try {
         if (settings_show_mail && document.location.href.match(/^https?:\/\/www\.geocaching\.com\/email\//) && document.getElementById("ctl00_ContentBody_SendMessagePanel1_tbMessage")) {
             // Prevent deleting content
+			injectPageScriptFunction(function(){
+				var oldClearSearch = clearSearch;			
+				clearSearch = function(obj) {
+					if (obj.id !== "ctl00_ContentBody_SendMessagePanel1_tbMessage"){
+						oldClearSearch(obj);
+					}
+				};
+			},"()");
+			
             document.getElementById("ctl00_ContentBody_SendMessagePanel1_tbMessage").setAttribute("onfocus", "");
 
             // Default settings
