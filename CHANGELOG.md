@@ -1,3 +1,7 @@
+#### v11.4
+- Fix: Versionierung
+
+--
 #### v11.3
 - Fix: Works now with Firefox 36
 - New: Download Button for Lab Cache Gpx Files. Fixes #120 
