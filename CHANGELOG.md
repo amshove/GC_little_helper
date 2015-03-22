@@ -1,16 +1,15 @@
 #### v11.3
-- New: Download Button for Lab Cache Gpx Files. Dixes #120 
--Mod: added labs.geocaching.com to the chrome manifest.
+- Fix: Works now with Firefox 36
+- New: Download Button for Lab Cache Gpx Files. Fixes #120 
 - Fix: GClh doesn't work on new settings pages (fixes #118)
--Mod: updated sync_setConfigData for the new chrome storage concept
--mod: new initialisation concept (just a try to remove the nesting and make it more structured)
--Fix: settings storage is broken for the map page
--Add: sync settings with chrome sync
--Fix: warnings on the map page while checking for updates
+- Mod: updated sync_setConfigData for the new chrome storage concept
+- mod: new initialisation concept (just a try to remove the nesting and make it more structured)
+- Fix: settings storage is broken for the map page
+- Add: sync settings with chrome sync
+- Fix: warnings on the map page while checking for updates
 - Fix: geochecker link causes security error (fixes #130)
 - New: Added Fancybox on the picture list in the description. (closes #124)
 - Fix: Update alert without function? (fixes #111)
-- Fix: GClh doesn't work on new settings pages (fixes #118)
 - Fix: Link from google maps to gc.com is missing (fixes #125)
 
 --
