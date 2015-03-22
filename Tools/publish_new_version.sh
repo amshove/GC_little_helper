@@ -27,7 +27,7 @@ rm CHANGELOG.bak
 # Update version number
 echo "Updating version number ..."
 sed -i s/@version\ \ \ \ \ \ \ \ [0-9.]*/@version\ \ \ \ \ \ \ \ $NEW_VERS/ gc_little_helper.user.js
-sed -i s/var\ scriptVersion\ =\ \"[0-9.]*\"/var\ scriptVersion\ =\ \"$NEW_VERS\"/ gc_little_helper.user.js
+sed -i s/c.scriptVersion\ =\ \"[0-9.]*\"/c.scriptVersion\ =\ \"$NEW_VERS\"/ gc_little_helper.user.js
 
 # Create Chrome Package
 echo "Creating Chrome package ..."
