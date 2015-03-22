@@ -4,6 +4,8 @@
 // @version        11.2
 // @include        http://www.geocaching.com/*
 // @include        https://www.geocaching.com/*
+// @include        http://labs.geocaching.com/*
+// @include        https://labs.geocaching.com/*
 // @include        http://maps.google.tld/*
 // @include        http://www.google.tld/maps*
 // @include        https://maps.google.tld/*
@@ -6085,6 +6087,48 @@ var mainGC = function () {
         gclh_error("Apply Special Links", e);
     }
 
+// Add Download Link to Lab cache Pages
+    try {
+        if (document.location.href.match(/^https?:\/\/labs\.geocaching\.com\/Adventures\/Details\/(\w|\-)*/)) {
+            /*
+             * removing -> background-image: -moz-linear-gradient(left center , rgba(157, 178, 81, 0) 0%, #9db251 100%);
+             * This gets a clearer view, if more than one Navigation Button is Displayed
+             */
+            for(var i=0 ; i < document.styleSheets.length ; i++){
+                if(document.styleSheets[i].href && document.styleSheets[i].href.match(/^https?:\/\/labs\.geocaching\.com\/Content\/css\/main\?[v]\=\w*/)){
+                    document.styleSheets[i].cssRules[384].style['background-image'] = "none";
+                }
+            }
+
+            /*
+             * Example Path for Site      /Adventures/Details/90ced6d4-0a22-4c19-a491-7ae17d489c60
+             * Example Path for Download  /Adventures/DetailsAsGPX/90ced6d4-0a22-4c19-a491-7ae17d489c60
+             *
+             * Get current Path with GUID and create download Path
+             */
+            pathName = window.location.pathname;
+            pathValues = pathName.split("/");
+            downloadPath = "/Adventures/DetailsAsGPX/" + pathValues[3];
+
+            /*
+             * Move existing Leaderboard Button to the left
+             * Create new Button with Download Link
+             */
+            $('#leaderboard')
+                .css({
+                    "margin-right" : "0px",
+                    "padding-right": "9px",
+                    "padding-left" : "9px",
+                    "right"        : "184px"
+                })
+                .parent()
+                .append(
+                    '<a id="dl_link" class="link-leaderboard" href="' + downloadPath + '" style="padding-left: 9px;">Download‌ as‌ GPX‌ File</a>'
+                );
+        }
+    } catch (e) {
+        gclh_error("Lab Gpx Downlad Link hinzufügen", e);
+    }
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 // Config-Page
