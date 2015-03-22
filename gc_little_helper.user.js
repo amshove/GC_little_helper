@@ -1,7 +1,7 @@
 ﻿// ==UserScript==
 // @name           GC little helper
 // @namespace      http://www.amshove.net
-// @version        11.2
+// @version        11.3
 // @include        http://www.geocaching.com/*
 // @include        https://www.geocaching.com/*
 // @include        http://labs.geocaching.com/*
