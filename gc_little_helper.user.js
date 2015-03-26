@@ -142,8 +142,8 @@ var browserInit = function (c) {
         }
 
         chrome.runtime.sendMessage({"getGclhConfig": ""}, function (data) {
-            if (typeof(data["GclhConfig"]) !== "undefined") {
-                c.CONFIG = JSON.parse(data["GclhConfig"]);
+            if (typeof(data) !== "undefined") {
+                c.CONFIG = data;
             }
             else {
                 c.CONFIG = {};
@@ -7046,7 +7046,7 @@ var mainGC = function () {
 // Config Sync
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
-    if (is_page("profile") || (settings_sync_autoImport && (new Date() - settings_sync_last) > settings_sync_time)) {
+    if (is_page("profile") || (settings_sync_autoImport && (settings_sync_last.toString() === "Invalid Date" || (new Date() - settings_sync_last) > settings_sync_time)) ){
         // Sync: get config data
         function sync_getConfigData() {
             var data = {};
@@ -7083,8 +7083,10 @@ var mainGC = function () {
         var gclh_sync_DB_Client = null;
 
         function gclh_sync_DB_CheckAndCreateClient(userToken) {
+			var deferred = $.Deferred();
             if (gclh_sync_DB_Client != null && gclh_sync_DB_Client.isAuthenticated()) {
-                return;
+				deferred.resolve();
+                return deferred.promise();
             }
             $('#syncDBLoader').show();
             setValue("dbToken", "");
@@ -7112,53 +7114,54 @@ var mainGC = function () {
                     document.getElementById('btn_DBSave').disabled = false;
                     document.getElementById('btn_DBLoad').disabled = false;
                 }
+				
+				deferred.resolve();
             });
-
+			
+			return deferred.promise();
         }
 
         function gclh_sync_DBSave() {
             var deferred = $.Deferred();
-            gclh_sync_DB_CheckAndCreateClient();
+            gclh_sync_DB_CheckAndCreateClient().done(function(){
+				$('#syncDBLoader').show();
 
-            $('#syncDBLoader').show();
-
-            gclh_sync_DB_Client.writeFile("GCLittleHelperSettings.json", sync_getConfigData(), {}, function () {
-                $('#syncDBLoader').hide();
-                deferred.resolve();
-            });
-
+				gclh_sync_DB_Client.writeFile("GCLittleHelperSettings.json", sync_getConfigData(), {}, function () {
+					$('#syncDBLoader').hide();
+					deferred.resolve();
+				});
+			}).fail(function(){deferred.reject();});
             return deferred.promise();
         }
 
         function gclh_sync_DBLoad() {
             var deferred = $.Deferred();
-            gclh_sync_DB_CheckAndCreateClient();
+            gclh_sync_DB_CheckAndCreateClient().done(function(){
+				$('#syncDBLoader').show();
 
-            $('#syncDBLoader').show();
-
-            gclh_sync_DB_Client.readFile("GCLittleHelperSettings.json", {}, function (error, data) {
-                if (data != null && data != "") {
-                    sync_setConfigData(data);
-                    $('#syncDBLoader').hide();
-                    deferred.resolve();
-                }
-            });
-
+				gclh_sync_DB_Client.readFile("GCLittleHelperSettings.json", {}, function (error, data) {
+					if (data != null && data != "") {
+						sync_setConfigData(data);
+						$('#syncDBLoader').hide();
+						deferred.resolve();
+					}
+				});
+			}).fail(function(){deferred.reject();});
             return deferred.promise();
         }
 
         function gclh_sync_DBHash() {
             var deferred = $.Deferred();
-            gclh_sync_DB_CheckAndCreateClient();
+			
+            gclh_sync_DB_CheckAndCreateClient().done(function(){
+				$('#syncDBLoader').show();
 
-            $('#syncDBLoader').show();
-
-            gclh_sync_DB_Client.stat("GCLittleHelperSettings.json", {}, function (error, data) {
-                if (data != null && data != "") {
-                    deferred.resolve(data.versionTag);
-                }
-            });
-
+				gclh_sync_DB_Client.stat("GCLittleHelperSettings.json", {}, function (error, data) {
+					if (data != null && data != "") {
+						deferred.resolve(data.versionTag);
+					}
+				});
+			}).fail(function(){deferred.reject();});;
             return deferred.promise();
         }
 
@@ -7289,26 +7292,27 @@ var mainGC = function () {
                 document.getElementById('gclh_sync_lnk').addEventListener("click", gclh_sync_showConfig, false);
             }
         }
-
-        if (settings_sync_autoImport && (new Date() - settings_sync_last) > settings_sync_time) {
+		
+        if (settings_sync_autoImport && (settings_sync_last.toString() === "Invalid Date" || (new Date() - settings_sync_last) > settings_sync_time) && document.URL.indexOf("#access_token") === -1) {
             gclh_sync_DBHash().done(function (hash) {
                 if (hash != settings_sync_hash) {
                     gclh_sync_DBLoad().done(function () {
                         settings_sync_last = new Date();
                         settings_sync_hash = hash;
-                        setValue("settings_sync_last", settings_sync_last);
-                        setValue("settings_sync_hash", settings_sync_hash);
-
-                        if (is_page("profile")) {
-                            //Reload page
-                            if (document.location.href.indexOf("#") == -1 || document.location.href.indexOf("#") == document.location.href.length - 1) {
-                                $('html, body').animate({scrollTop: 0}, 0);
-                                document.location.reload(true);
-                            }
-                            else {
-                                document.location.replace(document.location.href.slice(0, document.location.href.indexOf("#")));
-                            }
-                        }
+                        setValue("settings_sync_last", settings_sync_last.toString()).done(function(){
+							setValue("settings_sync_hash", settings_sync_hash).done(function(){
+								if (is_page("profile")) {
+									//Reload page
+									if (document.location.href.indexOf("#") == -1 || document.location.href.indexOf("#") == document.location.href.length - 1) {
+										$('html, body').animate({scrollTop: 0}, 0);
+										document.location.reload(true);
+									}
+									else {
+										document.location.replace(document.location.href.slice(0, document.location.href.indexOf("#")));
+									}
+								}
+							});
+						});                            
                     });
                 }
             });
@@ -7405,7 +7409,9 @@ function setValue(name, value) {
      CONFIG["gclhConfigKeys"] = JSON.stringify(gclhConfigKeys);
      }*/
     if (browser === "chrome") {
-        chrome.runtime.sendMessage({setGclhConfig: JSON.stringify(CONFIG)}, function () {
+		var data2Store = {};
+		data2Store[name] = value;
+        chrome.runtime.sendMessage({setGclhConfig: data2Store}, function () {
             defer.resolve();
         });
     }
@@ -7419,13 +7425,15 @@ function setValue(name, value) {
 
 function setValueSet(data) {
     var defer = $.Deferred();
-
+	var data2Store = {};
+	
     for (key in data) {
         CONFIG[key] = data[key];
+        data2Store[key] = data[key];
     }
 
     if (browser === "chrome") {
-        chrome.runtime.sendMessage({setGclhConfig: JSON.stringify(CONFIG)}, function (e) {
+        chrome.runtime.sendMessage({setGclhConfig: data2Store}, function (e) {
             defer.resolve();
         });
     }
