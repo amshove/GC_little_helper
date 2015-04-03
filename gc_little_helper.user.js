@@ -849,8 +849,8 @@ var mainGC = function () {
 // Function to get the Finds out of the login-Text-Box
     function get_my_finds() {
         var finds = "";
-        if (getElementsByClass('SignedInText')[0]) {
-            finds = parseInt(getElementsByClass('SignedInText')[0].getElementsByTagName("strong")[1].innerHTML.replace(/[,.]/, ''));
+        if ($('.li-user-info').children().length >= 2) {
+            finds = parseInt($('.li-user-info').children().next().text().match(/[0-9]+/));
         }
         return finds;
     }
@@ -2213,9 +2213,8 @@ var mainGC = function () {
         if (settings_show_bbcode && (document.location.href.match(/^https?:\/\/www\.geocaching\.com\/seek\/log\.aspx\?(id|guid|ID|wp|LUID|PLogGuid)\=/) || document.location.href.match(/^https?:\/\/www\.geocaching\.com\/track\/log\.aspx\?(id|wid|guid|ID|LUID|PLogGuid)\=/)) && document.getElementById('litDescrCharCount')) {
             // Get finds to replace #found# variable
             finds = get_my_finds();
-            if (getElementsByClass('SignedInProfileLink')[0]) {
-                var me = getElementsByClass('SignedInProfileLink')[0].innerHTML;
-            }
+            
+            var me = $('.li-user-info').children().first().text();            
 
             gclh_add_insert_fkt("ctl00_ContentBody_LogBookPanel1_uxLogInfo");
 
@@ -2665,7 +2664,8 @@ var mainGC = function () {
             // Add Mail-Signature
             if (getValue("settings_mail_signature", "") != "") {
                 var me = "#me#";
-                if (getElementsByClass("SignedInProfileLink")[0]) me = getElementsByClass("SignedInProfileLink")[0].innerHTML;
+				var newName = $('.li-user-info').children().first().text();
+                if (newName) me = newName;
                 document.getElementById("ctl00_ContentBody_SendMessagePanel1_tbMessage").innerHTML += "\n\n" + getValue("settings_mail_signature").replace(/#me#/g, me);
             }
         }
@@ -2683,8 +2683,9 @@ var mainGC = function () {
                 if (cache_type.match(/event/i)) {
                     select_val = settings_default_logtype_event;
                 }
+				
                 //Ownername == Username
-                else if ($('.PostLogList').find('a[href*="http://www.geocaching.com/profile/?guid="]').text().trim() == $('.SignedInProfileLink').first().text().trim()) {
+                else if ($('.PostLogList').find('a[href*="http://www.geocaching.com/profile/?guid="]').text().trim() == $('.li-user-info').children().text().trim()) {
                     select_val = settings_default_logtype_owner;
                 }
                 else {
@@ -2732,9 +2733,9 @@ var mainGC = function () {
             window.addEventListener("load", gclh_setFocus, false);
 
             // Replace #found# variable
-            if (getElementsByClass('SignedInText')[0]) {
+            if ($('.li-user-info').children().length > 0) {
                 var finds = get_my_finds();
-                var me = getElementsByClass('SignedInProfileLink')[0].innerHTML;
+                var me = $('.li-user-info').children().first().text();               
                 var owner = document.getElementById('ctl00_ContentBody_LogBookPanel1_WaypointLink').nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML;
                 document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML = document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML.replace(/#found_no#/g, finds);
                 finds++;
@@ -2784,7 +2785,8 @@ var mainGC = function () {
             // Replace #found# variable
             if (getElementsByClass('SignedInText')[0] && document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo')) {
                 var finds = get_my_finds();
-                var me = getElementsByClass('SignedInProfileLink')[0].innerHTML;
+				
+                var me = $('.li-user-info').children().first().text();
                 var owner = document.getElementById('ctl00_ContentBody_LogBookPanel1_WaypointLink').nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML;
                 document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML = document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML.replace(/#found_no#/g, finds);
                 finds++;
@@ -4179,7 +4181,7 @@ var mainGC = function () {
 
 // VIP
     try {
-        if (settings_show_vip_list && getElementsByClass("SignedInProfileLink")[0] && (is_page("cache_listing") || document.location.href.match(/^https?:\/\/www\.geocaching\.com\/my\//) || document.location.href.match(/^https?:\/\/www\.geocaching\.com\/my\/myfriends\.aspx/) || document.location.href.match(/^https?:\/\/www\.geocaching\.com\/profile\//))) {
+        if (settings_show_vip_list && $('.li-user-info').children().first() && (is_page("cache_listing") || document.location.href.match(/^https?:\/\/www\.geocaching\.com\/my\//) || document.location.href.match(/^https?:\/\/www\.geocaching\.com\/my\/myfriends\.aspx/) || document.location.href.match(/^https?:\/\/www\.geocaching\.com\/profile\//))) {
             var img_vip_off = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAKCAYAAAC9vt6cAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9sHDhEzBX83tZcAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAsElEQVQoz6WSsQ2DUAxEz4gdfkdBQQUlDAU9E0ALHQWLsMAfA8o/BNVLkYCS0ETkGstn6+kk2yShPxRLEtxjmJmio8nzXN57SZL3XkVRnEtHNTNlWaZ5nj9AAHRdR9M0ANR1Td/38Iz2UZdlIUmS0zsB67rinGPfd5xzbNt2AUgiTVOmaboCAMqypG1bqqo6ve8E77oAhmEgiiLGcbwHCCEQxzEhhJ8B9hrcPqP9+0gPbh/tf/c8szwAAAAASUVORK5CYII=";
             var img_vip_on = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAKCAYAAAC9vt6cAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9sHDhE0Aq4StvMAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAzklEQVQoz6WSwQvBcBTHP7/lanFT3DdzV9yw+RNc8E/s6A/YSa6KUrs4u4omB6KUKJoc5a+Q5rRlOCz7Xl7feu/zXu89AXjEUAKgszb/KrbKPSTfDJo2t8MdgNvhzrBlB0l+tMo9+o0R+8kxgASAgqFynrsAnGYumqF+deysTepmhZW9/QZouoLrXHk+nlwWVzRd+TnytOtQahfDOwBI51LImSTLwQo5I5POpn5O8Cnp3WiGyma8o1BXIi8yDKgpCEmQr0YHCMCLc0YR95Fe0bc6eQ97MqYAAAAASUVORK5CYII=";
             var vips = getValue("vips", false);
@@ -4315,7 +4317,7 @@ var mainGC = function () {
                 vips = vips.replace(/, (?=,)/g, ",null");
                 vips = JSON.parse(vips);
             }
-            var myself = getElementsByClass("SignedInProfileLink")[0].innerHTML;
+            var myself = $('.li-user-info').children().first().text();
             var gclh_build_vip_list = function () {
             };
 
@@ -5796,8 +5798,7 @@ var mainGC = function () {
             style.innerHTML = css;
             head.appendChild(style);
 
-            if (getElementsByClass('SignedInProfileLink')[0])
-                var me = getElementsByClass('SignedInProfileLink')[0].innerHTML;
+            var me = $('.li-user-info').children().first().text();                
             var owner = document.getElementById("ctl00_ContentBody_BugDetails_BugOwner").innerHTML;
             var trLogs = document.getElementsByClassName("Data");
             for (var i = 0; i < trLogs.length; i += 2) {
