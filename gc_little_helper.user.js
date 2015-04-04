@@ -850,7 +850,7 @@ var mainGC = function () {
     function get_my_finds() {
         var finds = "";
         if ($('.li-user-info').children().length >= 2) {
-            finds = parseInt($('.li-user-info').children().next().text().match(/[0-9]+/));
+            finds = parseInt($('.li-user-info').children().next().text().match(/[0-9,\.]+/)[0].replace(/[,\.]/,""));
         }
         return finds;
     }
