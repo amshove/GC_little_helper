@@ -1241,14 +1241,8 @@ var mainGC = function () {
                 script.innerHTML = code;
                 document.getElementsByTagName("body")[0].appendChild(script);
 
-                var searchfield = "<input onKeyDown='if(event.keyCode==13) { gclh_search(); return false; }' type='text' size='6' name='navi_search' id='navi_search' style='margin-top: 2px; padding: 1px; font-weight: bold; font-family: sans-serif; border: 2px solid #778555; border-radius: 7px 7px 7px 7px; -moz-border-radius: 7px; -khtml-border-radius: 7px; background-color:#d8cd9d' value='" + settings_bookmarks_search_default + "'>";
-        if(document.getElementsByClassName("menu").length > 0){
-            var menu = document.getElementsByClassName("menu")[0];
-            menu.innerHTML += searchfield;
-        }else{
-            var nav_list = document.getElementById('Navigation').childNodes[1];
-            nav_list.innerHTML += searchfield;
-        }
+                var searchfield = "<li><input onKeyDown='if(event.keyCode==13) { gclh_search(); return false; }' type='text' size='6' name='navi_search' id='navi_search' style='margin-top: 8px; padding: 1px; font-weight: bold; font-family: sans-serif; border: 2px solid #778555; border-radius: 7px 7px 7px 7px; -moz-border-radius: 7px; -khtml-border-radius: 7px; background-color:#d8cd9d' value='" + settings_bookmarks_search_default + "'></li>";
+				$(".Menu").append(searchfield);
             }
 
             //Chrome menu hover fix / Language selector fix
