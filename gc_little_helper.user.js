@@ -263,8 +263,9 @@ var variablesInit = function (c) {
     c.settings_log_inline_pmo4basic = getValue("settings_log_inline_pmo4basic", false);
     // Settings: Show Bookmarks
     c.settings_bookmarks_show = getValue("settings_bookmarks_show", true);
+	c.settings_change_header_layout = getValue("settings_change_header_layout", true);
     // Settings: Bookmarks on Top
-    c.settings_bookmarks_on_top = getValue("settings_bookmarks_on_top", true);
+    c.settings_bookmarks_on_top = getValue("settings_bookmarks_on_top", true);    
     c.settings_bookmarks_top_menu = getValue("settings_bookmarks_top_menu", "true");
     c.settings_bookmarks_search = getValue("settings_bookmarks_search", "true");
     c.settings_bookmarks_search_default = getValue("settings_bookmarks_search_default", "");
@@ -1127,6 +1128,23 @@ var mainGC = function () {
         }
     } catch (e) {
         gclh_error("Sum up all FP and BM entries on public profile pages", e);
+    }
+	
+//Change Header layout
+    try {
+        if (!is_page("map") && settings_change_header_layout) {
+            $('.li-upgrade').remove();
+			$('.ProfileWidget').css("margin-top", "-63px");
+			$('#ctl00_siteHeader').find(".container").prepend($('#Navigation').find(".container").remove().get().reverse());
+			var head = document.getElementsByTagName('head')[0];
+			var style = document.createElement('style');
+			style.type = 'text/css';
+			style.innerHTML = ".Menu li a, .Menu li a:link, .Menu li a:visited { color: #93b516 !important; } ul.Menu>li>a:hover,ul.Menu>li>a:focus { color: #FFFFFF !important;}";
+			head.appendChild(style);
+			$('#ctl00_A1').css("-webkit-filter","invert(60%)").css("-moz-filter","invert(60%)").css("filter","invert(60%)").css("visibility", "visible").css("padding-top", "18px");
+        }
+    } catch (e) {
+        gclh_error("Change Header layout", e);
     }
 
 // Bookmark-Liste im Profil
@@ -6277,7 +6295,8 @@ var mainGC = function () {
             html += "<br><br>";
             html += "<h4 class='gclh_headline2'>Global</h4>";
             html += "Home-Coords: <input class='gclh_form' type='text' id='settings_home_lat_lng' value='" + DectoDeg(getValue("home_lat"), getValue("home_lng")) + "'>" + show_help("The Home-Coords are filled automatically if you update your Home-Coords on gc.com. If it doesn\'t work you can insert them here. These Coords are used for some special Links (Nearest List, Nearest Map, ..) and for the homezone-circle on the map.") + "<br>";
-            html += checkbox('settings_bookmarks_on_top', "Show <a class='gclh_ref' href='#gclh_linklist' id='gclh_linklist_link_1'>Linklist</a> on top") + show_help("Show the Linklist on the top of the page - beside the other Links of gc.com. You can configure the Links at the end of this configuration-page.") + "<br/>";
+            html += checkbox('settings_change_header_layout', "Change header layout") + show_help("Change the header layout to save some vertical space.") + "<br/>";
+			html += checkbox('settings_bookmarks_on_top', "Show <a class='gclh_ref' href='#gclh_linklist' id='gclh_linklist_link_1'>Linklist</a> on top") + show_help("Show the Linklist on the top of the page - beside the other Links of gc.com. You can configure the Links at the end of this configuration-page.") + "<br/>";
             html += checkbox('settings_bookmarks_show', "Show <a class='gclh_ref' href='#gclh_linklist' id='gclh_linklist_link_2'>Linklist</a> in profile") + show_help("Show the Linklist at the side in your profile. You can configure the Links at the end of this configuration-page.") + "<br/>";
             html += checkbox('settings_hide_advert_link', 'Hide link to advertisement instructions') + "<br/>";
             html += checkbox('settings_hide_line_breaks', 'Hide superfluous line breaks') + "<br/>";
@@ -6818,6 +6837,7 @@ var mainGC = function () {
                 'settings_log_inline_tb',
                 'settings_bookmarks_show',
                 'settings_bookmarks_on_top',
+				'settings_change_header_layout',
                 'settings_bookmarks_search',
                 'settings_redirect_to_map',
                 'settings_hide_facebook',
@@ -7474,6 +7494,10 @@ function is_link(name, url) {
             if (url.match(/^http:\/\/www\.geocaching\.com\/profile/) || url.match(/^https:\/\/www\.geocaching\.com\/profile/)) return true;
             else return false;
             break;
+		case "map":
+			if (url.match(/^http:\/\/www\.geocaching\.com\/map/) || url.match(/^https:\/\/www\.geocaching\.com\/map/)) return true;
+			else return false;
+			break;
         default:
             return false;
     }
