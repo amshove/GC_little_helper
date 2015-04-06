@@ -1298,11 +1298,11 @@ var mainGC = function () {
 // Bookmarks on top - Beta Map
     try {
         if (settings_bookmarks_on_top && document.location.href.match(/^https?:\/\/www\.geocaching\.com\/map\//)) {
-//    var header = getElementsByClass("ui-block-b")[0];
-            var header = document.getElementsByTagName("header")[0];
-            if (header) {
+            if ($('.LogIn').length > 0) {
+				$('.MapsLogo').parent().css("width","250px");
                 var div = document.createElement("div");
-                div.style.float = 'left';
+                div.style = 'float: left; padding-left: 20px;';
+				
                 div.appendChild(document.createElement("br"));
 
                 for (var i = 0; i < settings_bookmarks_list_beta.length; i++) {
@@ -1310,7 +1310,7 @@ var mainGC = function () {
                     if (typeof(x) == "undefined" || typeof(x) == "object") continue;
 
                     var hyperlink = document.createElement("a");
-                    hyperlink.style.color = '#FFFFFF';
+                    hyperlink.style.color = '#93b516';
                     hyperlink.style.fontWeight = 'normal';
 
                     for (attr in bookmarks[x]) {
@@ -1325,7 +1325,7 @@ var mainGC = function () {
                     }
                 }
 
-                header.childNodes[3].appendChild(div);
+                $('.LogIn').parent().before(div).after($('.LogIn').remove()).remove();
             }
         }
     } catch (e) {
