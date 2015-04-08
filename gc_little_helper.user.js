@@ -3931,15 +3931,15 @@ var mainGC = function () {
     try {
         if (getValue("settings_new_width") > 0 && getValue("settings_new_width") != 950) {
             var width = getValue("settings_new_width");
-            var css = ".container { width: " + width + "px; }";
-            css += ".wrapper, nav .wrapper { width: "+width+"px; }";
-            css += "#Content .container { width: " + width + "px; }";
-            css += ".span-24 { width: " + width + "px; }";
-            css += ".span-20 { width: " + (width - 160) + "px; }";
-            css += ".span-16 { width: " + (width - 330) + "px; }";
+            var css = ".container { width: " + width + "px !important; }";
+            css += ".wrapper, nav .wrapper { width: "+width+"px !important; }";
+            css += "#Content .container { width: " + width + "px !important; }";
+            css += ".span-24 { width: " + width + "px !important; }";
+            css += ".span-20 { width: " + (width - 160) + "px !important; }";
+            css += ".span-16 { width: " + (width - 330) + "px !important; }";
 //    css += ".span-17 { width: "+(width-280)+"px; }";
-            css += ".span-17 { width: " + (width - 330) + "px; }";
-            css += ".span-19 { width: " + (width - 200) + "px; }";
+            css += ".span-17 { width: " + (width - 330) + "px !important; }";
+            css += ".span-19 { width: " + (width - 200) + "px !important; }";
             css += ".home-hero { background: url(\"/images/home/home-hero.jpg\") no-repeat scroll left 0 transparent; color: #FFFFFF; margin: 38px 0 30px; }";
 
             var head = document.getElementsByTagName('head')[0];
