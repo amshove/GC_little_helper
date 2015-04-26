@@ -4864,6 +4864,8 @@ var mainGC = function () {
                 "  text-decoration:underline;" +
                 "  position: relative;" +
                 "}" +
+                "a.gclh_thumb {" +  				
+				"overflow: visible !important; max-width: none !important;}" +
                 "a.gclh_thumb span {" +
                 "  visibility: hidden;" +
                 "  position: absolute;" +
@@ -5016,7 +5018,7 @@ var mainGC = function () {
             var tds = new Array();
             // Make images bigger
             for (var i = 0; i < links.length; i++) {
-                if (links[i].href.match(/^https?:\/\/imgcdn\.geocaching\.com\/(cache|track)\//) && links[i].childNodes[1] && links[i].childNodes[1].tagName == 'IMG') {
+                if (links[i].href.match(/^https?:\/\/img\.geocaching\.com\/(cache|track)\//) && links[i].childNodes[1] && links[i].childNodes[1].tagName == 'IMG') {
                     var thumb = links[i].childNodes[1];
                     thumb.style.width = "300px";
                     thumb.style.height = "auto";
