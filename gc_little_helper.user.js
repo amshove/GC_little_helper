@@ -1156,7 +1156,7 @@ var mainGC = function () {
 			head.appendChild(style);
 			var ctl00A1 = $('#ctl00_A1');
 			if(ctl00A1.length == 0){
-				ctl00A1 = $('ul.menu').before().prev().children().filter('img');
+				ctl00A1 = $('ul.menu').before().prev().children().filter('img').parent();
 			}
 			ctl00A1.css("visibility", "visible").css("padding-top", "18px").find("img").attr("src","https://www.geocaching.com/images/tlnmasters/geocaching-logo.png");
         }
