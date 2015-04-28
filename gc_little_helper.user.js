@@ -140,8 +140,13 @@ var browserInit = function (c) {
                 httpReq.send(typeof requestData.data == 'undefined' ? null : requestData.data);
             }
         }
-
+		
+		var initialConfigRecv = false;
         chrome.runtime.sendMessage({"getGclhConfig": ""}, function (data) {
+			if(initialConfigRecv){
+				return;
+			}
+			initialConfigRecv = true;
             if (typeof(data) !== "undefined") {
                 c.CONFIG = data;
             }
@@ -509,7 +514,7 @@ var start = function (c) {
         .then(function () {
             return variablesInit(c);
         })
-        .done(function () {
+        .done(function () {			
             if (document.location.href.match(/^(http|https):\/\/maps\.google\./) || document.location.href.match(/^(http|https):\/\/www\.google\.[a-zA-Z.]*\/maps/)) {
                 mainGMaps();
             }
@@ -1132,16 +1137,28 @@ var mainGC = function () {
 	
 //Change Header layout
     try {
-        if (!is_page("map") && settings_change_header_layout) {
-            $('.li-upgrade').remove();
-			$('.ProfileWidget').css("margin-top", "-63px");
-			$('#ctl00_siteHeader').find(".container").prepend($('#Navigation').find(".container").remove().get().reverse());
+        if (!is_page("map") && settings_change_header_layout) {			
+            $('.li-upgrade, .li-upgrade-btn').remove();
+			$('.ProfileWidget').css("margin-top", "-55px"); //.li-user
+			var siteHeader = $('#ctl00_siteHeader').find(".container");
+			if(siteHeader.length == 0){
+				siteHeader = $('.logo').parent();
+			}
+			var navigation = $('#Navigation').find(".container");
+			if(navigation.length == 0){
+				navigation = $('nav').find(".wrapper").children();
+			}
+			siteHeader.prepend(navigation.remove().get().reverse());
 			var head = document.getElementsByTagName('head')[0];
 			var style = document.createElement('style');
 			style.type = 'text/css';
 			style.innerHTML = ".Menu li a, .Menu li a:link, .Menu li a:visited { color: #93b516 !important; } ul.Menu>li>a:hover,ul.Menu>li>a:focus { color: #FFFFFF !important;}";
 			head.appendChild(style);
-			$('#ctl00_A1').css("visibility", "visible").css("padding-top", "18px").find("img").attr("src","https://www.geocaching.com/images/tlnmasters/geocaching-logo.png");
+			var ctl00A1 = $('#ctl00_A1');
+			if(ctl00A1.length == 0){
+				ctl00A1 = $('ul.menu').before().prev().children().filter('img');
+			}
+			ctl00A1.css("visibility", "visible").css("padding-top", "18px").find("img").attr("src","https://www.geocaching.com/images/tlnmasters/geocaching-logo.png");
         }
     } catch (e) {
         gclh_error("Change Header layout", e);
@@ -4866,7 +4883,7 @@ var mainGC = function () {
                 "}" +
                 "a.gclh_thumb {" +  				
 				"overflow: visible !important; max-width: none !important;}" +
-                "a.gclh_thumb span {" +
+				"a.gclh_thumb span {" +
                 "  visibility: hidden;" +
                 "  position: absolute;" +
                 "  top:-310px;" +
