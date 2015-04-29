@@ -1291,7 +1291,7 @@ var mainGC = function () {
                             $(this).removeClass('hover');
                             $('ul:first', this).css('visibility', 'hidden');
                         }
-                    );
+                    ).find(".SubMenu").css("margin-top: 0px;");
 
                     //Language selector fix
                     $('.LanguageSelector script').remove().appendTo('.LanguageSelector');
