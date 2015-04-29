@@ -1137,28 +1137,38 @@ var mainGC = function () {
 	
 //Change Header layout
     try {
-        if (!is_page("map") && settings_change_header_layout) {			
-            $('.li-upgrade, .li-upgrade-btn').remove();
-			$('.ProfileWidget').css("margin-top", "-55px"); //.li-user
-			var siteHeader = $('#ctl00_siteHeader').find(".container");
-			if(siteHeader.length == 0){
-				siteHeader = $('.logo').parent();
+        if (!is_page("map") && settings_change_header_layout) {	
+			if(document.URL.indexOf("messagecenter") !== -1){
+				$('.li-membership').remove();				
+				$('.profile-panel').css("margin-top", "-43px"); 				
+				$('.logo').parent().prepend($('nav').find(".wrapper").children().remove().get());
+				
+				var head = document.getElementsByTagName('head')[0];
+				var style = document.createElement('style');
+				style.type = 'text/css';
+				style.innerHTML = ".menu li a, .menu li a:link, .Menu li a:visited { color: #93b516 !important; } ul.menu>li>a:hover,ul.menu>li>a:focus { color: #FFFFFF !important;} ul.menu>li{display: inline;} .menu{height:18px; margin-top: -5px; margin-left: 250px;} .logo2 {  top: 18px; position: relative; } ";
+				head.appendChild(style);			
+				
+				$('ul.menu').before().prev().children().filter('img').parent().css("visibility", "visible").css("padding-top", "18px").find("img").attr("src","https://www.geocaching.com/images/tlnmasters/geocaching-logo.png").parent().addClass("logo2") ;
+		
+				$('nav').remove();
 			}
-			var navigation = $('#Navigation').find(".container");
-			if(navigation.length == 0){
-				navigation = $('nav').find(".wrapper").children();
+			else{
+				$('.li-upgrade').remove();
+				$('.ProfileWidget').css("margin-top", "-55px");					
+				$('#ctl00_siteHeader').find(".container").prepend($('#Navigation').find(".container").remove().get().reverse());
+				
+				var head = document.getElementsByTagName('head')[0];
+				var style = document.createElement('style');
+				style.type = 'text/css';
+				style.innerHTML = ".Menu li a, .Menu li a:link, .Menu li a:visited { color: #93b516 !important; } ul.Menu>li>a:hover,ul.Menu>li>a:focus { color: #FFFFFF !important;} .logged-in-user>li a {display: inline-block;}";
+				head.appendChild(style);				
+				
+				$('#ctl00_A1').css("visibility", "visible").css("padding-top", "18px").find("img").attr("src","https://www.geocaching.com/images/tlnmasters/geocaching-logo.png");			
 			}
-			siteHeader.prepend(navigation.remove().get().reverse());
-			var head = document.getElementsByTagName('head')[0];
-			var style = document.createElement('style');
-			style.type = 'text/css';
-			style.innerHTML = ".Menu li a, .Menu li a:link, .Menu li a:visited { color: #93b516 !important; } ul.Menu>li>a:hover,ul.Menu>li>a:focus { color: #FFFFFF !important;}";
-			head.appendChild(style);
-			var ctl00A1 = $('#ctl00_A1');
-			if(ctl00A1.length == 0){
-				ctl00A1 = $('ul.menu').before().prev().children().filter('img').parent();
-			}
-			ctl00A1.css("visibility", "visible").css("padding-top", "18px").find("img").attr("src","https://www.geocaching.com/images/tlnmasters/geocaching-logo.png");
+		
+           	
+			
         }
     } catch (e) {
         gclh_error("Change Header layout", e);
