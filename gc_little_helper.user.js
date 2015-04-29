@@ -1235,7 +1235,7 @@ var mainGC = function () {
                 menu.appendChild(headline);
 
                 var submenu = document.createElement("ul");
-                submenu.setAttribute("class", "SubMenu");
+                $(submenu).addClass("SubMenu").addClass("submenu");
 //      submenu.setAttribute("style","visibility: hidden;");
                 menu.appendChild(submenu);
 
@@ -1301,8 +1301,14 @@ var mainGC = function () {
                             $(this).removeClass('hover');
                             $('ul:first', this).css('visibility', 'hidden');
                         }
-                    ).find(".SubMenu").css("margin-top: 0px;");
+                    );	
 
+					var head = document.getElementsByTagName('head')[0];
+					var style = document.createElement('style');
+					style.type = 'text/css';
+					style.innerHTML = ".SubMenu{ margin-top: -10px !important;} .submenu{ margin-top: -3px !important;}";
+					head.appendChild(style);
+					
                     //Language selector fix
                     $('.LanguageSelector script').remove().appendTo('.LanguageSelector');
                 }, "()");
