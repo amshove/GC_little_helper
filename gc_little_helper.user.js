@@ -1146,7 +1146,7 @@ var mainGC = function () {
 				var head = document.getElementsByTagName('head')[0];
 				var style = document.createElement('style');
 				style.type = 'text/css';
-				style.innerHTML = ".menu li a, .menu li a:link, .Menu li a:visited { color: #93b516 !important; } ul.menu>li>a:hover,ul.menu>li>a:focus { color: #FFFFFF !important;} ul.menu>li{display: inline;} .menu{height:18px; margin-top: -5px; margin-left: 250px;} .logo2 {  top: 18px; position: relative; } ";
+				style.innerHTML = ".menu li a, .menu li a:link, .Menu li a:visited { color: #93b516 !important; } ul.menu>li>a:hover,ul.menu>li>a:focus { color: #FFFFFF !important;} ul.menu>li{display: inline; position: relative;} .menu{height:18px; margin-top: -5px; margin-left: 250px;} .logo2 {  top: 18px; position: relative; } ul.menu > li > ul {position: absolute; left: 0;}";
 				head.appendChild(style);			
 				
 				$('ul.menu').before().prev().children().filter('img').parent().css("visibility", "visible").css("padding-top", "18px").find("img").attr("src","https://www.geocaching.com/images/tlnmasters/geocaching-logo.png").parent().addClass("logo2") ;
