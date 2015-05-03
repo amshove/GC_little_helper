@@ -1,7 +1,7 @@
 ﻿// ==UserScript==
 // @name           GC little helper
 // @namespace      http://www.amshove.net
-// @version        11.4
+// @version        11.5
 // @include        http://www.geocaching.com/*
 // @include        https://www.geocaching.com/*
 // @include        http://labs.geocaching.com/*
@@ -187,7 +187,7 @@ var constInit = function (c) {
 
     // Set defaults
     c.scriptName = "gc_little_helper";
-    c.scriptVersion = "11.4";
+    c.scriptVersion = "11.5";
     c.anzCustom = 10;
     c.anzTemplates = 10;
     c.bookmarks_def = new Array(16, 18, 13, 14, 17, 12);

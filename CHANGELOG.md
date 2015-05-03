@@ -1,3 +1,23 @@
+#### v11.5
+-Fix: messagecenter menues at the wrong place
+-Fix: Hover in in menus not always possible
+-Fix: Header gets destroyed on messagecenter page
+-Fix: Header submenu disappears when cursor leaves the headline
+-Fix: Profile widget disappears
+-Fix: bigger gallery images broken
+-Fix: tooltips are broken on gallery page (fixes #147)
+-Fix: if gclh increases the site with the layout get broken(fixes #146)
+-Fix: Linklist overlays the map
+-Mod: changed logo instead of inverting it
+-Fix: searchfield is in second row
+-Fix: templates not working
+-Fix: username location changed
+-Mod: rewrite chrome storage backend (with auto fallback to local) (#140)
+-Fix: settings to big for chrome sync storage (QUOTA_BYTES_PER_ITEM) -> store multiple values for chrome (#140)
+-Fix: dropbox auto sync clould lead into a reload loop
+-Fix: some smaller bugs
+
+--
 #### v11.4
 - Fix: Versionierung
 
