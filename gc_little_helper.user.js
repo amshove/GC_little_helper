@@ -140,10 +140,15 @@ var browserInit = function (c) {
                 httpReq.send(typeof requestData.data == 'undefined' ? null : requestData.data);
             }
         }
-
+		
+		var initialConfigRecv = false;
         chrome.runtime.sendMessage({"getGclhConfig": ""}, function (data) {
-            if (typeof(data["GclhConfig"]) !== "undefined") {
-                c.CONFIG = JSON.parse(data["GclhConfig"]);
+			if(initialConfigRecv){
+				return;
+			}
+			initialConfigRecv = true;
+            if (typeof(data) !== "undefined") {
+                c.CONFIG = data;
             }
             else {
                 c.CONFIG = {};
@@ -263,8 +268,9 @@ var variablesInit = function (c) {
     c.settings_log_inline_pmo4basic = getValue("settings_log_inline_pmo4basic", false);
     // Settings: Show Bookmarks
     c.settings_bookmarks_show = getValue("settings_bookmarks_show", true);
+	c.settings_change_header_layout = getValue("settings_change_header_layout", true);
     // Settings: Bookmarks on Top
-    c.settings_bookmarks_on_top = getValue("settings_bookmarks_on_top", true);
+    c.settings_bookmarks_on_top = getValue("settings_bookmarks_on_top", true);    
     c.settings_bookmarks_top_menu = getValue("settings_bookmarks_top_menu", "true");
     c.settings_bookmarks_search = getValue("settings_bookmarks_search", "true");
     c.settings_bookmarks_search_default = getValue("settings_bookmarks_search_default", "");
@@ -508,7 +514,7 @@ var start = function (c) {
         .then(function () {
             return variablesInit(c);
         })
-        .done(function () {
+        .done(function () {			
             if (document.location.href.match(/^(http|https):\/\/maps\.google\./) || document.location.href.match(/^(http|https):\/\/www\.google\.[a-zA-Z.]*\/maps/)) {
                 mainGMaps();
             }
@@ -849,8 +855,8 @@ var mainGC = function () {
 // Function to get the Finds out of the login-Text-Box
     function get_my_finds() {
         var finds = "";
-        if (getElementsByClass('SignedInText')[0]) {
-            finds = parseInt(getElementsByClass('SignedInText')[0].getElementsByTagName("strong")[1].innerHTML.replace(/[,.]/, ''));
+        if ($('.li-user-info').children().length >= 2) {
+            finds = parseInt($('.li-user-info').children().next().text().match(/[0-9,\.]+/)[0].replace(/[,\.]/,""));
         }
         return finds;
     }
@@ -1128,6 +1134,45 @@ var mainGC = function () {
     } catch (e) {
         gclh_error("Sum up all FP and BM entries on public profile pages", e);
     }
+	
+//Change Header layout
+    try {
+        if (!is_page("map") && settings_change_header_layout) {	
+			if(document.URL.indexOf("messagecenter") !== -1){
+				$('.li-membership').remove();				
+				$('.profile-panel').css("margin-top", "-43px"); 				
+				$('.logo').parent().prepend($('nav').find(".wrapper").children().remove().get());
+				
+				var head = document.getElementsByTagName('head')[0];
+				var style = document.createElement('style');
+				style.type = 'text/css';
+				style.innerHTML = ".menu li a, .menu li a:link, .Menu li a:visited { color: #93b516 !important; } ul.menu>li>a:hover,ul.menu>li>a:focus { color: #FFFFFF !important;} ul.menu>li{display: inline; position: relative;} .menu{height:18px; margin-top: -5px; margin-left: 250px;} .logo2 {  top: 18px; position: relative; } ul.menu > li > ul {position: absolute; left: 0;}";
+				head.appendChild(style);			
+				
+				$('ul.menu').before().prev().children().filter('img').parent().css("visibility", "visible").css("padding-top", "18px").find("img").attr("src","https://www.geocaching.com/images/tlnmasters/geocaching-logo.png").parent().addClass("logo2") ;
+		
+				$('nav').remove();
+			}
+			else{
+				$('.li-upgrade').remove();
+				$('.ProfileWidget').css("margin-top", "-55px");					
+				$('#ctl00_siteHeader').find(".container").prepend($('#Navigation').find(".container").remove().get().reverse());
+				
+				var head = document.getElementsByTagName('head')[0];
+				var style = document.createElement('style');
+				style.type = 'text/css';
+				style.innerHTML = ".Menu li a, .Menu li a:link, .Menu li a:visited { color: #93b516 !important; } ul.Menu>li>a:hover,ul.Menu>li>a:focus { color: #FFFFFF !important;} .logged-in-user>li a {display: inline-block;}";
+				head.appendChild(style);				
+				
+				$('#ctl00_A1').css("visibility", "visible").css("padding-top", "18px").find("img").attr("src","https://www.geocaching.com/images/tlnmasters/geocaching-logo.png");			
+			}
+		
+           	
+			
+        }
+    } catch (e) {
+        gclh_error("Change Header layout", e);
+    }
 
 // Bookmark-Liste im Profil
     try {
@@ -1190,7 +1235,7 @@ var mainGC = function () {
                 menu.appendChild(headline);
 
                 var submenu = document.createElement("ul");
-                submenu.setAttribute("class", "SubMenu");
+                $(submenu).addClass("SubMenu").addClass("submenu");
 //      submenu.setAttribute("style","visibility: hidden;");
                 menu.appendChild(submenu);
 
@@ -1241,14 +1286,8 @@ var mainGC = function () {
                 script.innerHTML = code;
                 document.getElementsByTagName("body")[0].appendChild(script);
 
-                var searchfield = "<input onKeyDown='if(event.keyCode==13) { gclh_search(); return false; }' type='text' size='6' name='navi_search' id='navi_search' style='margin-top: 2px; padding: 1px; font-weight: bold; font-family: sans-serif; border: 2px solid #778555; border-radius: 7px 7px 7px 7px; -moz-border-radius: 7px; -khtml-border-radius: 7px; background-color:#d8cd9d' value='" + settings_bookmarks_search_default + "'>";
-        if(document.getElementsByClassName("menu").length > 0){
-            var menu = document.getElementsByClassName("menu")[0];
-            menu.innerHTML += searchfield;
-        }else{
-            var nav_list = document.getElementById('Navigation').childNodes[1];
-            nav_list.innerHTML += searchfield;
-        }
+                var searchfield = "<li><input onKeyDown='if(event.keyCode==13) { gclh_search(); return false; }' type='text' size='6' name='navi_search' id='navi_search' style='margin-top: 8px; padding: 1px; font-weight: bold; font-family: sans-serif; border: 2px solid #778555; border-radius: 7px 7px 7px 7px; -moz-border-radius: 7px; -khtml-border-radius: 7px; background-color:#d8cd9d' value='" + settings_bookmarks_search_default + "'></li>";
+				$(".Menu").append(searchfield);
             }
 
             //Chrome menu hover fix / Language selector fix
@@ -1262,8 +1301,14 @@ var mainGC = function () {
                             $(this).removeClass('hover');
                             $('ul:first', this).css('visibility', 'hidden');
                         }
-                    );
+                    );	
 
+					var head = document.getElementsByTagName('head')[0];
+					var style = document.createElement('style');
+					style.type = 'text/css';
+					style.innerHTML = ".SubMenu{ margin-top: -10px !important;} .submenu{ margin-top: -3px !important;}";
+					head.appendChild(style);
+					
                     //Language selector fix
                     $('.LanguageSelector script').remove().appendTo('.LanguageSelector');
                 }, "()");
@@ -1286,11 +1331,11 @@ var mainGC = function () {
 // Bookmarks on top - Beta Map
     try {
         if (settings_bookmarks_on_top && document.location.href.match(/^https?:\/\/www\.geocaching\.com\/map\//)) {
-//    var header = getElementsByClass("ui-block-b")[0];
-            var header = document.getElementsByTagName("header")[0];
-            if (header) {
+            if ($('.LogIn').length > 0) {
+				$('.MapsLogo').parent().css("width","250px");
                 var div = document.createElement("div");
-                div.style.float = 'left';
+                div.style = 'float: left; padding-left: 20px;';
+				
                 div.appendChild(document.createElement("br"));
 
                 for (var i = 0; i < settings_bookmarks_list_beta.length; i++) {
@@ -1298,7 +1343,7 @@ var mainGC = function () {
                     if (typeof(x) == "undefined" || typeof(x) == "object") continue;
 
                     var hyperlink = document.createElement("a");
-                    hyperlink.style.color = '#FFFFFF';
+                    hyperlink.style.color = '#93b516';
                     hyperlink.style.fontWeight = 'normal';
 
                     for (attr in bookmarks[x]) {
@@ -1313,7 +1358,7 @@ var mainGC = function () {
                     }
                 }
 
-                header.childNodes[3].appendChild(div);
+                $('.LogIn').parent().before(div).after($('.LogIn').remove()).remove();
             }
         }
     } catch (e) {
@@ -2213,9 +2258,8 @@ var mainGC = function () {
         if (settings_show_bbcode && (document.location.href.match(/^https?:\/\/www\.geocaching\.com\/seek\/log\.aspx\?(id|guid|ID|wp|LUID|PLogGuid)\=/) || document.location.href.match(/^https?:\/\/www\.geocaching\.com\/track\/log\.aspx\?(id|wid|guid|ID|LUID|PLogGuid)\=/)) && document.getElementById('litDescrCharCount')) {
             // Get finds to replace #found# variable
             finds = get_my_finds();
-            if (getElementsByClass('SignedInProfileLink')[0]) {
-                var me = getElementsByClass('SignedInProfileLink')[0].innerHTML;
-            }
+            
+            var me = $('.li-user-info').children().first().text();            
 
             gclh_add_insert_fkt("ctl00_ContentBody_LogBookPanel1_uxLogInfo");
 
@@ -2665,7 +2709,8 @@ var mainGC = function () {
             // Add Mail-Signature
             if (getValue("settings_mail_signature", "") != "") {
                 var me = "#me#";
-                if (getElementsByClass("SignedInProfileLink")[0]) me = getElementsByClass("SignedInProfileLink")[0].innerHTML;
+				var newName = $('.li-user-info').children().first().text();
+                if (newName) me = newName;
                 document.getElementById("ctl00_ContentBody_SendMessagePanel1_tbMessage").innerHTML += "\n\n" + getValue("settings_mail_signature").replace(/#me#/g, me);
             }
         }
@@ -2683,8 +2728,9 @@ var mainGC = function () {
                 if (cache_type.match(/event/i)) {
                     select_val = settings_default_logtype_event;
                 }
+				
                 //Ownername == Username
-                else if ($('.PostLogList').find('a[href*="http://www.geocaching.com/profile/?guid="]').text().trim() == $('.SignedInProfileLink').first().text().trim()) {
+                else if ($('.PostLogList').find('a[href*="http://www.geocaching.com/profile/?guid="]').text().trim() == $('.li-user-info').children().text().trim()) {
                     select_val = settings_default_logtype_owner;
                 }
                 else {
@@ -2732,9 +2778,9 @@ var mainGC = function () {
             window.addEventListener("load", gclh_setFocus, false);
 
             // Replace #found# variable
-            if (getElementsByClass('SignedInText')[0]) {
+            if ($('.li-user-info').children().length > 0) {
                 var finds = get_my_finds();
-                var me = getElementsByClass('SignedInProfileLink')[0].innerHTML;
+                var me = $('.li-user-info').children().first().text();               
                 var owner = document.getElementById('ctl00_ContentBody_LogBookPanel1_WaypointLink').nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML;
                 document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML = document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML.replace(/#found_no#/g, finds);
                 finds++;
@@ -2784,7 +2830,8 @@ var mainGC = function () {
             // Replace #found# variable
             if (getElementsByClass('SignedInText')[0] && document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo')) {
                 var finds = get_my_finds();
-                var me = getElementsByClass('SignedInProfileLink')[0].innerHTML;
+				
+                var me = $('.li-user-info').children().first().text();
                 var owner = document.getElementById('ctl00_ContentBody_LogBookPanel1_WaypointLink').nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML;
                 document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML = document.getElementById('ctl00_ContentBody_LogBookPanel1_uxLogInfo').innerHTML.replace(/#found_no#/g, finds);
                 finds++;
@@ -3917,15 +3964,15 @@ var mainGC = function () {
     try {
         if (getValue("settings_new_width") > 0 && getValue("settings_new_width") != 950) {
             var width = getValue("settings_new_width");
-            var css = ".container { width: " + width + "px; }";
-            css += ".wrapper, nav .wrapper { width: "+width+"px; }";
-            css += "#Content .container { width: " + width + "px; }";
-            css += ".span-24 { width: " + width + "px; }";
-            css += ".span-20 { width: " + (width - 160) + "px; }";
-            css += ".span-16 { width: " + (width - 330) + "px; }";
+            var css = ".container { width: " + width + "px !important; }";
+            css += ".wrapper, nav .wrapper { width: "+width+"px !important; }";
+            css += "#Content .container { width: " + width + "px !important; }";
+            css += ".span-24 { width: " + width + "px !important; }";
+            css += ".span-20 { width: " + (width - 160) + "px !important; }";
+            css += ".span-16 { width: " + (width - 330) + "px !important; }";
 //    css += ".span-17 { width: "+(width-280)+"px; }";
-            css += ".span-17 { width: " + (width - 330) + "px; }";
-            css += ".span-19 { width: " + (width - 200) + "px; }";
+            css += ".span-17 { width: " + (width - 330) + "px !important; }";
+            css += ".span-19 { width: " + (width - 200) + "px !important; }";
             css += ".home-hero { background: url(\"/images/home/home-hero.jpg\") no-repeat scroll left 0 transparent; color: #FFFFFF; margin: 38px 0 30px; }";
 
             var head = document.getElementsByTagName('head')[0];
@@ -4179,7 +4226,7 @@ var mainGC = function () {
 
 // VIP
     try {
-        if (settings_show_vip_list && getElementsByClass("SignedInProfileLink")[0] && (is_page("cache_listing") || document.location.href.match(/^https?:\/\/www\.geocaching\.com\/my\//) || document.location.href.match(/^https?:\/\/www\.geocaching\.com\/my\/myfriends\.aspx/) || document.location.href.match(/^https?:\/\/www\.geocaching\.com\/profile\//))) {
+        if (settings_show_vip_list && $('.li-user-info').children().first() && (is_page("cache_listing") || document.location.href.match(/^https?:\/\/www\.geocaching\.com\/my\//) || document.location.href.match(/^https?:\/\/www\.geocaching\.com\/my\/myfriends\.aspx/) || document.location.href.match(/^https?:\/\/www\.geocaching\.com\/profile\//))) {
             var img_vip_off = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAKCAYAAAC9vt6cAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9sHDhEzBX83tZcAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAsElEQVQoz6WSsQ2DUAxEz4gdfkdBQQUlDAU9E0ALHQWLsMAfA8o/BNVLkYCS0ETkGstn6+kk2yShPxRLEtxjmJmio8nzXN57SZL3XkVRnEtHNTNlWaZ5nj9AAHRdR9M0ANR1Td/38Iz2UZdlIUmS0zsB67rinGPfd5xzbNt2AUgiTVOmaboCAMqypG1bqqo6ve8E77oAhmEgiiLGcbwHCCEQxzEhhJ8B9hrcPqP9+0gPbh/tf/c8szwAAAAASUVORK5CYII=";
             var img_vip_on = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAKCAYAAAC9vt6cAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9sHDhE0Aq4StvMAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAzklEQVQoz6WSwQvBcBTHP7/lanFT3DdzV9yw+RNc8E/s6A/YSa6KUrs4u4omB6KUKJoc5a+Q5rRlOCz7Xl7feu/zXu89AXjEUAKgszb/KrbKPSTfDJo2t8MdgNvhzrBlB0l+tMo9+o0R+8kxgASAgqFynrsAnGYumqF+deysTepmhZW9/QZouoLrXHk+nlwWVzRd+TnytOtQahfDOwBI51LImSTLwQo5I5POpn5O8Cnp3WiGyma8o1BXIi8yDKgpCEmQr0YHCMCLc0YR95Fe0bc6eQ97MqYAAAAASUVORK5CYII=";
             var vips = getValue("vips", false);
@@ -4315,7 +4362,7 @@ var mainGC = function () {
                 vips = vips.replace(/, (?=,)/g, ",null");
                 vips = JSON.parse(vips);
             }
-            var myself = getElementsByClass("SignedInProfileLink")[0].innerHTML;
+            var myself = $('.li-user-info').children().first().text();
             var gclh_build_vip_list = function () {
             };
 
@@ -4850,7 +4897,9 @@ var mainGC = function () {
                 "  text-decoration:underline;" +
                 "  position: relative;" +
                 "}" +
-                "a.gclh_thumb span {" +
+                "a.gclh_thumb {" +  				
+				"overflow: visible !important; max-width: none !important;}" +
+				"a.gclh_thumb span {" +
                 "  visibility: hidden;" +
                 "  position: absolute;" +
                 "  top:-310px;" +
@@ -5002,7 +5051,7 @@ var mainGC = function () {
             var tds = new Array();
             // Make images bigger
             for (var i = 0; i < links.length; i++) {
-                if (links[i].href.match(/^https?:\/\/imgcdn\.geocaching\.com\/(cache|track)\//) && links[i].childNodes[1] && links[i].childNodes[1].tagName == 'IMG') {
+                if (links[i].href.match(/^https?:\/\/img\.geocaching\.com\/(cache|track)\//) && links[i].childNodes[1] && links[i].childNodes[1].tagName == 'IMG') {
                     var thumb = links[i].childNodes[1];
                     thumb.style.width = "300px";
                     thumb.style.height = "auto";
@@ -5796,8 +5845,7 @@ var mainGC = function () {
             style.innerHTML = css;
             head.appendChild(style);
 
-            if (getElementsByClass('SignedInProfileLink')[0])
-                var me = getElementsByClass('SignedInProfileLink')[0].innerHTML;
+            var me = $('.li-user-info').children().first().text();                
             var owner = document.getElementById("ctl00_ContentBody_BugDetails_BugOwner").innerHTML;
             var trLogs = document.getElementsByClassName("Data");
             for (var i = 0; i < trLogs.length; i += 2) {
@@ -6282,7 +6330,8 @@ var mainGC = function () {
             html += "<br><br>";
             html += "<h4 class='gclh_headline2'>Global</h4>";
             html += "Home-Coords: <input class='gclh_form' type='text' id='settings_home_lat_lng' value='" + DectoDeg(getValue("home_lat"), getValue("home_lng")) + "'>" + show_help("The Home-Coords are filled automatically if you update your Home-Coords on gc.com. If it doesn\'t work you can insert them here. These Coords are used for some special Links (Nearest List, Nearest Map, ..) and for the homezone-circle on the map.") + "<br>";
-            html += checkbox('settings_bookmarks_on_top', "Show <a class='gclh_ref' href='#gclh_linklist' id='gclh_linklist_link_1'>Linklist</a> on top") + show_help("Show the Linklist on the top of the page - beside the other Links of gc.com. You can configure the Links at the end of this configuration-page.") + "<br/>";
+            html += checkbox('settings_change_header_layout', "Change header layout") + show_help("Change the header layout to save some vertical space.") + "<br/>";
+			html += checkbox('settings_bookmarks_on_top', "Show <a class='gclh_ref' href='#gclh_linklist' id='gclh_linklist_link_1'>Linklist</a> on top") + show_help("Show the Linklist on the top of the page - beside the other Links of gc.com. You can configure the Links at the end of this configuration-page.") + "<br/>";
             html += checkbox('settings_bookmarks_show', "Show <a class='gclh_ref' href='#gclh_linklist' id='gclh_linklist_link_2'>Linklist</a> in profile") + show_help("Show the Linklist at the side in your profile. You can configure the Links at the end of this configuration-page.") + "<br/>";
             html += checkbox('settings_hide_advert_link', 'Hide link to advertisement instructions') + "<br/>";
             html += checkbox('settings_hide_line_breaks', 'Hide superfluous line breaks') + "<br/>";
@@ -6823,6 +6872,7 @@ var mainGC = function () {
                 'settings_log_inline_tb',
                 'settings_bookmarks_show',
                 'settings_bookmarks_on_top',
+				'settings_change_header_layout',
                 'settings_bookmarks_search',
                 'settings_redirect_to_map',
                 'settings_hide_facebook',
@@ -7046,7 +7096,7 @@ var mainGC = function () {
 // Config Sync
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
-    if (is_page("profile") || (settings_sync_autoImport && (new Date() - settings_sync_last) > settings_sync_time)) {
+    if (is_page("profile") || (settings_sync_autoImport && (settings_sync_last.toString() === "Invalid Date" || (new Date() - settings_sync_last) > settings_sync_time)) ){
         // Sync: get config data
         function sync_getConfigData() {
             var data = {};
@@ -7083,8 +7133,10 @@ var mainGC = function () {
         var gclh_sync_DB_Client = null;
 
         function gclh_sync_DB_CheckAndCreateClient(userToken) {
+			var deferred = $.Deferred();
             if (gclh_sync_DB_Client != null && gclh_sync_DB_Client.isAuthenticated()) {
-                return;
+				deferred.resolve();
+                return deferred.promise();
             }
             $('#syncDBLoader').show();
             setValue("dbToken", "");
@@ -7112,53 +7164,54 @@ var mainGC = function () {
                     document.getElementById('btn_DBSave').disabled = false;
                     document.getElementById('btn_DBLoad').disabled = false;
                 }
+				
+				deferred.resolve();
             });
-
+			
+			return deferred.promise();
         }
 
         function gclh_sync_DBSave() {
             var deferred = $.Deferred();
-            gclh_sync_DB_CheckAndCreateClient();
+            gclh_sync_DB_CheckAndCreateClient().done(function(){
+				$('#syncDBLoader').show();
 
-            $('#syncDBLoader').show();
-
-            gclh_sync_DB_Client.writeFile("GCLittleHelperSettings.json", sync_getConfigData(), {}, function () {
-                $('#syncDBLoader').hide();
-                deferred.resolve();
-            });
-
+				gclh_sync_DB_Client.writeFile("GCLittleHelperSettings.json", sync_getConfigData(), {}, function () {
+					$('#syncDBLoader').hide();
+					deferred.resolve();
+				});
+			}).fail(function(){deferred.reject();});
             return deferred.promise();
         }
 
         function gclh_sync_DBLoad() {
             var deferred = $.Deferred();
-            gclh_sync_DB_CheckAndCreateClient();
+            gclh_sync_DB_CheckAndCreateClient().done(function(){
+				$('#syncDBLoader').show();
 
-            $('#syncDBLoader').show();
-
-            gclh_sync_DB_Client.readFile("GCLittleHelperSettings.json", {}, function (error, data) {
-                if (data != null && data != "") {
-                    sync_setConfigData(data);
-                    $('#syncDBLoader').hide();
-                    deferred.resolve();
-                }
-            });
-
+				gclh_sync_DB_Client.readFile("GCLittleHelperSettings.json", {}, function (error, data) {
+					if (data != null && data != "") {
+						sync_setConfigData(data);
+						$('#syncDBLoader').hide();
+						deferred.resolve();
+					}
+				});
+			}).fail(function(){deferred.reject();});
             return deferred.promise();
         }
 
         function gclh_sync_DBHash() {
             var deferred = $.Deferred();
-            gclh_sync_DB_CheckAndCreateClient();
+			
+            gclh_sync_DB_CheckAndCreateClient().done(function(){
+				$('#syncDBLoader').show();
 
-            $('#syncDBLoader').show();
-
-            gclh_sync_DB_Client.stat("GCLittleHelperSettings.json", {}, function (error, data) {
-                if (data != null && data != "") {
-                    deferred.resolve(data.versionTag);
-                }
-            });
-
+				gclh_sync_DB_Client.stat("GCLittleHelperSettings.json", {}, function (error, data) {
+					if (data != null && data != "") {
+						deferred.resolve(data.versionTag);
+					}
+				});
+			}).fail(function(){deferred.reject();});;
             return deferred.promise();
         }
 
@@ -7289,26 +7342,27 @@ var mainGC = function () {
                 document.getElementById('gclh_sync_lnk').addEventListener("click", gclh_sync_showConfig, false);
             }
         }
-
-        if (settings_sync_autoImport && (new Date() - settings_sync_last) > settings_sync_time) {
+		
+        if (settings_sync_autoImport && (settings_sync_last.toString() === "Invalid Date" || (new Date() - settings_sync_last) > settings_sync_time) && document.URL.indexOf("#access_token") === -1) {
             gclh_sync_DBHash().done(function (hash) {
                 if (hash != settings_sync_hash) {
                     gclh_sync_DBLoad().done(function () {
                         settings_sync_last = new Date();
                         settings_sync_hash = hash;
-                        setValue("settings_sync_last", settings_sync_last);
-                        setValue("settings_sync_hash", settings_sync_hash);
-
-                        if (is_page("profile")) {
-                            //Reload page
-                            if (document.location.href.indexOf("#") == -1 || document.location.href.indexOf("#") == document.location.href.length - 1) {
-                                $('html, body').animate({scrollTop: 0}, 0);
-                                document.location.reload(true);
-                            }
-                            else {
-                                document.location.replace(document.location.href.slice(0, document.location.href.indexOf("#")));
-                            }
-                        }
+                        setValue("settings_sync_last", settings_sync_last.toString()).done(function(){
+							setValue("settings_sync_hash", settings_sync_hash).done(function(){
+								if (is_page("profile")) {
+									//Reload page
+									if (document.location.href.indexOf("#") == -1 || document.location.href.indexOf("#") == document.location.href.length - 1) {
+										$('html, body').animate({scrollTop: 0}, 0);
+										document.location.reload(true);
+									}
+									else {
+										document.location.replace(document.location.href.slice(0, document.location.href.indexOf("#")));
+									}
+								}
+							});
+						});                            
                     });
                 }
             });
@@ -7405,7 +7459,9 @@ function setValue(name, value) {
      CONFIG["gclhConfigKeys"] = JSON.stringify(gclhConfigKeys);
      }*/
     if (browser === "chrome") {
-        chrome.runtime.sendMessage({setGclhConfig: JSON.stringify(CONFIG)}, function () {
+		var data2Store = {};
+		data2Store[name] = value;
+        chrome.runtime.sendMessage({setGclhConfig: data2Store}, function () {
             defer.resolve();
         });
     }
@@ -7419,13 +7475,15 @@ function setValue(name, value) {
 
 function setValueSet(data) {
     var defer = $.Deferred();
-
+	var data2Store = {};
+	
     for (key in data) {
         CONFIG[key] = data[key];
+        data2Store[key] = data[key];
     }
 
     if (browser === "chrome") {
-        chrome.runtime.sendMessage({setGclhConfig: JSON.stringify(CONFIG)}, function (e) {
+        chrome.runtime.sendMessage({setGclhConfig: data2Store}, function (e) {
             defer.resolve();
         });
     }
@@ -7471,6 +7529,10 @@ function is_link(name, url) {
             if (url.match(/^http:\/\/www\.geocaching\.com\/profile/) || url.match(/^https:\/\/www\.geocaching\.com\/profile/)) return true;
             else return false;
             break;
+		case "map":
+			if (url.match(/^http:\/\/www\.geocaching\.com\/map/) || url.match(/^https:\/\/www\.geocaching\.com\/map/)) return true;
+			else return false;
+			break;
         default:
             return false;
     }
