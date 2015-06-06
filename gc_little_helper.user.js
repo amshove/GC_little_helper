@@ -3310,11 +3310,11 @@ var mainGC = function () {
 // Map-Overlays
     var map_overlays = new Object();
     map_overlays["Hillshadow"] = {
-        tileUrl: "http://toolserver.org/~cmarqu/hill/{z}/{x}/{y}.png",
-        attribution: 'hillshadow \u00a9 <a href="http://toolserver.org/" target=\'_blank\'>toolserver.org</a>',
-        tileSize: 256,
-        minZoom: 0,
-        maxZoom: 17
+    	tileUrl:"http://a.tiles.wmflabs.org/hillshading/{z}/{x}/{y}.png",
+    	attribution:'hillshadow \u00a9 <a href="http://a.tiles.wmflabs.org/" target=\'_blank\'>a.tiles.wmflabs.org</a>',
+    	tileSize:256,
+    	minZoom:0,
+    	maxZoom:17
     };
     map_overlays["Public Transport Lines"] = {
         tileUrl: "http://openptmap.org/tiles/{z}/{x}/{y}.png",
