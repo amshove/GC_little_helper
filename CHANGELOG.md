@@ -1,3 +1,7 @@
+#### v11.6
+
+
+--
 #### v11.5
 -Fix: messagecenter menues at the wrong place
 -Fix: Hover in in menus not always possible
