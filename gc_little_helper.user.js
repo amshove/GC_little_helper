@@ -1,4 +1,4 @@
-﻿// ==UserScript==
+// ==UserScript==
 // @name           GC little helper
 // @namespace      http://www.amshove.net
 // @version        11.5
@@ -4262,7 +4262,7 @@ var mainGC = function () {
                     vips = vips.replace(/\\x7C/g, "|");
                     vips = vips.replace(/\\x7D/g, "}");
                     vips = vips.replace(/\\x7E/g, "~");
-                    vips = vips.replace(/\\xA0/g, " ");
+                    vips = vips.replace(/\\xA0/g, " ");
                     vips = vips.replace(/\\xA1/g, "¡");
                     vips = vips.replace(/\\xA2/g, "¢");
                     vips = vips.replace(/\\xA3/g, "£");
@@ -4466,7 +4466,7 @@ var mainGC = function () {
                 }
 
                 // Show VIP List
-                var map = document.getElementById("map_preview_canvas");
+                var map = document.getElementById("ctl00_ContentBody_detailWidget");
                 var box = document.createElement("div");
                 var headline = document.createElement("h3");
                 var body = document.createElement("div");
