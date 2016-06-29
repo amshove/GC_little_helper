@@ -1,5 +1,5 @@
 #### v11.6
-
+-Fix: VIP-List was broken
 
 --
 #### v11.5
