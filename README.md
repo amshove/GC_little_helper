@@ -1,6 +1,11 @@
 GC little helper
 ================
 
+Mantained fork by @2Abendsegler:  
+https://github.com/2Abendsegler/GClh
+
+-----------------------------------------------  
+
 Changelog: [CHANGELOG.md](https://github.com/amshove/GC_little_helper/blob/master/CHANGELOG.md)
 
 How to install
